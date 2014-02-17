@@ -35,8 +35,12 @@
  * dvd_drive_status.c
  * Get the status of the disc tray
  *
+ * See http://dvds.beandog.org/doku.php/dvd_drive_status for justification :)
+ *
  * This does do strict error checking to see if the device exists, is a DVD
  * drive, is accessible, and so on.
+ *
+ * With no argument, uses '/dev/dvd' as the drive
  *
  * Exit codes:
  * 1 - no disc (closed, no media)
