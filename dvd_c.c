@@ -5,16 +5,10 @@
 #include <fcntl.h>
 #include <linux/cdrom.h>
 #include <dvdread/dvd_reader.h>
+#include <dvdread/dvd_udf.h>
 #include <dvdread/ifo_read.h>
-#include <dvdread/dvd_input.h>
 
-/**
- * dvd_num_tracks.c
- * A simple little program to get the total number of tracks on a DVD.
- *
- * Checks if the device is a DVD drive or not, and if it is, also looks to see
- * if it can be polled or not.
- */
+#include <string.h>
 
 int main(int argc, char **argv) {
 
@@ -70,30 +64,21 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// begin libdvdread
+	// libdvdread
+
+	// open DVD device and don't cache queries
 	dvd_reader_t *dvd;
 	dvd = DVDOpen(device_filename);
-	if(dvd == 0) {
-		fprintf(stderr, "libdvdread could not open %s\n", device_filename);
-		return 1;
-	}
+	DVDUDFCacheLevel(dvd, 0);
 
-	ifo_handle_t *vmg_ifo;
-	vmg_ifo = ifoOpen(dvd, 0);
+	ifo_handle_t *ifo_zero;
+	ifo_zero = ifoOpen(dvd, 0);
+	if(!ifo_zero) { fprintf(stderr, "opening ifo_zero failed\n"); return 1; }
 
-	if(!vmg_ifo) {
-		fprintf(stderr, "libdvdread: ifoOpen() failed\n");
-		return 1;
-	}
+	int nr_of_vtss = ifo_zero->vts_atrt->nr_of_vtss;
+	printf("nr_of_vtss: %i\n", nr_of_vtss);
 
-	int num_titles;
-	num_titles = vmg_ifo->tt_srpt->nr_of_srpts;
-	printf("%i\n", num_titles);
-
-	ifoClose(vmg_ifo);
-
+	ifoClose(ifo_zero);
 	DVDClose(dvd);
-
-	return 0;
 
 }

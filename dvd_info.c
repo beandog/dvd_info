@@ -1,19 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
+#include <stdbool.h>
 #include <linux/cdrom.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/dvd_udf.h>
 #include <dvdread/ifo_read.h>
-
-#include <string.h>
+#include "dvd_device.h"
+#include "dvd_drive.h"
 
 int main(int argc, char **argv) {
 
-	int cdrom;
+	int dvd_fd;
 	int drive_status;
+	bool is_hardware;
+	bool is_image;
+	bool ready = false;
 	char* device_filename;
 	char* status;
 
@@ -22,46 +27,43 @@ int main(int argc, char **argv) {
 	else
 		device_filename = argv[1];
 
-	// Check if device exists
-	if(access(device_filename, F_OK) != 0) {
+	// Check to see if device can be accessed
+	if(dvd_device_access(device_filename) == 1) {
 		fprintf(stderr, "cannot access %s\n", device_filename);
 		return 1;
 	}
 
-	cdrom = open(device_filename, O_RDONLY | O_NONBLOCK);
-	if(cdrom < 0) {
+	// Check to see if device can be opened
+	dvd_fd = dvd_device_open(device_filename);
+	if(dvd_fd < 0) {
 		fprintf(stderr, "error opening %s\n", device_filename);
 		return 1;
 	}
-	drive_status = ioctl(cdrom, CDROM_DRIVE_STATUS);
-	if(drive_status < 0) {
-		fprintf(stderr, "%s is not a DVD drive\n", device_filename);
-		close(cdrom);
-		return 1;
-	}
-	close(cdrom);
+	dvd_device_close(dvd_fd);
 
-	switch(drive_status) {
-		case CDS_NO_DISC:
-			status = "no disc";
-			break;
-		case CDS_TRAY_OPEN:
-			status = "tray open";
-			break;
-		case CDS_DRIVE_NOT_READY:
-			status = "drive not ready";
-			break;
-		case CDS_DISC_OK:
-			status = "drive ready";
-			break;
-		default:
-			status = "unknown";
-			break;
-	}
+	// Check if it is hardware or an image file
+	is_hardware = dvd_device_is_hardware(device_filename);
+	is_image = dvd_device_is_image(device_filename);
 
-	if(drive_status != CDS_DISC_OK) {
-		fprintf(stderr, "%s\n", status);
-		return 1;
+	if(is_image)
+		ready = true;
+
+	// Poll drive status if it is hardware
+	if(is_hardware)
+		drive_status = dvd_drive_get_status(device_filename);
+
+	if(is_hardware)
+		dvd_drive_display_status(device_filename);
+
+	// Wait for the drive to become ready
+	if(is_hardware && dvd_drive_has_media(device_filename)) {
+		ready = true;
+	} else {
+		printf("waiting for drive to become ready\n");
+		while(!dvd_drive_has_media(device_filename)) {
+			usleep(1000000);
+		}
+		ready = true;
 	}
 
 	// libdvdread
