@@ -26,6 +26,51 @@ void print_usage(char *binary) {
 
 }
 
+void dvd_title(char* device_filename, char *dvd_title) {
+
+	char title[33];
+	FILE* filehandle = 0;
+	int x, y, z;
+
+	filehandle = fopen(device_filename, "r");
+	if(filehandle == NULL) {
+		fprintf(stderr, "could not open device %s for reading\n", device_filename);
+		return "";
+	}
+
+	if(fseek(filehandle, 32808, SEEK_SET) == -1) {
+		fprintf(stderr, "could not seek on device %s\n", device_filename);
+		fclose(filehandle);
+		return "";
+	}
+
+	x = fread(title, 1, 32, filehandle);
+	if(x == 0) {
+		fprintf(stderr, "could not read device %s\n", device_filename);
+		fclose(filehandle);
+		return "";
+	}
+	title[32] = '\0';
+
+	fclose(filehandle);
+
+	y = sizeof(title);
+	while(y-- > 2) {
+		if(title[y] == ' ') {
+			title[y] = '\0';
+		}
+	}
+
+	/*
+	for(z = 0; z < strlen(title); z++) {
+		printf("%c", title[z]);
+	}
+	*/
+
+	strcpy(dvd_title, title);
+
+}
+
 int main(int argc, char **argv) {
 
 	int dvd_fd;
@@ -225,6 +270,12 @@ int main(int argc, char **argv) {
 	} else if(display_provider_id && !ifo_zero) {
 
 		fprintf(stderr, "dvd_info: cannot display provider_id\n");
+
+	}
+
+	// --title
+	// Display DVD title
+	if(display_title) {
 
 	}
 
