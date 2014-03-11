@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
 	}
 
 	if(verbose)
-		printf("device filename: %s\n", device_filename);
+		printf("dvd: %s\n", device_filename);
 
 	// Handle options
 	if(track_number < 1)
@@ -148,20 +148,56 @@ int main(int argc, char **argv) {
 	// libdvdread
 
 	// open DVD device and don't cache queries
-	// dvd_reader_t *dvd;
+	dvd_reader_t *dvd;
 	dvd = DVDOpen(device_filename);
-	DVDUDFCacheLevel(dvd, 0);
+	// DVDUDFCacheLevel(dvd, 0);
 
+	// --id
+	// Display DVDDiscID from libdvdread
+	if(display_id) {
+
+		int dvd_disc_id;
+		unsigned char tmp_buf[16];
+
+		dvd_disc_id = DVDDiscID(dvd, tmp_buf);
+
+		if(dvd_disc_id == -1) {
+			fprintf(stderr, "libdvdread: DVDDiscID() failed\n");
+			return 1;
+		}
+
+		if(verbose)
+			printf("id: ");
+
+		for(int x = 0; x < sizeof(tmp_buf); x++) {
+			printf("%02x", tmp_buf[x]);
+		}
+		printf("\n");
+
+	}
+
+	// --num_vts
+	// Display number of VTSs on DVD
 	if(display_num_vts) {
-		ifo_handle_t *ifo_zero;
-		ifo_zero = ifoOpen(dvd, 0);
-		if(!ifo_zero) { fprintf(stderr, "opening ifo_zero failed\n"); return 1; }
 
-		int nr_of_vtss = ifo_zero->vts_atrt->nr_of_vtss;
+		int num_vts;
+		ifo_handle_t *ifo_zero;
+
+		ifo_zero = ifoOpen(dvd, 0);
+
+		if(!ifo_zero) {
+			fprintf(stderr, "opening ifo_zero failed\n");
+			return 1;
+		}
+
+		num_vts = ifo_zero->vts_atrt->nr_of_vtss;
+
 		if(verbose)
 			printf("num_vts: ");
-		printf("%i\n", nr_of_vtss);
+		printf("%i\n", num_vts);
+
 		ifoClose(ifo_zero);
+
 	}
 
 	DVDClose(dvd);
