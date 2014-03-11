@@ -26,7 +26,7 @@ void print_usage(char *binary) {
 
 }
 
-void dvd_title(char* device_filename, char *dvd_title) {
+int dvd_info_title(char* device_filename, char *dvd_title) {
 
 	char title[33];
 	FILE* filehandle = 0;
@@ -34,21 +34,18 @@ void dvd_title(char* device_filename, char *dvd_title) {
 
 	filehandle = fopen(device_filename, "r");
 	if(filehandle == NULL) {
-		fprintf(stderr, "could not open device %s for reading\n", device_filename);
-		return "";
+		return 1;
 	}
 
 	if(fseek(filehandle, 32808, SEEK_SET) == -1) {
-		fprintf(stderr, "could not seek on device %s\n", device_filename);
 		fclose(filehandle);
-		return "";
+		return 2;
 	}
 
 	x = fread(title, 1, 32, filehandle);
 	if(x == 0) {
-		fprintf(stderr, "could not read device %s\n", device_filename);
 		fclose(filehandle);
-		return "";
+		return 3;
 	}
 	title[32] = '\0';
 
@@ -61,13 +58,9 @@ void dvd_title(char* device_filename, char *dvd_title) {
 		}
 	}
 
-	/*
-	for(z = 0; z < strlen(title); z++) {
-		printf("%c", title[z]);
-	}
-	*/
+	strncpy(dvd_title, title, 32);
 
-	strcpy(dvd_title, title);
+	return 0;
 
 }
 
@@ -277,6 +270,23 @@ int main(int argc, char **argv) {
 	// Display DVD title
 	if(display_title) {
 
+		char dvd_title[33];
+		int dvd_info_title_ret;
+
+		dvd_info_title_ret = dvd_info_title(device_filename, dvd_title);
+
+		if(dvd_info_title_ret == 1) {
+			fprintf(stderr, "dvd_info: could not open device %s for reading\n", device_filename);
+		} else if(dvd_info_title_ret == 2) {
+			fprintf(stderr, "dvd_info: could not seek on device %s\n", device_filename);
+		} else if(dvd_info_title_ret == 3) {
+			fprintf(stderr, "dvd_info: could not read device %s\n", device_filename);
+		} else {
+			if(verbose)
+				printf("title: ");
+			printf("%s\n", dvd_title);
+		}
+
 	}
 
 	// Cleanup
@@ -284,6 +294,7 @@ int main(int argc, char **argv) {
 	if(ifo_zero)
 		ifoClose(ifo_zero);
 
-	DVDClose(dvd);
+	if(dvd)
+		DVDClose(dvd);
 
 }
