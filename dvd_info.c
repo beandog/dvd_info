@@ -126,6 +126,7 @@ int main(int argc, char **argv) {
 	int display_num_tracks = 0;
 	int display_num_vts = 0;
 	int display_provider_id = 0;
+	int display_serial_id = 0;
 	int display_vmg_id = 0;
 
 	struct option long_options[] = {
@@ -146,6 +147,7 @@ int main(int argc, char **argv) {
 		{ "num-tracks", no_argument, & display_num_tracks, 1 },
 		{ "num-vts", no_argument, & display_num_vts, 1 },
 		{ "provider-id", no_argument, & display_provider_id, 1 },
+		{ "serial-id", no_argument, & display_serial_id, 1 },
 		{ "vmg-id", no_argument, & display_vmg_id, 1 },
 
 		{ 0, 0, 0, 0 }
@@ -284,28 +286,16 @@ int main(int argc, char **argv) {
 		printf("error opening %s with dvdnav\n", device_filename);
 	}
 
-	// use libdvdnav to ping the DVD so the CSS is decrypted -- this is to
-	// prevent any possible issues opening it later.
-	if(is_hardware) {
-
-		const char *serial_str;
-		dvdnav_get_serial_string(dvdnav_dvd, &serial_str);
-
-		printf("serial: %s\n", serial_str);
-
-
-	}
-
 	// begin libdvdread usage
 
 	// open DVD device and don't cache queries (FIXME? do I need to set that?)
-	dvd_reader_t *dvd;
-	dvd = DVDOpen(device_filename);
+	dvd_reader_t *dvdread_dvd;
+	dvdread_dvd = DVDOpen(device_filename);
 	// DVDUDFCacheLevel(dvd, 0);
 
 	// Open IFO zero -- where all the cool stuff is
 	ifo_handle_t *ifo_zero;
-	ifo_zero = ifoOpen(dvd, 0);
+	ifo_zero = ifoOpen(dvdread_dvd, 0);
 	if(!ifo_zero) {
 		fprintf(stderr, "dvd_info: opening IFO zero failed\n");
 	}
@@ -317,7 +307,7 @@ int main(int argc, char **argv) {
 		int dvd_disc_id;
 		unsigned char tmp_buf[16];
 
-		dvd_disc_id = DVDDiscID(dvd, tmp_buf);
+		dvd_disc_id = DVDDiscID(dvdread_dvd, tmp_buf);
 
 		if(dvd_disc_id == -1) {
 			fprintf(stderr, "dvd_info: querying DVD id failed\n");
@@ -389,6 +379,22 @@ int main(int argc, char **argv) {
 
 	}
 
+	// --serial-id
+	// Display serial ID
+	if(display_serial_id || display_all) {
+
+		const char *serial_id;
+
+		if(dvdnav_get_serial_string(dvdnav_dvd, &serial_id) == DVDNAV_STATUS_OK) {
+
+			if(verbose)
+				printf("serial_id: ");
+			printf("%s\n", serial_id);
+
+		}
+
+	}
+
 	// --title
 	// Display DVD title
 	if(display_title || display_all) {
@@ -437,8 +443,8 @@ int main(int argc, char **argv) {
 	if(ifo_zero)
 		ifoClose(ifo_zero);
 
-	if(dvd)
-		DVDClose(dvd);
+	if(dvdread_dvd)
+		DVDClose(dvdread_dvd);
 
 	if(dvdnav_dvd)
 		dvdnav_close(dvdnav_dvd);
