@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 't':
-				track_number = 0;
+				track_number = atoi(optarg);
 				break;
 
 			case 'v':
