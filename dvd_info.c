@@ -399,6 +399,7 @@ int main(int argc, char **argv) {
 	// Display DVD title
 	if(display_title || display_all) {
 
+		/*
 		char dvd_title[33];
 		int dvd_info_title_ret;
 
@@ -411,6 +412,15 @@ int main(int argc, char **argv) {
 		} else if(dvd_info_title_ret == 3) {
 			fprintf(stderr, "dvd_info: could not read device %s\n", device_filename);
 		} else {
+			if(verbose)
+				printf("title: ");
+			printf("%s\n", dvd_title);
+		}
+		*/
+
+		const char *dvd_title;
+
+		if(dvdnav_get_title_string(dvdnav_dvd, &dvd_title) == DVDNAV_STATUS_OK) {
 			if(verbose)
 				printf("title: ");
 			printf("%s\n", dvd_title);
