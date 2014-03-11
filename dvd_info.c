@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
 	// libdvdread
 
 	// open DVD device and don't cache queries
-	dvd_reader_t *dvd;
+	// dvd_reader_t *dvd;
 	dvd = DVDOpen(device_filename);
 	DVDUDFCacheLevel(dvd, 0);
 
