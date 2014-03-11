@@ -18,6 +18,7 @@ void print_usage(char *binary) {
 	printf("Usage %s [options] [-t track_number] [dvd path]\n", binary);
 	printf("\n");
 	printf("Display DVD info:\n");
+	printf("  --all			Display all\n");
 	printf("  --id			Unique DVD identifier\n");
 	printf("  --title		DVD title\n");
 	printf("  --num_tracks		Number of tracks\n");
@@ -77,6 +78,7 @@ int main(int argc, char **argv) {
 	char* status;
 
 	// getopt_long
+	int display_all = 0;
 	int display_id = 0;
 	int display_title = 0;
 	int display_num_tracks = 0;
@@ -92,6 +94,7 @@ int main(int argc, char **argv) {
 
 		{ "verbose", no_argument, 0, 'v' },
 
+		{ "all", no_argument, & display_all, 1 },
 		{ "id", no_argument, & display_id, 1 },
 		{ "title", no_argument, & display_title, 1 },
 		{ "num_tracks", no_argument, & display_num_tracks, 1 },
@@ -202,7 +205,7 @@ int main(int argc, char **argv) {
 
 	// --id
 	// Display DVDDiscID from libdvdread
-	if(display_id) {
+	if(display_id || display_all) {
 
 		int dvd_disc_id;
 		unsigned char tmp_buf[16];
@@ -225,9 +228,22 @@ int main(int argc, char **argv) {
 
 	}
 
+	// --num_tracks
+	if((display_num_tracks || display_all) && ifo_zero) {
+
+		int num_tracks;
+
+		num_tracks = ifo_zero->tt_srpt->nr_of_srpts;
+
+		if(verbose)
+			printf("num_tracks: ");
+		printf("%i\n", num_tracks);
+
+	}
+
 	// --num_vts
 	// Display number of VTSs on DVD
-	if(display_num_vts && ifo_zero) {
+	if((display_num_vts || display_all) && ifo_zero) {
 
 		int num_vts;
 
@@ -237,7 +253,7 @@ int main(int argc, char **argv) {
 			printf("num_vts: ");
 		printf("%i\n", num_vts);
 
-	} else if(display_num_vts && !ifo_zero) {
+	} else if((display_num_vts || display_all) && !ifo_zero) {
 
 		fprintf(stderr, "dvd_info: cannot display num_vts\n");
 
@@ -245,7 +261,7 @@ int main(int argc, char **argv) {
 
 	// --provider_id
 	// Display provider ID
-	if(display_provider_id && ifo_zero) {
+	if((display_provider_id || display_all) && ifo_zero) {
 
 		char *provider_id;
 		bool has_provider_id = false;
@@ -260,7 +276,7 @@ int main(int argc, char **argv) {
 		if(provider_id[0] != '\0')
 			has_provider_id = true;
 
-	} else if(display_provider_id && !ifo_zero) {
+	} else if((display_provider_id || display_all) && !ifo_zero) {
 
 		fprintf(stderr, "dvd_info: cannot display provider_id\n");
 
@@ -268,7 +284,7 @@ int main(int argc, char **argv) {
 
 	// --title
 	// Display DVD title
-	if(display_title) {
+	if(display_title || display_all) {
 
 		char dvd_title[33];
 		int dvd_info_title_ret;
