@@ -116,13 +116,17 @@ int main(int argc, char **argv) {
 		dvd_drive_display_status(device_filename);
 
 	// Wait for the drive to become ready
-	if(is_hardware && dvd_drive_has_media(device_filename)) {
+	if(is_hardware) {
+		if(dvd_drive_has_media(device_filename)) {
+			ready = true;
+		} else  {
+			printf("waiting for drive to become ready\n");
+			while(!dvd_drive_has_media(device_filename)) {
+				usleep(1000000);
+			}
+		}
 		ready = true;
 	} else {
-		printf("waiting for drive to become ready\n");
-		while(!dvd_drive_has_media(device_filename)) {
-			usleep(1000000);
-		}
 		ready = true;
 	}
 
