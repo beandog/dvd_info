@@ -10,6 +10,7 @@
 #include <dvdread/dvd_reader.h>
 #include <dvdread/dvd_udf.h>
 #include <dvdread/ifo_read.h>
+#include <dvdnav/dvdnav.h>
 #include "dvd_device.h"
 #include "dvd_drive.h"
 
@@ -228,6 +229,7 @@ int main(int argc, char **argv) {
 	// Poll drive status if it is hardware
 	if(is_hardware) {
 		drive_status = dvd_drive_get_status(device_filename);
+		// FIXME send to stderr
 		if(verbose) {
 			printf("drive status: ");
 			dvd_drive_display_status(device_filename);
@@ -247,6 +249,7 @@ int main(int argc, char **argv) {
 			// when to stop napping (60 seconds)
 			int max_num_naps = 60;
 
+			// FIXME send to stderr
 			printf("drive status: ");
 			dvd_drive_display_status(device_filename);
 
@@ -269,6 +272,28 @@ int main(int argc, char **argv) {
 				}
 			}
 		}
+	}
+
+	// begin libdvdnav usage
+	dvdnav_t *dvdnav_dvd;
+	dvdnav_status_t *dvdnav_status;
+	int dvdnav_ret;
+	dvdnav_ret = dvdnav_open(&dvdnav_dvd, device_filename);
+
+	if(dvdnav_ret == DVDNAV_STATUS_ERR) {
+		printf("error opening %s with dvdnav\n", device_filename);
+	}
+
+	// use libdvdnav to ping the DVD so the CSS is decrypted -- this is to
+	// prevent any possible issues opening it later.
+	if(is_hardware) {
+
+		const char *serial_str;
+		dvdnav_get_serial_string(dvdnav_dvd, &serial_str);
+
+		printf("serial: %s\n", serial_str);
+
+
 	}
 
 	// begin libdvdread usage
@@ -415,4 +440,6 @@ int main(int argc, char **argv) {
 	if(dvd)
 		DVDClose(dvd);
 
+	if(dvdnav_dvd)
+		dvdnav_close(dvdnav_dvd);
 }
