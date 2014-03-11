@@ -24,6 +24,7 @@ void print_usage(char *binary) {
 	printf("  --num_tracks		Number of tracks\n");
 	printf("  --num_vts		Number of VTSs\n");
 	printf("  --provider_id 	Provider ID\n");
+	printf("  --vmg_id		VMG ID\n");
 
 }
 
@@ -84,6 +85,7 @@ int main(int argc, char **argv) {
 	int display_num_tracks = 0;
 	int display_num_vts = 0;
 	int display_provider_id = 0;
+	int display_vmg_id = 0;
 	int long_index = 0;
 	int opt;
 	// Suppress getopt sending 'invalid argument' to stderr
@@ -100,6 +102,7 @@ int main(int argc, char **argv) {
 		{ "num_tracks", no_argument, & display_num_tracks, 1 },
 		{ "num_vts", no_argument, & display_num_vts, 1 },
 		{ "provider_id", no_argument, & display_provider_id, 1 },
+		{ "vmg_id", no_argument, & display_vmg_id, 1 },
 
 		{ 0, 0, 0, 0 }
 	};
@@ -302,6 +305,26 @@ int main(int argc, char **argv) {
 				printf("title: ");
 			printf("%s\n", dvd_title);
 		}
+
+	}
+
+	/**
+	 * Display VMG_ID
+	 *
+	 * It's entirely possible, and common, that the string is blank.  If it's not
+	 * blank, it is probably 'DVDVIDEO-VMG'.
+	 *
+	 */
+	if((display_vmg_id || display_all) && ifo_zero) {
+
+		char *vmg_id;
+
+		vmg_id = ifo_zero->vmgi_mat->vmg_identifier;
+		vmg_id[12] = '\0';
+
+		if(verbose)
+			printf("vmg_id: ");
+		printf("%s\n", vmg_id);
 
 	}
 
