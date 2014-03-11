@@ -13,6 +13,9 @@
 #include "dvd_device.h"
 #include "dvd_drive.h"
 
+/**
+ * Output on 'dvd_info -h'
+ */
 void print_usage(char *binary) {
 
 	printf("Usage %s [options] [-t track_number] [dvd path]\n", binary);
@@ -28,17 +31,29 @@ void print_usage(char *binary) {
 
 }
 
+/**
+ * Get the DVD title, which maxes out at a 32-character string.
+ * All DVDs should have one.
+ *
+ * This whole function is mostly lifted from lsdvd.
+ *
+ */
 int dvd_info_title(char* device_filename, char *dvd_title) {
 
 	char title[33];
 	FILE* filehandle = 0;
 	int x, y, z;
 
+	// If we can't even open the device, exit quietly
 	filehandle = fopen(device_filename, "r");
 	if(filehandle == NULL) {
 		return 1;
 	}
 
+	// The DVD title is actually on the disc, and doesn't need the dvdread
+	// or dvdnav library to access it.  I should prefer to use them, though
+	// to avoid situations where something freaks out for not decrypting
+	// the CSS first ... so, I guess a FIXME is in order.
 	if(fseek(filehandle, 32808, SEEK_SET) == -1) {
 		fclose(filehandle);
 		return 2;
@@ -53,6 +68,7 @@ int dvd_info_title(char* device_filename, char *dvd_title) {
 
 	fclose(filehandle);
 
+	// A nice way to trim the string. :)
 	y = sizeof(title);
 	while(y-- > 2) {
 		if(title[y] == ' ') {
@@ -60,6 +76,11 @@ int dvd_info_title(char* device_filename, char *dvd_title) {
 		}
 	}
 
+	// For future note to myself, this answers the question of
+	// how to have a function 'return' a string, and still be able to have
+	// exit codes as well.  The answer is that you don't return a string at
+	// all -- you copy the contents to the string that is passed in the
+	// function.
 	strncpy(dvd_title, title, 32);
 
 	return 0;
@@ -68,17 +89,36 @@ int dvd_info_title(char* device_filename, char *dvd_title) {
 
 int main(int argc, char **argv) {
 
+	// DVD file descriptor
 	int dvd_fd;
-	int drive_status;
-	int track_number = 0;
-	bool is_hardware;
-	bool is_image;
-	bool ready = false;
-	bool verbose = false;
-	char* device_filename = "/dev/dvd";
-	char* status;
 
-	// getopt_long
+	// DVD drive status
+	int drive_status;
+
+	// DVD track number -- default to 0, which basically means, ignore me.
+	int track_number = 0;
+
+	// Do a check to see if the DVD filename given is hardware ('/dev/foo')
+	bool is_hardware;
+	// Or if it's an image file, filename (ISO, UDF, etc.)
+	bool is_image;
+
+	// Verbosity ftw.
+	bool verbose = false;
+
+	// Default to '/dev/dvd' by default
+	// FIXME check to see if the filename exists, and if not, poll /dev/sr0 instead
+	char* device_filename = "/dev/dvd";
+
+	/** Begin GNU getopt_long **/
+	// Specific variables to getopt_long
+	int long_index = 0;
+	int opt;
+	// Suppress getopt sending 'invalid argument' to stderr
+	// FIXME: can add this once I get proper error handling myself
+	// opterr = 0;
+
+	// The display_* functions are just false by default, enabled by passing options
 	int display_all = 0;
 	int display_id = 0;
 	int display_title = 0;
@@ -86,29 +126,39 @@ int main(int argc, char **argv) {
 	int display_num_vts = 0;
 	int display_provider_id = 0;
 	int display_vmg_id = 0;
-	int long_index = 0;
-	int opt;
-	// Suppress getopt sending 'invalid argument' to stderr
-	// opterr = 0;
+
 	struct option long_options[] = {
+
+		// Entries with both a name and a value, will take either the
+		// long option or the short one.  Fex, '--device' or '-i'
 		{ "device", required_argument, 0, 'i' },
 		{ "track", required_argument, 0, 't' },
 
 		{ "verbose", no_argument, 0, 'v' },
 
+		// These set the value of the display_* variables above,
+		// directly to 1 (true) if they are passed.  Only the long
+		// option will trigger them.  fex, '--num-tracks'
 		{ "all", no_argument, & display_all, 1 },
 		{ "id", no_argument, & display_id, 1 },
 		{ "title", no_argument, & display_title, 1 },
-		{ "num_tracks", no_argument, & display_num_tracks, 1 },
-		{ "num_vts", no_argument, & display_num_vts, 1 },
-		{ "provider_id", no_argument, & display_provider_id, 1 },
-		{ "vmg_id", no_argument, & display_vmg_id, 1 },
+		{ "num-tracks", no_argument, & display_num_tracks, 1 },
+		{ "num-vts", no_argument, & display_num_vts, 1 },
+		{ "provider-id", no_argument, & display_provider_id, 1 },
+		{ "vmg-id", no_argument, & display_vmg_id, 1 },
 
 		{ 0, 0, 0, 0 }
 	};
 
-	while((opt = getopt_long(argc, argv, "hi:t:v", long_options, &long_index )) != -1) {
+	// I could probably come up with a better variable name. I probably would if
+	// I understood getopt better. :T
+	char *str_options;
+	str_options = "hi:t:v";
 
+	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
+
+		// It's worth noting that if there are unknown options passed,
+		// I just ignore them, and continue printing requested data.
 		switch(opt) {
 
 			case 'h':
@@ -140,17 +190,20 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	// If '-i /dev/device' is not passed, then set it to the string
+	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
+	// of '/dev/dvd'.
 	if (argv[optind]) {
 		device_filename = argv[optind];
 	}
 
+	// Verbose output begins
 	if(verbose)
 		printf("dvd: %s\n", device_filename);
 
-	// Handle options
+	// Reset track number if needed
 	if(track_number < 1)
 		track_number = 0;
-
 
 	/** Begin dvd_info :) */
 
@@ -172,34 +225,60 @@ int main(int argc, char **argv) {
 	is_hardware = dvd_device_is_hardware(device_filename);
 	is_image = dvd_device_is_image(device_filename);
 
-	if(is_image)
-		ready = true;
-
 	// Poll drive status if it is hardware
-	if(is_hardware)
+	if(is_hardware) {
 		drive_status = dvd_drive_get_status(device_filename);
-
-	if(is_hardware)
-		dvd_drive_display_status(device_filename);
+		if(verbose) {
+			printf("drive status: ");
+			dvd_drive_display_status(device_filename);
+		}
+	}
 
 	// Wait for the drive to become ready
+	// FIXME, make this optional?  Dunno.  Probably not.
+	// At the very least, let the wait value be set. :)
 	if(is_hardware) {
 		if(!dvd_drive_has_media(device_filename)) {
-			printf("waiting for drive to become ready\n");
-			while(!dvd_drive_has_media(device_filename)) {
-				usleep(1000000);
+
+			// sleep for one second
+			int sleepy_time = 1000000;
+			// how many naps I have taken
+			int num_naps = 0;
+			// when to stop napping (60 seconds)
+			int max_num_naps = 60;
+
+			printf("drive status: ");
+			dvd_drive_display_status(device_filename);
+
+			fprintf(stderr, "dvd_info: waiting for media\n");
+			fprintf(stderr, "dvd_info: will give up after one minute\n");
+			while(!dvd_drive_has_media(device_filename) && (num_naps < max_num_naps)) {
+				usleep(sleepy_time);
+				num_naps = num_naps + 1;
+
+				// This is slightly annoying, even for me.
+				if(verbose)
+					fprintf(stderr, "%i ", num_naps);
+
+				// Tired of waiting, exiting out
+				if(num_naps == max_num_naps) {
+					if(verbose)
+						fprintf(stderr, "\n");
+					fprintf(stderr, "dvd_info: tired of waiting for media, quitting\n");
+					return 1;
+				}
 			}
 		}
 	}
 
-	// libdvdread
+	// begin libdvdread usage
 
-	// open DVD device and don't cache queries
+	// open DVD device and don't cache queries (FIXME? do I need to set that?)
 	dvd_reader_t *dvd;
 	dvd = DVDOpen(device_filename);
 	// DVDUDFCacheLevel(dvd, 0);
 
-	// Open IFO zero
+	// Open IFO zero -- where all the cool stuff is
 	ifo_handle_t *ifo_zero;
 	ifo_zero = ifoOpen(dvd, 0);
 	if(!ifo_zero) {
