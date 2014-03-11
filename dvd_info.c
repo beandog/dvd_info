@@ -13,6 +13,18 @@
 #include "dvd_device.h"
 #include "dvd_drive.h"
 
+void print_usage(char *binary) {
+
+	printf("Usage %s [options] [-t track_number] [dvd path]\n", binary);
+	printf("\n");
+	printf("Display DVD info:\n");
+	printf("  --id		Unique DVD identifier\n");
+	printf("  --title	DVD title\n");
+	printf("  --num_tracks	Number of tracks\n");
+	printf("  --num_vts	Number of VTSs\n");
+
+}
+
 int main(int argc, char **argv) {
 
 	int dvd_fd;
@@ -22,11 +34,13 @@ int main(int argc, char **argv) {
 	bool is_image;
 	bool ready = false;
 	bool verbose = false;
-	char* device_filename;
+	char* device_filename = "/dev/dvd";
 	char* status;
 
 	// getopt_long
 	int display_id = 0;
+	int display_title = 0;
+	int display_num_tracks = 0;
 	int display_num_vts = 0;
 	int long_index = 0;
 	int opt;
@@ -35,17 +49,24 @@ int main(int argc, char **argv) {
 	struct option long_options[] = {
 		{ "device", required_argument, 0, 'i' },
 		{ "track", required_argument, 0, 't' },
+
 		{ "verbose", no_argument, 0, 'v' },
-		{ "num_vts", no_argument, & display_num_vts, 1 },
+
 		{ "id", no_argument, & display_id, 1 },
+		{ "title", no_argument, & display_title, 1 },
+		{ "num_tracks", no_argument, & display_num_tracks, 1 },
+		{ "num_vts", no_argument, & display_num_vts, 1 },
+
 		{ 0, 0, 0, 0 }
 	};
 
-	device_filename = "/dev/dvd";
-
-	while((opt = getopt_long(argc, argv, ":i:t:v", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "hi:t:v", long_options, &long_index )) != -1) {
 
 		switch(opt) {
+
+			case 'h':
+				print_usage(argv[0]);
+				return 0;
 
 			case 'i':
 				device_filename = optarg;
@@ -72,9 +93,8 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	// Use non-argument string as DVD device, if there is one
-	if(strlen(argv[optind]) > 0) {
-	 	device_filename = argv[optind];
+	if (argv[optind]) {
+		device_filename = argv[optind];
 	}
 
 	if(verbose)
@@ -117,17 +137,12 @@ int main(int argc, char **argv) {
 
 	// Wait for the drive to become ready
 	if(is_hardware) {
-		if(dvd_drive_has_media(device_filename)) {
-			ready = true;
-		} else  {
+		if(!dvd_drive_has_media(device_filename)) {
 			printf("waiting for drive to become ready\n");
 			while(!dvd_drive_has_media(device_filename)) {
 				usleep(1000000);
 			}
 		}
-		ready = true;
-	} else {
-		ready = true;
 	}
 
 	// libdvdread
@@ -137,14 +152,18 @@ int main(int argc, char **argv) {
 	dvd = DVDOpen(device_filename);
 	DVDUDFCacheLevel(dvd, 0);
 
-	ifo_handle_t *ifo_zero;
-	ifo_zero = ifoOpen(dvd, 0);
-	if(!ifo_zero) { fprintf(stderr, "opening ifo_zero failed\n"); return 1; }
+	if(display_num_vts) {
+		ifo_handle_t *ifo_zero;
+		ifo_zero = ifoOpen(dvd, 0);
+		if(!ifo_zero) { fprintf(stderr, "opening ifo_zero failed\n"); return 1; }
 
-	int nr_of_vtss = ifo_zero->vts_atrt->nr_of_vtss;
-	printf("nr_of_vtss: %i\n", nr_of_vtss);
+		int nr_of_vtss = ifo_zero->vts_atrt->nr_of_vtss;
+		if(verbose)
+			printf("num_vts: ");
+		printf("%i\n", nr_of_vtss);
+		ifoClose(ifo_zero);
+	}
 
-	ifoClose(ifo_zero);
 	DVDClose(dvd);
 
 }
