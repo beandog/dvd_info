@@ -18,10 +18,11 @@ void print_usage(char *binary) {
 	printf("Usage %s [options] [-t track_number] [dvd path]\n", binary);
 	printf("\n");
 	printf("Display DVD info:\n");
-	printf("  --id		Unique DVD identifier\n");
-	printf("  --title	DVD title\n");
-	printf("  --num_tracks	Number of tracks\n");
-	printf("  --num_vts	Number of VTSs\n");
+	printf("  --id			Unique DVD identifier\n");
+	printf("  --title		DVD title\n");
+	printf("  --num_tracks		Number of tracks\n");
+	printf("  --num_vts		Number of VTSs\n");
+	printf("  --provider_id 	Provider ID\n");
 
 }
 
@@ -42,6 +43,7 @@ int main(int argc, char **argv) {
 	int display_title = 0;
 	int display_num_tracks = 0;
 	int display_num_vts = 0;
+	int display_provider_id = 0;
 	int long_index = 0;
 	int opt;
 	// Suppress getopt sending 'invalid argument' to stderr
@@ -56,6 +58,7 @@ int main(int argc, char **argv) {
 		{ "title", no_argument, & display_title, 1 },
 		{ "num_tracks", no_argument, & display_num_tracks, 1 },
 		{ "num_vts", no_argument, & display_num_vts, 1 },
+		{ "provider_id", no_argument, & display_provider_id, 1 },
 
 		{ 0, 0, 0, 0 }
 	};
@@ -152,6 +155,13 @@ int main(int argc, char **argv) {
 	dvd = DVDOpen(device_filename);
 	// DVDUDFCacheLevel(dvd, 0);
 
+	// Open IFO zero
+	ifo_handle_t *ifo_zero;
+	ifo_zero = ifoOpen(dvd, 0);
+	if(!ifo_zero) {
+		fprintf(stderr, "dvd_info: opening IFO zero failed\n");
+	}
+
 	// --id
 	// Display DVDDiscID from libdvdread
 	if(display_id) {
@@ -162,33 +172,26 @@ int main(int argc, char **argv) {
 		dvd_disc_id = DVDDiscID(dvd, tmp_buf);
 
 		if(dvd_disc_id == -1) {
-			fprintf(stderr, "libdvdread: DVDDiscID() failed\n");
-			return 1;
-		}
+			fprintf(stderr, "dvd_info: querying DVD id failed\n");
+		} else {
 
-		if(verbose)
-			printf("id: ");
+			if(verbose)
+				printf("id: ");
 
-		for(int x = 0; x < sizeof(tmp_buf); x++) {
-			printf("%02x", tmp_buf[x]);
+			for(int x = 0; x < sizeof(tmp_buf); x++) {
+				printf("%02x", tmp_buf[x]);
+			}
+			printf("\n");
+
 		}
-		printf("\n");
 
 	}
 
 	// --num_vts
 	// Display number of VTSs on DVD
-	if(display_num_vts) {
+	if(display_num_vts && ifo_zero) {
 
 		int num_vts;
-		ifo_handle_t *ifo_zero;
-
-		ifo_zero = ifoOpen(dvd, 0);
-
-		if(!ifo_zero) {
-			fprintf(stderr, "opening ifo_zero failed\n");
-			return 1;
-		}
 
 		num_vts = ifo_zero->vts_atrt->nr_of_vtss;
 
@@ -196,9 +199,39 @@ int main(int argc, char **argv) {
 			printf("num_vts: ");
 		printf("%i\n", num_vts);
 
-		ifoClose(ifo_zero);
+	} else if(display_num_vts && !ifo_zero) {
+
+		fprintf(stderr, "dvd_info: cannot display num_vts\n");
 
 	}
+
+	// --provider_id
+	// Display provider ID
+	if(display_provider_id && ifo_zero) {
+
+		char *provider_id;
+		bool has_provider_id = false;
+
+		provider_id = ifo_zero->vmgi_mat->provider_identifier;
+
+		if(verbose)
+			printf("provider_id: ");
+		printf("%s\n", provider_id);
+
+		// Having an empty provider ID is very common.
+		if(provider_id[0] != '\0')
+			has_provider_id = true;
+
+	} else if(display_provider_id && !ifo_zero) {
+
+		fprintf(stderr, "dvd_info: cannot display provider_id\n");
+
+	}
+
+	// Cleanup
+
+	if(ifo_zero)
+		ifoClose(ifo_zero);
 
 	DVDClose(dvd);
 
