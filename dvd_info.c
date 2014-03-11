@@ -5,6 +5,7 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <stdbool.h>
+#include <getopt.h>
 #include <linux/cdrom.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/dvd_udf.h>
@@ -16,16 +17,75 @@ int main(int argc, char **argv) {
 
 	int dvd_fd;
 	int drive_status;
+	int track_number = 0;
 	bool is_hardware;
 	bool is_image;
 	bool ready = false;
+	bool verbose = false;
 	char* device_filename;
 	char* status;
 
-	if(argc == 1)
-		device_filename = "/dev/dvd";
-	else
-		device_filename = argv[1];
+	// getopt_long
+	int display_id = 0;
+	int display_num_vts = 0;
+	int long_index = 0;
+	int opt;
+	// Suppress getopt sending 'invalid argument' to stderr
+	// opterr = 0;
+	struct option long_options[] = {
+		{ "device", required_argument, 0, 'i' },
+		{ "track", required_argument, 0, 't' },
+		{ "verbose", no_argument, 0, 'v' },
+		{ "num_vts", no_argument, & display_num_vts, 1 },
+		{ "id", no_argument, & display_id, 1 },
+		{ 0, 0, 0, 0 }
+	};
+
+	device_filename = "/dev/dvd";
+
+	while((opt = getopt_long(argc, argv, ":i:t:v", long_options, &long_index )) != -1) {
+
+		switch(opt) {
+
+			case 'i':
+				device_filename = optarg;
+				break;
+
+			case 't':
+				track_number = 0;
+				break;
+
+			case 'v':
+				verbose = true;
+				break;
+
+			// ignore unknown arguments
+			case '?':
+				break;
+
+			// let getopt_long set the variable
+			case 0:
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	// Use non-argument string as DVD device, if there is one
+	if(strlen(argv[optind]) > 0) {
+	 	device_filename = argv[optind];
+	}
+
+	if(verbose)
+		printf("device filename: %s\n", device_filename);
+
+	// Handle options
+	if(track_number < 1)
+		track_number = 0;
+
+
+	/** Begin dvd_info :) */
 
 	// Check to see if device can be accessed
 	if(dvd_device_access(device_filename) == 1) {
