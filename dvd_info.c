@@ -26,10 +26,10 @@ void print_usage(char *binary) {
 	printf("  --all			Display all\n");
 	printf("  --id			Unique DVD identifier\n");
 	printf("  --title		DVD title\n");
-	printf("  --num_tracks		Number of tracks\n");
-	printf("  --num_vts		Number of VTSs\n");
-	printf("  --provider_id 	Provider ID\n");
-	printf("  --vmg_id		VMG ID\n");
+	printf("  --num-tracks		Number of tracks\n");
+	printf("  --num-vts		Number of VTSs\n");
+	printf("  --provider-id 	Provider ID\n");
+	printf("  --vmg-id		VMG ID\n");
 
 }
 
@@ -342,7 +342,7 @@ int main(int argc, char **argv) {
 
 	}
 
-	// --num_tracks
+	// --num-tracks
 	if((display_num_tracks || display_all) && ifo_zero) {
 
 		int num_tracks;
@@ -350,12 +350,12 @@ int main(int argc, char **argv) {
 		num_tracks = ifo_zero->tt_srpt->nr_of_srpts;
 
 		if(verbose)
-			printf("num_tracks: ");
+			printf("num tracks: ");
 		printf("%i\n", num_tracks);
 
 	}
 
-	// --num_vts
+	// --num-vts
 	// Display number of VTSs on DVD
 	if((display_num_vts || display_all) && ifo_zero) {
 
@@ -364,16 +364,16 @@ int main(int argc, char **argv) {
 		num_vts = ifo_zero->vts_atrt->nr_of_vtss;
 
 		if(verbose)
-			printf("num_vts: ");
+			printf("num vts: ");
 		printf("%i\n", num_vts);
 
 	} else if((display_num_vts || display_all) && !ifo_zero) {
 
-		fprintf(stderr, "dvd_info: cannot display num_vts\n");
+		fprintf(stderr, "dvd_info: cannot display num vts\n");
 
 	}
 
-	// --provider_id
+	// --provider-id
 	// Display provider ID
 	if((display_provider_id || display_all) && ifo_zero) {
 
@@ -383,7 +383,7 @@ int main(int argc, char **argv) {
 		provider_id = ifo_zero->vmgi_mat->provider_identifier;
 
 		if(verbose)
-			printf("provider_id: ");
+			printf("provider id: ");
 		printf("%s\n", provider_id);
 
 		// Having an empty provider ID is very common.
@@ -392,7 +392,7 @@ int main(int argc, char **argv) {
 
 	} else if((display_provider_id || display_all) && !ifo_zero) {
 
-		fprintf(stderr, "dvd_info: cannot display provider_id\n");
+		fprintf(stderr, "dvd_info: cannot display provider id\n");
 
 	}
 
@@ -405,7 +405,7 @@ int main(int argc, char **argv) {
 		if(dvdnav_get_serial_string(dvdnav_dvd, &serial_id) == DVDNAV_STATUS_OK) {
 
 			if(verbose)
-				printf("serial_id: ");
+				printf("serial id: ");
 			printf("%s\n", serial_id);
 
 		}
@@ -460,7 +460,7 @@ int main(int argc, char **argv) {
 		vmg_id[12] = '\0';
 
 		if(verbose)
-			printf("vmg_id: ");
+			printf("vmg id: ");
 		printf("%s\n", vmg_id);
 
 	}
