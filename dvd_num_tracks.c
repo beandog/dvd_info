@@ -6,7 +6,6 @@
 #include <linux/cdrom.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
-#include <dvdread/dvd_input.h>
 
 /**
  * dvd_num_tracks.c
