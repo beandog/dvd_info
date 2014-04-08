@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <getopt.h>
+#include <inttypes.h>
 #include <linux/cdrom.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/dvd_udf.h>
@@ -286,6 +287,22 @@ int main(int argc, char **argv) {
 		printf("error opening %s with dvdnav\n", device_filename);
 	}
 
+	// see mplayer2/stream/stream_dvdnav.c:405 for examples accessing stream
+	/*
+	uint8_t video_aspect = dvdnav_get_video_aspect(dvdnav_dvd);
+	if(verbose)
+		printf("aspect ratio: ");
+	printf("%u\n", video_aspect);
+
+	uint8_t lg;
+	uint16_t i;
+	uint16_t channels;
+	lg = dvdnav_get_audio_logical_stream(dvdnav_dvd, i);
+	channels = dvdnav_audio_stream_channels(dvdnav_dvd, lg);
+
+	printf("channels: %" PRIu16 "\n", channels);
+	*/
+
 	// begin libdvdread usage
 
 	// open DVD device and don't cache queries (FIXME? do I need to set that?)
@@ -314,7 +331,7 @@ int main(int argc, char **argv) {
 		} else {
 
 			if(verbose)
-				printf("id: ");
+				printf("disc_id: ");
 
 			for(int x = 0; x < sizeof(tmp_buf); x++) {
 				printf("%02x", tmp_buf[x]);
