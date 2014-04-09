@@ -343,6 +343,20 @@ int main(int argc, char **argv) {
 
 	}
 
+	// --title
+	// Display DVD title
+	if(display_title || display_all) {
+
+		const char *dvd_title;
+
+		if(dvdnav_get_title_string(dvdnav_dvd, &dvd_title) == DVDNAV_STATUS_OK) {
+			if(verbose)
+				printf("title: ");
+			printf("%s\n", dvd_title);
+		}
+
+	}
+
 	// --num-tracks
 	if((display_num_tracks || display_all) && ifo_zero) {
 
@@ -409,20 +423,6 @@ int main(int argc, char **argv) {
 				printf("serial id: ");
 			printf("%s\n", serial_id);
 
-		}
-
-	}
-
-	// --title
-	// Display DVD title
-	if(display_title || display_all) {
-
-		const char *dvd_title;
-
-		if(dvdnav_get_title_string(dvdnav_dvd, &dvd_title) == DVDNAV_STATUS_OK) {
-			if(verbose)
-				printf("title: ");
-			printf("%s\n", dvd_title);
 		}
 
 	}
