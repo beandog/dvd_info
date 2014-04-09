@@ -306,10 +306,9 @@ int main(int argc, char **argv) {
 
 	// begin libdvdread usage
 
-	// open DVD device and don't cache queries (FIXME? do I need to set that?)
+	// Open DVD device
 	dvd_reader_t *dvdread_dvd;
 	dvdread_dvd = DVDOpen(device_filename);
-	// DVDUDFCacheLevel(dvd, 0);
 
 	// Open IFO zero -- where all the cool stuff is
 	ifo_handle_t *ifo_zero;
