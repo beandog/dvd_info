@@ -29,6 +29,7 @@ void print_usage(char *binary) {
 	printf("  --num-tracks		Number of tracks\n");
 	printf("  --num-vts		Number of VTSs\n");
 	printf("  --provider-id 	Provider ID\n");
+	printf("  --serial-id 		Serial ID\n");
 	printf("  --vmg-id		VMG ID\n");
 
 }
