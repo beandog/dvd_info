@@ -154,6 +154,7 @@ int main(int argc, char **argv) {
 	int display_video_format = 0;
 	int display_video_codec = 0;
 	int display_aspect_ratio = 0;
+	int display_video_height = 0;
 
 	// Not enabled by an argument, set manually
 	bool display_track = false;
@@ -185,6 +186,7 @@ int main(int argc, char **argv) {
 		{ "video-format", no_argument, & display_video_format, 1 },
 		{ "video-codec", no_argument, & display_video_codec, 1 },
 		{ "aspect-ratio", no_argument, & display_aspect_ratio, 1 },
+		{ "video-height", no_argument, & display_video_height, 1 },
 
 		{ 0, 0, 0, 0 }
 	};
@@ -529,12 +531,17 @@ int main(int argc, char **argv) {
 		}
 
 
-		if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0)
+		// Video format and height
+		unsigned int video_height;
+		if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0) {
 			video_format = "NTSC";
-		else if(track_ifo->vtsi_mat->vts_video_attr.video_format == 1)
+			video_height = 480;
+		} else if(track_ifo->vtsi_mat->vts_video_attr.video_format == 1) {
 			video_format = "PAL";
-		else {
+			video_height = 576;
+		} else {
 			video_format = "Unknown";
+			video_height = 480;
 			if(display_video_format || display_all)
 				fprintf(stderr, "Video format unknown, please send a bug report!\n");
 		}
@@ -568,6 +575,13 @@ int main(int argc, char **argv) {
 			if(verbose)
 				printf("aspect ratio: ");
 			printf("%s\n", aspect_ratio);
+		}
+
+		// Display video height
+		if(display_video_height || display_all) {
+			if(verbose)
+				printf("video height: ");
+			printf("%i\n", video_height);
 		}
 
 	}
