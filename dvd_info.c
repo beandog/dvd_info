@@ -39,7 +39,8 @@ void print_usage(char *binary) {
 	printf("  --aspect-ratio	Aspect ratio (16:9, 4:3)\n");
 	printf("  --video-width		Video width (480, 576, 288)\n");
 	printf("  --video-height	Video height (720, 704, 352)\n");
-	printf("  --letterbox		Letterbox video (0 = no, 1 = yes)\n");
+	printf("  --letterbox		Letterbox video (0 [no], 1 [yes])\n");
+	printf("  --film-mode		Film mode (film [movie], video [camera])\n");
 
 }
 
@@ -160,6 +161,7 @@ int main(int argc, char **argv) {
 	int display_video_height = 0;
 	int display_video_width = 0;
 	int display_letterbox = 0;
+	int display_film_mode = 0;
 
 	// Not enabled by an argument, set manually
 	bool display_track = false;
@@ -194,6 +196,7 @@ int main(int argc, char **argv) {
 		{ "video-height", no_argument, & display_video_height, 1 },
 		{ "video-width", no_argument, & display_video_width, 1 },
 		{ "letterbox", no_argument, & display_letterbox, 1 },
+		{ "film-mode", no_argument, & display_film_mode, 1 },
 
 		{ 0, 0, 0, 0 }
 	};
@@ -583,6 +586,13 @@ int main(int argc, char **argv) {
 		if(track_ifo->vtsi_mat->vts_video_attr.letterboxed)
 			letterbox = true;
 
+		// Film mode: film (movie), video (camera)
+		char *film_mode;
+		if(track_ifo->vtsi_mat->vts_video_attr.film_mode)
+			film_mode = "film";
+		else
+			film_mode = "video";
+
 		// Display video codec
 		if(display_video_codec || display_all) {
 			if(verbose)
@@ -626,6 +636,12 @@ int main(int argc, char **argv) {
 				printf("1\n");
 			else
 				printf("0\n");
+		}
+
+		if(display_film_mode || display_all) {
+			if(verbose)
+				printf("film mode: ");
+			printf("%s\n", film_mode);
 		}
 
 	}
