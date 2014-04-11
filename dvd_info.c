@@ -120,12 +120,12 @@ int main(int argc, char **argv) {
 	int drive_status;
 
 	// DVD track number -- default to 0, which basically means, ignore me.
-	int track_number = 0;
+	unsigned int track_number = 0;
 
 	// Do a check to see if the DVD filename given is hardware ('/dev/foo')
-	bool is_hardware;
+	bool is_hardware = false;
 	// Or if it's an image file, filename (ISO, UDF, etc.)
-	bool is_image;
+	bool is_image = false;
 
 	// Verbosity ftw.
 	bool verbose = false;
@@ -142,7 +142,6 @@ int main(int argc, char **argv) {
 	// FIXME: can add this once I get proper error handling myself
 	// opterr = 0;
 
-	bool display_track;
 
 	// The display_* functions are just false by default, enabled by passing options
 	int display_all = 0;
@@ -157,6 +156,12 @@ int main(int argc, char **argv) {
 	int display_video_format = 0;
 	int display_video_codec = 0;
 	int display_aspect_ratio = 0;
+
+	// Not enabled by an argument, set manually
+	bool display_track = false;
+
+	// Retain argument passed for track
+	char *track_number_optarg;
 
 	struct option long_options[] = {
 
@@ -206,11 +211,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 't':
-				track_number = atoi(optarg);
-				if(track_number < 1) {
-					fprintf(stderr, "Invalid track number: %s\n", optarg);
-					return 1;
-				}
+				track_number_optarg = optarg;
 				break;
 
 			case 'v':
@@ -229,6 +230,24 @@ int main(int argc, char **argv) {
 				break;
 		}
 	}
+
+	// Check for invalid input
+	bool valid_args = true;
+
+	// Check for valid track number input
+	if(strlen(track_number_optarg) > 0) {
+		int n = atoi(track_number_optarg);
+		if(n < 1 || n > 99) {
+			fprintf(stderr, "Invalid track number: %s\n", track_number_optarg);
+			valid_args = false;
+		} else {
+			track_number = n;
+		}
+	}
+
+	// Exit after all invalid input warnings have been sent
+	if(valid_args == false)
+		return 1;
 
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
