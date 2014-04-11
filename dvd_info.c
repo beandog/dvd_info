@@ -37,6 +37,8 @@ void print_usage(char *binary) {
 	printf("  --video-codec		Video codec (MPEG1 / MPEG2)\n");
 	printf("  --video-format	Video format (NTSC / PAL )\n");
 	printf("  --aspect-ratio	Aspect ratio (16:9, 4:3)\n");
+	printf("  --video-width		Video width (480, 576, 288)\n");
+	printf("  --video-height	Video height (720, 704, 352)\n");
 
 }
 
@@ -155,6 +157,7 @@ int main(int argc, char **argv) {
 	int display_video_codec = 0;
 	int display_aspect_ratio = 0;
 	int display_video_height = 0;
+	int display_video_width = 0;
 
 	// Not enabled by an argument, set manually
 	bool display_track = false;
@@ -187,6 +190,7 @@ int main(int argc, char **argv) {
 		{ "video-codec", no_argument, & display_video_codec, 1 },
 		{ "aspect-ratio", no_argument, & display_aspect_ratio, 1 },
 		{ "video-height", no_argument, & display_video_height, 1 },
+		{ "video-width", no_argument, & display_video_width, 1 },
 
 		{ 0, 0, 0, 0 }
 	};
@@ -597,6 +601,13 @@ int main(int argc, char **argv) {
 			if(verbose)
 				printf("video height: ");
 			printf("%i\n", video_height);
+		}
+
+		// Display video width
+		if(display_video_width || display_all) {
+			if(verbose)
+				printf("video width: ");
+			printf("%i\n", video_width);
 		}
 
 	}
