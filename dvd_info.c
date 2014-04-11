@@ -36,6 +36,7 @@ void print_usage(char *binary) {
 	printf("Display track info:\n");
 	printf("  --video-codec		Video codec (MPEG1 / MPEG2)\n");
 	printf("  --video-format	Video format (NTSC / PAL )\n");
+	printf("  --aspect-ratio	Aspect ratio (16:9, 4:3)\n");
 
 }
 
@@ -140,6 +141,7 @@ int main(int argc, char **argv) {
 	int display_side = 0;
 	int display_video_format = 0;
 	int display_video_codec = 0;
+	int display_aspect_ratio = 0;
 
 	struct option long_options[] = {
 
@@ -161,9 +163,10 @@ int main(int argc, char **argv) {
 		{ "provider-id", no_argument, & display_provider_id, 1 },
 		{ "serial-id", no_argument, & display_serial_id, 1 },
 		{ "vmg-id", no_argument, & display_vmg_id, 1 },
-		{ "display-side", no_argument, & display_side, 1 },
-		{ "display-video-format", no_argument, & display_video_format, 1 },
-		{ "display-video-codec", no_argument, & display_video_codec, 1 },
+		{ "side", no_argument, & display_side, 1 },
+		{ "video-format", no_argument, & display_video_format, 1 },
+		{ "video-codec", no_argument, & display_video_codec, 1 },
+		{ "aspect-ratio", no_argument, & display_aspect_ratio, 1 },
 
 		{ 0, 0, 0, 0 }
 	};
@@ -477,10 +480,10 @@ int main(int argc, char **argv) {
 	}
 
 	/** Display track information */
+	ifo_handle_t *track_ifo;
 	char *video_codec;
 	char *video_format;
 	char *aspect_ratio;
-	ifo_handle_t *track_ifo;
 
 	if(display_track) {
 
@@ -495,24 +498,51 @@ int main(int argc, char **argv) {
 			video_codec = "MPEG1";
 		else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
 			video_codec = "MPEG2";
+		else {
+			video_codec = "Unknown";
+			if(display_video_codec || display_all)
+				fprintf(stderr, "MPEG version unknown, please send a bug report!\n");
+		}
 
 		if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0)
 			video_format = "NTSC";
 		else if(track_ifo->vtsi_mat->vts_video_attr.video_format == 1)
 			video_format = "PAL";
+		else {
+			video_format = "Unknown";
+			if(display_video_format || display_all)
+				fprintf(stderr, "Video format unknown, please send a bug report!\n");
+		}
+
+		if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
+			aspect_ratio = "4:3";
+		else if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
+			aspect_ratio = "16:9";
+		else {
+			aspect_ratio = "Unknown";
+			if(display_aspect_ratio || display_all)
+				fprintf(stderr, "Aspect ratio unknown, please send a bug report!\n");
+		}
 
 		// Display video codec
-		if(display_video_codec) {
+		if(display_video_codec || display_all) {
 			if(verbose)
 				printf("video codec: ");
 			printf("%s\n", video_codec);
 		}
 
 		// Display video format
-		if(display_video_format) {
+		if(display_video_format || display_all) {
 			if(verbose)
 				printf("video format: ");
 			printf("%s\n", video_format);
+		}
+
+		// Display aspect ratio
+		if(display_aspect_ratio || display_all) {
+			if(verbose)
+				printf("aspect ratio: ");
+			printf("%s\n", aspect_ratio);
 		}
 
 	}
