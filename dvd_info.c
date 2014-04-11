@@ -39,6 +39,7 @@ void print_usage(char *binary) {
 	printf("  --aspect-ratio	Aspect ratio (16:9, 4:3)\n");
 	printf("  --video-width		Video width (480, 576, 288)\n");
 	printf("  --video-height	Video height (720, 704, 352)\n");
+	printf("  --letterbox		Letterbox video (0 = no, 1 = yes)\n");
 
 }
 
