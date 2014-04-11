@@ -40,6 +40,21 @@ void print_usage(char *binary) {
 
 }
 
+int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
+
+	char *codec;
+
+	if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
+		codec = "MPEG1";
+	else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
+		codec = "MPEG2";
+
+	strncpy(video_codec, codec, 6);
+
+	return 0;
+
+}
+
 /**
  * Get the DVD title, which maxes out at a 32-character string.
  * All DVDs should have one.
@@ -494,6 +509,11 @@ int main(int argc, char **argv) {
 			return 1;
 		}
 
+		/*
+		char video_codec[6];
+		dvd_track_video_codec(track_ifo, video_codec);
+		*/
+
 		if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
 			video_codec = "MPEG1";
 		else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
@@ -503,6 +523,7 @@ int main(int argc, char **argv) {
 			if(display_video_codec || display_all)
 				fprintf(stderr, "MPEG version unknown, please send a bug report!\n");
 		}
+
 
 		if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0)
 			video_format = "NTSC";
