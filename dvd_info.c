@@ -31,6 +31,11 @@ void print_usage(char *binary) {
 	printf("  --provider-id 	Provider ID\n");
 	printf("  --serial-id 		Serial ID\n");
 	printf("  --vmg-id		VMG ID\n");
+	printf("  --side		Disc side\n");
+	printf("\n");
+	printf("Display track info:\n");
+	printf("  --video-codec		Video codec (MPEG1 / MPEG2)\n");
+	printf("  --video-format	Video format (NTSC / PAL )\n");
 
 }
 
@@ -121,6 +126,8 @@ int main(int argc, char **argv) {
 	// FIXME: can add this once I get proper error handling myself
 	// opterr = 0;
 
+	bool display_track;
+
 	// The display_* functions are just false by default, enabled by passing options
 	int display_all = 0;
 	int display_id = 0;
@@ -130,6 +137,9 @@ int main(int argc, char **argv) {
 	int display_provider_id = 0;
 	int display_serial_id = 0;
 	int display_vmg_id = 0;
+	int display_side = 0;
+	int display_video_format = 0;
+	int display_video_codec = 0;
 
 	struct option long_options[] = {
 
@@ -151,6 +161,9 @@ int main(int argc, char **argv) {
 		{ "provider-id", no_argument, & display_provider_id, 1 },
 		{ "serial-id", no_argument, & display_serial_id, 1 },
 		{ "vmg-id", no_argument, & display_vmg_id, 1 },
+		{ "display-side", no_argument, & display_side, 1 },
+		{ "display-video-format", no_argument, & display_video_format, 1 },
+		{ "display-video-codec", no_argument, & display_video_codec, 1 },
 
 		{ 0, 0, 0, 0 }
 	};
@@ -176,6 +189,10 @@ int main(int argc, char **argv) {
 
 			case 't':
 				track_number = atoi(optarg);
+				if(track_number < 1) {
+					fprintf(stderr, "Invalid track number: %s\n", optarg);
+					return 1;
+				}
 				break;
 
 			case 'v':
@@ -207,8 +224,12 @@ int main(int argc, char **argv) {
 		printf("dvd: %s\n", device_filename);
 
 	// Reset track number if needed
-	if(track_number < 1)
+	if(track_number < 1) {
 		track_number = 0;
+		display_track = false;
+	} else {
+		display_track = true;
+	}
 
 	/** Begin dvd_info :) */
 
@@ -313,8 +334,10 @@ int main(int argc, char **argv) {
 	// Open IFO zero -- where all the cool stuff is
 	ifo_handle_t *ifo_zero;
 	ifo_zero = ifoOpen(dvdread_dvd, 0);
+	// FIXME do a proper exit
 	if(!ifo_zero) {
 		fprintf(stderr, "dvd_info: opening IFO zero failed\n");
+		return 1;
 	}
 
 	// --id
@@ -446,10 +469,61 @@ int main(int argc, char **argv) {
 
 	}
 
+	// Disc side
+	if(display_side) {
+		if(verbose)
+			printf("side: ");
+		printf("%i\n", ifo_zero->vmgi_mat->disc_side);
+	}
+
+	/** Display track information */
+	char *video_codec;
+	char *video_format;
+	char *aspect_ratio;
+	ifo_handle_t *track_ifo;
+
+	if(display_track) {
+
+		track_ifo = ifoOpen(dvdread_dvd, track_number);
+		// FIXME do a proper exit
+		if(!track_ifo) {
+			fprintf(stderr, "dvd_info: opening IFO %i failed\n", track_number);
+			return 1;
+		}
+
+		if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
+			video_codec = "MPEG1";
+		else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
+			video_codec = "MPEG2";
+
+		if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0)
+			video_format = "NTSC";
+		else if(track_ifo->vtsi_mat->vts_video_attr.video_format == 1)
+			video_format = "PAL";
+
+		// Display video codec
+		if(display_video_codec) {
+			if(verbose)
+				printf("video codec: ");
+			printf("%s\n", video_codec);
+		}
+
+		// Display video format
+		if(display_video_format) {
+			if(verbose)
+				printf("video format: ");
+			printf("%s\n", video_format);
+		}
+
+	}
+
 	// Cleanup
 
 	if(ifo_zero)
 		ifoClose(ifo_zero);
+
+	if(display_track && track_ifo)
+		ifoClose(track_ifo);
 
 	if(dvdread_dvd)
 		DVDClose(dvdread_dvd);
