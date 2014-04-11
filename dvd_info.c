@@ -41,6 +41,7 @@ void print_usage(char *binary) {
 	printf("  --video-height	Video height (720, 704, 352)\n");
 	printf("  --letterbox		Letterbox video (0 [no], 1 [yes])\n");
 	printf("  --film-mode		Film mode (film [movie], video [camera])\n");
+	printf("  --num-audio-streams	Number of audio streams\n");
 	printf("\n");
 	printf("Display subtitle info:\n");
 	printf("  --cc			Closed captioning (0 [no], 1 [yes])\n");
@@ -166,6 +167,7 @@ int main(int argc, char **argv) {
 	int display_letterbox = 0;
 	int display_film_mode = 0;
 	int display_cc = 0;
+	int display_num_audio_streams = 0;
 
 	// Not enabled by an argument, set manually
 	bool display_track = false;
@@ -205,6 +207,9 @@ int main(int argc, char **argv) {
 		{ "video-width", no_argument, & display_video_width, 1 },
 		{ "letterbox", no_argument, & display_letterbox, 1 },
 		{ "film-mode", no_argument, & display_film_mode, 1 },
+
+		// Audio
+		{ "num-audio-streams", no_argument, & display_num_audio_streams, 1 },
 
 		// Subtitles
 		{ "cc", no_argument, & display_cc, 1 },
@@ -616,6 +621,10 @@ int main(int argc, char **argv) {
 				has_cc_2 = true;
 		}
 
+		// Audio streams
+		int num_audio_streams;
+		num_audio_streams = track_ifo->vtsi_mat->nr_of_vtsm_audio_streams;
+
 		// Display video codec
 		if(display_video_codec || display_all) {
 			if(verbose)
@@ -676,6 +685,13 @@ int main(int argc, char **argv) {
 			printf("1\n");
 		}
 		*/
+
+		// Display number of audio streams
+		if(display_cc || display_num_audio_streams) {
+			if(verbose)
+				printf("num audio streams: ");
+			printf("%i\n", num_audio_streams);
+		}
 
 	}
 
