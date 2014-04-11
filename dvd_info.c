@@ -158,6 +158,7 @@ int main(int argc, char **argv) {
 	int display_aspect_ratio = 0;
 	int display_video_height = 0;
 	int display_video_width = 0;
+	int display_letterbox = 0;
 
 	// Not enabled by an argument, set manually
 	bool display_track = false;
@@ -191,6 +192,7 @@ int main(int argc, char **argv) {
 		{ "aspect-ratio", no_argument, & display_aspect_ratio, 1 },
 		{ "video-height", no_argument, & display_video_height, 1 },
 		{ "video-width", no_argument, & display_video_width, 1 },
+		{ "letterbox", no_argument, & display_letterbox, 1 },
 
 		{ 0, 0, 0, 0 }
 	};
@@ -575,6 +577,11 @@ int main(int argc, char **argv) {
 			video_height = video_height / 2;
 		}
 
+		// Letterbox
+		bool letterbox = false;
+		if(track_ifo->vtsi_mat->vts_video_attr.letterboxed)
+			letterbox = true;
+
 		// Display video codec
 		if(display_video_codec || display_all) {
 			if(verbose)
@@ -608,6 +615,16 @@ int main(int argc, char **argv) {
 			if(verbose)
 				printf("video width: ");
 			printf("%i\n", video_width);
+		}
+
+		// Display letterbox
+		if(display_letterbox || display_all) {
+			if(verbose)
+				printf("letterbox: ");
+			if(letterbox)
+				printf("1\n");
+			else
+				printf("0\n");
 		}
 
 	}
