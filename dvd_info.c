@@ -201,6 +201,8 @@ int main(int argc, char **argv) {
 		{ "vmg-id", no_argument, & display_vmg_id, 1 },
 		{ "side", no_argument, & display_side, 1 },
 
+		// FIXME add a warning if track information is requested without
+		// specifying a track number.
 		// Video
 		{ "video-format", no_argument, & display_video_format, 1 },
 		{ "video-codec", no_argument, & display_video_codec, 1 },
