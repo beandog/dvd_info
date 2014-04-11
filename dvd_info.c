@@ -520,19 +520,21 @@ int main(int argc, char **argv) {
 		dvd_track_video_codec(track_ifo, video_codec);
 		*/
 
+		bool valid_video_codec = true;
 		if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
 			video_codec = "MPEG1";
 		else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
 			video_codec = "MPEG2";
 		else {
 			video_codec = "Unknown";
-			if(display_video_codec || display_all)
-				fprintf(stderr, "MPEG version unknown, please send a bug report!\n");
+			valid_video_codec = false;
 		}
 
 
 		// Video format and height
 		unsigned int video_height;
+		bool valid_video_format = true;
+		bool valid_video_height = true;
 		if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0) {
 			video_format = "NTSC";
 			video_height = 480;
@@ -541,19 +543,32 @@ int main(int argc, char **argv) {
 			video_height = 576;
 		} else {
 			video_format = "Unknown";
-			video_height = 480;
-			if(display_video_format || display_all)
-				fprintf(stderr, "Video format unknown, please send a bug report!\n");
+			valid_video_format = false;
+			valid_video_height = false;
 		}
 
+		bool valid_aspect_ratio = true;
 		if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
 			aspect_ratio = "4:3";
 		else if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
 			aspect_ratio = "16:9";
 		else {
 			aspect_ratio = "Unknown";
-			if(display_aspect_ratio || display_all)
-				fprintf(stderr, "Aspect ratio unknown, please send a bug report!\n");
+			valid_aspect_ratio = false;
+		}
+
+		// Video width
+		unsigned int video_width = 720;
+		bool valid_video_width = true;
+		if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 0) {
+			video_width = 720;
+		} else if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 1) {
+			video_width = 704;
+		} else if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 2) {
+			video_width = 352;
+		} else if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 3) {
+			video_width = 352;
+			video_height = video_height / 2;
 		}
 
 		// Display video codec
