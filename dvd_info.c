@@ -42,6 +42,7 @@ void print_usage(char *binary) {
 	printf("  --letterbox		Letterbox video (0 [no], 1 [yes])\n");
 	printf("  --film-mode		Film mode (film [movie], video [camera])\n");
 	printf("  --num-audio-streams	Number of audio streams\n");
+	printf("  --num-subtitles	Number of VOBSUB subtitles\n");
 	printf("\n");
 	printf("Display subtitle info:\n");
 	printf("  --cc			Closed captioning (0 [no], 1 [yes])\n");
@@ -168,6 +169,7 @@ int main(int argc, char **argv) {
 	int display_film_mode = 0;
 	int display_cc = 0;
 	int display_num_audio_streams = 0;
+	int display_num_subtitles;
 
 	// Not enabled by an argument, set manually
 	bool display_track = false;
@@ -212,6 +214,7 @@ int main(int argc, char **argv) {
 		{ "num-audio-streams", no_argument, & display_num_audio_streams, 1 },
 
 		// Subtitles
+		{ "num-subtitles", no_argument, & display_num_subtitles, 1 },
 		{ "cc", no_argument, & display_cc, 1 },
 
 		{ 0, 0, 0, 0 }
@@ -625,6 +628,10 @@ int main(int argc, char **argv) {
 		int num_audio_streams;
 		num_audio_streams = track_ifo->vtsi_mat->nr_of_vts_audio_streams;
 
+		// Subtitles
+		int num_subtitles;
+		num_subtitles = track_ifo->vtsi_mat->nr_of_vts_subp_streams;
+
 		// Display video codec
 		if(display_video_codec || display_all) {
 			if(verbose)
@@ -691,6 +698,13 @@ int main(int argc, char **argv) {
 			if(verbose)
 				printf("audio streams: ");
 			printf("%i\n", num_audio_streams);
+		}
+
+		// Display number of subtitles
+		if(display_num_subtitles || display_all) {
+			if(verbose)
+				printf("subtitles: ");
+			printf("%i\n", num_subtitles);
 		}
 
 	}
