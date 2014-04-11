@@ -623,7 +623,7 @@ int main(int argc, char **argv) {
 
 		// Audio streams
 		int num_audio_streams;
-		num_audio_streams = track_ifo->vtsi_mat->nr_of_vtsm_audio_streams;
+		num_audio_streams = track_ifo->vtsi_mat->nr_of_vts_audio_streams;
 
 		// Display video codec
 		if(display_video_codec || display_all) {
