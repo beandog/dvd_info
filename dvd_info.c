@@ -138,8 +138,8 @@ int main(int argc, char **argv) {
 	// Specific variables to getopt_long
 	int long_index = 0;
 	int opt;
-	// Suppress getopt sending 'invalid argument' to stderr
-	opterr = 0;
+	// Send 'invalid argument' to stderr
+	opterr = 1;
 
 	// The display_* functions are just false by default, enabled by passing options
 	int display_all = 0;
@@ -194,6 +194,9 @@ int main(int argc, char **argv) {
 	char *str_options;
 	str_options = "hi:t:v";
 
+	// Check for invalid input
+	bool valid_args = true;
+
 	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
 
 		// It's worth noting that if there are unknown options passed,
@@ -209,7 +212,12 @@ int main(int argc, char **argv) {
 				break;
 
 			case 't':
-				track_number_optarg = optarg;
+				if(atoi(optarg) < 1 || atoi(optarg) > 99) {
+					fprintf(stderr, "Track number must be between 1 and 99\n");
+					valid_args = false;
+				} else {
+					track_number = atoi(optarg);
+				}
 				break;
 
 			case 'v':
@@ -226,20 +234,6 @@ int main(int argc, char **argv) {
 
 			default:
 				break;
-		}
-	}
-
-	// Check for invalid input
-	bool valid_args = true;
-
-	// Check for valid track number input
-	if(strlen(track_number_optarg) > 0) {
-		int n = atoi(track_number_optarg);
-		if(n < 1 || n > 99) {
-			fprintf(stderr, "Invalid track number: %s\n", track_number_optarg);
-			valid_args = false;
-		} else {
-			track_number = n;
 		}
 	}
 
