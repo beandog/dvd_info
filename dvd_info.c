@@ -217,6 +217,7 @@ int main(int argc, char **argv) {
 					valid_args = false;
 				} else {
 					track_number = atoi(optarg);
+					display_track = true;
 				}
 				break;
 
@@ -251,14 +252,6 @@ int main(int argc, char **argv) {
 	// Verbose output begins
 	if(verbose)
 		printf("dvd: %s\n", device_filename);
-
-	// Reset track number if needed
-	if(track_number < 1) {
-		track_number = 0;
-		display_track = false;
-	} else {
-		display_track = true;
-	}
 
 	/** Begin dvd_info :) */
 
