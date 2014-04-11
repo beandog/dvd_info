@@ -437,7 +437,7 @@ int main(int argc, char **argv) {
 		num_tracks = ifo_zero->tt_srpt->nr_of_srpts;
 
 		if(verbose)
-			printf("num tracks: ");
+			printf("tracks: ");
 		printf("%i\n", num_tracks);
 
 	}
@@ -689,7 +689,7 @@ int main(int argc, char **argv) {
 		// Display number of audio streams
 		if(display_cc || display_num_audio_streams) {
 			if(verbose)
-				printf("num audio streams: ");
+				printf("audio streams: ");
 			printf("%i\n", num_audio_streams);
 		}
 
