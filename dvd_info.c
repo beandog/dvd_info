@@ -139,9 +139,7 @@ int main(int argc, char **argv) {
 	int long_index = 0;
 	int opt;
 	// Suppress getopt sending 'invalid argument' to stderr
-	// FIXME: can add this once I get proper error handling myself
-	// opterr = 0;
-
+	opterr = 0;
 
 	// The display_* functions are just false by default, enabled by passing options
 	int display_all = 0;
