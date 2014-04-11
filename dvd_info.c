@@ -41,6 +41,9 @@ void print_usage(char *binary) {
 	printf("  --video-height	Video height (720, 704, 352)\n");
 	printf("  --letterbox		Letterbox video (0 [no], 1 [yes])\n");
 	printf("  --film-mode		Film mode (film [movie], video [camera])\n");
+	printf("\n");
+	printf("Display subtitle info:\n");
+	printf("  --cc			Closed captioning (0 [no], 1 [yes])\n");
 
 }
 
@@ -162,6 +165,7 @@ int main(int argc, char **argv) {
 	int display_video_width = 0;
 	int display_letterbox = 0;
 	int display_film_mode = 0;
+	int display_cc = 0;
 
 	// Not enabled by an argument, set manually
 	bool display_track = false;
@@ -182,6 +186,8 @@ int main(int argc, char **argv) {
 		// directly to 1 (true) if they are passed.  Only the long
 		// option will trigger them.  fex, '--num-tracks'
 		{ "all", no_argument, & display_all, 1 },
+
+		// DVD
 		{ "id", no_argument, & display_id, 1 },
 		{ "title", no_argument, & display_title, 1 },
 		{ "num-tracks", no_argument, & display_num_tracks, 1 },
@@ -190,6 +196,8 @@ int main(int argc, char **argv) {
 		{ "serial-id", no_argument, & display_serial_id, 1 },
 		{ "vmg-id", no_argument, & display_vmg_id, 1 },
 		{ "side", no_argument, & display_side, 1 },
+
+		// Video
 		{ "video-format", no_argument, & display_video_format, 1 },
 		{ "video-codec", no_argument, & display_video_codec, 1 },
 		{ "aspect-ratio", no_argument, & display_aspect_ratio, 1 },
@@ -197,6 +205,9 @@ int main(int argc, char **argv) {
 		{ "video-width", no_argument, & display_video_width, 1 },
 		{ "letterbox", no_argument, & display_letterbox, 1 },
 		{ "film-mode", no_argument, & display_film_mode, 1 },
+
+		// Subtitles
+		{ "cc", no_argument, & display_cc, 1 },
 
 		{ 0, 0, 0, 0 }
 	};
@@ -593,6 +604,18 @@ int main(int argc, char **argv) {
 		else
 			film_mode = "video";
 
+		// Closed Captioning
+		bool has_cc = false;
+		bool has_cc_1 = false;
+		bool has_cc_2 = false;
+		if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1 || track_ifo->vtsi_mat->vts_video_attr.line21_cc_2) {
+			has_cc = true;
+			if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1)
+				has_cc_1 = true;
+			if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_2)
+				has_cc_2 = true;
+		}
+
 		// Display video codec
 		if(display_video_codec || display_all) {
 			if(verbose)
@@ -643,6 +666,16 @@ int main(int argc, char **argv) {
 				printf("film mode: ");
 			printf("%s\n", film_mode);
 		}
+
+		// Display Closed Captioning
+		// Not sure if this is right or not
+		/*
+		if(display_cc || display_all) {
+			if(verbose)
+				printf("closed captioning: ");
+			printf("1\n");
+		}
+		*/
 
 	}
 
