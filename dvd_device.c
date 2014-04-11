@@ -8,14 +8,14 @@
 #include <linux/cdrom.h>
 #include "dvd_device.h"
 
-int dvd_device_access(char* device_filename) {
+bool dvd_device_access(char* device_filename) {
 
 	int device_access;
 	device_access = access(device_filename, F_OK);
 	if(device_access == 0)
-		return 0;
+		return true;
 	else
-		return 1;
+		return false;
 
 }
 

@@ -70,7 +70,7 @@ bool dvd_drive_is_ready(char* device_filename) {
 
 }
 
-int dvd_drive_display_status(char *device_filename) {
+void dvd_drive_display_status(char *device_filename) {
 
 	int drive_status;
 	char *status;
@@ -97,5 +97,4 @@ int dvd_drive_display_status(char *device_filename) {
 
 	printf("%s\n", status);
 
-	return 0;
 }

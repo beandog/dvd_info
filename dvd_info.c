@@ -289,7 +289,7 @@ int main(int argc, char **argv) {
 	/** Begin dvd_info :) */
 
 	// Check to see if device can be accessed
-	if(dvd_device_access(device_filename) == 1) {
+	if(!dvd_device_access(device_filename)) {
 		fprintf(stderr, "cannot access %s\n", device_filename);
 		return 1;
 	}
