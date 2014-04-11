@@ -694,7 +694,7 @@ int main(int argc, char **argv) {
 		*/
 
 		// Display number of audio streams
-		if(display_cc || display_num_audio_streams) {
+		if(display_num_audio_streams || display_all) {
 			if(verbose)
 				printf("audio streams: ");
 			printf("%i\n", num_audio_streams);
