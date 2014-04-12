@@ -38,7 +38,7 @@
  * @param device filename
  * @param char[33] to copy string to
  */
-int dvd_device_title(char* device_filename, char *dvd_title) {
+int dvd_device_title(char* device_filename, char *tmpbuf) {
 
 	char title[33] = {'\0'};
 	FILE* filehandle = 0;
@@ -77,7 +77,7 @@ int dvd_device_title(char* device_filename, char *dvd_title) {
 		}
 	}
 
-	strncpy(dvd_title, title, 32);
+	strncpy(tmpbuf, title, 32);
 
 	return 0;
 
