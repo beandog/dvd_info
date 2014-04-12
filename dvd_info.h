@@ -10,6 +10,80 @@
  */
 
 /**
+ * Get the DVD title, which maxes out at a 32-character string.
+ * All DVDs should have one.
+ *
+ * This is the same value as a volume name on an ISO, the string sits outside
+ * of the encrypted content, so a simple seek to the location reveals the
+ * contents.  In other words, this doesn't depend on libdvdread.  However, I
+ * have had DVD drives that, for some reason or another, will complain if
+ * the disc has not been decrypted first, so I would recommend decrypting the
+ * CSS at some point before doing any reads from the data.  I could be
+ * completely wrong about the CSS thing, but lots of anecdotal evidence says
+ * otherwise.  In time, I hope to track down the real issue, but until then,
+ * the generic suggestion stands. :)
+ *
+ * The title is going to be alpha-numeric, all upper-case, up to 32
+ * characters in length.
+ *
+ * These should *not* be considered as unique identifiers for discs.
+ *
+ * Some examples:
+ * - The Nightmare Before Christmas: NIGHTMARE
+ * - Powerpuff Girls: POWERPUFF_GIRLS_DISC_1
+ * - Star Trek: Voyager: VOYAGER_S7D1
+ *
+ * This whole function is mostly lifted from lsdvd.
+ *
+ * @param device filename
+ * @param char[33] to copy string to
+ */
+int dvd_device_title(char* device_filename, char *dvd_title) {
+
+	char title[33];
+	FILE* filehandle = 0;
+	int x, y, z;
+
+	// If we can't even open the device, exit quietly
+	filehandle = fopen(device_filename, "r");
+	if(filehandle == NULL) {
+		return 1;
+	}
+
+	// The DVD title is actually on the disc, and doesn't need the dvdread
+	// or dvdnav library to access it.  I should prefer to use them, though
+	// to avoid situations where something freaks out for not decrypting
+	// the CSS first ... so, I guess a FIXME is in order.
+	if(fseek(filehandle, 32808, SEEK_SET) == -1) {
+		fclose(filehandle);
+		return 2;
+	}
+
+	x = fread(title, 1, 32, filehandle);
+	if(x == 0) {
+		fclose(filehandle);
+		return 3;
+	}
+	title[32] = '\0';
+
+	fclose(filehandle);
+
+	// A nice way to trim the string. :)
+	// FIXME: could use an rtrim function in general
+	y = sizeof(title);
+	while(y-- > 2) {
+		if(title[y] == ' ') {
+			title[y] = '\0';
+		}
+	}
+
+	strncpy(dvd_title, title, 32);
+
+	return 0;
+
+}
+
+/**
  * Get the number of tracks on a DVD
  *
  * The word 'title' and 'track' are sometimes used interchangeably when talking
@@ -83,6 +157,8 @@ int dvd_info_num_vts(ifo_handle_t *ifo) {
  *
  * It's not unusual for this one to be empty as well.
  *
+ * These should *not* be considered as unique identifiers for discs.
+ *
  * @param dvdread IFO handle
  * @param char[33] to copy string to
  */
@@ -151,5 +227,22 @@ int dvd_info_side(ifo_handle_t *ifo) {
  * - Good Night, and Good Luck: 33905bf9
  * - Shipwrecked! (PAL): 3f69708e___mvb__
  *
+ * I would recommend *not* using these as unique identifiers -- mostly because
+ * I don't know how they are generated.
+ *
  * @param dvdnav_t
- * @param
+ * @param char[17] to copy the string to
+ * @return success
+ */
+void dvd_info_serial_id(dvdnav_t *dvdnav, char *tmpbuf) {
+
+	const char *serial_id;
+	dvdnav_get_serial_string(dvdnav, &serial_id);
+
+	int n = strlen(serial_id);
+	if(n > 0)
+		strncpy(tmpbuf, serial_id, 16);
+	else
+		tmpbuf[0] = '\0';
+
+}
