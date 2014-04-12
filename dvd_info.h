@@ -168,7 +168,7 @@ void dvd_info_provider_id(ifo_handle_t *ifo, char *tmpbuf) {
 
 	// Copy the string only if it has characters, otherwise set the string
 	// to zero length anyway.
-	if(strlen > 0)
+	if(n > 0)
 		strncpy(tmpbuf, ifo->vmgi_mat->provider_identifier, 32);
 	else
 		tmpbuf[0] = '\0';
