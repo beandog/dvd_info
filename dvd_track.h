@@ -56,3 +56,37 @@ bool dvd_track_mpeg2(ifo_handle_t *track_ifo) {
 		return false;
 
 }
+
+/**
+ * Check if a video format is NTSC
+ *
+ * @param dvdread track IFO handler
+ * @return boolean
+ */
+bool dvd_track_pal_video(ifo_handle_t *track_ifo) {
+
+	int format = track_ifo->vtsi_mat->vts_video_attr.video_format;
+
+	if(format == 0)
+		return true;
+	else
+		return false;
+
+}
+
+/**
+ * Check if a video format is PAL
+ *
+ * @param dvdread track IFO handler
+ * @return boolean
+ */
+bool dvd_track_pal_video(ifo_handle_t *track_ifo) {
+
+	int format = track_ifo->vtsi_mat->vts_video_attr.video_format;
+
+	if(format == 1)
+		return true;
+	else
+		return false;
+
+}
