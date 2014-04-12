@@ -423,15 +423,12 @@ int main(int argc, char **argv) {
 	// Display serial ID
 	if(display_serial_id || display_all) {
 
-		const char *serial_id;
+		char serial_id[17] = {'\0'};
+		dvd_info_serial_id(dvdnav_dvd, serial_id);
 
-		if(dvdnav_get_serial_string(dvdnav_dvd, &serial_id) == DVDNAV_STATUS_OK) {
-
-			if(verbose)
-				printf("serial id: ");
-			printf("%s\n", serial_id);
-
-		}
+		if(verbose)
+			printf("serial id: ");
+		printf("%s\n", serial_id);
 
 	}
 
