@@ -441,7 +441,7 @@ int main(int argc, char **argv) {
 
 	}
 
-	// --vmg -id
+	// --vmg-id
 	// Display VMG ID
 	if((display_vmg_id || display_all) && ifo_zero) {
 
