@@ -41,7 +41,7 @@ bool dvd_track_mpeg1(ifo_handle_t *track_ifo) {
 }
 
 /**
- * Helper function to check if video codec is MPEG-1
+ * Helper function to check if video codec is MPEG-2
  *
  * @param dvdread track IFO handler
  * @return boolean
