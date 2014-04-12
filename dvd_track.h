@@ -158,7 +158,7 @@ bool dvd_track_letterbox_video(ifo_handle_t *track_ifo) {
 
 	int letterbox = track_ifo->vtsi_mat->vts_video_attr.letterboxed;
 
-	if(format == 0)
+	if(letterbox == 0)
 		return false;
 	else
 		return true;
