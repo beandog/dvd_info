@@ -90,3 +90,20 @@ bool dvd_track_pal_video(ifo_handle_t *track_ifo) {
 		return false;
 
 }
+
+/**
+ * Get the video height
+ *
+ * @param dvdread track IFO handler
+ * @return video height, or 0 for unknown
+ */
+int dvd_track_video_height(ifo_handle_t *track_ifo) {
+
+	if(dvd_track_ntsc_video(track_ifo))
+		return 480;
+	else if(dvd_track_pal_video(track_ifo))
+		return 576;
+	else
+		return 0;
+
+}
