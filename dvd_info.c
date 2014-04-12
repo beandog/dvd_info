@@ -14,6 +14,7 @@
 #include <dvdnav/dvdnav.h>
 #include "dvd_device.h"
 #include "dvd_drive.h"
+#include "dvd_info.h"
 
 /**
  * Output on 'dvd_info -h'
@@ -423,7 +424,7 @@ int main(int argc, char **argv) {
 
 		int num_tracks;
 
-		num_tracks = ifo_zero->tt_srpt->nr_of_srpts;
+		num_tracks = dvd_info_num_tracks(ifo_zero);
 
 		if(verbose)
 			printf("tracks: ");
@@ -437,7 +438,7 @@ int main(int argc, char **argv) {
 
 		int num_vts;
 
-		num_vts = ifo_zero->vts_atrt->nr_of_vtss;
+		num_vts = dvd_info_num_vts(ifo_zero);
 
 		if(verbose)
 			printf("num vts: ");
@@ -453,16 +454,18 @@ int main(int argc, char **argv) {
 	// Display provider ID
 	if((display_provider_id || display_all) && ifo_zero) {
 
-		char *provider_id;
-		bool has_provider_id = false;
-
-		provider_id = ifo_zero->vmgi_mat->provider_identifier;
+		// Max length of provider ID is 32 letters, so create an array
+		// that has enough size to store the letters and a null
+		// terminator.  Also initialize it with all null terminators.
+		char provider_id[33] = {'\0'};
+		dvd_info_provider_id(ifo_zero, provider_id);
 
 		if(verbose)
 			printf("provider id: ");
 		printf("%s\n", provider_id);
 
 		// Having an empty provider ID is very common.
+		bool has_provider_id = false;
 		if(provider_id[0] != '\0')
 			has_provider_id = true;
 
@@ -489,18 +492,12 @@ int main(int argc, char **argv) {
 	}
 
 	/**
-	 * Display VMG_ID
-	 *
-	 * It's entirely possible, and common, that the string is blank.  If it's not
-	 * blank, it is probably 'DVDVIDEO-VMG'.
-	 *
+	 * --vmg-id
 	 */
 	if((display_vmg_id || display_all) && ifo_zero) {
 
-		char *vmg_id;
-
-		vmg_id = ifo_zero->vmgi_mat->vmg_identifier;
-		vmg_id[12] = '\0';
+		char vmg_id[13] = {'\0'};
+		dvd_info_vmg_id(ifo_zero, vmg_id);
 
 		if(verbose)
 			printf("vmg id: ");
