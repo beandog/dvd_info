@@ -65,62 +65,6 @@ int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
 
 }
 
-/**
- * Get the DVD title, which maxes out at a 32-character string.
- * All DVDs should have one.
- *
- * This whole function is mostly lifted from lsdvd.
- *
- */
-int dvd_info_title(char* device_filename, char *dvd_title) {
-
-	char title[33];
-	FILE* filehandle = 0;
-	int x, y, z;
-
-	// If we can't even open the device, exit quietly
-	filehandle = fopen(device_filename, "r");
-	if(filehandle == NULL) {
-		return 1;
-	}
-
-	// The DVD title is actually on the disc, and doesn't need the dvdread
-	// or dvdnav library to access it.  I should prefer to use them, though
-	// to avoid situations where something freaks out for not decrypting
-	// the CSS first ... so, I guess a FIXME is in order.
-	if(fseek(filehandle, 32808, SEEK_SET) == -1) {
-		fclose(filehandle);
-		return 2;
-	}
-
-	x = fread(title, 1, 32, filehandle);
-	if(x == 0) {
-		fclose(filehandle);
-		return 3;
-	}
-	title[32] = '\0';
-
-	fclose(filehandle);
-
-	// A nice way to trim the string. :)
-	y = sizeof(title);
-	while(y-- > 2) {
-		if(title[y] == ' ') {
-			title[y] = '\0';
-		}
-	}
-
-	// For future note to myself, this answers the question of
-	// how to have a function 'return' a string, and still be able to have
-	// exit codes as well.  The answer is that you don't return a string at
-	// all -- you copy the contents to the string that is passed in the
-	// function.
-	strncpy(dvd_title, title, 32);
-
-	return 0;
-
-}
-
 int main(int argc, char **argv) {
 
 	// DVD file descriptor
