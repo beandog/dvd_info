@@ -147,3 +147,20 @@ int dvd_track_video_width(ifo_handle_t *track_ifo) {
 	}
 
 }
+
+/**
+ * Check for letterbox video
+ *
+ * @param dvdread track IFO handler
+ * @return boolean
+ */
+bool dvd_track_letterbox_video(ifo_handle_t *track_ifo) {
+
+	int letterbox = track_ifo->vtsi_mat->vts_video_attr.letterboxed;
+
+	if(format == 0)
+		return false;
+	else
+		return true;
+
+}
