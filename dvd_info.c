@@ -506,7 +506,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Disc side
-	if(display_side) {
+	if(display_side || display_all) {
 		if(verbose)
 			printf("side: ");
 		printf("%i\n", ifo_zero->vmgi_mat->disc_side);
