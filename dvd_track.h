@@ -146,6 +146,8 @@ int dvd_track_video_width(ifo_handle_t *track_ifo) {
 
 	}
 
+	return video_width;
+
 }
 
 /**
