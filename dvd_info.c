@@ -364,6 +364,7 @@ int main(int argc, char **argv) {
 	}
 
 	// --num-tracks
+	// Display total number of tracks
 	if((display_num_tracks || display_all) && ifo_zero) {
 
 		int num_tracks;
@@ -432,9 +433,8 @@ int main(int argc, char **argv) {
 
 	}
 
-	/**
-	 * --vmg-id
-	 */
+	// --vmg -id
+	// Display VMG ID
 	if((display_vmg_id || display_all) && ifo_zero) {
 
 		char vmg_id[13] = {'\0'};
@@ -446,14 +446,17 @@ int main(int argc, char **argv) {
 
 	}
 
-	// Disc side
+	// --side
+	// Display disc side
 	if(display_side || display_all) {
 		if(verbose)
 			printf("side: ");
 		printf("%i\n", ifo_zero->vmgi_mat->disc_side);
 	}
 
-	/** Display track information */
+	/**
+	 * Track information
+	 */
 	ifo_handle_t *track_ifo;
 	char *video_codec;
 	char *video_format;
@@ -473,6 +476,7 @@ int main(int argc, char **argv) {
 		dvd_track_video_codec(track_ifo, video_codec);
 		*/
 
+		// Video codec
 		bool valid_video_codec = true;
 		if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
 			video_codec = "MPEG1";
@@ -482,7 +486,6 @@ int main(int argc, char **argv) {
 			video_codec = "Unknown";
 			valid_video_codec = false;
 		}
-
 
 		// Video format and height
 		unsigned int video_height;
@@ -500,6 +503,7 @@ int main(int argc, char **argv) {
 			valid_video_height = false;
 		}
 
+		// Aspect ratio
 		bool valid_aspect_ratio = true;
 		if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
 			aspect_ratio = "4:3";
@@ -556,6 +560,7 @@ int main(int argc, char **argv) {
 		int num_subtitles;
 		num_subtitles = track_ifo->vtsi_mat->nr_of_vts_subp_streams;
 
+		// --video-codec
 		// Display video codec
 		if(display_video_codec || display_all) {
 			if(verbose)
@@ -563,6 +568,7 @@ int main(int argc, char **argv) {
 			printf("%s\n", video_codec);
 		}
 
+		// --video-format
 		// Display video format
 		if(display_video_format || display_all) {
 			if(verbose)
@@ -570,6 +576,7 @@ int main(int argc, char **argv) {
 			printf("%s\n", video_format);
 		}
 
+		// --aspect-ratio
 		// Display aspect ratio
 		if(display_aspect_ratio || display_all) {
 			if(verbose)
@@ -577,6 +584,7 @@ int main(int argc, char **argv) {
 			printf("%s\n", aspect_ratio);
 		}
 
+		// --video-height
 		// Display video height
 		if(display_video_height || display_all) {
 			if(verbose)
@@ -584,6 +592,7 @@ int main(int argc, char **argv) {
 			printf("%i\n", video_height);
 		}
 
+		// --video-width
 		// Display video width
 		if(display_video_width || display_all) {
 			if(verbose)
@@ -591,6 +600,7 @@ int main(int argc, char **argv) {
 			printf("%i\n", video_width);
 		}
 
+		// --letterbox
 		// Display letterbox
 		if(display_letterbox || display_all) {
 			if(verbose)
@@ -601,6 +611,8 @@ int main(int argc, char **argv) {
 				printf("0\n");
 		}
 
+		// --film-mode
+		// Film mode
 		if(display_film_mode || display_all) {
 			if(verbose)
 				printf("film mode: ");
@@ -617,6 +629,7 @@ int main(int argc, char **argv) {
 		}
 		*/
 
+		// --num-audio-streams
 		// Display number of audio streams
 		if(display_num_audio_streams || display_all) {
 			if(verbose)
@@ -624,6 +637,7 @@ int main(int argc, char **argv) {
 			printf("%i\n", num_audio_streams);
 		}
 
+		// --num-subtitles
 		// Display number of subtitles
 		if(display_num_subtitles || display_all) {
 			if(verbose)
