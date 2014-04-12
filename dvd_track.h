@@ -99,11 +99,17 @@ bool dvd_track_pal_video(ifo_handle_t *track_ifo) {
  */
 int dvd_track_video_height(ifo_handle_t *track_ifo) {
 
+	int video_height = 0;
+	int picture_size = track_ifo->vtsi_mat->vts_video_attr.picture_size;
+
 	if(dvd_track_ntsc_video(track_ifo))
-		return 480;
+		video_height = 480;
 	else if(dvd_track_pal_video(track_ifo))
-		return 576;
-	else
-		return 0;
+		video_height = 576;
+
+	if(picture_size == 3 && video_height > 0)
+		video_height = video_height / 2;
+
+	return video_height;
 
 }
