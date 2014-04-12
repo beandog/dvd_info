@@ -40,7 +40,7 @@
  */
 int dvd_device_title(char* device_filename, char *dvd_title) {
 
-	char title[33];
+	char title[33] = {'\0'};
 	FILE* filehandle = 0;
 	int x, y, z;
 
