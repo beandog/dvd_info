@@ -353,6 +353,7 @@ int main(int argc, char **argv) {
 	// Display DVD title
 	if(display_title || display_all) {
 
+		/*
 		const char *dvd_title;
 
 		if(dvdnav_get_title_string(dvdnav_dvd, &dvd_title) == DVDNAV_STATUS_OK) {
@@ -360,6 +361,13 @@ int main(int argc, char **argv) {
 				printf("title: ");
 			printf("%s\n", dvd_title);
 		}
+		*/
+
+		char title[33] = {'\0'};
+		dvd_device_title(device_filename, title);
+		if(verbose)
+			printf("title: ");
+		printf("%s\n", title);
 
 	}
 
