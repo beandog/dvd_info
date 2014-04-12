@@ -113,3 +113,37 @@ int dvd_track_video_height(ifo_handle_t *track_ifo) {
 	return video_height;
 
 }
+
+/**
+ * Get the video width
+ *
+ * @param dvdread track IFO handler
+ * @return video width, or 0 for unknown
+ */
+int dvd_track_video_width(ifo_handle_t *track_ifo) {
+
+	int video_width = 0;
+	int picture_size = track_ifo->vtsi_mat->vts_video_attr.picture_size;
+	int video_height = dvd_track_video_height(track_ifo);
+
+	if(video_height == 0)
+		return 0;
+
+	switch(picture_size) {
+
+		case 0:
+			video_width = 720;
+
+		case 1:
+			video_width = 704;
+
+		case 2:
+		case 3:
+			video_width = 352;
+
+		default:
+			video_width = 0;
+
+	}
+
+}
