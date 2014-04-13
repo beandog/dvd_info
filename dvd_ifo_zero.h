@@ -73,7 +73,7 @@ int dvd_device_title(const char *device_filename, char *p);
  * @param dvdread IFO handle
  * @return num tracks
  */
-int dvd_info_num_tracks(const ifo_handle_t *ifo);
+uint16_t dvd_info_num_tracks(const ifo_handle_t *ifo);
 
 /**
  * Get the number of VTS on a DVD
@@ -81,7 +81,7 @@ int dvd_info_num_tracks(const ifo_handle_t *ifo);
  * @param dvdread IFO handle
  * @return num VTS
  */
-int dvd_info_num_vts(const ifo_handle_t *ifo);
+uint16_t dvd_info_num_vts(const ifo_handle_t *ifo);
 
 /**
  * Get the provider ID
@@ -132,7 +132,7 @@ void dvd_info_vmg_id(const ifo_handle_t *ifo, char *p);
  * @param libdvdread IFO handle
  * @return DVD side
  */
-int dvd_info_side(const ifo_handle_t *ifo);
+uint8_t dvd_info_side(const ifo_handle_t *ifo);
 
 /**
  * Get the DVD serial id from dvdnav

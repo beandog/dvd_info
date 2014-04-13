@@ -133,9 +133,9 @@ int dvd_device_title(const char *device_filename, char *p) {
  * @param dvdread IFO handle
  * @return num tracks
  */
-int dvd_info_num_tracks(const ifo_handle_t *ifo) {
+uint16_t dvd_info_num_tracks(const ifo_handle_t *ifo) {
 
-	int num_tracks;
+	uint16_t num_tracks;
 
 	num_tracks = ifo->tt_srpt->nr_of_srpts;
 
@@ -149,9 +149,9 @@ int dvd_info_num_tracks(const ifo_handle_t *ifo) {
  * @param dvdread IFO handle
  * @return num VTS
  */
-int dvd_info_num_vts(const ifo_handle_t *ifo) {
+uint16_t dvd_info_num_vts(const ifo_handle_t *ifo) {
 
-	int num_vts;
+	uint16_t num_vts;
 
 	num_vts = ifo->vts_atrt->nr_of_vtss;
 
@@ -229,9 +229,9 @@ void dvd_info_vmg_id(const ifo_handle_t *ifo, char *p) {
  * @param libdvdread IFO handle
  * @return DVD side
  */
-int dvd_info_side(const ifo_handle_t *ifo) {
+uint8_t dvd_info_side(const ifo_handle_t *ifo) {
 
-	int side = ifo->vmgi_mat->disc_side;
+	uint8_t side = ifo->vmgi_mat->disc_side;
 
 	if(side == 2)
 		return 2;

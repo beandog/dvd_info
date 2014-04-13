@@ -377,13 +377,13 @@ int main(int argc, char **argv) {
 	// Display total number of tracks
 	if((display_num_tracks || display_all) && ifo_zero) {
 
-		int num_tracks;
+		uint16_t num_tracks;
 
 		num_tracks = dvd_info_num_tracks(ifo_zero);
 
 		if(verbose)
 			printf("tracks: ");
-		printf("%i\n", num_tracks);
+		printf("%d\n", num_tracks);
 
 	}
 
@@ -391,13 +391,13 @@ int main(int argc, char **argv) {
 	// Display number of VTSs on DVD
 	if((display_num_vts || display_all) && ifo_zero) {
 
-		int num_vts;
+		uint16_t num_vts;
 
 		num_vts = dvd_info_num_vts(ifo_zero);
 
 		if(verbose)
 			printf("num vts: ");
-		printf("%i\n", num_vts);
+		printf("%d\n", num_vts);
 
 	} else if((display_num_vts || display_all) && !ifo_zero) {
 
