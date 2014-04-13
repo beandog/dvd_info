@@ -12,7 +12,7 @@
  * @param device filename (/dev/dvd, dvd.iso, etc.)
  * @return bool can access device or not
  */
-bool dvd_device_access(char *device_filename);
+bool dvd_device_access(const char *device_filename);
 
 /**
  * Use open() to create a file descriptor to the DVD.
@@ -21,7 +21,7 @@ bool dvd_device_access(char *device_filename);
  * @param device filename (/dev/dvd, dvd.iso, etc.)
  * @return file descriptor, -1 if failed
  */
-int dvd_device_open(char *device_filename);
+int dvd_device_open(const char *device_filename);
 
 /**
  * Use close() to close the file descriptor to the DVD.
@@ -38,7 +38,7 @@ int dvd_device_close(int dvd_fd);
  * @param device filename (/dev/dvd, dvd.iso, etc.)
  * @return bool
  */
-bool dvd_device_is_hardware(char *device_filename);
+bool dvd_device_is_hardware(const char *device_filename);
 
 /**
  * Check if device is an image (filename)
@@ -46,4 +46,4 @@ bool dvd_device_is_hardware(char *device_filename);
  * @param device filename (/dev/dvd, dvd.iso, etc.)
  * @return bool
  */
-bool dvd_device_is_image(char *device_filename);
+bool dvd_device_is_image(const char *device_filename);
