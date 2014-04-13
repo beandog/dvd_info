@@ -37,11 +37,15 @@
  *
  * @param device filename
  * @param char[33] to copy string to
+ * @retval 0 success
+ * @retval 1 could not open device
+ * @retval 2 could not seek file
+ * @retval 3 could not read the title
  */
-int dvd_device_title(char* device_filename, char *tmpbuf) {
+int dvd_device_title(char *device_filename, char *p) {
 
-	char title[33] = {'\0'};
-	FILE* filehandle = 0;
+	char dvd_title[33] = {'\0'};
+	FILE *filehandle = 0;
 	int x, y, z;
 
 	// If we can't even open the device, exit quietly
@@ -53,31 +57,32 @@ int dvd_device_title(char* device_filename, char *tmpbuf) {
 	// The DVD title is actually on the disc, and doesn't need the dvdread
 	// or dvdnav library to access it.  I should prefer to use them, though
 	// to avoid situations where something freaks out for not decrypting
-	// the CSS first ... so, I guess a FIXME is in order.
+	// the CSS first ... so, I guess a FIXME is in order -- or use decss
+	// first.
 	if(fseek(filehandle, 32808, SEEK_SET) == -1) {
 		fclose(filehandle);
 		return 2;
 	}
 
-	x = fread(title, 1, 32, filehandle);
+	x = fread(dvd_title, 1, 32, filehandle);
+	dvd_title[32] = '\0';
 	if(x == 0) {
 		fclose(filehandle);
 		return 3;
 	}
-	title[32] = '\0';
 
 	fclose(filehandle);
 
 	// A nice way to trim the string. :)
 	// FIXME: could use an rtrim function in general
-	y = sizeof(title);
+	y = strlen(dvd_title);
 	while(y-- > 2) {
-		if(title[y] == ' ') {
-			title[y] = '\0';
+		if(dvd_title[y] == ' ') {
+			dvd_title[y] = '\0';
 		}
 	}
 
-	strncpy(tmpbuf, title, 32);
+	strncpy(p, dvd_title, 32);
 
 	return 0;
 
@@ -162,16 +167,16 @@ int dvd_info_num_vts(ifo_handle_t *ifo) {
  * @param dvdread IFO handle
  * @param char[33] to copy string to
  */
-void dvd_info_provider_id(ifo_handle_t *ifo, char *tmpbuf) {
+void dvd_info_provider_id(ifo_handle_t *ifo, char *p) {
 
 	int n = strlen(ifo->vmgi_mat->provider_identifier);
 
 	// Copy the string only if it has characters, otherwise set the string
 	// to zero length anyway.
 	if(n > 0)
-		strncpy(tmpbuf, ifo->vmgi_mat->provider_identifier, 32);
+		strncpy(p, ifo->vmgi_mat->provider_identifier, 32);
 	else
-		tmpbuf[0] = '\0';
+		memset(p, '\0', 33);
 
 }
 
@@ -183,16 +188,16 @@ void dvd_info_provider_id(ifo_handle_t *ifo, char *tmpbuf) {
  * @param libdvdread IFO handle
  * @param char[13] to copy string to
  */
-void dvd_info_vmg_id(ifo_handle_t *ifo, char *tmpbuf) {
+void dvd_info_vmg_id(ifo_handle_t *ifo, char *p) {
 
 	int n = strlen(ifo->vmgi_mat->vmg_identifier);
 
 	// Copy the string only if it has characters, otherwise set the string
 	// to zero length anyway.
-	if(strlen > 0)
-		strncpy(tmpbuf, ifo->vmgi_mat->vmg_identifier, 12);
+	if(n > 0)
+		strncpy(p, ifo->vmgi_mat->vmg_identifier, 12);
 	else
-		tmpbuf[0] = '\0';
+		memset(p, '\0', 13);
 
 }
 
@@ -204,6 +209,9 @@ void dvd_info_vmg_id(ifo_handle_t *ifo, char *tmpbuf) {
  *
  * I haven't ever checked this before, so I don't know what DVDs are authored
  * with.  I'm going to simply return 2 if it's set to that, and a 1 otherwise.
+ *
+ * @param libdvdread IFO handle
+ * @return DVD side
  */
 int dvd_info_side(ifo_handle_t *ifo) {
 
@@ -234,15 +242,15 @@ int dvd_info_side(ifo_handle_t *ifo) {
  * @param char[17] to copy the string to
  * @return success
  */
-void dvd_info_serial_id(dvdnav_t *dvdnav, char *tmpbuf) {
+void dvd_info_serial_id(dvdnav_t *dvdnav, char *p) {
 
 	const char *serial_id;
 	dvdnav_get_serial_string(dvdnav, &serial_id);
 
 	int n = strlen(serial_id);
 	if(n > 0)
-		strncpy(tmpbuf, serial_id, 16);
+		strncpy(p, serial_id, 16);
 	else
-		tmpbuf[0] = '\0';
+		memset(p, '\0', 17);
 
 }
