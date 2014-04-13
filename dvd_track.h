@@ -10,7 +10,7 @@
  * @retval 1 MPEG-1
  * @retval 2 MPEG-2
  */
-int dvd_track_mpeg_version(ifo_handle_t *track_ifo);
+int dvd_track_mpeg_version(const ifo_handle_t *track_ifo);
 
 /**
  * Helper function to check if video codec is MPEG-1
@@ -18,7 +18,7 @@ int dvd_track_mpeg_version(ifo_handle_t *track_ifo);
  * @param dvdread track IFO handler
  * @return boolean
  */
-bool dvd_track_mpeg1(ifo_handle_t *track_ifo);
+bool dvd_track_mpeg1(const ifo_handle_t *track_ifo);
 
 /**
  * Helper function to check if video codec is MPEG-2
@@ -26,7 +26,7 @@ bool dvd_track_mpeg1(ifo_handle_t *track_ifo);
  * @param dvdread track IFO handler
  * @return boolean
  */
-bool dvd_track_mpeg2(ifo_handle_t *track_ifo);
+bool dvd_track_mpeg2(const ifo_handle_t *track_ifo);
 
 /**
  * Check if a video format is NTSC
@@ -34,7 +34,7 @@ bool dvd_track_mpeg2(ifo_handle_t *track_ifo);
  * @param dvdread track IFO handler
  * @return boolean
  */
-bool dvd_track_ntsc_video(ifo_handle_t *track_ifo);
+bool dvd_track_ntsc_video(const ifo_handle_t *track_ifo);
 
 /**
  * Check if a video format is PAL
@@ -42,7 +42,7 @@ bool dvd_track_ntsc_video(ifo_handle_t *track_ifo);
  * @param dvdread track IFO handler
  * @return boolean
  */
-bool dvd_track_pal_video(ifo_handle_t *track_ifo);
+bool dvd_track_pal_video(const ifo_handle_t *track_ifo);
 
 /**
  * Get the video height
@@ -50,7 +50,7 @@ bool dvd_track_pal_video(ifo_handle_t *track_ifo);
  * @param dvdread track IFO handler
  * @return video height, or 0 for unknown
  */
-int dvd_track_video_height(ifo_handle_t *track_ifo);
+int dvd_track_video_height(const ifo_handle_t *track_ifo);
 
 /**
  * Get the video width
@@ -58,7 +58,7 @@ int dvd_track_video_height(ifo_handle_t *track_ifo);
  * @param dvdread track IFO handler
  * @return video width, or 0 for unknown
  */
-int dvd_track_video_width(ifo_handle_t *track_ifo);
+int dvd_track_video_width(const ifo_handle_t *track_ifo);
 
 /**
  * Check for letterbox video
@@ -66,4 +66,4 @@ int dvd_track_video_width(ifo_handle_t *track_ifo);
  * @param dvdread track IFO handler
  * @return boolean
  */
-bool dvd_track_letterbox_video(ifo_handle_t *track_ifo);
+bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo);

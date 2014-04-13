@@ -2,7 +2,7 @@
  * Functions used to get information about a DVD track
  */
 
-int dvd_track_mpeg_version(ifo_handle_t *track_ifo) {
+int dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
 
 	int version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
 
@@ -15,7 +15,7 @@ int dvd_track_mpeg_version(ifo_handle_t *track_ifo) {
 
 }
 
-bool dvd_track_mpeg1(ifo_handle_t *track_ifo) {
+bool dvd_track_mpeg1(const ifo_handle_t *track_ifo) {
 
 	int version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
 
@@ -26,7 +26,7 @@ bool dvd_track_mpeg1(ifo_handle_t *track_ifo) {
 
 }
 
-bool dvd_track_mpeg2(ifo_handle_t *track_ifo) {
+bool dvd_track_mpeg2(const ifo_handle_t *track_ifo) {
 
 	int version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
 
@@ -37,7 +37,7 @@ bool dvd_track_mpeg2(ifo_handle_t *track_ifo) {
 
 }
 
-bool dvd_track_ntsc_video(ifo_handle_t *track_ifo) {
+bool dvd_track_ntsc_video(const ifo_handle_t *track_ifo) {
 
 	int format = track_ifo->vtsi_mat->vts_video_attr.video_format;
 
@@ -48,7 +48,7 @@ bool dvd_track_ntsc_video(ifo_handle_t *track_ifo) {
 
 }
 
-bool dvd_track_pal_video(ifo_handle_t *track_ifo) {
+bool dvd_track_pal_video(const ifo_handle_t *track_ifo) {
 
 	int format = track_ifo->vtsi_mat->vts_video_attr.video_format;
 
@@ -59,7 +59,7 @@ bool dvd_track_pal_video(ifo_handle_t *track_ifo) {
 
 }
 
-int dvd_track_video_height(ifo_handle_t *track_ifo) {
+int dvd_track_video_height(const ifo_handle_t *track_ifo) {
 
 	int video_height = 0;
 	int picture_size = track_ifo->vtsi_mat->vts_video_attr.picture_size;
@@ -106,7 +106,7 @@ int dvd_track_video_width(ifo_handle_t *track_ifo) {
 
 }
 
-bool dvd_track_letterbox_video(ifo_handle_t *track_ifo) {
+bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo) {
 
 	int letterbox = track_ifo->vtsi_mat->vts_video_attr.letterboxed;
 
