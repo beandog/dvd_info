@@ -15,6 +15,7 @@
 #include "dvd_device.h"
 #include "dvd_drive.h"
 #include "dvd_info.h"
+#include "dvd_ifo_zero.h"
 #include "dvd_track.h"
 
 /**

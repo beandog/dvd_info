@@ -5,8 +5,6 @@
  *
  */
 
-#include <stdbool.h>
-
 /**
  * Check to see if the file can actually be accessed by the user running
  * the program.  This would check to see if the file exists as well.
