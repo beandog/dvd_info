@@ -42,7 +42,7 @@
  * @retval 2 could not seek file
  * @retval 3 could not read the title
  */
-int dvd_device_title(char *device_filename, char *p) {
+int dvd_device_title(const char *device_filename, char *p) {
 
 	char dvd_title[33] = {'\0'};
 	FILE *filehandle = 0;
@@ -117,7 +117,7 @@ int dvd_device_title(char *device_filename, char *p) {
  * @param dvdread IFO handle
  * @return num tracks
  */
-int dvd_info_num_tracks(ifo_handle_t *ifo) {
+int dvd_info_num_tracks(const ifo_handle_t *ifo) {
 
 	int num_tracks;
 
@@ -133,7 +133,7 @@ int dvd_info_num_tracks(ifo_handle_t *ifo) {
  * @param dvdread IFO handle
  * @return num VTS
  */
-int dvd_info_num_vts(ifo_handle_t *ifo) {
+int dvd_info_num_vts(const ifo_handle_t *ifo) {
 
 	int num_vts;
 
@@ -167,7 +167,7 @@ int dvd_info_num_vts(ifo_handle_t *ifo) {
  * @param dvdread IFO handle
  * @param char[33] to copy string to
  */
-void dvd_info_provider_id(ifo_handle_t *ifo, char *p) {
+void dvd_info_provider_id(const ifo_handle_t *ifo, char *p) {
 
 	int n = strlen(ifo->vmgi_mat->provider_identifier);
 
@@ -188,7 +188,7 @@ void dvd_info_provider_id(ifo_handle_t *ifo, char *p) {
  * @param libdvdread IFO handle
  * @param char[13] to copy string to
  */
-void dvd_info_vmg_id(ifo_handle_t *ifo, char *p) {
+void dvd_info_vmg_id(const ifo_handle_t *ifo, char *p) {
 
 	int n = strlen(ifo->vmgi_mat->vmg_identifier);
 
@@ -213,7 +213,7 @@ void dvd_info_vmg_id(ifo_handle_t *ifo, char *p) {
  * @param libdvdread IFO handle
  * @return DVD side
  */
-int dvd_info_side(ifo_handle_t *ifo) {
+int dvd_info_side(const ifo_handle_t *ifo) {
 
 	int side = ifo->vmgi_mat->disc_side;
 
