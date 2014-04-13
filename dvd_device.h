@@ -30,7 +30,7 @@ int dvd_device_open(const char *device_filename);
  * @param DVD device file descriptor (dvd_fd)
  * @return return value, 0 if success, 1 if fail
  */
-int dvd_device_close(int dvd_fd);
+int dvd_device_close(const int dvd_fd);
 
 /**
  * Check if device is hardware (/dev/dvd, /dev/dvd1, etc.)
