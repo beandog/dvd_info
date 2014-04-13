@@ -31,7 +31,7 @@
  * @retval 3 CDS_DRIVE_NOT_READY
  * @retval 4 CDS_DISC_OK
  */
-int dvd_drive_get_status(char *device_filename);
+int dvd_drive_get_status(const char *device_filename);
 
 /**
  * Check if the DVD tray IS CLOSED and HAS A DVD
@@ -39,7 +39,7 @@ int dvd_drive_get_status(char *device_filename);
  * @param DVD device filename (/dev/dvd, /dev/bluray, etc.)
  * @return bool
  */
-bool dvd_drive_has_media(char *device_filename);
+bool dvd_drive_has_media(const char *device_filename);
 
 /**
  * Check if the DVD tray IS OPEN
@@ -47,7 +47,7 @@ bool dvd_drive_has_media(char *device_filename);
  * @param DVD device filename (/dev/dvd, /dev/bluray, etc.)
  * @return bool
  */
-bool dvd_drive_is_open(char *device_filename);
+bool dvd_drive_is_open(const char *device_filename);
 
 /**
  * Check if the DVD tray IS CLOSED
@@ -55,7 +55,7 @@ bool dvd_drive_is_open(char *device_filename);
  * @param DVD device filename (/dev/dvd, /dev/bluray, etc.)
  * @return bool
  */
-bool dvd_drive_is_closed(char *device_filename);
+bool dvd_drive_is_closed(const char *device_filename);
 
 /**
  * Check if the DVD tray IS READY TO QUERY FOR STATUS
@@ -70,11 +70,11 @@ bool dvd_drive_is_closed(char *device_filename);
  * @param DVD device filename (/dev/dvd, /dev/bluray, etc.)
  * @return bool
  */
-bool dvd_drive_is_ready(char *device_filename);
+bool dvd_drive_is_ready(const char *device_filename);
 
 /**
  * Human-friendly print-out of the dvd drive status
  *
  * @param DVD device filename (/dev/dvd, /dev/bluray, etc.)
  */
-void dvd_drive_display_status(char *device_filename);
+void dvd_drive_display_status(const char *device_filename);
