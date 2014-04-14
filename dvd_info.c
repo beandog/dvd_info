@@ -18,6 +18,8 @@
 #include "dvd_ifo_zero.h"
 #include "dvd_track.h"
 
+#define DEFAULT_DVD_DEVICE "/dev/dvd"
+
 /**
  * Output on 'dvd_info -h'
  */
@@ -88,7 +90,7 @@ int main(int argc, char **argv) {
 
 	// Default to '/dev/dvd' by default
 	// FIXME check to see if the filename exists, and if not, poll /dev/sr0 instead
-	char* device_filename = "/dev/dvd";
+	char* device_filename = DEFAULT_DVD_DEVICE;
 
 	/** Begin GNU getopt_long **/
 	// Specific variables to getopt_long
