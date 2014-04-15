@@ -538,6 +538,8 @@ int main(int argc, char **argv) {
 		} else if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 3) {
 			video_width = 352;
 			video_height = video_height / 2;
+		} else {
+			valid_video_width = false;
 		}
 
 		// Letterbox
