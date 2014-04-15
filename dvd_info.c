@@ -540,6 +540,8 @@ int main(int argc, char **argv) {
 			video_height = video_height / 2;
 		} else {
 			valid_video_width = false;
+			fprintf(stderr, "Invalid video width: %i\n", track_ifo->vtsi_mat->vts_video_attr.picture_size);
+			return 1;
 		}
 
 		// Letterbox
