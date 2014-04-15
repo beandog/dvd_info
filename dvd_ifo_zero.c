@@ -62,7 +62,7 @@ int dvd_device_title(const char *device_filename, char *p) {
 
 	char dvd_title[33] = {'\0'};
 	FILE *filehandle = 0;
-	int x, y, z;
+	int x, y;
 
 	// If we can't even open the device, exit quietly
 	filehandle = fopen(device_filename, "r");
