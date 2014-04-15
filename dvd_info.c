@@ -524,6 +524,8 @@ int main(int argc, char **argv) {
 		else {
 			aspect_ratio = "Unknown";
 			valid_aspect_ratio = false;
+			fprintf(stderr, "Unknown aspect ratio: %i, expected 0 or 3\n", track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio);
+			return 1;
 		}
 
 		// Video width
