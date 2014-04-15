@@ -123,9 +123,6 @@ int main(int argc, char **argv) {
 	// Not enabled by an argument, set manually
 	bool display_track = false;
 
-	// Retain argument passed for track
-	char *track_number_optarg;
-
 	struct option long_options[] = {
 
 		// Entries with both a name and a value, will take either the
