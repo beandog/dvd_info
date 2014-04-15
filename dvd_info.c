@@ -305,7 +305,7 @@ int main(int argc, char **argv) {
 
 	// begin libdvdnav usage
 	dvdnav_t *dvdnav_dvd;
-	dvdnav_status_t *dvdnav_status;
+	// dvdnav_status_t *dvdnav_status;
 	int dvdnav_ret;
 	dvdnav_ret = dvdnav_open(&dvdnav_dvd, device_filename);
 
