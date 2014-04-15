@@ -18,9 +18,7 @@ int main(int argc, char **argv) {
 
 	int cdrom;
 	int drive_status;
-	int disc_status;
 	char* dvd_device;
-	char* status;
 	char title[33];
 	FILE* filehandle = 0;
 	int x, y, z;
