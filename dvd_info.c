@@ -183,13 +183,8 @@ int main(int argc, char **argv) {
 				break;
 
 			case 't':
-				if(atoi(optarg) < 1 || atoi(optarg) > 99) {
-					fprintf(stderr, "Track number must be between 1 and 99\n");
-					valid_args = false;
-				} else {
-					track_number = atoi(optarg);
-					display_track = true;
-				}
+				track_number = atoi(optarg);
+				display_track = true;
 				break;
 
 			case 'v':
@@ -319,6 +314,12 @@ int main(int argc, char **argv) {
 
 	// Get the total number of title tracks on the DVD
 	num_title_tracks = ifo_zero->tt_srpt->nr_of_srpts;
+
+	// Exit if track number requested does not exist
+	if(display_track && (track_number > num_title_tracks)) {
+		fprintf(stderr, "Invalid track number %d.  Max number of title tracks is %d\n", track_number, num_title_tracks);
+		return 1;
+	}
 
 	// --id
 	// Display DVDDiscID from libdvdread
