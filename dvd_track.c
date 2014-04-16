@@ -2,6 +2,11 @@
  * Functions used to get information about a DVD track
  */
 
+#include <string.h>
+#include <stdbool.h>
+#include "dvdread/ifo_types.h"
+#include "dvdread/ifo_read.h"
+
 int dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
 
 	int version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
@@ -136,11 +141,10 @@ int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
 
 int dvd_track_msec(dvd_time_t *dvd_time) {
 
-	int framerates[4];
+	int framerates[4] = {0, 2500, 0, 2997};
 	int framerate;
 	int msec;
 
-	framerates[] = {0, 2500, 0, 2997};
 	framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
 	msec = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
 	msec += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
