@@ -13,6 +13,7 @@
 #include <dvdread/ifo_read.h>
 #include <dvdnav/dvdnav.h>
 #include "dvd_ifo_zero.h"
+#include "dvdread/ifo_print.h"
 
 /**
  * Functions used to get basic DVD data:

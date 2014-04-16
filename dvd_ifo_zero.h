@@ -9,8 +9,6 @@
  * - # VMG ID
  */
 
-#include "dvdread/ifo_print.h"
-
 /**
  * Get the DVD title, which maxes out at a 32-character string.
  * All DVDs should have one.
