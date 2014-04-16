@@ -61,12 +61,12 @@ int main(int argc, char **argv) {
 
 	int cdrom;
 	int drive_status;
-	char* device_filename;
+	char *device_filename;
 	char default_dvd_device[] = DEFAULT_DVD_DEVICE;
 	char primary_fallback_device[] = PRIMARY_FALLBACK_DEVICE;
 	char secondary_fallback_device[] = SECONDARY_FALLBACK_DEVICE;
 	bool using_fallback_device = false;
-	char* status;
+	char *status;
 
 	// Check if device exists
 	if(argc == 1) {
