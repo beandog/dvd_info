@@ -318,7 +318,8 @@ int main(int argc, char **argv) {
 
 	// Exit if track number requested does not exist
 	if(display_track && (track_number > num_title_tracks)) {
-		fprintf(stderr, "Invalid track number %d.  Max number of title tracks is %d\n", track_number, num_title_tracks);
+		fprintf(stderr, "Invalid track number %d\n", track_number);
+		fprintf(stderr, "Valid track numbers: 1 to %d\n", num_title_tracks);
 		return 1;
 	}
 
