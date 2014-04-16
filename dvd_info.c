@@ -335,8 +335,10 @@ int main(int argc, char **argv) {
 
 	}
 
-
-	// Quit if track number is invalid
+	// Warn if track number is higher than amount expected
+	// libdvdread might throw this as a warning if accessing the
+	// highest track number:
+	// libdvdread: No VTS_TMAPT available - skipping.
 	if(display_track && (track_number > max_tracks)) {
 		fprintf(stderr, "WARNING: Track number %i is possibly invalid, calculating max number of tracks %i exist\n", track_number, max_tracks);
 	}
