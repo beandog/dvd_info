@@ -67,3 +67,13 @@ int dvd_track_video_width(const ifo_handle_t *track_ifo);
  * @return boolean
  */
 bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo);
+
+/**
+ * Get the number of miliseconds for a track's playback time
+ *
+ * Same function as used in MPlayer and lsdvd
+ *
+ * @param dvdread dvd_time struct
+ * @return miliseconds
+ */
+int dvd_track_msec(dvd_time_t *dvd_time);

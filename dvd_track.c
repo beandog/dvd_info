@@ -133,3 +133,22 @@ int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
 	return 0;
 
 }
+
+int dvd_track_msec(dvd_time_t *dvd_time) {
+
+	int framerates[4];
+	int framerate;
+	int msec;
+
+	framerates[] = {0, 2500, 0, 2997};
+	framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
+	msec = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
+	msec += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
+	msec += (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f)) * 1000;
+
+	if(framerate > 0)
+		msec += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
+
+	return msec;
+
+}
