@@ -1,9 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <linux/cdrom.h>
+
+#define DEFAULT_DVD_DEVICE "/dev/dvd"
+#define PRIMARY_FALLBACK_DEVICE "/dev/sr0"
+#define SECONDARY_FALLBACK_DEVICE "/dev/cdrom"
 
 /**
  * From linux/cdrom.h:
@@ -31,26 +36,56 @@
  * 4 - drive ready (closed, has media)
  * 5 - device exists, but is NOT a DVD drive
  * 6 - cannot access device
+ * 7 - cannot find a device
  *
  * - Returns an exit code similar to CDROM_DRIVE_STATUS in cdrom.h
  */
+
+bool device_access(const char *device_filename) {
+
+	int a;
+	bool success;
+
+	a = access(device_filename, F_OK);
+
+	if(device_access)
+		success = true;
+	else
+		success = false;
+
+	return success;
+
+}
+
 int main(int argc, char **argv) {
 
 	int cdrom;
 	int drive_status;
 	char* device_filename;
+	char default_dvd_device[] = DEFAULT_DVD_DEVICE;
+	char primary_fallback_device[] = PRIMARY_FALLBACK_DEVICE;
+	char secondary_fallback_device[] = SECONDARY_FALLBACK_DEVICE;
 	char* status;
 
-	// Use '/dev/dvd' by default
-	if(argc == 1)
-		device_filename = "/dev/dvd";
-	else
-		device_filename = argv[1];
-
 	// Check if device exists
-	if(access(device_filename, F_OK) != 0) {
-		fprintf(stderr, "cannot access %s\n", device_filename);
-		return 6;
+	if(argc == 1) {
+		device_filename = argv[1];
+		if(!device_access(device_filename)) {
+			fprintf(stderr, "Cannot access %s\n", device_filename);
+			return 6;
+		}
+	} else {
+		if(device_access(default_dvd_device)) {
+			device_filename = default_dvd_device;
+		} else if(device_access(primary_fallback_device)) {
+			device_filename = primary_fallback_device;
+		} else if(device_access(secondary_fallback_device)) {
+			device_filename = secondary_fallback_device;
+		} else {
+			fprintf(stderr, "Could not guess your DVD device\n");
+			fprintf(stderr, "Attempted opening %s, %s and %s with no luck\n", DEFAULT_DVD_DEVICE, PRIMARY_FALLBACK_DEVICE, SECONDARY_FALLBACK_DEVICE);
+			return 7;
+		}
 	}
 
 	// Try opening device
@@ -72,16 +107,16 @@ int main(int argc, char **argv) {
 
 	switch(drive_status) {
 		case CDS_NO_DISC:
-			status = "no disc";
+			status = "drive closed with no disc";
 			break;
 		case CDS_TRAY_OPEN:
-			status = "tray open";
+			status = "drive open";
 			break;
 		case CDS_DRIVE_NOT_READY:
 			status = "drive not ready";
 			break;
 		case CDS_DISC_OK:
-			status = "drive ready";
+			status = "drive closed with disc";
 			break;
 		default:
 			status = "unknown";
