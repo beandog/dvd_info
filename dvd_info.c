@@ -67,6 +67,9 @@ int main(int argc, char **argv) {
 	// DVD track number -- default to 0, which basically means, ignore me.
 	unsigned int track_number = 0;
 
+	// Total number of DVD tracks, titles
+	int num_tracks, num_titles, max_tracks = 1;
+
 	// Do a check to see if the DVD filename given is hardware ('/dev/foo')
 	bool is_hardware = false;
 	// Or if it's an image file, filename (ISO, UDF, etc.)
@@ -312,6 +315,30 @@ int main(int argc, char **argv) {
 	if(!ifo_zero) {
 		fprintf(stderr, "dvd_info: opening IFO zero failed\n");
 		return 1;
+	}
+
+	// Get the total number of tracks on the DVD
+	num_tracks = ifo_zero->tt_srpt->nr_of_srpts;
+	// and titles
+	num_titles = ifo_zero->vmgi_mat->vmg_nr_of_title_sets;
+
+	if(num_tracks != num_titles) {
+		fprintf(stderr, "WARNING: nr_of_srpts (%i) and vmg_nr_of_title_sets(%i) do not match!\n", num_tracks, num_titles);
+
+		if(num_tracks > num_titles) {
+			max_tracks = num_titles;
+		} else if (num_titles > num_tracks) {
+			max_tracks = num_tracks;
+		}
+
+		fprintf(stderr, "NOTICE: Setting maximum number of tracks to %i\n", max_tracks);
+
+	}
+
+
+	// Quit if track number is invalid
+	if(display_track && (track_number > max_tracks)) {
+		fprintf(stderr, "WARNING: Track number %i is possibly invalid, calculating max number of tracks %i exist\n", track_number, max_tracks);
 	}
 
 	// --id
