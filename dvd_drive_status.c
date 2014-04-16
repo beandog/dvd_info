@@ -48,10 +48,10 @@ bool device_access(const char *device_filename) {
 
 	a = access(device_filename, F_OK);
 
-	if(device_access)
-		success = true;
-	else
+	if(a != 0)
 		success = false;
+	else
+		success = true;
 
 	return success;
 
@@ -65,26 +65,32 @@ int main(int argc, char **argv) {
 	char default_dvd_device[] = DEFAULT_DVD_DEVICE;
 	char primary_fallback_device[] = PRIMARY_FALLBACK_DEVICE;
 	char secondary_fallback_device[] = SECONDARY_FALLBACK_DEVICE;
+	bool using_fallback_device = false;
 	char* status;
 
 	// Check if device exists
 	if(argc == 1) {
-		device_filename = argv[1];
-		if(!device_access(device_filename)) {
-			fprintf(stderr, "Cannot access %s\n", device_filename);
-			return 6;
-		}
-	} else {
 		if(device_access(default_dvd_device)) {
 			device_filename = default_dvd_device;
 		} else if(device_access(primary_fallback_device)) {
 			device_filename = primary_fallback_device;
+			using_fallback_device = true;
 		} else if(device_access(secondary_fallback_device)) {
 			device_filename = secondary_fallback_device;
+			using_fallback_device = true;
 		} else {
 			fprintf(stderr, "Could not guess your DVD device\n");
 			fprintf(stderr, "Attempted opening %s, %s and %s with no luck\n", DEFAULT_DVD_DEVICE, PRIMARY_FALLBACK_DEVICE, SECONDARY_FALLBACK_DEVICE);
 			return 7;
+		}
+		if(using_fallback_device) {
+			fprintf(stderr, "Device not specified, using %s\n", device_filename);
+		}
+	} else {
+		device_filename = argv[1];
+		if(!device_access(device_filename)) {
+			fprintf(stderr, "Cannot access %s\n", device_filename);
+			return 6;
 		}
 	}
 
