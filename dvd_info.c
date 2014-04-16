@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
 	int display_film_mode = 0;
 	int display_cc = 0;
 	int display_num_audio_streams = 0;
-	int display_num_subtitles;
+	int display_num_subtitles = 0;
 
 	// Not enabled by an argument, set manually
 	bool display_track = false;
