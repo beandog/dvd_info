@@ -55,20 +55,6 @@ void print_usage(char *binary) {
 
 }
 
-int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
-
-	char *codec;
-
-	if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
-		codec = "MPEG1";
-	else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
-		codec = "MPEG2";
-
-	strncpy(video_codec, codec, 6);
-
-	return 0;
-
-}
 
 int main(int argc, char **argv) {
 
@@ -488,11 +474,6 @@ int main(int argc, char **argv) {
 			fprintf(stderr, "dvd_info: opening IFO %i failed\n", track_number);
 			return 1;
 		}
-
-		/*
-		char video_codec[6];
-		dvd_track_video_codec(track_ifo, video_codec);
-		*/
 
 		// Video codec
 		bool valid_video_codec = true;

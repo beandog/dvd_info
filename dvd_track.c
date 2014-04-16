@@ -116,3 +116,20 @@ bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo) {
 		return true;
 
 }
+
+int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
+
+	char *codec;
+
+	if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
+		codec = "MPEG1";
+	else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
+		codec = "MPEG2";
+	else
+		codec = "";
+
+	strncpy(video_codec, codec, 6);
+
+	return 0;
+
+}
