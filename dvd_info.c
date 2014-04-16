@@ -288,14 +288,15 @@ int main(int argc, char **argv) {
 	}
 
 	// begin libdvdnav usage
+	/*
 	dvdnav_t *dvdnav_dvd;
-	// dvdnav_status_t *dvdnav_status;
 	int dvdnav_ret;
 	dvdnav_ret = dvdnav_open(&dvdnav_dvd, device_filename);
 
 	if(dvdnav_ret == DVDNAV_STATUS_ERR) {
 		printf("error opening %s with dvdnav\n", device_filename);
 	}
+	*/
 
 	// begin libdvdread usage
 
@@ -427,6 +428,7 @@ int main(int argc, char **argv) {
 
 	// --serial-id
 	// Display serial ID
+	/*
 	if(display_serial_id || display_all) {
 
 		char serial_id[17] = {'\0'};
@@ -437,6 +439,7 @@ int main(int argc, char **argv) {
 		printf("%s\n", serial_id);
 
 	}
+	*/
 
 	// --vmg-id
 	// Display VMG ID
@@ -676,6 +679,8 @@ int main(int argc, char **argv) {
 	if(dvdread_dvd)
 		DVDClose(dvdread_dvd);
 
+	/*
 	if(dvdnav_dvd)
 		dvdnav_close(dvdnav_dvd);
+	*/
 }
