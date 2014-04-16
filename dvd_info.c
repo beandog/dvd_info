@@ -37,6 +37,7 @@ void print_usage(char *binary) {
 	printf("  --serial-id 		Serial ID\n");
 	printf("  --vmg-id		VMG ID\n");
 	printf("  --side		Disc side\n");
+	printf("  --ifo-dump		Full dump of all IF0 information\n");
 	printf("\n");
 	printf("Display track info:\n");
 	printf("  --video-codec		Video codec (MPEG1 / MPEG2)\n");
@@ -109,6 +110,7 @@ int main(int argc, char **argv) {
 	int display_serial_id = 0;
 	int display_vmg_id = 0;
 	int display_side = 0;
+	int display_ifo_dump = 0;
 	int display_video_format = 0;
 	int display_video_codec = 0;
 	int display_aspect_ratio = 0;
@@ -146,6 +148,7 @@ int main(int argc, char **argv) {
 		{ "serial-id", no_argument, & display_serial_id, 1 },
 		{ "vmg-id", no_argument, & display_vmg_id, 1 },
 		{ "side", no_argument, & display_side, 1 },
+		{ "ifo-dump", no_argument, & display_ifo_dump, 1 },
 
 		// FIXME add a warning if track information is requested without
 		// specifying a track number.
@@ -463,6 +466,12 @@ int main(int argc, char **argv) {
 		printf("%i\n", ifo_zero->vmgi_mat->disc_side);
 	}
 
+	// --ifo-dump
+	// Display all the IFO information possible
+	if(display_ifo_dump && !display_track) {
+		ifo_print(dvdread_dvd, 0);
+	}
+
 	/**
 	 * Track information
 	 */
@@ -658,6 +667,12 @@ int main(int argc, char **argv) {
 			if(verbose)
 				printf("subtitles: ");
 			printf("%i\n", num_subtitles);
+		}
+
+		// --ifo-dump
+		// Display all the IFO information possible
+		if(display_ifo_dump) {
+			ifo_print(dvdread_dvd, track_number);
 		}
 
 	}
