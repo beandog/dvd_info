@@ -476,13 +476,33 @@ int main(int argc, char **argv) {
 	char *video_codec;
 	char *video_format;
 	char *aspect_ratio;
+	int title_track_idx;
+	int title_track_ifo_number;
+	int vts_ttn;
+	pgc_t *pgc;
+	pgcit_t *vts_pgcit;
 
-	if(display_track) {
+	if(display_track && track_number) {
 
-		track_ifo = ifoOpen(dvdread_dvd, track_number);
-		// FIXME do a proper exit
+		title_track_idx = track_number - 1;
+		title_track_ifo_number = ifo_zero->tt_srpt->title[title_track_idx].title_set_nr;
+		track_ifo = ifoOpen(dvdread_dvd, title_track_ifo_number);
+		vts_ttn = ifo_zero->tt_srpt->title[title_track_idx].vts_ttn;
+		vts_pgcit = track_ifo->vts_pgcit;
+		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
+
 		if(!track_ifo) {
 			fprintf(stderr, "dvd_info: opening IFO %i failed\n", track_number);
+			ifoClose(ifo_zero);
+			DVDClose(dvdread_dvd);
+			return 1;
+		}
+
+		if(!track_ifo->vtsi_mat) {
+			printf("Could not open vtsi_mat for track %d\n", track_number);
+			ifoClose(ifo_zero);
+			ifoClose(track_ifo);
+			DVDClose(dvdread_dvd);
 			return 1;
 		}
 
@@ -664,7 +684,7 @@ int main(int argc, char **argv) {
 		// --ifo-dump
 		// Display all the IFO information possible
 		if(display_ifo_dump) {
-			ifo_print(dvdread_dvd, track_number);
+			ifo_print(dvdread_dvd, title_track_ifo_number);
 		}
 
 	}
