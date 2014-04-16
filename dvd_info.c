@@ -11,6 +11,7 @@
 #include <dvdread/dvd_reader.h>
 #include <dvdread/dvd_udf.h>
 #include <dvdread/ifo_read.h>
+#include <dvdread/ifo_print.h>
 #include <dvdnav/dvdnav.h>
 #include "dvd_device.h"
 #include "dvd_drive.h"
