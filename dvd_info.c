@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
 	unsigned int track_number = 0;
 
 	// Total number of DVD tracks, titles
-	int num_tracks, num_titles, max_tracks = 1;
+	uint16_t num_title_tracks;
 
 	// Do a check to see if the DVD filename given is hardware ('/dev/foo')
 	bool is_hardware = false;
@@ -317,31 +317,8 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// Get the total number of tracks on the DVD
-	num_tracks = ifo_zero->tt_srpt->nr_of_srpts;
-	// and titles
-	num_titles = ifo_zero->vmgi_mat->vmg_nr_of_title_sets;
-
-	if(num_tracks != num_titles) {
-		fprintf(stderr, "WARNING: nr_of_srpts (%i) and vmg_nr_of_title_sets(%i) do not match!\n", num_tracks, num_titles);
-
-		if(num_tracks > num_titles) {
-			max_tracks = num_titles;
-		} else if (num_titles > num_tracks) {
-			max_tracks = num_tracks;
-		}
-
-		fprintf(stderr, "NOTICE: Setting maximum number of tracks to %i\n", max_tracks);
-
-	}
-
-	// Warn if track number is higher than amount expected
-	// libdvdread might throw this as a warning if accessing the
-	// highest track number:
-	// libdvdread: No VTS_TMAPT available - skipping.
-	if(display_track && (track_number > max_tracks)) {
-		fprintf(stderr, "WARNING: Track number %i is possibly invalid, calculating max number of tracks %i exist\n", track_number, max_tracks);
-	}
+	// Get the total number of title tracks on the DVD
+	num_title_tracks = ifo_zero->tt_srpt->nr_of_srpts;
 
 	// --id
 	// Display DVDDiscID from libdvdread
