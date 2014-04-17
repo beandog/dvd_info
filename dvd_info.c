@@ -50,6 +50,7 @@ void print_usage(char *binary) {
 	printf("  --film-mode		Film mode (film [movie], video [camera])\n");
 	printf("  --num-audio-streams	Number of audio streams\n");
 	printf("  --num-subtitles	Number of VOBSUB subtitles\n");
+	printf("  --length		Playback length in hh:mm:ss.ms\n");
 	printf("\n");
 	printf("Display subtitle info:\n");
 	printf("  --cc			Closed captioning (0 [no], 1 [yes])\n");
@@ -111,6 +112,7 @@ int main(int argc, char **argv) {
 	int display_cc = 0;
 	int display_num_audio_streams = 0;
 	int display_num_subtitles = 0;
+	int display_playback_length = 0;
 
 	// Not enabled by an argument, set manually
 	bool display_track = false;
@@ -157,6 +159,8 @@ int main(int argc, char **argv) {
 		// Subtitles
 		{ "num-subtitles", no_argument, & display_num_subtitles, 1 },
 		{ "cc", no_argument, & display_cc, 1 },
+
+		{ "length", no_argument, & display_playback_length, 1 },
 
 		{ 0, 0, 0, 0 }
 	};
@@ -680,6 +684,15 @@ int main(int argc, char **argv) {
 			if(verbose)
 				printf("subtitles: ");
 			printf("%i\n", num_subtitles);
+		}
+
+		// Title track length (HH:MM:SS.MS)
+		char title_track_length[14] = {'\0'};
+		dvd_track_str_length(&pgc->playback_time, title_track_length);
+		if(display_playback_length || display_all) {
+			if(verbose)
+				printf("length: ");
+			printf("%s\n", title_track_length);
 		}
 
 		// --ifo-dump
