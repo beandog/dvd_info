@@ -2,6 +2,7 @@
  * Functions used to get information about a DVD track
  */
 
+#include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 #include "dvdread/ifo_types.h"
@@ -139,20 +140,77 @@ int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
 
 }
 
-int dvd_track_msec(dvd_time_t *dvd_time) {
+int dvd_track_length(dvd_time_t *dvd_time) {
 
 	int framerates[4] = {0, 2500, 0, 2997};
-	int framerate;
-	int msec;
-
-	framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
-	msec = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
+	int framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
+	int msec = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
 	msec += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
 	msec += (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f)) * 1000;
 
 	if(framerate > 0)
 		msec += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
 
+
 	return msec;
+
+}
+
+
+int dvd_track_time_milliseconds(dvd_time_t *dvd_time) {
+
+	int framerates[4] = {0, 2500, 0, 2997};
+	int framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
+	int i = 0;
+
+	if(framerate > 0)
+		i += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
+
+	return i;
+}
+
+int dvd_track_time_seconds(dvd_time_t *dvd_time) {
+
+	int i = ((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f);
+
+	if(i > 59)
+		i -= 60;
+
+	return i;
+}
+
+int dvd_track_time_minutes(dvd_time_t *dvd_time) {
+
+	int i = ((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f);
+
+	if(i > 59)
+		i -= 60;
+
+	return i;
+}
+
+int dvd_track_time_hours(dvd_time_t *dvd_time) {
+
+	int i = ((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f);
+
+	if(i > 59)
+		i -= 60;
+
+	return i;
+}
+
+void dvd_track_str_length(dvd_time_t *dvd_time, char *p) {
+
+
+	int hours, minutes, seconds, milliseconds;
+
+	hours = dvd_track_time_hours(dvd_time);
+	minutes = dvd_track_time_minutes(dvd_time);
+	seconds = dvd_track_time_seconds(dvd_time);
+	milliseconds = dvd_track_time_milliseconds(dvd_time);
+
+	snprintf(p, 13, "%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
+
+	p[14] = '\0';
 
 }

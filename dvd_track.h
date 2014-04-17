@@ -76,4 +76,14 @@ bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo);
  * @param dvdread dvd_time struct
  * @return miliseconds
  */
-int dvd_track_msec(dvd_time_t *dvd_time);
+int dvd_track_length(dvd_time_t *dvd_time);
+
+int dvd_track_time_milliseconds(dvd_time_t *dvd_time);
+
+int dvd_track_time_seconds(dvd_time_t *dvd_time);
+
+int dvd_track_time_minutes(dvd_time_t *dvd_time);
+
+int dvd_track_time_hours(dvd_time_t *dvd_time);
+
+void dvd_track_str_length(dvd_time_t *dvd_time, char *p);
