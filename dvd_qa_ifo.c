@@ -5,6 +5,8 @@
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 
+#define DEFAULT_DVD_DEVICE "/dev/dvd"
+
 /**
  * Determine if an IFO is valid, by checking to see if dvdread's ifoOpen()
  * function can access it and parse the data.
@@ -59,7 +61,10 @@ int main(int argc, char **argv) {
 
 	}
 
-	if(hflag == 1 || iflag == 0 || nflag == 0) {
+	if(iflag == 0)
+		dvd_path = DEFAULT_DVD_DEVICE;
+
+	if(hflag == 1 || nflag == 0) {
 		usage();
 		return 2;
 	}
@@ -81,14 +86,12 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Could not open IFO 0\n");
 		DVDClose(dvd_reader);
 		return 4;
-	} else if(dvd_ifo_number == 0) {
-		ifoClose(dvd_ifo);
-		DVDClose(dvd_reader);
-		return 0;
 	}
 
 	dvd_title_sets = dvd_ifo->vts_atrt->nr_of_vtss;
-	ifoClose(dvd_ifo);
+
+	if(dvd_ifo_number != 0)
+		ifoClose(dvd_ifo);
 
 	if(dvd_ifo_number > dvd_title_sets) {
 		fprintf(stderr, "IFO number %i exceeds maximum number of IFOS, %i\n", dvd_ifo_number, dvd_title_sets);
@@ -100,7 +103,8 @@ int main(int argc, char **argv) {
 		return 2;
 	}
 
-	dvd_ifo = ifoOpen(dvd_reader, dvd_ifo_number);
+	if(dvd_ifo_number != 0)
+		dvd_ifo = ifoOpen(dvd_reader, dvd_ifo_number);
 
 	if(dvd_ifo) {
 		printf("pass\n");
