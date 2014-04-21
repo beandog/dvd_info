@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	num_title_sets = ifo_zero->vmgi_mat->vmg_nr_of_title_sets;
+	num_title_sets = ifo_zero->vts_atrt->nr_of_vtss;
 	ifoClose(ifo_zero);
 
 	printf("%d\n", num_title_sets);
