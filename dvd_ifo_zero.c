@@ -187,7 +187,9 @@ uint16_t dvd_info_num_vts(const ifo_handle_t *ifo) {
  */
 void dvd_info_provider_id(const ifo_handle_t *ifo, char *p) {
 
-	int n = strlen(ifo->vmgi_mat->provider_identifier);
+	unsigned long n;
+
+	n = strlen(ifo->vmgi_mat->provider_identifier);
 
 	// Copy the string only if it has characters, otherwise set the string
 	// to zero length anyway.
@@ -208,7 +210,9 @@ void dvd_info_provider_id(const ifo_handle_t *ifo, char *p) {
  */
 void dvd_info_vmg_id(const ifo_handle_t *ifo, char *p) {
 
-	int n = strlen(ifo->vmgi_mat->vmg_identifier);
+	unsigned long n;
+
+	n = strlen(ifo->vmgi_mat->vmg_identifier);
 
 	// Copy the string only if it has characters, otherwise set the string
 	// to zero length anyway.
@@ -263,9 +267,11 @@ uint8_t dvd_info_side(const ifo_handle_t *ifo) {
 void dvd_info_serial_id(dvdnav_t *dvdnav, char *p) {
 
 	const char *serial_id;
+	unsigned long n;
+
 	dvdnav_get_serial_string(dvdnav, &serial_id);
 
-	int n = strlen(serial_id);
+	n = strlen(serial_id);
 	if(n > 0)
 		strncpy(p, serial_id, 16);
 	else
