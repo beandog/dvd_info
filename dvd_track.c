@@ -9,6 +9,8 @@
 #include "dvdread/ifo_read.h"
 #include "dvd_track.h"
 
+int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec);
+
 int dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
 
 	int version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
