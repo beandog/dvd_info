@@ -477,7 +477,7 @@ int main(int argc, char **argv) {
 	/**
 	 * Track information
 	 */
-	ifo_handle_t *track_ifo;
+	ifo_handle_t *track_ifo = NULL;
 	char *video_codec;
 	char *video_format;
 	char *aspect_ratio;
