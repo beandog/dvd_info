@@ -334,6 +334,7 @@ int main(int argc, char **argv) {
 
 		int dvd_disc_id;
 		unsigned char tmp_buf[16];
+		unsigned long x = 0;
 
 		dvd_disc_id = DVDDiscID(dvdread_dvd, tmp_buf);
 
@@ -344,7 +345,7 @@ int main(int argc, char **argv) {
 			if(verbose)
 				printf("disc_id: ");
 
-			for(int x = 0; x < sizeof(tmp_buf); x++) {
+			for(x = 0; x < sizeof(tmp_buf); x++) {
 				printf("%02x", tmp_buf[x]);
 			}
 			printf("\n");
