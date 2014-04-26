@@ -25,7 +25,7 @@
  * Should be used by internal functions to get drive status, and then set
  * booleans based on the return value.
  *
- * @param DVD device filename (/dev/dvd, /dev/bluray, etc.)
+ * @param device_filename DVD device filename (/dev/dvd, /dev/bluray, etc.)
  * @retval 1 CDS_NO_DISC
  * @retval 2 CDS_TRAY_OPEN
  * @retval 3 CDS_DRIVE_NOT_READY
@@ -36,7 +36,7 @@ int dvd_drive_get_status(const char *device_filename);
 /**
  * Check if the DVD tray IS CLOSED and HAS A DVD
  *
- * @param DVD device filename (/dev/dvd, /dev/bluray, etc.)
+ * @param device_filename DVD device filename (/dev/dvd, /dev/bluray, etc.)
  * @return bool
  */
 bool dvd_drive_has_media(const char *device_filename);
@@ -44,7 +44,7 @@ bool dvd_drive_has_media(const char *device_filename);
 /**
  * Check if the DVD tray IS OPEN
  *
- * @param DVD device filename (/dev/dvd, /dev/bluray, etc.)
+ * @param device_filename DVD device filename (/dev/dvd, /dev/bluray, etc.)
  * @return bool
  */
 bool dvd_drive_is_open(const char *device_filename);
@@ -52,7 +52,7 @@ bool dvd_drive_is_open(const char *device_filename);
 /**
  * Check if the DVD tray IS CLOSED
  *
- * @param DVD device filename (/dev/dvd, /dev/bluray, etc.)
+ * @param device_filename DVD device filename (/dev/dvd, /dev/bluray, etc.)
  * @return bool
  */
 bool dvd_drive_is_closed(const char *device_filename);
@@ -67,7 +67,7 @@ bool dvd_drive_is_closed(const char *device_filename);
  * being opened or closed, and it hasn't finished initilization.  Once this
  * returns true, everything else has the green light to go.
  *
- * @param DVD device filename (/dev/dvd, /dev/bluray, etc.)
+ * @param device_filename DVD device filename (/dev/dvd, /dev/bluray, etc.)
  * @return bool
  */
 bool dvd_drive_is_ready(const char *device_filename);
@@ -75,6 +75,6 @@ bool dvd_drive_is_ready(const char *device_filename);
 /**
  * Human-friendly print-out of the dvd drive status
  *
- * @param DVD device filename (/dev/dvd, /dev/bluray, etc.)
+ * @param device_filename DVD device filename (/dev/dvd, /dev/bluray, etc.)
  */
 void dvd_drive_display_status(const char *device_filename);

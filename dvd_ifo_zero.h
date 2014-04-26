@@ -35,8 +35,8 @@
  *
  * This whole function is mostly lifted from lsdvd.
  *
- * @param device filename
- * @param char[33] to copy string to
+ * @param device_filename device filename
+ * @param p char[33] to copy string to
  * @retval 0 success
  * @retval 1 could not open device
  * @retval 2 could not seek file
@@ -70,7 +70,7 @@ int dvd_device_title(const char *device_filename, char *p);
  * The Black Cauldron (Walt Disney): 99
  * Searching For Bobby Fischer: 4
  *
- * @param dvdread IFO handle
+ * @param ifo dvdread IFO handle
  * @return num tracks
  */
 uint16_t dvd_info_num_tracks(const ifo_handle_t *ifo);
@@ -78,7 +78,7 @@ uint16_t dvd_info_num_tracks(const ifo_handle_t *ifo);
 /**
  * Get the number of VTS on a DVD
  *
- * @param dvdread IFO handle
+ * @param ifo dvdread IFO handle
  * @return num VTS
  */
 uint16_t dvd_info_num_vts(const ifo_handle_t *ifo);
@@ -105,8 +105,8 @@ uint16_t dvd_info_num_vts(const ifo_handle_t *ifo);
  *
  * These should *not* be considered as unique identifiers for discs.
  *
- * @param dvdread IFO handle
- * @param char[33] to copy string to
+ * @param ifo dvdread IFO handle
+ * @param p char[33] to copy string to
  */
 void dvd_info_provider_id(const ifo_handle_t *ifo, char *p);
 
@@ -115,8 +115,8 @@ void dvd_info_provider_id(const ifo_handle_t *ifo, char *p);
  * It's entirely possible, and common, that the string is blank.  If it's not
  * blank, it is probably 'DVDVIDEO-VMG'.
  *
- * @param libdvdread IFO handle
- * @param char[13] to copy string to
+ * @param ifo libdvdread IFO handle
+ * @param p char[13] to copy string to
  */
 void dvd_info_vmg_id(const ifo_handle_t *ifo, char *p);
 
@@ -129,7 +129,7 @@ void dvd_info_vmg_id(const ifo_handle_t *ifo, char *p);
  * I haven't ever checked this before, so I don't know what DVDs are authored
  * with.  I'm going to simply return 2 if it's set to that, and a 1 otherwise.
  *
- * @param libdvdread IFO handle
+ * @param ifo libdvdread IFO handle
  * @return DVD side
  */
 uint8_t dvd_info_side(const ifo_handle_t *ifo);
@@ -148,8 +148,8 @@ uint8_t dvd_info_side(const ifo_handle_t *ifo);
  * I would recommend *not* using these as unique identifiers -- mostly because
  * I don't know how they are generated.
  *
- * @param dvdnav_t
- * @param char[17] to copy the string to
+ * @param dvdnav dvdnav_t
+ * @param p char[17] to copy the string to
  * @return success
  */
 void dvd_info_serial_id(dvdnav_t *dvdnav, char *p);
