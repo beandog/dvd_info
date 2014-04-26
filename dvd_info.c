@@ -523,7 +523,7 @@ int main(int argc, char **argv) {
 		}
 
 		// Video format and height
-		unsigned int video_height;
+		unsigned int video_height = 0;
 		bool valid_video_format = true;
 		bool valid_video_height = true;
 		if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0) {
@@ -562,7 +562,8 @@ int main(int argc, char **argv) {
 			video_width = 352;
 		} else if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 3) {
 			video_width = 352;
-			video_height = video_height / 2;
+			if(video_height)
+				video_height = video_height / 2;
 		} else {
 			valid_video_width = false;
 			fprintf(stderr, "Invalid video width: %i\n", track_ifo->vtsi_mat->vts_video_attr.picture_size);
