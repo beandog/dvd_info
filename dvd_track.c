@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include "dvdread/ifo_types.h"
 #include "dvdread/ifo_read.h"
+#include "dvd_track.h"
 
 int dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
 
@@ -82,7 +83,7 @@ int dvd_track_video_height(const ifo_handle_t *track_ifo) {
 
 }
 
-int dvd_track_video_width(ifo_handle_t *track_ifo) {
+int dvd_track_video_width(const ifo_handle_t *track_ifo) {
 
 	int video_width = 0;
 	int picture_size = track_ifo->vtsi_mat->vts_video_attr.picture_size;
