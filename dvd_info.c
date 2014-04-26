@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 	int drive_status;
 
 	// DVD track number -- default to 0, which basically means, ignore me.
-	unsigned int track_number = 0;
+	int track_number = 0;
 
 	// Total number of DVD tracks, titles
 	uint16_t num_title_tracks;
@@ -322,9 +322,9 @@ int main(int argc, char **argv) {
 	num_title_tracks = ifo_zero->tt_srpt->nr_of_srpts;
 
 	// Exit if track number requested does not exist
-	if(display_track && (track_number > num_title_tracks)) {
+	if(display_track && (track_number > num_title_tracks || track_number < 1)) {
 		fprintf(stderr, "Invalid track number %d\n", track_number);
-		fprintf(stderr, "Valid track numbers: 1 to %d\n", num_title_tracks);
+		fprintf(stderr, "Valid track numbers: 0 to %d\n", num_title_tracks);
 		return 1;
 	}
 
