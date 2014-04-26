@@ -261,7 +261,7 @@ int main(int argc, char **argv) {
 		if(!dvd_drive_has_media(device_filename)) {
 
 			// sleep for one second
-			int sleepy_time = 1000000;
+			__useconds_t sleepy_time = 1000000;
 			// how many naps I have taken
 			int num_naps = 0;
 			// when to stop napping (60 seconds)
