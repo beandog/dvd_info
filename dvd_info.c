@@ -483,8 +483,8 @@ int main(int argc, char **argv) {
 	char *video_format;
 	char *aspect_ratio;
 	int title_track_idx;
-	int title_track_ifo_number;
-	int vts_ttn;
+	uint8_t title_track_ifo_number;
+	uint8_t vts_ttn;
 	pgc_t *pgc;
 	pgcit_t *vts_pgcit;
 
