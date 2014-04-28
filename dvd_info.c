@@ -596,11 +596,11 @@ int main(int argc, char **argv) {
 		}
 
 		// Audio streams
-		int num_audio_streams;
+		uint8_t num_audio_streams;
 		num_audio_streams = track_ifo->vtsi_mat->nr_of_vts_audio_streams;
 
 		// Subtitles
-		int num_subtitles;
+		uint8_t num_subtitles;
 		num_subtitles = track_ifo->vtsi_mat->nr_of_vts_subp_streams;
 
 		// --video-codec
