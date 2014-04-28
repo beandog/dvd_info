@@ -4,6 +4,8 @@
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 
+void usage(void);
+
 void usage() {
 	fprintf(stderr, "Usage: dvd_num_ifos [dvd path]\n");
 }
