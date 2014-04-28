@@ -15,11 +15,12 @@
 #include <dvdnav/dvdnav.h>
 #include "dvd_device.h"
 #include "dvd_drive.h"
-#include "dvd_info.h"
 #include "dvd_ifo_zero.h"
 #include "dvd_track.h"
 
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
+
+void print_usage(char *binary);
 
 /**
  * Output on 'dvd_info -h'
@@ -56,7 +57,6 @@ void print_usage(char *binary) {
 	printf("  --cc			Closed captioning (0 [no], 1 [yes])\n");
 
 }
-
 
 int main(int argc, char **argv) {
 
