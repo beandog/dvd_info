@@ -40,6 +40,9 @@
  *
  * - Returns an exit code similar to CDROM_DRIVE_STATUS in cdrom.h
  */
+bool device_access(const char *device_filename);
+
+int main(int argc, char **argv);
 
 bool device_access(const char *device_filename) {
 
