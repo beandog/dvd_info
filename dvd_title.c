@@ -21,7 +21,9 @@ int main(int argc, char **argv) {
 	char* dvd_device;
 	char title[33];
 	FILE* filehandle = 0;
-	int x, y, z;
+	int y;
+	unsigned long x;
+	unsigned long z;
 
 	if(argc == 1)
 		dvd_device = "/dev/dvd";
