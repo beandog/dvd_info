@@ -333,7 +333,7 @@ int main(int argc, char **argv) {
 	if(display_id || display_all) {
 
 		int dvd_disc_id;
-		unsigned char tmp_buf[16];
+		unsigned char tmp_buf[16] = {'\0'};
 		unsigned long x = 0;
 
 		dvd_disc_id = DVDDiscID(dvdread_dvd, tmp_buf);
