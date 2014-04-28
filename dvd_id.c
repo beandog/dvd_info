@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
 	int device_is_dvd_drive = 1;
 	char* device_filename;
 	char* status;
+	unsigned long x;
 
 	if(argc == 1)
 		device_filename = "/dev/dvd";
@@ -79,7 +80,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	for(int x = 0; x < sizeof(tmp_buf); x++) {
+	for(x = 0; x < sizeof(tmp_buf); x++) {
 		printf("%02x", tmp_buf[x]);
 	}
 	printf("\n");
