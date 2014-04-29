@@ -16,19 +16,6 @@
 
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
 
-void print_usage(char *binary);
-
-/**
- * Output on 'dvd_info -h'
- */
-void print_usage(char *binary) {
-
-	printf("Usage %s [options] [dvd path]\n", binary);
-	printf("\n");
-
-}
-
-
 int main(int argc, char **argv) {
 
 	int dvd_fd;
@@ -40,8 +27,8 @@ int main(int argc, char **argv) {
 	char *device_filename = DEFAULT_DVD_DEVICE;
 	dvd_reader_t *dvdread_dvd;
 	ifo_handle_t *ifo;
-	dvd_file_t *dvd_file;
-	ssize_t dvd_filesize;
+	dvd_file_t *dvdread_ifo_file;
+	ssize_t ifo_filesize;
 	unsigned char *buffer = NULL;
 	ssize_t bytes_read;
 	ssize_t ifo_bytes_written;
@@ -78,16 +65,12 @@ int main(int argc, char **argv) {
 	}
 
 	if(is_hardware) {
-
 		if(!dvd_drive_has_media(device_filename)) {
-
 			// FIXME send to stderr
 			printf("drive status: ");
 			dvd_drive_display_status(device_filename);
 			return 1;
-
 		}
-
 	}
 
 	printf("[DVD]\n");
@@ -110,10 +93,11 @@ int main(int argc, char **argv) {
 
 	num_ifos = ifo->vts_atrt->nr_of_vtss;
 
-	printf("* %d IFOS present\n", num_ifos);
+	printf("* %d title IFOs present\n", num_ifos);
 
 	if(num_ifos < 1) {
-		printf("* DVD has no IFOS?!\n");
+		printf("* DVD has no title IFOs?!\n");
+		printf("* Most likely a bug in libdvdread or a bad master or problems reading the disc\n");
 		ifoClose(ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -122,9 +106,8 @@ int main(int argc, char **argv) {
 	if(ifo)
 		ifoClose(ifo);
 
-	// Testing - Open IFO directly
+	// Open IFO directly
 	// See DVDCopyIfoBup() in dvdbackup.c for reference
-
 	for (ifo_number = 0; ifo_number < num_ifos + 1; ifo_number++) {
 
 		printf("[IFO]\n");
@@ -138,21 +121,21 @@ int main(int argc, char **argv) {
 			return 1;
 		}
 
-		dvd_file = DVDOpenFile(dvdread_dvd, ifo_number, DVD_READ_INFO_FILE);
+		dvdread_ifo_file = DVDOpenFile(dvdread_dvd, ifo_number, DVD_READ_INFO_FILE);
 
-		if(dvd_file == 0) {
+		if(dvdread_ifo_file == 0) {
 			printf("* Could not open IFO %d\n", ifo_number);
 			ifoClose(ifo);
 			DVDClose(dvdread_dvd);
 			return 1;
 		}
 
-		dvd_filesize = DVDFileSize(dvd_file) * DVD_VIDEO_LB_LEN;
-		printf("* Block filesize: %ld\n", dvd_filesize);
+		ifo_filesize = DVDFileSize(dvdread_ifo_file) * DVD_VIDEO_LB_LEN;
+		printf("* Block filesize: %ld\n", ifo_filesize);
 
 		// Allocate enough memory for the buffer, *now that we know the filesize*
 		// printf("* Allocating buffer\n");
-		buffer = (unsigned char *)malloc((unsigned long)dvd_filesize * sizeof(unsigned char));
+		buffer = (unsigned char *)malloc((unsigned long)ifo_filesize * sizeof(unsigned char));
 
 		if(buffer == NULL) {
 			printf("* Could not allocate memory for buffer\n");
@@ -166,14 +149,13 @@ int main(int argc, char **argv) {
 
 		// Need to check to make sure it could read the right size
 		printf("* Reading DVD bytes\n");
-		bytes_read = DVDReadBytes(ifo->file, buffer, (size_t)dvd_filesize);
-		if(bytes_read != dvd_filesize) {
-			printf(" * Bytes read and IFO filesize do not match: %ld, %ld\n", bytes_read, dvd_filesize);
+		bytes_read = DVDReadBytes(ifo->file, buffer, (size_t)ifo_filesize);
+		if(bytes_read != ifo_filesize) {
+			printf(" * Bytes read and IFO filesize do not match: %ld, %ld\n", bytes_read, ifo_filesize);
 			ifoClose(ifo);
 			DVDClose(dvdread_dvd);
 			return 1;
 		}
-
 
 		// TODO
 		// * Create VIDEO_TS file if it does not exist
@@ -211,16 +193,16 @@ int main(int argc, char **argv) {
 		}
 
 		printf("* Writing to %s\n", ifo_filename);
-		ifo_bytes_written = write(streamout_ifo, buffer, (size_t)dvd_filesize);
+		ifo_bytes_written = write(streamout_ifo, buffer, (size_t)ifo_filesize);
 		printf("* Writing to %s\n", bup_filename);
-		bup_bytes_written = write(streamout_bup, buffer, (size_t)dvd_filesize);
+		bup_bytes_written = write(streamout_bup, buffer, (size_t)ifo_filesize);
 
 		// Check that source size and target sizes match
-		if((ifo_bytes_written != dvd_filesize) || (bup_bytes_written != dvd_filesize) || (ifo_bytes_written != bup_bytes_written)) {
-			if(ifo_bytes_written != dvd_filesize)
-				printf("* IFO num bytes written and IFO filesize do not match: %ld, %ld\n", ifo_bytes_written, dvd_filesize);
-			if(bup_bytes_written != dvd_filesize)
-				printf("* BUP num bytes written and BUP filesize do not match: %ld, %ld\n", bup_bytes_written, dvd_filesize);
+		if((ifo_bytes_written != ifo_filesize) || (bup_bytes_written != ifo_filesize) || (ifo_bytes_written != bup_bytes_written)) {
+			if(ifo_bytes_written != ifo_filesize)
+				printf("* IFO num bytes written and IFO filesize do not match: %ld, %ld\n", ifo_bytes_written, ifo_filesize);
+			if(bup_bytes_written != ifo_filesize)
+				printf("* BUP num bytes written and BUP filesize do not match: %ld, %ld\n", bup_bytes_written, ifo_filesize);
 			if(ifo_bytes_written != bup_bytes_written)
 				printf("* IFO num bytes written and BUP num bytes written do not match: %ld, %ld\n", ifo_bytes_written, bup_bytes_written);
 			free(buffer);
@@ -232,7 +214,6 @@ int main(int argc, char **argv) {
 		}
 
 		// TODO: Check if the IFO and BUP file contents are exactly the same
-
 		free(buffer);
 		close(streamout_ifo);
 		close(streamout_bup);
