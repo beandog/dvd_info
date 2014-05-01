@@ -748,12 +748,18 @@ int main(int argc, char **argv) {
 
 		char lang_code[3] = {'\0'};
 		char audio_codec[5] = {'\0'};
+		int audio_channels = 0;
+		int audio_stream_id;
 		// audio_attr_t *audio_attr;
 		for(int i = 0; i < num_audio_streams; i++) {
 			dvd_track_audio_lang_code(track_ifo, i, lang_code);
 			printf("%s\n", lang_code);
 			dvd_track_audio_codec(track_ifo, i, audio_codec);
 			printf("%s\n", audio_codec);
+			audio_channels = dvd_track_audio_num_channels(track_ifo, i);
+			printf("%i\n", audio_channels);
+			audio_stream_id = dvd_track_audio_stream_id(track_ifo, i);
+			printf("%i\n", audio_stream_id);
 		}
 
 		// --ifo-dump
