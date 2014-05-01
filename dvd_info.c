@@ -17,6 +17,7 @@
 #include "dvd_drive.h"
 #include "dvd_ifo_zero.h"
 #include "dvd_track.h"
+#include "dvd_track_audio.h"
 
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
 
@@ -718,13 +719,6 @@ int main(int argc, char **argv) {
 		}
 		*/
 
-		// --num-audio-streams
-		// Display number of audio streams
-		if(display_num_audio_streams || display_all) {
-			if(verbose)
-				printf("* Audio Streams: ");
-			printf("%i\n", num_audio_streams);
-		}
 
 		// --num-subtitles
 		// Display number of subtitles
@@ -740,6 +734,25 @@ int main(int argc, char **argv) {
 			if(verbose)
 				printf("* Length: ");
 			printf("%s\n", title_track_length);
+		}
+
+		/** Audio Streams **/
+
+		// --num-audio-streams
+		// Display number of audio streams
+		if(display_num_audio_streams || display_all) {
+			if(verbose)
+				printf("* Audio Streams: ");
+			printf("%i\n", num_audio_streams);
+		}
+
+		char lang_code[3] = {'\0'};
+		// audio_attr_t *audio_attr;
+		for(int i = 0; i < num_audio_streams; i++) {
+
+			dvd_track_audio_lang_code(track_ifo, i, lang_code);
+
+			printf("%s\n", lang_code);
 		}
 
 		// --ifo-dump
