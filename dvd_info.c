@@ -638,8 +638,7 @@ int main(int argc, char **argv) {
 		}
 
 		// Letterbox
-		if(track_ifo->vtsi_mat->vts_video_attr.letterboxed)
-			letterbox = true;
+		letterbox = dvd_track_letterbox_video(track_ifo);
 
 		// Film mode: film (movie), video (camera)
 		if(track_ifo->vtsi_mat->vts_video_attr.film_mode)
