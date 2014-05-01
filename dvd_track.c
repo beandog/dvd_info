@@ -249,3 +249,15 @@ uint8_t dvd_track_num_audio_streams(const ifo_handle_t *track_ifo) {
 	return num_audio_streams;
 
 }
+
+/** Subtitles **/
+
+uint8_t dvd_track_num_subtitles(const ifo_handle_t *track_ifo) {
+
+	uint8_t num_subtitles;
+
+	num_subtitles = track_ifo->vtsi_mat->nr_of_vts_subp_streams;
+
+	return num_subtitles;
+
+}

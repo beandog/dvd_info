@@ -99,3 +99,7 @@ void dvd_track_str_length(dvd_time_t *dvd_time, char *p);
 /** Audio Streams **/
 
 uint8_t dvd_track_num_audio_streams(const ifo_handle_t *track_ifo);
+
+/** Subtitles **/
+
+uint8_t dvd_track_num_subtitles(const ifo_handle_t *track_ifo);
