@@ -100,7 +100,6 @@ int main(int argc, char **argv) {
 	unsigned int video_width = 720;
 	bool valid_video_width = true;
 	bool letterbox = false;
-	char *film_mode;
 	bool has_cc = false;
 	bool has_cc_1 = false;
 	bool has_cc_2 = false;
@@ -152,7 +151,6 @@ int main(int argc, char **argv) {
 	int display_video_height = 0;
 	int display_video_width = 0;
 	int display_letterbox = 0;
-	int display_film_mode = 0;
 	int display_cc = 0;
 	int display_num_audio_streams = 0;
 	int display_num_subtitles = 0;
@@ -200,7 +198,6 @@ int main(int argc, char **argv) {
 		{ "video-height", no_argument, & display_video_height, 1 },
 		{ "video-width", no_argument, & display_video_width, 1 },
 		{ "letterbox", no_argument, & display_letterbox, 1 },
-		{ "film-mode", no_argument, & display_film_mode, 1 },
 
 		// Audio
 		{ "num-audio-streams", no_argument, & display_num_audio_streams, 1 },
@@ -643,12 +640,6 @@ int main(int argc, char **argv) {
 		// Letterbox
 		letterbox = dvd_track_letterbox_video(track_ifo);
 
-		// Film mode: film (movie), video (camera)
-		if(track_ifo->vtsi_mat->vts_video_attr.film_mode)
-			film_mode = "film";
-		else
-			film_mode = "video";
-
 		// Closed Captioning
 		if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1 || track_ifo->vtsi_mat->vts_video_attr.line21_cc_2) {
 			has_cc = true;
@@ -713,14 +704,6 @@ int main(int argc, char **argv) {
 				printf("1\n");
 			else
 				printf("0\n");
-		}
-
-		// --film-mode
-		// Film mode
-		if(display_film_mode || display_all) {
-			if(verbose)
-				printf("* Film Mode: ");
-			printf("%s\n", film_mode);
 		}
 
 		// Display Closed Captioning

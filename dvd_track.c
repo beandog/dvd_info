@@ -44,7 +44,7 @@ bool dvd_track_mpeg1(const ifo_handle_t *track_ifo) {
 
 	unsigned char version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
 
-	if(version == 1)
+	if(version == 0)
 		return true;
 	else
 		return false;
@@ -55,7 +55,7 @@ bool dvd_track_mpeg2(const ifo_handle_t *track_ifo) {
 
 	unsigned char version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
 
-	if(version == 2)
+	if(version == 1)
 		return true;
 	else
 		return false;
