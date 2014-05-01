@@ -95,3 +95,7 @@ int dvd_track_time_minutes(dvd_time_t *dvd_time);
 int dvd_track_time_hours(dvd_time_t *dvd_time);
 
 void dvd_track_str_length(dvd_time_t *dvd_time, char *p);
+
+/** Audio Streams **/
+
+uint8_t dvd_track_num_audio_streams(const ifo_handle_t *track_ifo);

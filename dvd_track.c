@@ -235,3 +235,17 @@ void dvd_track_str_length(dvd_time_t *dvd_time, char *p) {
 	p[14] = '\0';
 
 }
+
+/** Audio **/
+
+// See dvd_track_audio.h for specific info to one audio stream
+
+uint8_t dvd_track_num_audio_streams(const ifo_handle_t *track_ifo) {
+
+	uint8_t num_audio_streams;
+
+	num_audio_streams = track_ifo->vtsi_mat->nr_of_vts_audio_streams;
+
+	return num_audio_streams;
+
+}
