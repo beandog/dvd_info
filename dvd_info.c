@@ -672,20 +672,20 @@ int main(int argc, char **argv) {
 			printf("%s\n", aspect_ratio);
 		}
 
-		// --video-height
-		// Display video height
-		if(display_video_height || display_all) {
-			if(verbose)
-				printf("* Video Height: ");
-			printf("%i\n", video_height);
-		}
-
 		// --video-width
 		// Display video width
 		if(display_video_width || display_all) {
 			if(verbose)
 				printf("* Video Width: ");
 			printf("%i\n", video_width);
+		}
+
+		// --video-height
+		// Display video height
+		if(display_video_height || display_all) {
+			if(verbose)
+				printf("* Video Height: ");
+			printf("%i\n", video_height);
 		}
 
 		// --letterbox
