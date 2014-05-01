@@ -39,7 +39,7 @@ void print_usage(char *binary) {
 	printf("  --serial-id 		Serial ID\n");
 	printf("  --vmg-id		VMG ID\n");
 	printf("  --side		Disc side\n");
-	printf("  --ifo-dump		Full dump of all IF0 information\n");
+	printf("  --ifo-dump		Full dump of all IFO information\n");
 	printf("\n");
 	printf("Display track info:\n");
 	printf("  --video-codec		Video codec (MPEG1 / MPEG2)\n");
@@ -55,16 +55,57 @@ void print_usage(char *binary) {
 	printf("\n");
 	printf("Display subtitle info:\n");
 	printf("  --cc			Closed captioning (0 [no], 1 [yes])\n");
+	printf("\n");
+	printf("Display output formats:\n");
+	printf("  -b, --batch		Batch style output\n");
+	printf("  -v, --verbose		Verbose output\n");
+	printf("  -z, --debug		Display debug output\n");
 
 }
 
 int main(int argc, char **argv) {
 
-	// DVD file descriptor
 	int dvd_fd;
-
-	// DVD drive status
 	int drive_status;
+	uint16_t num_ifos;
+	int dvd_disc_id;
+	unsigned char tmp_buf[16] = {'\0'};
+	unsigned long x = 0;
+	__useconds_t sleepy_time = 1000000;
+	int num_naps = 0;
+	int max_num_naps = 60;
+	char title[33] = {'\0'};
+	dvd_reader_t *dvdread_dvd;
+	uint16_t num_tracks;
+	uint16_t num_vts;
+	char provider_id[33] = {'\0'};
+	bool has_provider_id = false;
+	char vmg_id[13] = {'\0'};
+	ifo_handle_t *ifo_zero;
+	ifo_handle_t *track_ifo = NULL;
+	char *video_codec;
+	char *video_format;
+	char *aspect_ratio;
+	int title_track_idx;
+	uint8_t title_track_ifo_number;
+	uint8_t vts_ttn;
+	pgc_t *pgc;
+	pgcit_t *vts_pgcit;
+	bool valid_video_codec = true;
+	unsigned int video_height = 0;
+	bool valid_video_format = true;
+	bool valid_video_height = true;
+	bool valid_aspect_ratio = true;
+	unsigned int video_width = 720;
+	bool valid_video_width = true;
+	bool letterbox = false;
+	char *film_mode;
+	bool has_cc = false;
+	bool has_cc_1 = false;
+	bool has_cc_2 = false;
+	uint8_t num_audio_streams;
+	uint8_t num_subtitles;
+	char title_track_length[14] = {'\0'};
 
 	// DVD track number -- default to 0, which basically means, ignore me.
 	int track_number = 0;
@@ -77,8 +118,10 @@ int main(int argc, char **argv) {
 	// Or if it's an image file, filename (ISO, UDF, etc.)
 	bool is_image = false;
 
-	// Verbosity ftw.
+	// Output formats
+	bool batch = false;
 	bool verbose = false;
+	bool debug = false;
 
 	// Default to '/dev/dvd' by default
 	// FIXME check to see if the filename exists, and if not, poll /dev/sr0 instead
@@ -113,6 +156,9 @@ int main(int argc, char **argv) {
 	int display_num_audio_streams = 0;
 	int display_num_subtitles = 0;
 	int display_playback_length = 0;
+	int display_batch = 0;
+	int display_verbose = 0;
+	int display_debug = 0;
 
 	// Not enabled by an argument, set manually
 	bool display_track = false;
@@ -124,7 +170,9 @@ int main(int argc, char **argv) {
 		{ "device", required_argument, 0, 'i' },
 		{ "track", required_argument, 0, 't' },
 
+		{ "batch", no_argument, 0, 'b' },
 		{ "verbose", no_argument, 0, 'v' },
+		{ "debug", no_argument, 0, 'z' },
 
 		// These set the value of the display_* variables above,
 		// directly to 1 (true) if they are passed.  Only the long
@@ -192,8 +240,16 @@ int main(int argc, char **argv) {
 				display_track = true;
 				break;
 
+			case 'b':
+				batch = 1;
+				break;
+
 			case 'v':
 				verbose = true;
+				break;
+
+			case 'z':
+				debug = true;
 				break;
 
 			// ignore unknown arguments
@@ -213,6 +269,24 @@ int main(int argc, char **argv) {
 	if(valid_args == false)
 		return 1;
 
+	if(!batch && display_batch)
+		batch = true;
+
+	if(debug || display_debug || verbose || display_verbose) {
+		if(batch)
+			batch = false;
+		if(!verbose)
+			verbose = true;
+		if(!display_all)
+			display_all = 1;
+	}
+
+	if(!debug && display_debug) {
+		if(!display_all)
+			display_all = 1;
+		debug = true;
+	}
+
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
 	// of '/dev/dvd'.
@@ -220,9 +294,10 @@ int main(int argc, char **argv) {
 		device_filename = argv[optind];
 	}
 
-	// Verbose output begins
-	if(verbose)
-		printf("dvd: %s\n", device_filename);
+	if(verbose || !batch) {
+		printf("[DVD]\n");
+		printf("* Opening %s\n", device_filename);
+	}
 
 	/** Begin dvd_info :) */
 
@@ -248,8 +323,8 @@ int main(int argc, char **argv) {
 	if(is_hardware) {
 		drive_status = dvd_drive_get_status(device_filename);
 		// FIXME send to stderr
-		if(verbose) {
-			printf("drive status: ");
+		if(verbose || !batch) {
+			printf("* Drive status: ");
 			dvd_drive_display_status(device_filename);
 		}
 	}
@@ -259,13 +334,6 @@ int main(int argc, char **argv) {
 	// At the very least, let the wait value be set. :)
 	if(is_hardware) {
 		if(!dvd_drive_has_media(device_filename)) {
-
-			// sleep for one second
-			__useconds_t sleepy_time = 1000000;
-			// how many naps I have taken
-			int num_naps = 0;
-			// when to stop napping (60 seconds)
-			int max_num_naps = 60;
 
 			// FIXME send to stderr
 			printf("drive status: ");
@@ -306,11 +374,9 @@ int main(int argc, char **argv) {
 	// begin libdvdread usage
 
 	// Open DVD device
-	dvd_reader_t *dvdread_dvd;
 	dvdread_dvd = DVDOpen(device_filename);
 
 	// Open IFO zero -- where all the cool stuff is
-	ifo_handle_t *ifo_zero;
 	ifo_zero = ifoOpen(dvdread_dvd, 0);
 	// FIXME do a proper exit
 	if(!ifo_zero) {
@@ -318,13 +384,25 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	// Total # of IFOs
+	num_ifos = ifo_zero->vts_atrt->nr_of_vtss;
+
 	// Get the total number of title tracks on the DVD
 	num_title_tracks = ifo_zero->tt_srpt->nr_of_srpts;
+
+	if(verbose || !batch) {
+
+		printf("* Title IFOs: %d\n", num_ifos);
+		printf("* Title Tracks: %d\n", num_title_tracks);
+
+	}
 
 	// Exit if track number requested does not exist
 	if(display_track && (track_number > num_title_tracks || track_number < 1)) {
 		fprintf(stderr, "Invalid track number %d\n", track_number);
 		fprintf(stderr, "Valid track numbers: 0 to %d\n", num_title_tracks);
+		ifoClose(ifo_zero);
+		DVDClose(dvdread_dvd);
 		return 1;
 	}
 
@@ -332,18 +410,14 @@ int main(int argc, char **argv) {
 	// Display DVDDiscID from libdvdread
 	if(display_id || display_all) {
 
-		int dvd_disc_id;
-		unsigned char tmp_buf[16] = {'\0'};
-		unsigned long x = 0;
-
 		dvd_disc_id = DVDDiscID(dvdread_dvd, tmp_buf);
 
 		if(dvd_disc_id == -1) {
 			fprintf(stderr, "dvd_info: querying DVD id failed\n");
 		} else {
 
-			if(verbose)
-				printf("disc_id: ");
+			if(verbose || !batch)
+				printf("* Disc ID: ");
 
 			for(x = 0; x < sizeof(tmp_buf); x++) {
 				printf("%02x", tmp_buf[x]);
@@ -368,10 +442,9 @@ int main(int argc, char **argv) {
 		}
 		*/
 
-		char title[33] = {'\0'};
 		dvd_device_title(device_filename, title);
 		if(verbose)
-			printf("title: ");
+			printf("* Title: ");
 		printf("%s\n", title);
 
 	}
@@ -380,12 +453,10 @@ int main(int argc, char **argv) {
 	// Display total number of tracks
 	if((display_num_tracks || display_all) && ifo_zero) {
 
-		uint16_t num_tracks;
-
 		num_tracks = dvd_info_num_tracks(ifo_zero);
 
 		if(verbose)
-			printf("tracks: ");
+			printf("* Tracks: ");
 		printf("%d\n", num_tracks);
 
 	}
@@ -394,12 +465,10 @@ int main(int argc, char **argv) {
 	// Display number of VTSs on DVD
 	if((display_num_vts || display_all) && ifo_zero) {
 
-		uint16_t num_vts;
-
 		num_vts = dvd_info_num_vts(ifo_zero);
 
 		if(verbose)
-			printf("num vts: ");
+			printf("* VTS: ");
 		printf("%d\n", num_vts);
 
 	} else if((display_num_vts || display_all) && !ifo_zero) {
@@ -415,15 +484,13 @@ int main(int argc, char **argv) {
 		// Max length of provider ID is 32 letters, so create an array
 		// that has enough size to store the letters and a null
 		// terminator.  Also initialize it with all null terminators.
-		char provider_id[33] = {'\0'};
 		dvd_info_provider_id(ifo_zero, provider_id);
 
 		if(verbose)
-			printf("provider id: ");
+			printf("* Provider ID: ");
 		printf("%s\n", provider_id);
 
 		// Having an empty provider ID is very common.
-		bool has_provider_id = false;
 		if(provider_id[0] != '\0')
 			has_provider_id = true;
 
@@ -452,11 +519,10 @@ int main(int argc, char **argv) {
 	// Display VMG ID
 	if((display_vmg_id || display_all) && ifo_zero) {
 
-		char vmg_id[13] = {'\0'};
 		dvd_info_vmg_id(ifo_zero, vmg_id);
 
 		if(verbose)
-			printf("vmg id: ");
+			printf("* VMG: ");
 		printf("%s\n", vmg_id);
 
 	}
@@ -465,7 +531,7 @@ int main(int argc, char **argv) {
 	// Display disc side
 	if(display_side || display_all) {
 		if(verbose)
-			printf("side: ");
+			printf("* Disc Side: ");
 		printf("%i\n", ifo_zero->vmgi_mat->disc_side);
 	}
 
@@ -478,17 +544,10 @@ int main(int argc, char **argv) {
 	/**
 	 * Track information
 	 */
-	ifo_handle_t *track_ifo = NULL;
-	char *video_codec;
-	char *video_format;
-	char *aspect_ratio;
-	int title_track_idx;
-	uint8_t title_track_ifo_number;
-	uint8_t vts_ttn;
-	pgc_t *pgc;
-	pgcit_t *vts_pgcit;
 
 	if(display_track && track_number) {
+
+		printf("[Track %d]\n", track_number);
 
 		title_track_idx = track_number - 1;
 		title_track_ifo_number = ifo_zero->tt_srpt->title[title_track_idx].title_set_nr;
@@ -513,7 +572,6 @@ int main(int argc, char **argv) {
 		}
 
 		// Video codec
-		bool valid_video_codec = true;
 		if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
 			video_codec = "MPEG1";
 		else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
@@ -524,9 +582,6 @@ int main(int argc, char **argv) {
 		}
 
 		// Video format and height
-		unsigned int video_height = 0;
-		bool valid_video_format = true;
-		bool valid_video_height = true;
 		if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0) {
 			video_format = "NTSC";
 			video_height = 480;
@@ -540,7 +595,6 @@ int main(int argc, char **argv) {
 		}
 
 		// Aspect ratio
-		bool valid_aspect_ratio = true;
 		if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
 			aspect_ratio = "4:3";
 		else if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
@@ -553,8 +607,6 @@ int main(int argc, char **argv) {
 		}
 
 		// Video width
-		unsigned int video_width = 720;
-		bool valid_video_width = true;
 		if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 0) {
 			video_width = 720;
 		} else if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 1) {
@@ -572,21 +624,16 @@ int main(int argc, char **argv) {
 		}
 
 		// Letterbox
-		bool letterbox = false;
 		if(track_ifo->vtsi_mat->vts_video_attr.letterboxed)
 			letterbox = true;
 
 		// Film mode: film (movie), video (camera)
-		char *film_mode;
 		if(track_ifo->vtsi_mat->vts_video_attr.film_mode)
 			film_mode = "film";
 		else
 			film_mode = "video";
 
 		// Closed Captioning
-		bool has_cc = false;
-		bool has_cc_1 = false;
-		bool has_cc_2 = false;
 		if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1 || track_ifo->vtsi_mat->vts_video_attr.line21_cc_2) {
 			has_cc = true;
 			if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1)
@@ -596,18 +643,16 @@ int main(int argc, char **argv) {
 		}
 
 		// Audio streams
-		uint8_t num_audio_streams;
 		num_audio_streams = track_ifo->vtsi_mat->nr_of_vts_audio_streams;
 
 		// Subtitles
-		uint8_t num_subtitles;
 		num_subtitles = track_ifo->vtsi_mat->nr_of_vts_subp_streams;
 
 		// --video-codec
 		// Display video codec
 		if(display_video_codec || display_all) {
 			if(verbose)
-				printf("video codec: ");
+				printf("* Video Codec: ");
 			printf("%s\n", video_codec);
 		}
 
@@ -615,7 +660,7 @@ int main(int argc, char **argv) {
 		// Display video format
 		if(display_video_format || display_all) {
 			if(verbose)
-				printf("video format: ");
+				printf("* Video Format: ");
 			printf("%s\n", video_format);
 		}
 
@@ -623,7 +668,7 @@ int main(int argc, char **argv) {
 		// Display aspect ratio
 		if(display_aspect_ratio || display_all) {
 			if(verbose)
-				printf("aspect ratio: ");
+				printf("* Aspect Ratio: ");
 			printf("%s\n", aspect_ratio);
 		}
 
@@ -631,7 +676,7 @@ int main(int argc, char **argv) {
 		// Display video height
 		if(display_video_height || display_all) {
 			if(verbose)
-				printf("video height: ");
+				printf("* Video Height: ");
 			printf("%i\n", video_height);
 		}
 
@@ -639,7 +684,7 @@ int main(int argc, char **argv) {
 		// Display video width
 		if(display_video_width || display_all) {
 			if(verbose)
-				printf("video width: ");
+				printf("* Video Width: ");
 			printf("%i\n", video_width);
 		}
 
@@ -647,7 +692,7 @@ int main(int argc, char **argv) {
 		// Display letterbox
 		if(display_letterbox || display_all) {
 			if(verbose)
-				printf("letterbox: ");
+				printf("* Letterbox: ");
 			if(letterbox)
 				printf("1\n");
 			else
@@ -658,7 +703,7 @@ int main(int argc, char **argv) {
 		// Film mode
 		if(display_film_mode || display_all) {
 			if(verbose)
-				printf("film mode: ");
+				printf("* Film Mode: ");
 			printf("%s\n", film_mode);
 		}
 
@@ -676,7 +721,7 @@ int main(int argc, char **argv) {
 		// Display number of audio streams
 		if(display_num_audio_streams || display_all) {
 			if(verbose)
-				printf("audio streams: ");
+				printf("* Audio Streams: ");
 			printf("%i\n", num_audio_streams);
 		}
 
@@ -684,16 +729,15 @@ int main(int argc, char **argv) {
 		// Display number of subtitles
 		if(display_num_subtitles || display_all) {
 			if(verbose)
-				printf("subtitles: ");
+				printf("* Subtitles: ");
 			printf("%i\n", num_subtitles);
 		}
 
 		// Title track length (HH:MM:SS.MS)
-		char title_track_length[14] = {'\0'};
 		dvd_track_str_length(&pgc->playback_time, title_track_length);
 		if(display_playback_length || display_all) {
 			if(verbose)
-				printf("length: ");
+				printf("* Length: ");
 			printf("%s\n", title_track_length);
 		}
 
