@@ -3,6 +3,14 @@
  */
 
 /**
+ * Get the IFO number that a track resides in
+ *
+ * @param ifo_zero dvdread handler for primary IFO
+ * @return IFO number
+ */
+uint8_t dvd_track_ifo_number(const ifo_handle_t *ifo_zero, const int track_number);
+
+/**
  * Get the MPEG video codec version
  *
  * @param track_ifo dvdread track IFO handler

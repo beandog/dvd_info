@@ -11,6 +11,22 @@
 
 int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec);
 
+uint8_t dvd_track_ifo_number(const ifo_handle_t *ifo_zero, const int track_number) {
+
+	// TODO research
+	// Should these be the same number
+	// vts_ttn = ifo_zero->tt_srpt->title[title_track_idx].vts_ttn;
+
+	int idx;
+	uint8_t ifo_number;
+
+	idx = track_number - 1;
+	ifo_number = ifo_zero->tt_srpt->title[idx].title_set_nr;
+
+	return ifo_number;
+
+}
+
 int dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
 
 	unsigned char version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
