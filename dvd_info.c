@@ -553,8 +553,6 @@ int main(int argc, char **argv) {
 		title_track_ifo_number = ifo_zero->tt_srpt->title[title_track_idx].title_set_nr;
 		track_ifo = ifoOpen(dvdread_dvd, title_track_ifo_number);
 		vts_ttn = ifo_zero->tt_srpt->title[title_track_idx].vts_ttn;
-		vts_pgcit = track_ifo->vts_pgcit;
-		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
 
 		if(!track_ifo) {
 			fprintf(stderr, "dvd_info: opening IFO %i failed\n", track_number);
@@ -570,6 +568,9 @@ int main(int argc, char **argv) {
 			DVDClose(dvdread_dvd);
 			return 1;
 		}
+
+		vts_pgcit = track_ifo->vts_pgcit;
+		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
 
 		// Video codec
 		if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
