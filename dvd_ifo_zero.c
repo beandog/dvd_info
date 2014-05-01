@@ -1,3 +1,4 @@
+#include "dvd_ifo_zero.h"
 
 /**
  * Functions used to get basic DVD data:
