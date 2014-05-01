@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <stdbool.h>
 #include <inttypes.h>
@@ -36,6 +37,7 @@ int main(int argc, char **argv) {
 	int streamout_ifo = -1, streamout_bup = -1;
 	char ifo_filename[PATH_MAX] = {'\0'};
 	char bup_filename[PATH_MAX] = {'\0'};
+	bool directory_exists = false;
 
 	if (argc > 1) {
 		device_filename = argv[1];
@@ -106,6 +108,57 @@ int main(int argc, char **argv) {
 	if(ifo)
 		ifoClose(ifo);
 
+	// Check if VIDEO_TS directory exists
+	DIR *dir = opendir("VIDEO_TS");
+	if(dir) {
+		directory_exists = true;
+		printf("* VIDEO_TS directory exists\n");
+	}
+
+	char video_ts_filenames[20][22];
+	snprintf(video_ts_filenames[0], 22, "VIDEO_TS/VIDEO_TS.IFO");
+	snprintf(video_ts_filenames[1], 22, "VIDEO_TS/VIDEO_TS.BUP");
+
+	for(int z = 1; z < 10; z++) {
+		printf("Index: %i\n", z);
+		snprintf(video_ts_filenames[z + 1], 22, "VIDEO_TS/VTS_%02i_0.IFO", z);
+		snprintf(video_ts_filenames[z + 2], 22, "VIDEO_TS/VTS_%02i_0.BUP", z);
+	}
+
+	// Delete the old VTS, IFO files from the directory.  I think this is
+	// cleaner than deleting the entire directory outright, in case there's
+	// something else in there I want.
+	if(directory_exists) {
+
+		for(int a = 0; a < 11; a++) {
+
+
+			if(open(video_ts_filenames[a], O_RDWR) != -1) {
+				printf("* Removing %s\n", video_ts_filenames[a]);
+				unlink(video_ts_filenames[a]);
+			}
+
+		}
+
+		return 0;
+
+	}
+
+	// Make directory if necessary
+	if(!directory_exists) {
+
+		int mkdir_retval;
+		mkdir_retval = mkdir("VIDEO_TS", 0755);
+
+		if(mkdir_retval == 0) {
+			printf("* Creating VIDEO_TS directory\n");
+		} else if(mkdir_retval == -1) {
+			printf("* Could not create VIDEO_TS directory\n");
+			return 1;
+		}
+
+	}
+
 	// Open IFO directly
 	// See DVDCopyIfoBup() in dvdbackup.c for reference
 	for (ifo_number = 0; ifo_number < num_ifos + 1; ifo_number++) {
@@ -164,11 +217,11 @@ int main(int argc, char **argv) {
 		// See http://linux.die.net/man/3/mkdir
 
 		if(ifo_number == 0) {
-			snprintf(ifo_filename, 18, "/tmp/VIDEO_TS.IFO");
-			snprintf(bup_filename, 18, "/tmp/VIDEO_TS.BUP");
+			snprintf(ifo_filename, 27, "VIDEO_TS/VIDEO_TS.IFO");
+			snprintf(bup_filename, 27, "VIDEO_TS/VIDEO_TS.BUP");
 		} else {
-			snprintf(ifo_filename, 18, "/tmp/VTS_%02i_0.IFO", ifo_number);
-			snprintf(bup_filename, 18, "/tmp/VTS_%02i_0.BUP", ifo_number);
+			snprintf(ifo_filename, 27, "VIDEO_TS/VTS_%02i_0.IFO", ifo_number);
+			snprintf(bup_filename, 27, "VIDEO_TS/VTS_%02i_0.BUP", ifo_number);
 		}
 
 		// file handlers
@@ -184,7 +237,7 @@ int main(int argc, char **argv) {
 			return 1;
 		}
 		if(streamout_bup == -1) {
-			printf("Could not open %s\n", bup_filename);
+			printf("* Could not open %s\n", bup_filename);
 			free(buffer);
 			close(streamout_ifo);
 			ifoClose(ifo);
