@@ -747,12 +747,13 @@ int main(int argc, char **argv) {
 		}
 
 		char lang_code[3] = {'\0'};
+		char audio_codec[5] = {'\0'};
 		// audio_attr_t *audio_attr;
 		for(int i = 0; i < num_audio_streams; i++) {
-
 			dvd_track_audio_lang_code(track_ifo, i, lang_code);
-
 			printf("%s\n", lang_code);
+			dvd_track_audio_codec(track_ifo, i, audio_codec);
+			printf("%s\n", audio_codec);
 		}
 
 		// --ifo-dump

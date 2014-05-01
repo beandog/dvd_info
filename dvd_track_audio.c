@@ -13,3 +13,18 @@ int dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, int audio_track, ch
 	return 0;
 
 }
+
+int dvd_track_audio_codec(const ifo_handle_t *track_ifo, int audio_track, char *p) {
+
+	unsigned char audio_codec;
+	char *audio_codecs[7] = { "ac3", "?", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
+	audio_attr_t *audio_attr;
+
+	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_track];
+	audio_codec = audio_attr->audio_format;
+
+	strncpy(p, audio_codecs[audio_codec], 5);
+
+	return 0;
+
+}
