@@ -656,7 +656,7 @@ int main(int argc, char **argv) {
 		}
 
 		// Audio streams
-		num_audio_streams = track_ifo->vtsi_mat->nr_of_vts_audio_streams;
+		num_audio_streams = dvd_track_num_audio_streams(track_ifo);
 
 		// Subtitles
 		num_subtitles = track_ifo->vtsi_mat->nr_of_vts_subp_streams;
