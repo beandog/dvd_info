@@ -555,6 +555,8 @@ int main(int argc, char **argv) {
 		track_ifo = ifoOpen(dvdread_dvd, title_track_ifo_number);
 		vts_ttn = ifo_zero->tt_srpt->title[title_track_idx].vts_ttn;
 
+		printf("* IFO: %d\n", title_track_ifo_number);
+
 		if(!track_ifo) {
 			fprintf(stderr, "dvd_info: opening IFO %i failed\n", track_number);
 			ifoClose(ifo_zero);
