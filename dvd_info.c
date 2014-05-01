@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
 	uint8_t vts_ttn;
 	pgc_t *pgc;
 	pgcit_t *vts_pgcit;
-	bool valid_video_codec = true;
+	bool valid_video_codec = false;
 	unsigned int video_height = 0;
 	bool valid_video_format = true;
 	bool valid_video_height = true;
@@ -586,13 +586,14 @@ int main(int argc, char **argv) {
 		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
 
 		// Video codec
-		if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
+		if(dvd_track_mpeg1(track_ifo)) {
 			video_codec = "MPEG1";
-		else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
+			valid_video_codec = true;
+		} else if(dvd_track_mpeg2(track_ifo)) {
 			video_codec = "MPEG2";
-		else {
+			valid_video_codec = true;
+		} else {
 			video_codec = "Unknown";
-			valid_video_codec = false;
 		}
 
 		// Video format and height
