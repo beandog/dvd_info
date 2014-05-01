@@ -561,7 +561,7 @@ int main(int argc, char **argv) {
 		printf("[Track %d]\n", track_number);
 
 		title_track_idx = track_number - 1;
-		title_track_ifo_number = ifo_zero->tt_srpt->title[title_track_idx].title_set_nr;
+		title_track_ifo_number = dvd_track_ifo_number(ifo_zero, track_number);
 		track_ifo = ifoOpen(dvdread_dvd, title_track_ifo_number);
 		vts_ttn = ifo_zero->tt_srpt->title[title_track_idx].vts_ttn;
 
