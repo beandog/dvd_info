@@ -659,7 +659,7 @@ int main(int argc, char **argv) {
 		num_audio_streams = dvd_track_num_audio_streams(track_ifo);
 
 		// Subtitles
-		num_subtitles = track_ifo->vtsi_mat->nr_of_vts_subp_streams;
+		num_subtitles = dvd_track_num_subtitles(track_ifo);
 
 		// --video-codec
 		// Display video codec
