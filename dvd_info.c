@@ -597,10 +597,10 @@ int main(int argc, char **argv) {
 		}
 
 		// Video format and height
-		if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0) {
+		if(dvd_track_ntsc_video(track_ifo)) {
 			video_format = "NTSC";
 			video_height = 480;
-		} else if(track_ifo->vtsi_mat->vts_video_attr.video_format == 1) {
+		} else if(dvd_track_pal_video(track_ifo)) {
 			video_format = "PAL";
 			video_height = 576;
 		} else {
