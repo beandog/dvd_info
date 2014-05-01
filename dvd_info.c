@@ -543,6 +543,16 @@ int main(int argc, char **argv) {
 	}
 
 	/**
+	 * IFO information
+	 */
+	// TODO, loop through IFOs and display IFO-specific information, such
+	// as language code, etc.  Also, use this information in dvd_track
+	// functions to flush out possible tracks with data worth accessing.
+	// fex: an IFO with unspecified language is (probably) not going to
+	// have anything worth watching (unless it's a menu?  Don't know the
+	// spec well enough yet to comment).
+
+	/**
 	 * Track information
 	 */
 
