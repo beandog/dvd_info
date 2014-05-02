@@ -3,7 +3,7 @@
 // Note: Remember that the language code is set in the IFO
 int dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_track, char *p) {
 
-	char lang_code[5] = {'\0'};
+	char lang_code[3] = {'\0'};
 	unsigned char lang_type;
 	audio_attr_t *audio_attr;
 
@@ -25,13 +25,13 @@ int dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_tra
 	} else if(lang_type == 1) {
 
 		sprintf(lang_code, "%c%c", audio_attr->lang_code>>8, audio_attr->lang_code & 0xff);
-		strncpy(p, lang_code, 5);
+		strncpy(p, lang_code, 3);
 
 	} else {
 
 		// See dvdread/ifo_print.c for same functionality (error checking)
 		fprintf(stderr, "libdvdread bug? Unknown lang code: 0x%x\n", audio_attr->lang_code);
-		strncpy(p, "", 2);
+		strncpy(p, "", 3);
 
 		return 1;
 
