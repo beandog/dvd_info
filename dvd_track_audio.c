@@ -24,7 +24,7 @@ int dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_tra
 
 	} else if(lang_type == 1) {
 
-		sprintf(lang_code, "%c%c", audio_attr->lang_code>>8, audio_attr->lang_code & 0xff);
+		snprintf(lang_code, 3, "%c%c", audio_attr->lang_code >> 8, audio_attr->lang_code & 0xff);
 		strncpy(p, lang_code, 3);
 
 	} else {
