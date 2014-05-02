@@ -100,6 +100,14 @@ void dvd_track_str_length(dvd_time_t *dvd_time, char *p);
 
 uint8_t dvd_track_num_audio_streams(const ifo_handle_t *track_ifo);
 
+int dvd_track_num_audio_lang_code_streams(const ifo_handle_t *track_ifo, const char *lang_code);
+
+bool dvd_track_has_audio_lang_code(const ifo_handle_t *track_ifo, const char *lang_code);
+
 /** Subtitles **/
 
 uint8_t dvd_track_num_subtitles(const ifo_handle_t *track_ifo);
+
+/*
+bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, char *lang_code);
+*/

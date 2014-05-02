@@ -8,6 +8,7 @@
 #include "dvdread/ifo_types.h"
 #include "dvdread/ifo_read.h"
 #include "dvd_track.h"
+#include "dvd_track_audio.h"
 
 int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec);
 
@@ -250,6 +251,44 @@ uint8_t dvd_track_num_audio_streams(const ifo_handle_t *track_ifo) {
 
 }
 
+int dvd_track_num_audio_lang_code_streams(const ifo_handle_t *track_ifo, const char *p) {
+
+	int num_track_audio_streams;
+	int num_lang_streams;
+	char lang_code[3] = {'\0'};
+	int audio_track;
+
+	num_track_audio_streams = dvd_track_num_audio_streams(track_ifo);
+	num_lang_streams = 0;
+
+	for(audio_track = 0; audio_track < num_track_audio_streams; audio_track++) {
+
+		dvd_track_audio_lang_code(track_ifo, audio_track, lang_code);
+
+		if(strncmp(lang_code, p, 3) == 0) {
+			num_lang_streams++;
+		}
+
+	}
+
+	return num_lang_streams;
+
+}
+
+bool dvd_track_has_audio_lang_code(const ifo_handle_t *track_ifo, const char *lang_code) {
+
+	int num_audio_lang_code_streams;
+
+	num_audio_lang_code_streams = dvd_track_num_audio_lang_code_streams(track_ifo, lang_code);
+
+	if(num_audio_lang_code_streams > 0)
+		return true;
+	else
+		return false;
+
+}
+
+
 /** Subtitles **/
 
 uint8_t dvd_track_num_subtitles(const ifo_handle_t *track_ifo) {
@@ -261,3 +300,18 @@ uint8_t dvd_track_num_subtitles(const ifo_handle_t *track_ifo) {
 	return num_subtitles;
 
 }
+
+/*
+bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, char *lang_code) {
+
+	uint8_t num_subtitles;
+
+	num_subtitles = dvd_track_num_subtitles(track_ifo);
+
+	if(num_subtitles == 0)
+		return false;
+
+	return false;
+
+}
+*/
