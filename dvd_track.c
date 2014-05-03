@@ -34,9 +34,9 @@ unsigned char dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
 
 	mpeg_version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
 
-	if(mpeg_version == 1)
+	if(mpeg_version == 0)
 		return 1;
-	else if(mpeg_version == 2)
+	else if(mpeg_version == 1)
 		return 2;
 	else
 		return 0;
