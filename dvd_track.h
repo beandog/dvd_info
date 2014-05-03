@@ -98,16 +98,56 @@ void dvd_track_str_length(dvd_time_t *dvd_time, char *p);
 
 /** Audio Streams **/
 
+/**
+ * Get the number of audio streams for a track
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @return number of audio streams
+ */
 uint8_t dvd_track_num_audio_streams(const ifo_handle_t *track_ifo);
 
+/**
+ * Get the number of audio streams for a specific language
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @param lang_code language code
+ * @return number of subtitles
+ */
 int dvd_track_num_audio_lang_code_streams(const ifo_handle_t *track_ifo, const char *lang_code);
 
+/**
+ * Check if a DVD track has a specific audio language
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @param lang_code language code
+ * @return boolean
+ */
 bool dvd_track_has_audio_lang_code(const ifo_handle_t *track_ifo, const char *lang_code);
 
 /** Subtitles **/
 
-uint8_t dvd_track_num_subtitles(const ifo_handle_t *track_ifo);
+/**
+ * Get the number of subtitle streams for a track
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @return number of subtitles
+ */
+uint8_t dvd_track_subtitles(const ifo_handle_t *track_ifo);
 
-/*
-bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, char *lang_code);
-*/
+/**
+ * Get the number of subtitle streams for a specific language
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @param lang_code language code
+ * @return number of subtitles
+ */
+uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *track_ifo, const char *lang_code);
+
+/**
+ * Check if a DVD track has a specific subtitle language
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @param lang_code language code
+ * @return boolean
+ */
+bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, const char *lang_code);

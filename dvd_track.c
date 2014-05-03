@@ -291,27 +291,49 @@ bool dvd_track_has_audio_lang_code(const ifo_handle_t *track_ifo, const char *la
 
 /** Subtitles **/
 
-uint8_t dvd_track_num_subtitles(const ifo_handle_t *track_ifo) {
+uint8_t dvd_track_subtitles(const ifo_handle_t *track_ifo) {
 
-	uint8_t num_subtitles;
+	uint8_t streams;
 
-	num_subtitles = track_ifo->vtsi_mat->nr_of_vts_subp_streams;
+	streams = track_ifo->vtsi_mat->nr_of_vts_subp_streams;
 
-	return num_subtitles;
+	return streams;
 
 }
 
-/*
-bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, char *lang_code) {
+uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *track_ifo, const char *lang_code) {
 
-	uint8_t num_subtitles;
+	uint8_t streams;
+	uint8_t matches;
+	uint8_t idx;
+	char str[3] = {'\0'};
 
-	num_subtitles = dvd_track_num_subtitles(track_ifo);
+	streams = dvd_track_subtitles(track_ifo);
+	matches = 0;
 
-	if(num_subtitles == 0)
-		return false;
+	for(idx = 0; idx < streams; idx++) {
+
+		dvd_track_audio_lang_code(track_ifo, idx, str);
+
+		if(strncmp(str, lang_code, 3) == 0) {
+			matches++;
+		}
+
+	}
+
+	return matches;
+
+}
+
+bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, const char *lang_code) {
+
+	uint8_t streams;
+
+	streams = dvd_track_num_subtitle_lang_code_streams(track_ifo, lang_code);
+
+	if(streams > 0)
+		return true;
 
 	return false;
 
 }
-*/
