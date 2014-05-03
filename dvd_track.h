@@ -18,7 +18,7 @@ uint8_t dvd_track_ifo_number(const ifo_handle_t *ifo_zero, const int track_numbe
  * @retval 1 MPEG-1
  * @retval 2 MPEG-2
  */
-int dvd_track_mpeg_version(const ifo_handle_t *track_ifo);
+uint8_t dvd_track_mpeg_version(const ifo_handle_t *track_ifo);
 
 /**
  * Helper function to check if video codec is MPEG-1

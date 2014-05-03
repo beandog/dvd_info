@@ -12,14 +12,14 @@
 
 int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec);
 
-uint8_t dvd_track_ifo_number(const ifo_handle_t *ifo_zero, const int track_number) {
+unsigned char dvd_track_ifo_number(const ifo_handle_t *ifo_zero, const int track_number) {
 
 	// TODO research
 	// Should these be the same number
 	// vts_ttn = ifo_zero->tt_srpt->title[title_track_idx].vts_ttn;
 
 	int idx;
-	uint8_t ifo_number;
+	unsigned char ifo_number;
 
 	idx = track_number - 1;
 	ifo_number = ifo_zero->tt_srpt->title[idx].title_set_nr;
@@ -28,13 +28,15 @@ uint8_t dvd_track_ifo_number(const ifo_handle_t *ifo_zero, const int track_numbe
 
 }
 
-int dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
+unsigned char dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
 
-	unsigned char version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
+	unsigned char mpeg_version;
 
-	if(version == 1)
+	mpeg_version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
+
+	if(mpeg_version == 1)
 		return 1;
-	else if(version == 2)
+	else if(mpeg_version == 2)
 		return 2;
 	else
 		return 0;
@@ -43,9 +45,7 @@ int dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
 
 bool dvd_track_mpeg1(const ifo_handle_t *track_ifo) {
 
-	unsigned char version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
-
-	if(version == 0)
+	if(dvd_track_mpeg_version(track_ifo) == 1)
 		return true;
 	else
 		return false;
@@ -54,9 +54,7 @@ bool dvd_track_mpeg1(const ifo_handle_t *track_ifo) {
 
 bool dvd_track_mpeg2(const ifo_handle_t *track_ifo) {
 
-	unsigned char version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
-
-	if(version == 1)
+	if(dvd_track_mpeg_version(track_ifo) == 2)
 		return true;
 	else
 		return false;
@@ -65,9 +63,11 @@ bool dvd_track_mpeg2(const ifo_handle_t *track_ifo) {
 
 bool dvd_track_ntsc_video(const ifo_handle_t *track_ifo) {
 
-	unsigned char format = track_ifo->vtsi_mat->vts_video_attr.video_format;
+	unsigned char video_format;
 
-	if(format == 0)
+	video_format = track_ifo->vtsi_mat->vts_video_attr.video_format;
+
+	if(video_format == 0)
 		return true;
 	else
 		return false;
@@ -76,9 +76,11 @@ bool dvd_track_ntsc_video(const ifo_handle_t *track_ifo) {
 
 bool dvd_track_pal_video(const ifo_handle_t *track_ifo) {
 
-	unsigned char format = track_ifo->vtsi_mat->vts_video_attr.video_format;
+	unsigned char video_format;
 
-	if(format == 1)
+	video_format = track_ifo->vtsi_mat->vts_video_attr.video_format;
+
+	if(video_format == 1)
 		return true;
 	else
 		return false;
@@ -87,8 +89,11 @@ bool dvd_track_pal_video(const ifo_handle_t *track_ifo) {
 
 int dvd_track_video_height(const ifo_handle_t *track_ifo) {
 
-	int video_height = 0;
-	unsigned char picture_size = track_ifo->vtsi_mat->vts_video_attr.picture_size;
+	int video_height;
+	unsigned char picture_size;
+
+	video_height = 0;
+	picture_size = track_ifo->vtsi_mat->vts_video_attr.picture_size;
 
 	if(dvd_track_ntsc_video(track_ifo))
 		video_height = 480;
