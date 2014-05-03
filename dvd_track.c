@@ -223,8 +223,10 @@ int dvd_track_time_hours(dvd_time_t *dvd_time) {
 
 void dvd_track_str_length(dvd_time_t *dvd_time, char *p) {
 
-
-	int hours, minutes, seconds, milliseconds;
+	int hours;
+	int minutes;
+	int seconds;
+	int milliseconds;
 
 	hours = dvd_track_time_hours(dvd_time);
 	minutes = dvd_track_time_minutes(dvd_time);
@@ -232,8 +234,6 @@ void dvd_track_str_length(dvd_time_t *dvd_time, char *p) {
 	milliseconds = dvd_track_time_milliseconds(dvd_time);
 
 	snprintf(p, 13, "%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
-
-	p[14] = '\0';
 
 }
 
