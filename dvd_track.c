@@ -137,6 +137,42 @@ int dvd_track_video_width(const ifo_handle_t *track_ifo) {
 
 }
 
+bool dvd_track_valid_aspect_ratio(const ifo_handle_t *track_ifo) {
+
+	unsigned char aspect_ratio;
+
+	aspect_ratio = track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio;
+
+	return aspect_ratio;
+
+}
+
+bool dvd_track_aspect_ratio_4x3(const ifo_handle_t *track_ifo) {
+
+	unsigned char aspect_ratio;
+
+	aspect_ratio = track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio;
+
+	if(aspect_ratio == 0)
+		return true;
+	else
+		return false;
+
+}
+
+bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *track_ifo) {
+
+	unsigned char aspect_ratio;
+
+	aspect_ratio = track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio;
+
+	if(aspect_ratio == 0)
+		return true;
+	else
+		return false;
+
+}
+
 bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo) {
 
 	unsigned char letterbox = track_ifo->vtsi_mat->vts_video_attr.letterboxed;

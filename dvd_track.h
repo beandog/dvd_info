@@ -69,6 +69,36 @@ int dvd_track_video_height(const ifo_handle_t *track_ifo);
 int dvd_track_video_width(const ifo_handle_t *track_ifo);
 
 /**
+ * Return the aspect ratio of a track
+ *
+ * This returns the value directly from the IFO attributes.  Error checking
+ * should be done somewhere else.
+ *
+ * 0: 4:3
+ * 3: 16:9
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @return aspect ratio
+ */
+bool dvd_track_valid_aspect_ratio(const ifo_handle_t *track_ifo);
+
+/**
+ * Check for 4:3 aspect ratio
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @return boolean
+ */
+bool dvd_track_aspect_ratio_4x3(const ifo_handle_t *track_ifo);
+
+/**
+ * Check for 16:9 aspect ratio
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @return boolean
+ */
+bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *track_ifo);
+
+/**
  * Check for letterbox video
  *
  * @param track_ifo dvdread track IFO handler
