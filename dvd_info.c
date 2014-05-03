@@ -18,6 +18,7 @@
 #include "dvd_ifo_zero.h"
 #include "dvd_track.h"
 #include "dvd_track_audio.h"
+#include "dvd_track_subtitle.h"
 
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
 
@@ -104,8 +105,9 @@ int main(int argc, char **argv) {
 	bool has_cc_1 = false;
 	bool has_cc_2 = false;
 	uint8_t num_audio_streams;
-	uint8_t num_subtitles;
-	char title_track_length[14] = {'\0'};
+	uint8_t subtitles;
+	// Originally 14, causes bug
+	char title_track_length[13] = {'\0'};
 
 	// DVD track number -- default to 0, which basically means, ignore me.
 	int track_number = 0;
@@ -284,6 +286,11 @@ int main(int argc, char **argv) {
 			display_all = 1;
 		debug = true;
 	}
+
+	/** Development Settings **/
+	// Enable verbosity / display_all during development
+	verbose = true;
+	display_all = true;
 
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
@@ -653,7 +660,7 @@ int main(int argc, char **argv) {
 		num_audio_streams = dvd_track_num_audio_streams(track_ifo);
 
 		// Subtitles
-		num_subtitles = dvd_track_num_subtitles(track_ifo);
+		subtitles = dvd_track_subtitles(track_ifo);
 
 		// --video-codec
 		// Display video codec
@@ -716,24 +723,22 @@ int main(int argc, char **argv) {
 		}
 		*/
 
-
 		// --num-subtitles
 		// Display number of subtitles
 		if(display_num_subtitles || display_all) {
 			if(verbose)
 				printf("* Subtitles: ");
-			printf("%i\n", num_subtitles);
+			printf("%i\n", subtitles);
 		}
 
 		// Title track length (HH:MM:SS.MS)
 		dvd_track_str_length(&pgc->playback_time, title_track_length);
+
 		if(display_playback_length || display_all) {
 			if(verbose)
 				printf("* Length: ");
 			printf("%s\n", title_track_length);
 		}
-
-		/** Audio Streams **/
 
 		// --num-audio-streams
 		// Display number of audio streams
@@ -743,20 +748,37 @@ int main(int argc, char **argv) {
 			printf("%i\n", num_audio_streams);
 		}
 
+		/** Audio Streams **/
+
 		char lang_code[3] = {'\0'};
 		char audio_codec[5] = {'\0'};
-		int audio_channels = 0;
+		int audio_channels;
 		int audio_stream_id;
-		// audio_attr_t *audio_attr;
-		for(int i = 0; i < num_audio_streams; i++) {
-			dvd_track_audio_lang_code(track_ifo, i, lang_code);
-			printf("%s\n", lang_code);
-			dvd_track_audio_codec(track_ifo, i, audio_codec);
-			printf("%s\n", audio_codec);
-			audio_channels = dvd_track_audio_num_channels(track_ifo, i);
-			printf("%i\n", audio_channels);
-			audio_stream_id = dvd_track_audio_stream_id(track_ifo, i);
-			printf("%i\n", audio_stream_id);
+		uint8_t stream_idx;
+
+		for(stream_idx = 0; stream_idx < num_audio_streams; stream_idx++) {
+			printf("[Audio Track %i]\n", stream_idx + 1);
+
+			dvd_track_audio_lang_code(track_ifo, stream_idx, lang_code);
+			printf("* Language Code: %s\n", lang_code);
+
+			dvd_track_audio_codec(track_ifo, stream_idx, audio_codec);
+			printf("* Audio Codec: %s\n", audio_codec);
+
+			audio_channels = dvd_track_audio_num_channels(track_ifo, stream_idx);
+			printf("* Channels: %i\n", audio_channels);
+
+			audio_stream_id = dvd_track_audio_stream_id(track_ifo, stream_idx);
+			printf("* Stream ID: %i\n", audio_stream_id);
+		}
+
+		for(stream_idx = 0; stream_idx < subtitles; stream_idx++) {
+
+			printf("[Subtitle Track %i]\n", stream_idx + 1);
+
+			dvd_track_subtitle_lang_code(track_ifo, stream_idx, lang_code);
+			printf("* Language Code: %s\n", lang_code);
+
 		}
 
 		// --ifo-dump
