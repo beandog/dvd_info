@@ -13,7 +13,7 @@ void usage() {
 int main(int argc, char **argv) {
 
 	char *dvd;
-	int num_title_sets;
+	uint16_t num_ifos;
 
 	dvd = argv[1];
 
@@ -42,10 +42,10 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	num_title_sets = ifo_zero->vts_atrt->nr_of_vtss;
+	num_ifos = ifo_zero->vts_atrt->nr_of_vtss;
 	ifoClose(ifo_zero);
 
-	printf("%d\n", num_title_sets);
+	printf("%d\n", num_ifos);
 
 	DVDClose(dvdread_dvd);
 
