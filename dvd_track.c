@@ -175,12 +175,14 @@ bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *track_ifo) {
 
 bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo) {
 
-	unsigned char letterbox = track_ifo->vtsi_mat->vts_video_attr.letterboxed;
+	unsigned char permitted_df;
 
-	if(letterbox == 0)
-		return false;
-	else
+	permitted_df = track_ifo->vtsi_mat->vts_video_attr.permitted_df;
+
+	if(permitted_df  == 0 || permitted_df == 2)
 		return true;
+	else
+		return false;
 
 }
 
@@ -289,6 +291,32 @@ uint8_t dvd_track_num_audio_streams(const ifo_handle_t *track_ifo) {
 	num_audio_streams = track_ifo->vtsi_mat->nr_of_vts_audio_streams;
 
 	return num_audio_streams;
+
+}
+
+// Used by dvd_debug
+// Looks at the program control chain instead of the VTS for number of audio streams
+// This should eliminate showing ghost audio streams that don't actually exist
+// See https://github.com/thierer/lsdvd/commit/2adcc7d8ab1d3ccaa8b2aa294ad15ba5f72533d4
+// See http://dvdnav.mplayerhq.hu/dvdinfo/pgc.html
+// Looks for whether a stream available flag is set for each audio stream
+uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *track_ifo) {
+
+	uint8_t num_active_audio_streams;
+	int idx;
+	pgc_t *pgc;
+
+	num_active_audio_streams = 0;
+	pgc = track_ifo->vts_pgcit->pgci_srp[0].pgc;
+
+	for(idx = 0; idx < 8; idx++) {
+
+		if(pgc->audio_control[idx] & 0x8000)
+			num_active_audio_streams++;
+
+	}
+
+	return num_active_audio_streams;
 
 }
 

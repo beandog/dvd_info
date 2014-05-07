@@ -101,6 +101,34 @@ bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *track_ifo);
 /**
  * Check for letterbox video
  *
+ * FIXME this is probably unreliable to determine if a video is letterboxed
+ * or not!
+ *
+ * There are two ways a DVD track could be construed as whether it's
+ * letterbox or not:
+ * - video attribute of IFO for letterbox is enabled
+ * - video attribute of IFO for permitted DF is one of letterbox videos (0 or 2)
+ *
+ * THIS function only looks at the letterbox tag in the IFO, and NOT
+ * at the permitted DF ones.  So, the FIXME is to either clarify what this
+ * one is looking for, or add a function that determines wehter it is
+ * letterbox or not based on both video attributes.
+ *
+ * For sake of proper referencing, it'd be good to examine DVDs and see
+ * how they are mastered.
+ *
+ * Note that this boolean is *different than lsdvd output* for letterbox.
+ * lsdvd will tag something as letterbox based on the permitted DF.
+ *
+ * Another thing to consider is, is the letterbox tag used at all?  I've
+ * already seen DVDs that have letterboxed video (Star Wars: A New Hope)
+ * but are not tagged as such.  So it could be that permitted DF should
+ * be the deciding factor to begin with.  Again, more research is needed.
+ *
+ * UPDATE: I've changed the function to follow same syntax as lsdvd and
+ * ifo_print.c as well.  If permitted_df is 0 (Pan & Scan plus Letterbox)
+ * or 3 (Letterbox Only) then it is true.
+ *
  * @param track_ifo dvdread track IFO handler
  * @return boolean
  */
@@ -135,6 +163,20 @@ void dvd_track_str_length(dvd_time_t *dvd_time, char *p);
  * @return number of audio streams
  */
 uint8_t dvd_track_num_audio_streams(const ifo_handle_t *track_ifo);
+
+/**
+ * Examine the PGC for the track IFO directly and see if there are any audio
+ * control entries marked as active.  This is an alternative way of checking
+ * for the number of audio streams, compared to looking at the VTS directly.
+ * This is useful for debugging, and flushing out either badly mastered DVDs or
+ * getting a closer identifier of how many streams this has.
+ *
+ * Haven't examined enough DVDs yet to verify that either one is more accurate.
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @return number of PGC audio streams marked as active
+ */
+uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *track_ifo);
 
 /**
  * Get the number of audio streams for a specific language
