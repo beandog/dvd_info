@@ -105,14 +105,17 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	if(ifo)
+	if(ifo) {
 		ifoClose(ifo);
+		ifo = NULL;
+	}
 
 	// Check if VIDEO_TS directory exists
 	DIR *dir = opendir("VIDEO_TS");
 	if(dir) {
 		directory_exists = true;
-		printf("* VIDEO_TS directory exists\n");
+		printf("* VIDEO_TS directory already exists\n");
+		return 1;
 	}
 
 	char video_ts_filenames[20][22];
@@ -125,46 +128,19 @@ int main(int argc, char **argv) {
 		snprintf(video_ts_filenames[z + 2], 22, "VIDEO_TS/VTS_%02i_0.BUP", z);
 	}
 
-	// Delete the old VTS, IFO files from the directory.  I think this is
-	// cleaner than deleting the entire directory outright, in case there's
-	// something else in there I want.
-	if(directory_exists) {
+	int mkdir_retval;
+	mkdir_retval = mkdir("VIDEO_TS", 0755);
 
-		for(int a = 0; a < 11; a++) {
-
-
-			if(open(video_ts_filenames[a], O_RDWR) != -1) {
-				printf("* Removing %s\n", video_ts_filenames[a]);
-				unlink(video_ts_filenames[a]);
-			}
-
-		}
-
-		return 0;
-
-	}
-
-	// Make directory if necessary
-	if(!directory_exists) {
-
-		int mkdir_retval;
-		mkdir_retval = mkdir("VIDEO_TS", 0755);
-
-		if(mkdir_retval == 0) {
-			printf("* Creating VIDEO_TS directory\n");
-		} else if(mkdir_retval == -1) {
-			printf("* Could not create VIDEO_TS directory\n");
-			return 1;
-		}
-
+	if(mkdir_retval == -1) {
+		printf("* Could not create VIDEO_TS directory\n");
+		return 1;
 	}
 
 	// Open IFO directly
 	// See DVDCopyIfoBup() in dvdbackup.c for reference
 	for (ifo_number = 0; ifo_number < num_ifos + 1; ifo_number++) {
 
-		printf("[IFO]\n");
-		printf("* Opening IFO %d\n", ifo_number);
+		printf("[IFO %d]\n", ifo_number);
 
 		ifo = ifoOpen(dvdread_dvd, ifo_number);
 
