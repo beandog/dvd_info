@@ -13,6 +13,9 @@
 #include <dvdread/ifo_read.h>
 #include <dvdnav/dvdnav.h>
 #include "dvdread/ifo_print.h"
+#include "dvd_track.h"
+#include "dvd_track_audio.h"
+#include "dvd_track_subtitle.h"
 
 /**
  * Functions used to get basic DVD data:
@@ -168,3 +171,134 @@ uint8_t dvd_info_side(const ifo_handle_t *ifo);
  * @param p char[17] to copy the string to
  */
 void dvd_info_serial_id(dvdnav_t *dvdnav, char *p);
+
+/**
+ * Find the longest track
+ *
+ * This will loop through all the tracks and see which one is longest.  If
+ * there are two tracks of the same max length, set it to the *first* one.
+ *
+ * In that sense, this function should *not* be used with the intent to guess
+ * that the longest track is also the feature track.  However, generally
+ * speaking, DVDs are usually authored with the feature track coming in at
+ * one of the first ones.
+ *
+ * A proper feature track function is going to examine each track and find
+ * the one that is both the longest and has audio streams (as well as a few
+ * other checks).  IOW, this function returns exactly what it's asked for:
+ * the longest track number.
+ *
+ * @param dvdread_dvd libdvdread DVD handler
+ * @return track number
+ */
+uint16_t dvd_info_longest_track(dvd_reader_t *dvdread_dvd);
+
+/**
+ * Find the longest track of all the tracks that *also* have subtitles.
+ *
+ * This can be confusing, so to be very specific here is how it works
+ * 1. Examine ALL tracks
+ * 2. If a track HAS SUBTITLES, then it is compared against the others
+ * 3. Returns the LONGEST TRACK with SUBTITLES
+ *
+ * In other words:
+ * LONGEST TRACK *may* or *may not* be the LONGEST TRACK WITH SUBTITLES
+ *
+ * This is a helper function.  It may or may not come in useful.  It will most
+ * likely come in handy when trying to guess what the feature track is.  If it
+ * comes down to multiple tracks with the same length, then this can possibly
+ * flush out the fake ones.
+ *
+ * The chances that there are DVDs that are mastered so as to confuse the
+ * software who guesses that the longest track is the feature one, but it is
+ * not is possible (I wouldn't put it past studios to do that).  However, I
+ * cannot think of any off the top of my head that do do this.  If I encounter
+ * one, I'll document it here as an example, and also make a note of it at
+ * http://dvds.beandog.org/problem_dvds as well.
+ *
+ * At the very least, it could serve as a good function to find the best track
+ * when someone wants one that has subtitles to begin with.  Have fun!
+ *
+ * @param dvdread_dvd libdvdread handler
+ * @return longest track number
+ */
+uint16_t dvd_info_longest_track_with_subtitles(dvd_reader_t *dvdread_dvd);
+
+/**
+ * Find the longest track that is also widescreen, with an aspect ratio of
+ * 16x9.
+ *
+ * This is a helper function that can be used in narrowing down which track is
+ * the feature track, and it comes down to aspect ratio being a deal-breaker.
+ *
+ * For an example, I'm using A Bug's Life on DVD.  It is mastered with two
+ * copies of the movie -- fullscreen and widescreen -- on one side of the disc.
+ * Track 1 has a length of 01:34:49.033 which is the fullscreen version, 4:3
+ * aspect ratio.  However, track 6 has a length of 01:34:48.220, which is
+ * 113 milliseconds less, but it is also the feature track, but widescreen, or
+ * with a 16:9 aspect ratio.  In that example, if DVD playback software
+ * guessed at the feature track as only being the one with the longest track
+ * length, then it would be incorrect -- assuming the viewer prefers widescreen
+ * over pan & scan (which is a generally valid assumption).
+ *
+ * For reference, dvd_id for A Bug's Life is: a8d71c6409a50a9b45432b2e0df7b425
+ * Amazon: http://www.amazon.com/Bugs-Life-Two-Disc-Collectors/dp/B00007LVCM
+ *
+ * @param dvdread_dvd libdvdread handler
+ * @return longest track number that has 16:9 aspect ratio or a -1 if no tracks
+ * are found
+ */
+uint16_t dvd_info_longest_16x9_track(dvd_reader_t *dvdread_dvd);
+
+/**
+ * Find the longest track with a 4:3 aspect ratio
+ *
+ * Same reasoning for the earlier 16:9 function.
+ *
+ * @param dvdread_dvd libdvdread handler
+ * @return longest track number that has 4:3 aspect ratio or a -1 if no tracks
+ * are found
+ */
+uint16_t dvd_info_longest_4x3_track(dvd_reader_t *dvdread_dvd);
+
+/**
+ * Find the longest track marked as Letterbox
+ *
+ * The reason for this function can seem confusing considering there is an
+ * earlier one that looks for a 16x9 aspect ratio.  The reason is this:
+ * DVD tracks have two separate attributes that can be set:
+ * - Aspect Ratio
+ * - Display Format
+ *
+ * The possible aspect ratios are 4:3 and 16:9.
+ * The possible display formats are Pan & Scan and Letterbox.
+ *
+ * It is *not* safe to assume that just because a track has a 4:3 aspect ratio
+ * that it is also Pan & Scan.  There are DVDs that have feature titles where
+ * black bars are added to letterbox video to force it to Pan & Scan.  These
+ * are called non-anamorphic DVDs, and are generally a thorn in the side of
+ * most DVD videophiles (and why we love Blu-ray so much).  That being said, it
+ * is again not safe as a general rule to assume that the best feature track
+ * also happens to be 16x9.
+ *
+ * It should be noted that it is very common for the Display Format attribute
+ * to be *unset* on a DVD track, so, once again, this function should not be
+ * considered as a definitive answer as to which track is the feature track.
+ * It does, however, help narrow the options down if it comes to this level.
+ *
+ * @param dvdread_dvd libdvdread handler
+ * @return longest track number that has a display format of Letterbox or a
+ * -1 if no tracks with the attribute are found
+ */
+uint16_t dvd_info_longest_letterbox_track(dvd_reader_t *dvdread_dvd);
+
+/**
+ * Find the longest track marked as Pan & Scan
+ *
+ * See the previous commentary on the last function for reasoning.
+ *
+ * @param dvdread_dvd libdvdread handler
+ * @return longest track number that has a display format of Pan & Scan, or a
+ * -1 if no tracks with the attribute are found
+ */
+uint16_t dvd_info_longest_pan_scan_track(dvd_reader_t *dvdread_dvd);
