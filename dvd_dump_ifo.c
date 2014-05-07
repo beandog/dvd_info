@@ -91,6 +91,7 @@ int main(int argc, char **argv) {
 	if(!ifo) {
 		printf("* Could not open IFO zero\n");
 		DVDClose(dvdread_dvd);
+		return 1;
 	}
 
 	num_ifos = ifo->vts_atrt->nr_of_vtss;
