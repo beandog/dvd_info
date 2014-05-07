@@ -85,6 +85,12 @@ int main(int argc, char **argv) {
 	char vmg_id[13] = {'\0'};
 	ifo_handle_t *ifo_zero;
 	ifo_handle_t *track_ifo = NULL;
+	uint16_t longest_track;
+	uint16_t longest_track_with_subtitles;
+	uint16_t longest_16x9_track;
+	uint16_t longest_4x3_track;
+	uint16_t longest_letterbox_track;
+	uint16_t longest_pan_scan_track;
 	char *video_codec;
 	char *video_format;
 	char *aspect_ratio;
@@ -146,6 +152,7 @@ int main(int argc, char **argv) {
 	int display_serial_id = 0;
 	int display_vmg_id = 0;
 	int display_side = 0;
+	int display_longest_track = 0;
 	int display_ifo_dump = 0;
 	int display_video_format = 0;
 	int display_video_codec = 0;
@@ -189,6 +196,7 @@ int main(int argc, char **argv) {
 		{ "serial-id", no_argument, & display_serial_id, 1 },
 		{ "vmg-id", no_argument, & display_vmg_id, 1 },
 		{ "side", no_argument, & display_side, 1 },
+		{ "longest-track", no_argument, & display_longest_track, 1 },
 		{ "ifo-dump", no_argument, & display_ifo_dump, 1 },
 
 		// FIXME add a warning if track information is requested without
@@ -538,6 +546,38 @@ int main(int argc, char **argv) {
 		if(verbose)
 			printf("* Disc Side: ");
 		printf("%i\n", ifo_zero->vmgi_mat->disc_side);
+	}
+
+	// Longest tracks
+	longest_track = dvd_info_longest_track(dvdread_dvd);
+	longest_track_with_subtitles = dvd_info_longest_track_with_subtitles(dvdread_dvd);
+	longest_16x9_track = dvd_info_longest_16x9_track(dvdread_dvd);
+	longest_4x3_track = dvd_info_longest_4x3_track(dvdread_dvd);
+	longest_letterbox_track = dvd_info_longest_letterbox_track(dvdread_dvd);
+
+	// --longest-track
+	// Display longest track number ordered by milliseconds
+	if(display_longest_track || display_all) {
+		if(verbose)
+			printf("* Longest track: ");
+		printf("%i\n", longest_track);
+
+		if(verbose)
+			printf("* Longest track with subtitles: ");
+		printf("%i\n", longest_track_with_subtitles);
+
+		if(verbose)
+			printf("* Longest 16x9 track: ");
+		printf("%i\n", longest_16x9_track);
+
+		if(verbose)
+			printf("* Longest 4x3 track: ");
+		printf("%i\n", longest_4x3_track);
+
+		if(verbose)
+			printf("* Longest letterbox track: ");
+		printf("%i\n", longest_letterbox_track);
+
 	}
 
 	// --ifo-dump
