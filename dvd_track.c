@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include "dvdread/ifo_types.h"
-#include "dvdread/ifo_read.h"
+#include <dvdread/ifo_types.h>
+#include <dvdread/ifo_read.h>
 #include "dvd_track.h"
 #include "dvd_track_audio.h"
 

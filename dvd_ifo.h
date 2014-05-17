@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include "dvdread/ifo_read.h"
-#include "dvdread/ifo_types.h"
+#include <dvdread/ifo_read.h>
+#include <dvdread/ifo_types.h>
 
 bool vmgm_audio_streams_ok(unsigned int i);
 bool mpeg_version_ok(unsigned int i);
