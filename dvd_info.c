@@ -69,7 +69,8 @@ int main(int argc, char **argv) {
 
 	int dvd_fd;
 	int drive_status;
-	uint16_t num_ifos;
+	uint16_t num_vts;
+	uint16_t num_tracks;
 	int dvd_disc_id;
 	unsigned char tmp_buf[16] = {'\0'};
 	unsigned long x = 0;
@@ -78,8 +79,6 @@ int main(int argc, char **argv) {
 	int max_num_naps = 60;
 	char title[33] = {'\0'};
 	dvd_reader_t *dvdread_dvd;
-	uint16_t num_tracks;
-	uint16_t num_vts;
 	char provider_id[33] = {'\0'};
 	bool has_provider_id = false;
 	char vmg_id[13] = {'\0'};
@@ -118,8 +117,6 @@ int main(int argc, char **argv) {
 	// DVD track number -- default to 0, which basically means, ignore me.
 	int track_number = 0;
 
-	// Total number of DVD tracks, titles
-	uint16_t num_title_tracks;
 
 	// Do a check to see if the DVD filename given is hardware ('/dev/foo')
 	bool is_hardware = false;
@@ -373,47 +370,39 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	// begin libdvdnav usage
-	/*
-	dvdnav_t *dvdnav_dvd;
-	int dvdnav_ret;
-	dvdnav_ret = dvdnav_open(&dvdnav_dvd, device_filename);
-
-	if(dvdnav_ret == DVDNAV_STATUS_ERR) {
-		printf("error opening %s with dvdnav\n", device_filename);
-	}
-	*/
-
 	// begin libdvdread usage
 
 	// Open DVD device
 	dvdread_dvd = DVDOpen(device_filename);
-
-	// Open IFO zero -- where all the cool stuff is
-	vmg_ifo = ifoOpen(dvdread_dvd, 0);
-	// FIXME do a proper exit
-	if(!vmg_ifo) {
-		fprintf(stderr, "dvd_info: opening IFO zero failed\n");
+	if(!dvdread_dvd) {
+		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
 		return 1;
 	}
 
-	// Total # of IFOs
-	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
+	// Open VMG IFO -- where all the cool stuff is
+	vmg_ifo = ifoOpen(dvdread_dvd, 0);
+	if(!vmg_ifo) {
+		fprintf(stderr, "Opening VMG IFO failed\n");
+		DVDClose(dvdread_dvd);
+		return 1;
+	}
+
+	// Total # of video title sets (or IFOs)
+	num_vts = dvd_info_num_vts(vmg_ifo);
 
 	// Get the total number of title tracks on the DVD
-	num_title_tracks = vmg_ifo->tt_srpt->nr_of_srpts;
+	num_tracks = dvd_info_num_tracks(vmg_ifo);
 
+	// Display starter information
 	if(verbose || !batch) {
-
-		printf("* Title IFOs: %d\n", num_ifos);
-		printf("* Title Tracks: %d\n", num_title_tracks);
-
+		printf("* Video Title Sets (IFOs): %d\n", num_vts);
+		printf("* Title Tracks (Movies / Features): %d\n", num_tracks);
 	}
 
 	// Exit if track number requested does not exist
-	if(display_track && (track_number > num_title_tracks || track_number < 1)) {
+	if(display_track && (track_number > num_tracks || track_number < 1)) {
 		fprintf(stderr, "Invalid track number %d\n", track_number);
-		fprintf(stderr, "Valid track numbers: 0 to %d\n", num_title_tracks);
+		fprintf(stderr, "Valid track numbers: 0 to %d\n", num_tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -445,16 +434,6 @@ int main(int argc, char **argv) {
 	// Display DVD title
 	if(display_title || display_all) {
 
-		/*
-		const char *dvd_title;
-
-		if(dvdnav_get_title_string(dvdnav_dvd, &dvd_title) == DVDNAV_STATUS_OK) {
-			if(verbose)
-				printf("title: ");
-			printf("%s\n", dvd_title);
-		}
-		*/
-
 		dvd_device_title(device_filename, title);
 		if(verbose)
 			printf("* Title: ");
@@ -466,7 +445,6 @@ int main(int argc, char **argv) {
 	// Display total number of tracks
 	if((display_num_tracks || display_all) && vmg_ifo) {
 
-		num_tracks = dvd_info_num_tracks(vmg_ifo);
 
 		if(verbose)
 			printf("* Tracks: ");
@@ -477,8 +455,6 @@ int main(int argc, char **argv) {
 	// --num-vts
 	// Display number of VTSs on DVD
 	if((display_num_vts || display_all) && vmg_ifo) {
-
-		num_vts = dvd_info_num_vts(vmg_ifo);
 
 		if(verbose)
 			printf("* VTS: ");
