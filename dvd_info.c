@@ -411,23 +411,17 @@ int main(int argc, char **argv) {
 	// --id
 	// Display DVDDiscID from libdvdread
 	if(display_id || display_all) {
-
 		dvd_disc_id = DVDDiscID(dvdread_dvd, tmp_buf);
-
 		if(dvd_disc_id == -1) {
 			fprintf(stderr, "dvd_info: querying DVD id failed\n");
 		} else {
-
 			if(verbose || !batch)
 				printf("* Disc ID: ");
-
 			for(x = 0; x < sizeof(tmp_buf); x++) {
 				printf("%02x", tmp_buf[x]);
 			}
 			printf("\n");
-
 		}
-
 	}
 
 	// --title
@@ -444,7 +438,6 @@ int main(int argc, char **argv) {
 	// --num-tracks
 	// Display total number of tracks
 	if((display_num_tracks || display_all) && vmg_ifo) {
-
 
 		if(verbose)
 			printf("* Tracks: ");
@@ -488,21 +481,6 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "dvd_info: cannot display provider id\n");
 
 	}
-
-	// --serial-id
-	// Display serial ID
-	/*
-	if(display_serial_id || display_all) {
-
-		char serial_id[17] = {'\0'};
-		dvd_info_serial_id(dvdnav_dvd, serial_id);
-
-		if(verbose)
-			printf("serial id: ");
-		printf("%s\n", serial_id);
-
-	}
-	*/
 
 	// --vmg-id
 	// Display VMG ID
@@ -585,7 +563,7 @@ int main(int argc, char **argv) {
 		track_ifo = ifoOpen(dvdread_dvd, title_track_ifo_number);
 		vts_ttn = vmg_ifo->tt_srpt->title[title_track_idx].vts_ttn;
 
-		printf("* IFO: %d\n", title_track_ifo_number);
+		printf("* Video Title Set (IFO): %d\n", title_track_ifo_number);
 
 		if(!track_ifo) {
 			fprintf(stderr, "dvd_info: opening IFO %i failed\n", track_number);
