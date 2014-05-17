@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
 	char provider_id[33] = {'\0'};
 	bool has_provider_id = false;
 	char vmg_id[13] = {'\0'};
-	ifo_handle_t *ifo_zero;
+	ifo_handle_t *vmg_ifo;
 	ifo_handle_t *track_ifo = NULL;
 	uint16_t longest_track;
 	uint16_t longest_track_with_subtitles;
@@ -390,18 +390,18 @@ int main(int argc, char **argv) {
 	dvdread_dvd = DVDOpen(device_filename);
 
 	// Open IFO zero -- where all the cool stuff is
-	ifo_zero = ifoOpen(dvdread_dvd, 0);
+	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	// FIXME do a proper exit
-	if(!ifo_zero) {
+	if(!vmg_ifo) {
 		fprintf(stderr, "dvd_info: opening IFO zero failed\n");
 		return 1;
 	}
 
 	// Total # of IFOs
-	num_ifos = ifo_zero->vts_atrt->nr_of_vtss;
+	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
 
 	// Get the total number of title tracks on the DVD
-	num_title_tracks = ifo_zero->tt_srpt->nr_of_srpts;
+	num_title_tracks = vmg_ifo->tt_srpt->nr_of_srpts;
 
 	if(verbose || !batch) {
 
@@ -414,7 +414,7 @@ int main(int argc, char **argv) {
 	if(display_track && (track_number > num_title_tracks || track_number < 1)) {
 		fprintf(stderr, "Invalid track number %d\n", track_number);
 		fprintf(stderr, "Valid track numbers: 0 to %d\n", num_title_tracks);
-		ifoClose(ifo_zero);
+		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
@@ -464,9 +464,9 @@ int main(int argc, char **argv) {
 
 	// --num-tracks
 	// Display total number of tracks
-	if((display_num_tracks || display_all) && ifo_zero) {
+	if((display_num_tracks || display_all) && vmg_ifo) {
 
-		num_tracks = dvd_info_num_tracks(ifo_zero);
+		num_tracks = dvd_info_num_tracks(vmg_ifo);
 
 		if(verbose)
 			printf("* Tracks: ");
@@ -476,15 +476,15 @@ int main(int argc, char **argv) {
 
 	// --num-vts
 	// Display number of VTSs on DVD
-	if((display_num_vts || display_all) && ifo_zero) {
+	if((display_num_vts || display_all) && vmg_ifo) {
 
-		num_vts = dvd_info_num_vts(ifo_zero);
+		num_vts = dvd_info_num_vts(vmg_ifo);
 
 		if(verbose)
 			printf("* VTS: ");
 		printf("%d\n", num_vts);
 
-	} else if((display_num_vts || display_all) && !ifo_zero) {
+	} else if((display_num_vts || display_all) && !vmg_ifo) {
 
 		fprintf(stderr, "dvd_info: cannot display num vts\n");
 
@@ -492,12 +492,12 @@ int main(int argc, char **argv) {
 
 	// --provider-id
 	// Display provider ID
-	if((display_provider_id || display_all) && ifo_zero) {
+	if((display_provider_id || display_all) && vmg_ifo) {
 
 		// Max length of provider ID is 32 letters, so create an array
 		// that has enough size to store the letters and a null
 		// terminator.  Also initialize it with all null terminators.
-		dvd_info_provider_id(ifo_zero, provider_id);
+		dvd_info_provider_id(vmg_ifo, provider_id);
 
 		if(verbose)
 			printf("* Provider ID: ");
@@ -507,7 +507,7 @@ int main(int argc, char **argv) {
 		if(provider_id[0] != '\0')
 			has_provider_id = true;
 
-	} else if((display_provider_id || display_all) && !ifo_zero) {
+	} else if((display_provider_id || display_all) && !vmg_ifo) {
 
 		fprintf(stderr, "dvd_info: cannot display provider id\n");
 
@@ -530,9 +530,9 @@ int main(int argc, char **argv) {
 
 	// --vmg-id
 	// Display VMG ID
-	if((display_vmg_id || display_all) && ifo_zero) {
+	if((display_vmg_id || display_all) && vmg_ifo) {
 
-		dvd_info_vmg_id(ifo_zero, vmg_id);
+		dvd_info_vmg_id(vmg_ifo, vmg_id);
 
 		if(verbose)
 			printf("* VMG: ");
@@ -545,7 +545,7 @@ int main(int argc, char **argv) {
 	if(display_side || display_all) {
 		if(verbose)
 			printf("* Disc Side: ");
-		printf("%i\n", ifo_zero->vmgi_mat->disc_side);
+		printf("%i\n", vmg_ifo->vmgi_mat->disc_side);
 	}
 
 	// Longest tracks
@@ -605,22 +605,22 @@ int main(int argc, char **argv) {
 		printf("[Track %d]\n", track_number);
 
 		title_track_idx = track_number - 1;
-		title_track_ifo_number = dvd_track_ifo_number(ifo_zero, track_number);
+		title_track_ifo_number = dvd_track_ifo_number(vmg_ifo, track_number);
 		track_ifo = ifoOpen(dvdread_dvd, title_track_ifo_number);
-		vts_ttn = ifo_zero->tt_srpt->title[title_track_idx].vts_ttn;
+		vts_ttn = vmg_ifo->tt_srpt->title[title_track_idx].vts_ttn;
 
 		printf("* IFO: %d\n", title_track_ifo_number);
 
 		if(!track_ifo) {
 			fprintf(stderr, "dvd_info: opening IFO %i failed\n", track_number);
-			ifoClose(ifo_zero);
+			ifoClose(vmg_ifo);
 			DVDClose(dvdread_dvd);
 			return 1;
 		}
 
 		if(!track_ifo->vtsi_mat) {
 			printf("Could not open vtsi_mat for track %d\n", track_number);
-			ifoClose(ifo_zero);
+			ifoClose(vmg_ifo);
 			ifoClose(track_ifo);
 			DVDClose(dvdread_dvd);
 			return 1;
@@ -831,8 +831,8 @@ int main(int argc, char **argv) {
 
 	// Cleanup
 
-	if(ifo_zero)
-		ifoClose(ifo_zero);
+	if(vmg_ifo)
+		ifoClose(vmg_ifo);
 
 	if(display_track && track_ifo)
 		ifoClose(track_ifo);

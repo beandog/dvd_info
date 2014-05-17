@@ -35,15 +35,15 @@ int main(int argc, char **argv) {
 	}
 
 	// Open IFO zero
-	ifo_handle_t *ifo_zero;
-	ifo_zero = ifoOpen(dvdread_dvd, 0);
-	if(!ifo_zero) {
+	ifo_handle_t *vmg_ifo;
+	vmg_ifo = ifoOpen(dvdread_dvd, 0);
+	if(!vmg_ifo) {
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
 
-	num_ifos = ifo_zero->vts_atrt->nr_of_vtss;
-	ifoClose(ifo_zero);
+	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
+	ifoClose(vmg_ifo);
 
 	printf("%d\n", num_ifos);
 

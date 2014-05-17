@@ -12,17 +12,17 @@
 
 int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec);
 
-unsigned char dvd_track_ifo_number(const ifo_handle_t *ifo_zero, const int track_number) {
+unsigned char dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_number) {
 
 	// TODO research
 	// Should these be the same number
-	// vts_ttn = ifo_zero->tt_srpt->title[title_track_idx].vts_ttn;
+	// vts_ttn = vmg_ifo->tt_srpt->title[title_track_idx].vts_ttn;
 
 	int idx;
 	unsigned char ifo_number;
 
 	idx = track_number - 1;
-	ifo_number = ifo_zero->tt_srpt->title[idx].title_set_nr;
+	ifo_number = vmg_ifo->tt_srpt->title[idx].title_set_nr;
 
 	return ifo_number;
 
