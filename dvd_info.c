@@ -292,11 +292,6 @@ int main(int argc, char **argv) {
 		debug = true;
 	}
 
-	/** Development Settings **/
-	// Enable verbosity / display_all during development
-	verbose = true;
-	display_all = true;
-
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
 	// of '/dev/dvd'.
