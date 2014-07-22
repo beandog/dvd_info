@@ -98,6 +98,7 @@ int main(int argc, char **argv) {
 	uint16_t num_vts;
 	uint16_t num_tracks;
 	int dvd_disc_id;
+	uint8_t dvd_disc_side;
 	char title[33] = {'\0'};
 	char provider_id[33] = {'\0'};
 	bool has_provider_id = false;
@@ -366,8 +367,20 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+
+	// GRAB ALL THE THINGS
 	// Total # of video title sets (or IFOs)
 	num_vts = dvd_info_num_vts(vmg_ifo);
+	dvd_disc_id = DVDDiscID(dvdread_dvd, tmp_buf);
+	dvd_disc_side = vmg_ifo->vmgi_mat->disc_side;
+	dvd_device_title(device_filename, title);
+	dvd_info_provider_id(vmg_ifo, provider_id);
+	dvd_info_vmg_id(vmg_ifo, vmg_id);
+	longest_track = dvd_info_longest_track(dvdread_dvd);
+	longest_track_with_subtitles = dvd_info_longest_track_with_subtitles(dvdread_dvd);
+	longest_16x9_track = dvd_info_longest_16x9_track(dvdread_dvd);
+	longest_4x3_track = dvd_info_longest_4x3_track(dvdread_dvd);
+	longest_letterbox_track = dvd_info_longest_letterbox_track(dvdread_dvd);
 
 	printf("[DVD]\n");
 
@@ -378,7 +391,6 @@ int main(int argc, char **argv) {
 
 	// --id
 	// Display DVDDiscID from libdvdread
-	dvd_disc_id = DVDDiscID(dvdread_dvd, tmp_buf);
 	if(dvd_disc_id == -1) {
 		fprintf(stderr, "dvd_info: querying DVD id failed\n");
 	} else {
@@ -391,7 +403,6 @@ int main(int argc, char **argv) {
 
 	// --title
 	// Display DVD title
-	dvd_device_title(device_filename, title);
 	printf("Title: ");
 	printf("%s\n", title);
 
@@ -400,7 +411,6 @@ int main(int argc, char **argv) {
 	// Max length of provider ID is 32 letters, so create an array
 	// that has enough size to store the letters and a null
 	// terminator.  Also initialize it with all null terminators.
-	dvd_info_provider_id(vmg_ifo, provider_id);
 
 	// Having an empty provider ID is very common.
 	if(provider_id[0] != '\0')
@@ -411,21 +421,13 @@ int main(int argc, char **argv) {
 
 	// --vmg-id
 	// Display VMG ID
-	dvd_info_vmg_id(vmg_ifo, vmg_id);
 	printf("VMG: ");
 	printf("%s\n", vmg_id);
 
 	// --side
 	// Display disc side
 	printf("Disc Side: ");
-	printf("%i\n", vmg_ifo->vmgi_mat->disc_side);
-
-	// Longest tracks
-	longest_track = dvd_info_longest_track(dvdread_dvd);
-	longest_track_with_subtitles = dvd_info_longest_track_with_subtitles(dvdread_dvd);
-	longest_16x9_track = dvd_info_longest_16x9_track(dvdread_dvd);
-	longest_4x3_track = dvd_info_longest_4x3_track(dvdread_dvd);
-	longest_letterbox_track = dvd_info_longest_letterbox_track(dvdread_dvd);
+	printf("%i\n", dvd_disc_side);
 
 	// --longest-track
 	// Display longest track number ordered by milliseconds
