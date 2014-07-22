@@ -143,7 +143,10 @@ bool dvd_track_valid_aspect_ratio(const ifo_handle_t *track_ifo) {
 
 	aspect_ratio = track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio;
 
-	return aspect_ratio;
+	if(aspect_ratio == 0 || aspect_ratio == 3)
+		return true;
+	else
+		return false;
 
 }
 
