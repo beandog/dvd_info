@@ -32,7 +32,6 @@ void print_usage(char *binary) {
 	printf("Usage %s [options] [-t track_number] [dvd path]\n", binary);
 	printf("\n");
 	printf("Display DVD info:\n");
-	printf("  --all			Display all\n");
 	printf("  --id			Unique DVD identifier\n");
 	printf("  --title		DVD title\n");
 	printf("  --num-tracks		Number of tracks\n");
@@ -59,7 +58,6 @@ void print_usage(char *binary) {
 	printf("  --cc			Closed captioning (0 [no], 1 [yes])\n");
 	printf("\n");
 	printf("Display output formats:\n");
-	printf("  -b, --batch		Batch style output\n");
 	printf("  -v, --verbose		Verbose output\n");
 	printf("  -z, --debug		Display debug output\n");
 
@@ -147,13 +145,11 @@ int main(int argc, char **argv) {
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
 	char *str_options;
-	str_options = "bhi:t:vz";
+	str_options = "hi:t:vz";
 
 	// The display_* functions are just false by default, enabled by passing options
-	int batch = 0;
 	int verbose = 0;
 	int debug = 0;
-	int display_all = 0;
 	int display_id = 0;
 	int display_title = 0;
 	int display_num_tracks = 0;
@@ -182,14 +178,8 @@ int main(int argc, char **argv) {
 		{ "device", required_argument, 0, 'i' },
 		{ "track", required_argument, 0, 't' },
 
-		{ "batch", no_argument, & batch, 1 },
 		{ "verbose", no_argument, & verbose, 1 },
 		{ "debug", no_argument, & debug, 1 },
-
-		// These set the value of the display_* variables above,
-		// directly to 1 (true) if they are passed.  Only the long
-		// option will trigger them.  fex, '--num-tracks'
-		{ "all", no_argument, & display_all, 1 },
 
 		// DVD
 		{ "id", no_argument, & display_id, 1 },
@@ -245,10 +235,6 @@ int main(int argc, char **argv) {
 				display_track = true;
 				break;
 
-			case 'b':
-				batch = 1;
-				break;
-
 			case 'v':
 				verbose = 1;
 				break;
@@ -281,17 +267,8 @@ int main(int argc, char **argv) {
 	if(valid_args == false)
 		return 1;
 
-	if(verbose)
-		batch = 0;
-
-	if(debug) {
-		batch = 0;
+	if(debug)
 		verbose = 1;
-	}
-
-	if(verbose || !batch) {
-		printf("[DVD]\n");
-	}
 
 	/** Begin dvd_info :) */
 
@@ -313,11 +290,13 @@ int main(int argc, char **argv) {
 	is_hardware = dvd_device_is_hardware(device_filename);
 	is_image = dvd_device_is_image(device_filename);
 
+	printf("[DVD]\n");
+
 	// Poll drive status if it is hardware
 	if(is_hardware) {
 		drive_status = dvd_drive_get_status(device_filename);
 		// FIXME send to stderr
-		if(verbose || !batch) {
+		if(verbose) {
 			printf("* Drive status: ");
 			dvd_drive_display_status(device_filename);
 		}
@@ -387,7 +366,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Display starter information
-	if(verbose || !batch) {
+	if(verbose) {
 		// # IFOs
 		printf("Video Title Sets: %d\n", num_vts);
 		printf("Tracks: %d\n", num_tracks);
@@ -395,12 +374,12 @@ int main(int argc, char **argv) {
 
 	// --id
 	// Display DVDDiscID from libdvdread
-	if(verbose || !batch) {
+	if(verbose) {
 		dvd_disc_id = DVDDiscID(dvdread_dvd, tmp_buf);
 		if(dvd_disc_id == -1) {
 			fprintf(stderr, "dvd_info: querying DVD id failed\n");
 		} else {
-			if(verbose || !batch)
+			if(verbose)
 				printf("Disc ID: ");
 			for(x = 0; x < sizeof(tmp_buf); x++) {
 				printf("%02x", tmp_buf[x]);
@@ -411,7 +390,7 @@ int main(int argc, char **argv) {
 
 	// --title
 	// Display DVD title
-	if(verbose || display_title || display_all) {
+	if(verbose || display_title) {
 
 		dvd_device_title(device_filename, title);
 		if(verbose)
@@ -422,7 +401,7 @@ int main(int argc, char **argv) {
 
 	// --num-tracks
 	// Display total number of tracks
-	if(display_num_tracks || display_all) {
+	if(display_num_tracks) {
 
 		if(verbose)
 			printf("* Tracks: ");
@@ -432,13 +411,13 @@ int main(int argc, char **argv) {
 
 	// --num-vts
 	// Display number of VTSs on DVD
-	if((display_num_vts || display_all) && vmg_ifo) {
+	if((display_num_vts) && vmg_ifo) {
 
 		if(verbose)
 			printf("* VTS: ");
 		printf("%d\n", num_vts);
 
-	} else if((display_num_vts || display_all) && !vmg_ifo) {
+	} else if((display_num_vts) && !vmg_ifo) {
 
 		fprintf(stderr, "dvd_info: cannot display num vts\n");
 
@@ -446,7 +425,7 @@ int main(int argc, char **argv) {
 
 	// --provider-id
 	// Display provider ID
-	if((display_provider_id || display_all) && vmg_ifo) {
+	if((display_provider_id) && vmg_ifo) {
 
 		// Max length of provider ID is 32 letters, so create an array
 		// that has enough size to store the letters and a null
@@ -461,7 +440,7 @@ int main(int argc, char **argv) {
 		if(provider_id[0] != '\0')
 			has_provider_id = true;
 
-	} else if((display_provider_id || display_all) && !vmg_ifo) {
+	} else if((display_provider_id) && !vmg_ifo) {
 
 		fprintf(stderr, "dvd_info: cannot display provider id\n");
 
@@ -469,7 +448,7 @@ int main(int argc, char **argv) {
 
 	// --vmg-id
 	// Display VMG ID
-	if((display_vmg_id || display_all) && vmg_ifo) {
+	if((display_vmg_id) && vmg_ifo) {
 
 		dvd_info_vmg_id(vmg_ifo, vmg_id);
 
@@ -481,7 +460,7 @@ int main(int argc, char **argv) {
 
 	// --side
 	// Display disc side
-	if(display_side || display_all) {
+	if(display_side) {
 		if(verbose)
 			printf("* Disc Side: ");
 		printf("%i\n", vmg_ifo->vmgi_mat->disc_side);
@@ -496,7 +475,7 @@ int main(int argc, char **argv) {
 
 	// --longest-track
 	// Display longest track number ordered by milliseconds
-	if(display_longest_track || display_all) {
+	if(display_longest_track) {
 		if(verbose)
 			printf("* Longest track: ");
 		printf("%i\n", longest_track);
@@ -643,7 +622,7 @@ int main(int argc, char **argv) {
 
 		// --video-codec
 		// Display video codec
-		if(display_video_codec || display_all) {
+		if(display_video_codec) {
 			if(verbose)
 				printf("* Video Codec: ");
 			printf("%s\n", video_codec);
@@ -651,7 +630,7 @@ int main(int argc, char **argv) {
 
 		// --video-format
 		// Display video format
-		if(display_video_format || display_all) {
+		if(display_video_format) {
 			if(verbose)
 				printf("* Video Format: ");
 			printf("%s\n", video_format);
@@ -659,7 +638,7 @@ int main(int argc, char **argv) {
 
 		// --aspect-ratio
 		// Display aspect ratio
-		if(display_aspect_ratio || display_all) {
+		if(display_aspect_ratio) {
 			if(verbose)
 				printf("* Aspect Ratio: ");
 			printf("%s\n", aspect_ratio);
@@ -667,7 +646,7 @@ int main(int argc, char **argv) {
 
 		// --video-width
 		// Display video width
-		if(display_video_width || display_all) {
+		if(display_video_width) {
 			if(verbose)
 				printf("* Video Width: ");
 			printf("%i\n", video_width);
@@ -675,7 +654,7 @@ int main(int argc, char **argv) {
 
 		// --video-height
 		// Display video height
-		if(display_video_height || display_all) {
+		if(display_video_height) {
 			if(verbose)
 				printf("* Video Height: ");
 			printf("%i\n", video_height);
@@ -683,7 +662,7 @@ int main(int argc, char **argv) {
 
 		// --letterbox
 		// Display letterbox
-		if(display_letterbox || display_all) {
+		if(display_letterbox) {
 			if(verbose)
 				printf("* Letterbox: ");
 			if(letterbox)
@@ -695,7 +674,7 @@ int main(int argc, char **argv) {
 		// Display Closed Captioning
 		// Not sure if this is right or not
 		/*
-		if(display_cc || display_all) {
+		if(display_cc) {
 			if(verbose)
 				printf("closed captioning: ");
 			printf("1\n");
@@ -704,7 +683,7 @@ int main(int argc, char **argv) {
 
 		// --num-subtitles
 		// Display number of subtitles
-		if(display_num_subtitles || display_all) {
+		if(display_num_subtitles) {
 			if(verbose)
 				printf("* Subtitles: ");
 			printf("%i\n", subtitles);
@@ -713,7 +692,7 @@ int main(int argc, char **argv) {
 		// Title track length (HH:MM:SS.MS)
 		dvd_track_str_length(&pgc->playback_time, title_track_length);
 
-		if(display_playback_length || display_all) {
+		if(display_playback_length) {
 			if(verbose)
 				printf("* Length: ");
 			printf("%s\n", title_track_length);
@@ -721,7 +700,7 @@ int main(int argc, char **argv) {
 
 		// --num-audio-streams
 		// Display number of audio streams
-		if(display_num_audio_streams || display_all) {
+		if(display_num_audio_streams) {
 			if(verbose)
 				printf("* Audio Streams: ");
 			printf("%i\n", num_audio_streams);
