@@ -67,37 +67,53 @@ void print_usage(char *binary) {
 
 int main(int argc, char **argv) {
 
-	int dvd_fd;
-	int drive_status;
-	uint16_t num_vts;
-	uint16_t num_tracks;
-	int dvd_disc_id;
+
+	/** temporary variables */
 	unsigned char tmp_buf[16] = {'\0'};
 	unsigned long x = 0;
+
+	// libdvdread
+	int dvd_fd;
+	dvd_reader_t *dvdread_dvd;
+	ifo_handle_t *vmg_ifo;
+	ifo_handle_t *track_ifo = NULL;
+	uint8_t vts_ttn;
+	pgc_t *pgc;
+	pgcit_t *vts_pgcit;
+
+	// Device hardware
+	char *device_filename = DEFAULT_DVD_DEVICE;
+	int drive_status;
 	__useconds_t sleepy_time = 1000000;
 	int num_naps = 0;
 	int max_num_naps = 60;
+	bool is_hardware = false;
+	bool is_image = false;
+
+	// DVD
+	uint16_t num_vts;
+	uint16_t num_tracks;
+	int dvd_disc_id;
 	char title[33] = {'\0'};
-	dvd_reader_t *dvdread_dvd;
 	char provider_id[33] = {'\0'};
 	bool has_provider_id = false;
 	char vmg_id[13] = {'\0'};
-	ifo_handle_t *vmg_ifo;
-	ifo_handle_t *track_ifo = NULL;
 	uint16_t longest_track;
 	uint16_t longest_track_with_subtitles;
 	uint16_t longest_16x9_track;
 	uint16_t longest_4x3_track;
 	uint16_t longest_letterbox_track;
 	uint16_t longest_pan_scan_track;
+
+	// Track
+	int track_number = 0;
+	int title_track_idx;
+	uint8_t title_track_ifo_number;
+
+	// Video
 	char *video_codec;
 	char *video_format;
 	char *aspect_ratio;
-	int title_track_idx;
-	uint8_t title_track_ifo_number;
-	uint8_t vts_ttn;
-	pgc_t *pgc;
-	pgcit_t *vts_pgcit;
 	bool valid_video_codec = false;
 	unsigned int video_height = 0;
 	bool valid_video_format = false;
@@ -106,38 +122,37 @@ int main(int argc, char **argv) {
 	unsigned int video_width = 720;
 	bool valid_video_width = true;
 	bool letterbox = false;
+
+	// Audio
+	uint8_t num_audio_streams;
+
+	// Subtitles
+	uint8_t subtitles;
 	bool has_cc = false;
 	bool has_cc_1 = false;
 	bool has_cc_2 = false;
-	uint8_t num_audio_streams;
-	uint8_t subtitles;
+
 	// Originally 14, causes bug
 	char title_track_length[13] = {'\0'};
-
-	// DVD track number -- default to 0, which basically means, ignore me.
-	int track_number = 0;
-
-
-	// Do a check to see if the DVD filename given is hardware ('/dev/foo')
-	bool is_hardware = false;
-	// Or if it's an image file, filename (ISO, UDF, etc.)
-	bool is_image = false;
 
 	// Output formats
 	bool batch = false;
 	bool verbose = false;
 	bool debug = false;
 
-	// Default to '/dev/dvd' by default
-	// FIXME check to see if the filename exists, and if not, poll /dev/sr0 instead
-	char* device_filename = DEFAULT_DVD_DEVICE;
-
-	/** Begin GNU getopt_long **/
-	// Specific variables to getopt_long
+	// getopt_long
 	int long_index = 0;
 	int opt;
 	// Send 'invalid argument' to stderr
-	opterr = 1;
+	opterr= 1;
+	// Check for invalid input
+	bool valid_args = true;
+	// Not enabled by an argument, set internally
+	bool display_track = false;
+	// I could probably come up with a better variable name. I probably would if
+	// I understood getopt better. :T
+	char *str_options;
+	str_options = "hi:t:v";
 
 	// The display_* functions are just false by default, enabled by passing options
 	int display_all = 0;
@@ -164,9 +179,6 @@ int main(int argc, char **argv) {
 	int display_batch = 0;
 	int display_verbose = 0;
 	int display_debug = 0;
-
-	// Not enabled by an argument, set manually
-	bool display_track = false;
 
 	struct option long_options[] = {
 
@@ -218,14 +230,7 @@ int main(int argc, char **argv) {
 		{ 0, 0, 0, 0 }
 	};
 
-	// I could probably come up with a better variable name. I probably would if
-	// I understood getopt better. :T
-	char *str_options;
-	str_options = "hi:t:v";
-
-	// Check for invalid input
-	bool valid_args = true;
-
+	// parse options
 	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
 
 		// It's worth noting that if there are unknown options passed,
@@ -270,6 +275,13 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	// If '-i /dev/device' is not passed, then set it to the string
+	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
+	// of '/dev/dvd'.
+	if (argv[optind]) {
+		device_filename = argv[optind];
+	}
+
 	// Exit after all invalid input warnings have been sent
 	if(valid_args == false)
 		return 1;
@@ -290,13 +302,6 @@ int main(int argc, char **argv) {
 		if(!display_all)
 			display_all = 1;
 		debug = true;
-	}
-
-	// If '-i /dev/device' is not passed, then set it to the string
-	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
-	// of '/dev/dvd'.
-	if (argv[optind]) {
-		device_filename = argv[optind];
 	}
 
 	if(verbose || !batch) {
