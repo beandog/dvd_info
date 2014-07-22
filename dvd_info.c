@@ -135,11 +135,6 @@ int main(int argc, char **argv) {
 	// Originally 14, causes bug
 	char title_track_length[13] = {'\0'};
 
-	// Output formats
-	bool batch = false;
-	bool verbose = false;
-	bool debug = false;
-
 	// getopt_long
 	int long_index = 0;
 	int opt;
@@ -155,6 +150,9 @@ int main(int argc, char **argv) {
 	str_options = "bhi:t:vz";
 
 	// The display_* functions are just false by default, enabled by passing options
+	int batch = 0;
+	int verbose = 0;
+	int debug = 0;
 	int display_all = 0;
 	int display_id = 0;
 	int display_title = 0;
@@ -176,9 +174,6 @@ int main(int argc, char **argv) {
 	int display_num_audio_streams = 0;
 	int display_num_subtitles = 0;
 	int display_playback_length = 0;
-	int display_batch = 0;
-	int display_verbose = 0;
-	int display_debug = 0;
 
 	struct option long_options[] = {
 
@@ -187,9 +182,9 @@ int main(int argc, char **argv) {
 		{ "device", required_argument, 0, 'i' },
 		{ "track", required_argument, 0, 't' },
 
-		{ "batch", no_argument, 0, 'b' },
-		{ "verbose", no_argument, 0, 'v' },
-		{ "debug", no_argument, 0, 'z' },
+		{ "batch", no_argument, & batch, 1 },
+		{ "verbose", no_argument, & verbose, 1 },
+		{ "debug", no_argument, & debug, 1 },
 
 		// These set the value of the display_* variables above,
 		// directly to 1 (true) if they are passed.  Only the long
@@ -255,11 +250,11 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'v':
-				verbose = true;
+				verbose = 1;
 				break;
 
 			case 'z':
-				debug = true;
+				debug = 1;
 				break;
 
 			// ignore unknown arguments
@@ -286,22 +281,12 @@ int main(int argc, char **argv) {
 	if(valid_args == false)
 		return 1;
 
-	if(!batch && display_batch)
-		batch = true;
+	if(verbose)
+		batch = 0;
 
-	if(debug || display_debug || verbose || display_verbose) {
-		if(batch)
-			batch = false;
-		if(!verbose)
-			verbose = true;
-		if(!display_all)
-			display_all = 1;
-	}
-
-	if(!debug && display_debug) {
-		if(!display_all)
-			display_all = 1;
-		debug = true;
+	if(debug) {
+		batch = 0;
+		verbose = 1;
 	}
 
 	if(verbose || !batch) {
