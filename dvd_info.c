@@ -422,7 +422,7 @@ int main(int argc, char **argv) {
 
 	// --num-tracks
 	// Display total number of tracks
-	if((display_num_tracks || display_all) && vmg_ifo) {
+	if(display_num_tracks || display_all) {
 
 		if(verbose)
 			printf("* Tracks: ");
