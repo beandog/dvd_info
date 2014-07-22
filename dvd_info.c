@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
 	char *str_options;
-	str_options = "hi:t:v";
+	str_options = "bhi:t:vz";
 
 	// The display_* functions are just false by default, enabled by passing options
 	int display_all = 0;
