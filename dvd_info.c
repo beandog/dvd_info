@@ -389,11 +389,6 @@ int main(int argc, char **argv) {
 	printf("Title: ");
 	printf("%s\n", title);
 
-	// --num-tracks
-	// Display total number of tracks
-	printf("Tracks: ");
-	printf("%d\n", num_tracks);
-
 	// --provider-id
 	// Display provider ID
 	// Max length of provider ID is 32 letters, so create an array
