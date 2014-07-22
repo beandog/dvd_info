@@ -291,7 +291,6 @@ int main(int argc, char **argv) {
 
 	if(verbose || !batch) {
 		printf("[DVD]\n");
-		printf("* Opening %s\n", device_filename);
 	}
 
 	/** Begin dvd_info :) */
@@ -378,12 +377,6 @@ int main(int argc, char **argv) {
 	// Get the total number of title tracks on the DVD
 	num_tracks = dvd_info_num_tracks(vmg_ifo);
 
-	// Display starter information
-	if(verbose || !batch) {
-		printf("* Video Title Sets (IFOs): %d\n", num_vts);
-		printf("* Title Tracks (Movies / Features): %d\n", num_tracks);
-	}
-
 	// Exit if track number requested does not exist
 	if(display_track && (track_number > num_tracks || track_number < 1)) {
 		fprintf(stderr, "Invalid track number %d\n", track_number);
@@ -393,15 +386,22 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	// Display starter information
+	if(verbose || !batch) {
+		// # IFOs
+		printf("Video Title Sets: %d\n", num_vts);
+		printf("Tracks: %d\n", num_tracks);
+	}
+
 	// --id
 	// Display DVDDiscID from libdvdread
-	if(display_id || display_all) {
+	if(verbose || !batch) {
 		dvd_disc_id = DVDDiscID(dvdread_dvd, tmp_buf);
 		if(dvd_disc_id == -1) {
 			fprintf(stderr, "dvd_info: querying DVD id failed\n");
 		} else {
 			if(verbose || !batch)
-				printf("* Disc ID: ");
+				printf("Disc ID: ");
 			for(x = 0; x < sizeof(tmp_buf); x++) {
 				printf("%02x", tmp_buf[x]);
 			}
@@ -411,11 +411,11 @@ int main(int argc, char **argv) {
 
 	// --title
 	// Display DVD title
-	if(display_title || display_all) {
+	if(verbose || display_title || display_all) {
 
 		dvd_device_title(device_filename, title);
 		if(verbose)
-			printf("* Title: ");
+			printf("Title: ");
 		printf("%s\n", title);
 
 	}
