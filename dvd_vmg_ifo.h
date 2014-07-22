@@ -204,6 +204,12 @@ uint16_t dvd_info_longest_track(dvd_reader_t *dvdread_dvd);
  * In other words:
  * LONGEST TRACK *may* or *may not* be the LONGEST TRACK WITH SUBTITLES
  *
+ * For example:
+ * Track 5 is 00:32:00 long, with no subtitles.  Perhaps it's a featurette
+ * that accompanies a show that is 30 minutes long.
+ * Track 2 is 00:28:00 long, that does have subtitles.  This is the longest
+ * track that also has subs, so it will return #2.
+ *
  * This is a helper function.  It may or may not come in useful.  It will most
  * likely come in handy when trying to guess what the feature track is.  If it
  * comes down to multiple tracks with the same length, then this can possibly
@@ -245,7 +251,7 @@ uint16_t dvd_info_longest_track_with_subtitles(dvd_reader_t *dvdread_dvd);
  * Amazon: http://www.amazon.com/Bugs-Life-Two-Disc-Collectors/dp/B00007LVCM
  *
  * @param dvdread_dvd libdvdread handler
- * @return longest track number that has 16:9 aspect ratio or a -1 if no tracks
+ * @return longest track number that has 16:9 aspect ratio or 0 if no tracks
  * are found
  */
 uint16_t dvd_info_longest_16x9_track(dvd_reader_t *dvdread_dvd);
@@ -256,7 +262,7 @@ uint16_t dvd_info_longest_16x9_track(dvd_reader_t *dvdread_dvd);
  * Same reasoning for the earlier 16:9 function.
  *
  * @param dvdread_dvd libdvdread handler
- * @return longest track number that has 4:3 aspect ratio or a -1 if no tracks
+ * @return longest track number that has 4:3 aspect ratio or 0 if no tracks
  * are found
  */
 uint16_t dvd_info_longest_4x3_track(dvd_reader_t *dvdread_dvd);
@@ -287,8 +293,8 @@ uint16_t dvd_info_longest_4x3_track(dvd_reader_t *dvdread_dvd);
  * It does, however, help narrow the options down if it comes to this level.
  *
  * @param dvdread_dvd libdvdread handler
- * @return longest track number that has a display format of Letterbox or a
- * -1 if no tracks with the attribute are found
+ * @return longest track number that has a display format of Letterbox or 0
+ * if no tracks with the attribute are found
  */
 uint16_t dvd_info_longest_letterbox_track(dvd_reader_t *dvdread_dvd);
 
@@ -298,7 +304,7 @@ uint16_t dvd_info_longest_letterbox_track(dvd_reader_t *dvdread_dvd);
  * See the previous commentary on the last function for reasoning.
  *
  * @param dvdread_dvd libdvdread handler
- * @return longest track number that has a display format of Pan & Scan, or a
- * -1 if no tracks with the attribute are found
+ * @return longest track number that has a display format of Pan & Scan, or 0
+ * if no tracks with the attribute are found
  */
 uint16_t dvd_info_longest_pan_scan_track(dvd_reader_t *dvdread_dvd);
