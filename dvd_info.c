@@ -366,105 +366,58 @@ int main(int argc, char **argv) {
 	}
 
 	// Display starter information
-	if(verbose) {
-		// # IFOs
-		printf("Video Title Sets: %d\n", num_vts);
-		printf("Tracks: %d\n", num_tracks);
-	}
+	// # Video Title Sets (VTS) / IFOs
+	printf("Total VTS: %d\n", num_vts);
+	printf("Tracks: %d\n", num_tracks);
 
 	// --id
 	// Display DVDDiscID from libdvdread
-	if(verbose) {
-		dvd_disc_id = DVDDiscID(dvdread_dvd, tmp_buf);
-		if(dvd_disc_id == -1) {
-			fprintf(stderr, "dvd_info: querying DVD id failed\n");
-		} else {
-			if(verbose)
-				printf("Disc ID: ");
-			for(x = 0; x < sizeof(tmp_buf); x++) {
-				printf("%02x", tmp_buf[x]);
-			}
-			printf("\n");
+	dvd_disc_id = DVDDiscID(dvdread_dvd, tmp_buf);
+	if(dvd_disc_id == -1) {
+		fprintf(stderr, "dvd_info: querying DVD id failed\n");
+	} else {
+		printf("Disc ID: ");
+		for(x = 0; x < sizeof(tmp_buf); x++) {
+			printf("%02x", tmp_buf[x]);
 		}
+		printf("\n");
 	}
 
 	// --title
 	// Display DVD title
-	if(verbose || display_title) {
-
-		dvd_device_title(device_filename, title);
-		if(verbose)
-			printf("Title: ");
-		printf("%s\n", title);
-
-	}
+	dvd_device_title(device_filename, title);
+	printf("Title: ");
+	printf("%s\n", title);
 
 	// --num-tracks
 	// Display total number of tracks
-	if(display_num_tracks) {
-
-		if(verbose)
-			printf("* Tracks: ");
-		printf("%d\n", num_tracks);
-
-	}
-
-	// --num-vts
-	// Display number of VTSs on DVD
-	if((display_num_vts) && vmg_ifo) {
-
-		if(verbose)
-			printf("* VTS: ");
-		printf("%d\n", num_vts);
-
-	} else if((display_num_vts) && !vmg_ifo) {
-
-		fprintf(stderr, "dvd_info: cannot display num vts\n");
-
-	}
+	printf("Tracks: ");
+	printf("%d\n", num_tracks);
 
 	// --provider-id
 	// Display provider ID
-	if((display_provider_id) && vmg_ifo) {
+	// Max length of provider ID is 32 letters, so create an array
+	// that has enough size to store the letters and a null
+	// terminator.  Also initialize it with all null terminators.
+	dvd_info_provider_id(vmg_ifo, provider_id);
 
-		// Max length of provider ID is 32 letters, so create an array
-		// that has enough size to store the letters and a null
-		// terminator.  Also initialize it with all null terminators.
-		dvd_info_provider_id(vmg_ifo, provider_id);
+	// Having an empty provider ID is very common.
+	if(provider_id[0] != '\0')
+		has_provider_id = true;
 
-		if(verbose)
-			printf("* Provider ID: ");
-		printf("%s\n", provider_id);
-
-		// Having an empty provider ID is very common.
-		if(provider_id[0] != '\0')
-			has_provider_id = true;
-
-	} else if((display_provider_id) && !vmg_ifo) {
-
-		fprintf(stderr, "dvd_info: cannot display provider id\n");
-
-	}
+	printf("Provider ID: ");
+	printf("%s\n", provider_id);
 
 	// --vmg-id
 	// Display VMG ID
-	if((display_vmg_id) && vmg_ifo) {
-
-		dvd_info_vmg_id(vmg_ifo, vmg_id);
-
-		if(verbose)
-			printf("* VMG: ");
-		printf("%s\n", vmg_id);
-
-	}
+	dvd_info_vmg_id(vmg_ifo, vmg_id);
+	printf("VMG: ");
+	printf("%s\n", vmg_id);
 
 	// --side
 	// Display disc side
-	if(display_side) {
-		if(verbose)
-			printf("* Disc Side: ");
-		printf("%i\n", vmg_ifo->vmgi_mat->disc_side);
-	}
+	printf("Disc Side: ");
+	printf("%i\n", vmg_ifo->vmgi_mat->disc_side);
 
 	// Longest tracks
 	longest_track = dvd_info_longest_track(dvdread_dvd);
@@ -475,28 +428,16 @@ int main(int argc, char **argv) {
 
 	// --longest-track
 	// Display longest track number ordered by milliseconds
-	if(display_longest_track) {
-		if(verbose)
-			printf("* Longest track: ");
-		printf("%i\n", longest_track);
-
-		if(verbose)
-			printf("* Longest track with subtitles: ");
-		printf("%i\n", longest_track_with_subtitles);
-
-		if(verbose)
-			printf("* Longest 16x9 track: ");
-		printf("%i\n", longest_16x9_track);
-
-		if(verbose)
-			printf("* Longest 4x3 track: ");
-		printf("%i\n", longest_4x3_track);
-
-		if(verbose)
-			printf("* Longest letterbox track: ");
-		printf("%i\n", longest_letterbox_track);
-
-	}
+	printf("Longest track: ");
+	printf("%i\n", longest_track);
+	printf("Longest track with subtitles: ");
+	printf("%i\n", longest_track_with_subtitles);
+	printf("Longest 16x9 track: ");
+	printf("%i\n", longest_16x9_track);
+	printf("Longest 4x3 track: ");
+	printf("%i\n", longest_4x3_track);
+	printf("Longest letterbox track: ");
+	printf("%i\n", longest_letterbox_track);
 
 	// --ifo-dump
 	// Display all the IFO information possible
@@ -518,7 +459,7 @@ int main(int argc, char **argv) {
 	 * Track information
 	 */
 
-	if(display_track && track_number) {
+	if(track_number) {
 
 		printf("[Track %d]\n", track_number);
 
@@ -527,7 +468,7 @@ int main(int argc, char **argv) {
 		track_ifo = ifoOpen(dvdread_dvd, title_track_ifo_number);
 		vts_ttn = vmg_ifo->tt_srpt->title[title_track_idx].vts_ttn;
 
-		printf("* Video Title Set (IFO): %d\n", title_track_ifo_number);
+		printf("Video Title Set (IFO): %d\n", title_track_ifo_number);
 
 		if(!track_ifo) {
 			fprintf(stderr, "dvd_info: opening IFO %i failed\n", track_number);
@@ -622,89 +563,60 @@ int main(int argc, char **argv) {
 
 		// --video-codec
 		// Display video codec
-		if(display_video_codec) {
-			if(verbose)
-				printf("* Video Codec: ");
-			printf("%s\n", video_codec);
-		}
+		printf("Video Codec: ");
+		printf("%s\n", video_codec);
 
 		// --video-format
 		// Display video format
-		if(display_video_format) {
-			if(verbose)
-				printf("* Video Format: ");
-			printf("%s\n", video_format);
-		}
+		if(verbose)
+		printf("Video Format: ");
+		printf("%s\n", video_format);
 
 		// --aspect-ratio
 		// Display aspect ratio
-		if(display_aspect_ratio) {
-			if(verbose)
-				printf("* Aspect Ratio: ");
-			printf("%s\n", aspect_ratio);
-		}
+		printf("Aspect Ratio: ");
+		printf("%s\n", aspect_ratio);
 
 		// --video-width
 		// Display video width
-		if(display_video_width) {
-			if(verbose)
-				printf("* Video Width: ");
-			printf("%i\n", video_width);
-		}
+		printf("Video Width: ");
+		printf("%i\n", video_width);
 
 		// --video-height
 		// Display video height
-		if(display_video_height) {
-			if(verbose)
-				printf("* Video Height: ");
-			printf("%i\n", video_height);
-		}
+		printf("Video Height: ");
+		printf("%i\n", video_height);
 
 		// --letterbox
 		// Display letterbox
-		if(display_letterbox) {
-			if(verbose)
-				printf("* Letterbox: ");
-			if(letterbox)
-				printf("1\n");
-			else
-				printf("0\n");
-		}
+		printf("Letterbox: ");
+		if(letterbox)
+			printf("1\n");
+		else
+			printf("0\n");
 
 		// Display Closed Captioning
 		// Not sure if this is right or not
 		/*
-		if(display_cc) {
-			if(verbose)
-				printf("closed captioning: ");
-			printf("1\n");
-		}
+		printf("closed captioning: ");
+		printf("1\n");
 		*/
 
 		// --num-subtitles
 		// Display number of subtitles
-		if(display_num_subtitles) {
-			if(verbose)
-				printf("* Subtitles: ");
-			printf("%i\n", subtitles);
-		}
+		printf("Subtitles: ");
+		printf("%i\n", subtitles);
 
 		// Title track length (HH:MM:SS.MS)
 		dvd_track_str_length(&pgc->playback_time, title_track_length);
 
-		if(display_playback_length) {
-			if(verbose)
-				printf("* Length: ");
-			printf("%s\n", title_track_length);
-		}
+		printf("Length: ");
+		printf("%s\n", title_track_length);
 
 		// --num-audio-streams
 		// Display number of audio streams
-		if(display_num_audio_streams) {
-			if(verbose)
-				printf("* Audio Streams: ");
-			printf("%i\n", num_audio_streams);
-		}
+		printf("Audio Streams: ");
+		printf("%i\n", num_audio_streams);
 
 		/** Audio Streams **/
 
@@ -718,16 +630,16 @@ int main(int argc, char **argv) {
 			printf("[Audio Track %i]\n", stream_idx + 1);
 
 			dvd_track_audio_lang_code(track_ifo, stream_idx, lang_code);
-			printf("* Language Code: %s\n", lang_code);
+			printf("Language Code: %s\n", lang_code);
 
 			dvd_track_audio_codec(track_ifo, stream_idx, audio_codec);
-			printf("* Audio Codec: %s\n", audio_codec);
+			printf("Audio Codec: %s\n", audio_codec);
 
 			audio_channels = dvd_track_audio_num_channels(track_ifo, stream_idx);
-			printf("* Channels: %i\n", audio_channels);
+			printf("Channels: %i\n", audio_channels);
 
 			audio_stream_id = dvd_track_audio_stream_id(track_ifo, stream_idx);
-			printf("* Stream ID: %i\n", audio_stream_id);
+			printf("Stream ID: %i\n", audio_stream_id);
 		}
 
 		for(stream_idx = 0; stream_idx < subtitles; stream_idx++) {
@@ -735,7 +647,7 @@ int main(int argc, char **argv) {
 			printf("[Subtitle Track %i]\n", stream_idx + 1);
 
 			dvd_track_subtitle_lang_code(track_ifo, stream_idx, lang_code);
-			printf("* Language Code: %s\n", lang_code);
+			printf("Language Code: %s\n", lang_code);
 
 		}
 
