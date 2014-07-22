@@ -296,8 +296,6 @@ int main(int argc, char **argv) {
 	is_hardware = dvd_device_is_hardware(device_filename);
 	is_image = dvd_device_is_image(device_filename);
 
-	printf("[DVD]\n");
-
 	// Poll drive status if it is hardware
 	if(is_hardware) {
 		drive_status = dvd_drive_get_status(device_filename);
@@ -370,6 +368,8 @@ int main(int argc, char **argv) {
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
+
+	printf("[DVD]\n");
 
 	// Display starter information
 	// # Video Title Sets (VTS) / IFOs
