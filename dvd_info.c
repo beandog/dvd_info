@@ -563,7 +563,6 @@ int main(int argc, char **argv) {
 
 		// --video-format
 		// Display video format
-		if(verbose)
 		printf("Video Format: ");
 		printf("%s\n", video_format);
 
