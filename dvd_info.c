@@ -31,6 +31,9 @@ void print_usage(char *binary) {
 
 	printf("Usage %s [options] [-t track_number] [dvd path]\n", binary);
 	printf("\n");
+	printf("Options:\n");
+	printf("  --ifo-dump		Full dump of all IFO information from libdvdread\n");
+	/*
 	printf("Display DVD info:\n");
 	printf("  --id			Unique DVD identifier\n");
 	printf("  --title		DVD title\n");
@@ -56,10 +59,13 @@ void print_usage(char *binary) {
 	printf("\n");
 	printf("Display subtitle info:\n");
 	printf("  --cc			Closed captioning (0 [no], 1 [yes])\n");
+	*/
+	/**
 	printf("\n");
 	printf("Display output formats:\n");
 	printf("  -v, --verbose		Verbose output\n");
 	printf("  -z, --debug		Display debug output\n");
+	*/
 
 }
 
