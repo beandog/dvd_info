@@ -354,20 +354,20 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// Total # of video title sets (or IFOs)
-	num_vts = dvd_info_num_vts(vmg_ifo);
-
 	// Get the total number of title tracks on the DVD
 	num_tracks = dvd_info_num_tracks(vmg_ifo);
 
 	// Exit if track number requested does not exist
 	if(display_track && (track_number > num_tracks || track_number < 1)) {
 		fprintf(stderr, "Invalid track number %d\n", track_number);
-		fprintf(stderr, "Valid track numbers: 0 to %d\n", num_tracks);
+		fprintf(stderr, "Valid track numbers: 1 to %d\n", num_tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
+
+	// Total # of video title sets (or IFOs)
+	num_vts = dvd_info_num_vts(vmg_ifo);
 
 	printf("[DVD]\n");
 
