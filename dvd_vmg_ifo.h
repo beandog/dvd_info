@@ -156,16 +156,11 @@ uint8_t dvd_info_side(const ifo_handle_t *ifo);
 /**
  * Get the DVD serial id from dvdnav
  *
- * Serial ID gathered using libdvdnav.  I haven't been able to tell if the
- * values are unique or not, but I'd gather that they are not.  It's a 16
- * letter string at the max.
+ * These strings are set by the DVD authoring software.  They are not unique.
  *
  * Some examples:
  * - Good Night, and Good Luck: 33905bf9
  * - Shipwrecked! (PAL): 3f69708e___mvb__
- *
- * I would recommend *not* using these as unique identifiers -- mostly because
- * I don't know how they are generated.
  *
  * @param dvdnav dvdnav_t
  * @param p char[17] to copy the string to
