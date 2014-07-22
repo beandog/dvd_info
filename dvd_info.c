@@ -381,6 +381,7 @@ int main(int argc, char **argv) {
 	longest_16x9_track = dvd_info_longest_16x9_track(dvdread_dvd);
 	longest_4x3_track = dvd_info_longest_4x3_track(dvdread_dvd);
 	longest_letterbox_track = dvd_info_longest_letterbox_track(dvdread_dvd);
+	longest_pan_scan_track = dvd_info_longest_pan_scan_track(dvdread_dvd);
 
 	printf("[DVD]\n");
 
@@ -441,6 +442,8 @@ int main(int argc, char **argv) {
 	printf("%i\n", longest_4x3_track);
 	printf("Longest letterbox track: ");
 	printf("%i\n", longest_letterbox_track);
+	printf("Longest pan & scan track: ");
+	printf("%i\n", longest_pan_scan_track);
 
 	// --ifo-dump
 	// Display all the IFO information possible
