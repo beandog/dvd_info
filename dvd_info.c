@@ -622,7 +622,7 @@ int main(int argc, char **argv) {
 		uint8_t stream_idx;
 
 		for(stream_idx = 0; stream_idx < num_audio_streams; stream_idx++) {
-			printf("[Audio Track %i]\n", stream_idx + 1);
+			printf("[Audio Track %i:%i]\n", track_number, stream_idx + 1);
 
 			dvd_track_audio_lang_code(track_ifo, stream_idx, lang_code);
 			printf("Language Code: %s\n", lang_code);
@@ -639,7 +639,7 @@ int main(int argc, char **argv) {
 
 		for(stream_idx = 0; stream_idx < subtitles; stream_idx++) {
 
-			printf("[Subtitle Track %i]\n", stream_idx + 1);
+			printf("[Subtitle Track %i:%i]\n", track_number, stream_idx + 1);
 
 			dvd_track_subtitle_lang_code(track_ifo, stream_idx, lang_code);
 			printf("Language Code: %s\n", lang_code);
