@@ -12,8 +12,8 @@
 #include <linux/limits.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
-#include "dvd_device.h"
-#include "dvd_drive.h"
+#include "dvd_info/dvd_device.h"
+#include "dvd_info/dvd_drive.h"
 
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
 

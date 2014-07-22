@@ -6,7 +6,7 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <linux/cdrom.h>
-#include "dvd_device.h"
+#include "dvd_info/dvd_device.h"
 
 bool dvd_device_access(const char* device_filename) {
 
