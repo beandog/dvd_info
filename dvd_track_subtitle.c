@@ -31,10 +31,6 @@ int dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const int subtitle
 
 int dvd_track_subtitle_stream_id(const int subtitle_track) {
 
-	int subtitle_stream_id;
-
-	subtitle_stream_id = 0x20 + subtitle_track;
-
-	return subtitle_stream_id;
+	return 0x20 + subtitle_track;
 
 }
