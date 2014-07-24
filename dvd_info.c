@@ -279,7 +279,6 @@ int main(int argc, char **argv) {
 	dvd_info.video_title_sets = dvd_info_num_vts(vmg_ifo);
 	for(uint16_t vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
-		printf("Opening VTS IFO %d\n", vts);
 		vts_ifo = ifoOpen(dvdread_dvd, vts);
 		if(!vts_ifo) {
 			fprintf(stderr, "Opening VTS IFO %d failed!\n", vts);
