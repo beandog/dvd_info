@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
 
 	// DVD
 	uint16_t video_title_sets;
-	uint16_t num_tracks;
+	uint16_t tracks;
 	int dvd_disc_id;
 	uint8_t dvd_disc_side;
 	char title[33] = {'\0'};
@@ -230,12 +230,12 @@ int main(int argc, char **argv) {
 	}
 
 	// Get the total number of title tracks on the DVD
-	num_tracks = dvd_info_num_tracks(vmg_ifo);
+	tracks = dvd_info_num_tracks(vmg_ifo);
 
 	// Exit if track number requested does not exist
-	if(track_number > num_tracks || track_number < 1) {
+	if(track_number > tracks || track_number < 1) {
 		fprintf(stderr, "Invalid track number %d\n", track_number);
-		fprintf(stderr, "Valid track numbers: 1 to %d\n", num_tracks);
+		fprintf(stderr, "Valid track numbers: 1 to %d\n", tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -262,7 +262,7 @@ int main(int argc, char **argv) {
 	// Display starter information
 	// # Video Title Sets (VTS) / IFOs
 	printf("Total VTS: %d\n", video_title_sets);
-	printf("Tracks: %d\n", num_tracks);
+	printf("Tracks: %d\n", tracks);
 
 	// Display DVDDiscID from libdvdread
 	if(dvd_disc_id == -1) {
