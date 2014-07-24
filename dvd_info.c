@@ -78,6 +78,7 @@ int main(int argc, char **argv) {
 	unsigned int video_height = 0;
 	unsigned int video_width = 720;
 	bool letterbox = false;
+	bool pan_and_scan = false;
 
 	// Audio
 	uint8_t num_audio_streams;
@@ -382,6 +383,9 @@ int main(int argc, char **argv) {
 		// Letterbox
 		letterbox = dvd_track_letterbox_video(track_ifo);
 
+		// Pan & Scan
+		pan_and_scan = dvd_track_pan_scan_video(track_ifo);
+
 		// Closed Captioning
 		if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1 || track_ifo->vtsi_mat->vts_video_attr.line21_cc_2) {
 			has_cc = true;
@@ -420,6 +424,13 @@ int main(int argc, char **argv) {
 		// Letterbox
 		printf("Letterbox: ");
 		if(letterbox)
+			printf("1\n");
+		else
+			printf("0\n");
+
+		// Pan & Scan
+		printf("Pan & Scan: ");
+		if(pan_and_scan)
 			printf("1\n");
 		else
 			printf("0\n");
