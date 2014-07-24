@@ -474,6 +474,8 @@ int main(int argc, char **argv) {
 
 		for(stream = 0; stream < dvd_track.audio_tracks; stream++) {
 
+			memset(&dvd_audio, 0, sizeof(dvd_audio));
+
 			dvd_audio.track = stream + 1;
 			dvd_audio.stream = stream;
 			dvd_track_audio_lang_code(track_ifo, stream, dvd_audio.lang_code);
