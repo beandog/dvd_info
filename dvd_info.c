@@ -464,18 +464,8 @@ int main(int argc, char **argv) {
 		printf("Aspect Ratio: %s\n", dvd_video.aspect_ratio);
 		printf("Video Width: %i\n", dvd_video.width);
 		printf("Video Height: %i\n", dvd_video.height);
-		printf("Letterbox: ");
-		if(dvd_video.letterbox)
-			printf("1\n");
-		else
-			printf("0\n");
-
-		// Pan & Scan
-		printf("Pan & Scan: ");
-		if(dvd_video.pan_and_scan)
-			printf("1\n");
-		else
-			printf("0\n");
+		printf("Letterbox: %i\n", dvd_video.letterbox ? 1 : 0);
+		printf("Pan & Scan: %i\n", dvd_video.pan_and_scan ? 1 : 0);
 
 		// Closed Captioning
 		// Not sure if this is right or not
