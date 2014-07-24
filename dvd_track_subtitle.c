@@ -1,4 +1,4 @@
-#include "dvd_info/dvd_track_subtitle.h"
+#include "dvd_track_subtitle.h"
 
 // TODO this function could stand a lot of strict error checking to see what the subtitle status is, and offer different return codes
 // Have dvd_debug check for issues here.

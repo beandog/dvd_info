@@ -15,12 +15,12 @@
 #include <dvdread/ifo_print.h>
 #include <dvdnav/dvdnav.h>
 #include <jansson.h>
-#include "dvd_info/dvd_device.h"
-#include "dvd_info/dvd_drive.h"
-#include "dvd_info/dvd_vmg_ifo.h"
-#include "dvd_info/dvd_track.h"
-#include "dvd_info/dvd_track_audio.h"
-#include "dvd_info/dvd_track_subtitle.h"
+#include "dvd_device.h"
+#include "dvd_drive.h"
+#include "dvd_vmg_ifo.h"
+#include "dvd_track.h"
+#include "dvd_track_audio.h"
+#include "dvd_track_subtitle.h"
 
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
 

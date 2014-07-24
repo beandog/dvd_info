@@ -1,4 +1,4 @@
-#include "dvd_info/dvd_vmg_ifo.h"
+#include "dvd_vmg_ifo.h"
 
 int dvd_device_title(const char *device_filename, char *p) {
 

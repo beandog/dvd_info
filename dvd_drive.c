@@ -5,8 +5,8 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <linux/cdrom.h>
-#include "dvd_info/dvd_device.h"
-#include "dvd_info/dvd_drive.h"
+#include "dvd_device.h"
+#include "dvd_drive.h"
 
 int dvd_drive_get_status(const char *device_filename) {
 

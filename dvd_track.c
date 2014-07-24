@@ -7,8 +7,8 @@
 #include <stdbool.h>
 #include <dvdread/ifo_types.h>
 #include <dvdread/ifo_read.h>
-#include "dvd_info/dvd_track.h"
-#include "dvd_info/dvd_track_audio.h"
+#include "dvd_track.h"
+#include "dvd_track_audio.h"
 
 int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec);
 
