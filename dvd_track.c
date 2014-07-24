@@ -107,7 +107,7 @@ uint16_t dvd_track_video_height(const ifo_handle_t *track_ifo) {
 uint16_t dvd_track_video_width(const ifo_handle_t *track_ifo) {
 
 	int video_width;
-	int video_height;
+	uint16_t video_height;
 	unsigned char picture_size;
 
 	video_width = 0;
