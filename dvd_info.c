@@ -30,6 +30,17 @@ void print_usage(char *binary) {
 
 }
 
+struct dvd_info {
+
+	uint16_t video_title_sets;
+	uint16_t tracks;
+	uint8_t dvd_disc_side;
+	char title[33];
+	char provider_id[33];
+	char vmg_id[13];
+	uint16_t longest_track;
+};
+
 int main(int argc, char **argv) {
 
 	// Device hardware
@@ -54,18 +65,12 @@ int main(int argc, char **argv) {
 	int dvdread_retval;
 
 	// DVD
-	uint16_t video_title_sets;
+	struct dvd_info dvd_info;
+	memset(dvd_info.title, '\0', 33);
+	memset(dvd_info.provider_id, '\0', 33);
+	memset(dvd_info.vmg_id, '\0', 13);
+
 	uint16_t tracks;
-	uint8_t dvd_disc_side;
-	char title[33] = {'\0'};
-	char provider_id[33] = {'\0'};
-	char vmg_id[13] = {'\0'};
-	uint16_t longest_track;
-	uint16_t longest_track_with_subtitles;
-	uint16_t longest_16x9_track;
-	uint16_t longest_4x3_track;
-	uint16_t longest_letterbox_track;
-	uint16_t longest_pan_scan_track;
 
 	// Track
 	int track_number = 0;
@@ -247,17 +252,20 @@ int main(int argc, char **argv) {
 
 	// GRAB ALL THE THINGS
 	// Total # of video title sets (or IFOs)
-	video_title_sets = dvd_info_num_vts(vmg_ifo);
-	dvd_disc_side = vmg_ifo->vmgi_mat->disc_side;
-	dvd_device_title(device_filename, title);
-	dvd_info_provider_id(vmg_ifo, provider_id);
-	dvd_info_vmg_id(vmg_ifo, vmg_id);
-	longest_track = dvd_info_longest_track(dvdread_dvd);
+	dvd_info.video_title_sets = dvd_info_num_vts(vmg_ifo);
+	dvd_info.dvd_disc_side = vmg_ifo->vmgi_mat->disc_side;
+	dvd_device_title(device_filename, dvd_info.title);
+	dvd_info_provider_id(vmg_ifo, dvd_info.provider_id);
+	dvd_info_vmg_id(vmg_ifo, dvd_info.vmg_id);
+	dvd_info.longest_track = dvd_info_longest_track(dvdread_dvd);
+
+	/*
 	longest_track_with_subtitles = dvd_info_longest_track_with_subtitles(dvdread_dvd);
 	longest_16x9_track = dvd_info_longest_16x9_track(dvdread_dvd);
 	longest_4x3_track = dvd_info_longest_4x3_track(dvdread_dvd);
 	longest_letterbox_track = dvd_info_longest_letterbox_track(dvdread_dvd);
 	longest_pan_scan_track = dvd_info_longest_pan_scan_track(dvdread_dvd);
+	*/
 	// libdvdread DVDDiscID()
 	// Convert hex values to a string
 	for(unsigned long x = 0; x < 16; x++) {
@@ -268,29 +276,29 @@ int main(int argc, char **argv) {
 
 	// DVD title
 	printf("Title: ");
-	printf("%s\n", title);
+	printf("%s\n", dvd_info.title);
 
 	// Provider ID
 	printf("Provider ID: ");
-	printf("%s\n", provider_id);
+	printf("%s\n", dvd_info.provider_id);
 
 	// VMG ID
 	printf("VMG: ");
-	printf("%s\n", vmg_id);
+	printf("%s\n", dvd_info.vmg_id);
 
 	// Disc side
 	printf("Disc Side: ");
-	printf("%i\n", dvd_disc_side);
+	printf("%i\n", dvd_info.dvd_disc_side);
 
 	// Video Title Sets / IFOs
-	printf("VTS: %d\n", video_title_sets);
+	printf("VTS: %d\n", dvd_info.video_title_sets);
 
 	// Tracks
 	printf("Tracks: %d\n", tracks);
 
 	// Longest track number ordered by milliseconds
 	printf("Longest track: ");
-	printf("%i\n", longest_track);
+	printf("%i\n", dvd_info.longest_track);
 	/**
 	printf("Longest track with subtitles: ");
 	printf("%i\n", longest_track_with_subtitles);
