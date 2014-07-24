@@ -92,6 +92,7 @@ int main(int argc, char **argv) {
 	unsigned int video_width = 720;
 	bool valid_video_width = true;
 	bool letterbox = false;
+	bool pan_and_scan = false;
 
 	// Audio
 	uint8_t num_audio_streams;
@@ -424,13 +425,15 @@ int main(int argc, char **argv) {
 
 		json_object_set_new(json_dvd_video, "format", json_string(video_format));
 		json_object_set_new(json_dvd_video, "aspect ratio", json_string(aspect_ratio));
-		json_object_set_new(json_dvd_video, "height", json_integer(video_height));
 		json_object_set_new(json_dvd_video, "width", json_integer(video_width));
+		json_object_set_new(json_dvd_video, "height", json_integer(video_height));
 
-		// Letterbox
+		// Letterbox / Pan & Scan
 		letterbox = dvd_track_letterbox_video(track_ifo);
+		pan_and_scan = dvd_track_pan_scan_video(track_ifo);
 
 		json_object_set_new(json_dvd_video, "letterbox", json_integer(letterbox));
+		json_object_set_new(json_dvd_video, "pan and scan", json_integer(pan_and_scan));
 
 		// Closed Captioning
 		if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1 || track_ifo->vtsi_mat->vts_video_attr.line21_cc_2) {
