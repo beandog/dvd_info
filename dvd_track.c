@@ -200,7 +200,7 @@ bool dvd_track_pan_scan_video(const ifo_handle_t *track_ifo) {
 
 }
 
-int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
+void dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
 
 	char *codec;
 
@@ -212,8 +212,6 @@ int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
 		codec = "";
 
 	strncpy(video_codec, codec, 6);
-
-	return 0;
 
 }
 
