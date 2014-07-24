@@ -45,13 +45,12 @@ int main(int argc, char **argv) {
 
 	// libdvdread
 	dvd_reader_t *dvdread_dvd;
-	ifo_handle_t *vmg_ifo;
+	ifo_handle_t *vmg_ifo = NULL;
 	ifo_handle_t *track_ifo = NULL;
 	unsigned char dvdread_id[16] = {'\0'};
 	uint8_t vts_ttn;
 	pgc_t *pgc;
 	pgcit_t *vts_pgcit;
-
 
 	// DVD
 	uint16_t num_vts;
