@@ -76,9 +76,6 @@ int main(int argc, char **argv) {
 	char *video_format;
 	char *aspect_ratio;
 	unsigned int video_height = 0;
-	bool valid_video_format = false;
-	bool valid_video_height = false;
-	bool valid_aspect_ratio = true;
 	unsigned int video_width = 720;
 	bool valid_video_width = true;
 	bool letterbox = false;
@@ -349,13 +346,9 @@ int main(int argc, char **argv) {
 		if(dvd_track_ntsc_video(track_ifo)) {
 			video_format = "NTSC";
 			video_height = 480;
-			valid_video_format = true;
-			valid_video_height = true;
 		} else if(dvd_track_pal_video(track_ifo)) {
 			video_format = "PAL";
 			video_height = 576;
-			valid_video_format = true;
-			valid_video_height = true;
 		} else {
 			video_format = "Unknown";
 		}
@@ -367,7 +360,6 @@ int main(int argc, char **argv) {
 			aspect_ratio = "16:9";
 		else {
 			aspect_ratio = "Unknown";
-			valid_aspect_ratio = false;
 			fprintf(stderr, "Unknown aspect ratio: %i, expected 0 or 3\n", track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio);
 			return 1;
 		}
