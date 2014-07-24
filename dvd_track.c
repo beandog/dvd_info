@@ -81,7 +81,7 @@ bool dvd_track_pal_video(const ifo_handle_t *track_ifo) {
 
 }
 
-int dvd_track_video_height(const ifo_handle_t *track_ifo) {
+uint16_t dvd_track_video_height(const ifo_handle_t *track_ifo) {
 
 	int video_height;
 	unsigned char picture_size;
@@ -94,14 +94,17 @@ int dvd_track_video_height(const ifo_handle_t *track_ifo) {
 	else if(dvd_track_pal_video(track_ifo))
 		video_height = 576;
 
-	if(picture_size == 3 && video_height > 0)
+	if(picture_size == 3 && video_height > 0) {
 		video_height = video_height / 2;
+		if(video_height < 0)
+			video_height = 0;
+	}
 
-	return video_height;
+	return (uint16_t)video_height;
 
 }
 
-int dvd_track_video_width(const ifo_handle_t *track_ifo) {
+uint16_t dvd_track_video_width(const ifo_handle_t *track_ifo) {
 
 	int video_width;
 	int video_height;
@@ -131,7 +134,7 @@ int dvd_track_video_width(const ifo_handle_t *track_ifo) {
 
 	}
 
-	return video_width;
+	return (uint16_t)video_width;
 
 }
 

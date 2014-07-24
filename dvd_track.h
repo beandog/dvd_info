@@ -58,7 +58,7 @@ bool dvd_track_pal_video(const ifo_handle_t *track_ifo);
  * @param track_ifo dvdread track IFO handler
  * @return video height, or 0 for unknown
  */
-int dvd_track_video_height(const ifo_handle_t *track_ifo);
+uint16_t dvd_track_video_height(const ifo_handle_t *track_ifo);
 
 /**
  * Get the video width
@@ -66,7 +66,7 @@ int dvd_track_video_height(const ifo_handle_t *track_ifo);
  * @param track_ifo dvdread track IFO handler
  * @return video width, or 0 for unknown
  */
-int dvd_track_video_width(const ifo_handle_t *track_ifo);
+uint16_t dvd_track_video_width(const ifo_handle_t *track_ifo);
 
 /**
  * Check for a valid aspect ratio (4:3, 16:9)
