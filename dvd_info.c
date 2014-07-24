@@ -51,11 +51,11 @@ int main(int argc, char **argv) {
 	uint8_t vts_ttn;
 	pgc_t *pgc;
 	pgcit_t *vts_pgcit;
+	int dvdread_retval;
 
 	// DVD
 	uint16_t video_title_sets;
 	uint16_t tracks;
-	int dvd_disc_id;
 	uint8_t dvd_disc_side;
 	char title[33] = {'\0'};
 	char provider_id[33] = {'\0'};
@@ -245,7 +245,7 @@ int main(int argc, char **argv) {
 	// GRAB ALL THE THINGS
 	// Total # of video title sets (or IFOs)
 	video_title_sets = dvd_info_num_vts(vmg_ifo);
-	dvd_disc_id = DVDDiscID(dvdread_dvd, dvdread_id);
+	dvdread_retval = DVDDiscID(dvdread_dvd, dvdread_id);
 	dvd_disc_side = vmg_ifo->vmgi_mat->disc_side;
 	dvd_device_title(device_filename, title);
 	dvd_info_provider_id(vmg_ifo, provider_id);
@@ -265,7 +265,7 @@ int main(int argc, char **argv) {
 	printf("Tracks: %d\n", tracks);
 
 	// Display DVDDiscID from libdvdread
-	if(dvd_disc_id == -1) {
+	if(dvdread_retval == -1) {
 		fprintf(stderr, "dvd_info: querying DVD id failed\n");
 	} else {
 		printf("Disc ID: ");
