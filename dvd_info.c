@@ -275,7 +275,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "dvd_info: querying DVD id failed\n");
 	} else {
 		printf("Disc ID: ");
-		for(int x = 0; x < sizeof(dvdread_id); x++) {
+		for(unsigned long x = 0; x < sizeof(dvdread_id); x++) {
 			printf("%02x", dvdread_id[x]);
 		}
 		printf("\n");
