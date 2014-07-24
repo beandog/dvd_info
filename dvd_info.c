@@ -31,13 +31,12 @@ void print_usage(char *binary) {
 }
 
 struct dvd_info {
-
 	uint16_t video_title_sets;
-	uint16_t tracks;
-	uint8_t dvd_disc_side;
+	uint8_t side;
 	char title[33];
 	char provider_id[33];
 	char vmg_id[13];
+	uint16_t tracks;
 	uint16_t longest_track;
 };
 
@@ -69,8 +68,6 @@ int main(int argc, char **argv) {
 	memset(dvd_info.title, '\0', 33);
 	memset(dvd_info.provider_id, '\0', 33);
 	memset(dvd_info.vmg_id, '\0', 13);
-
-	uint16_t tracks;
 
 	// Track
 	int track_number = 0;
@@ -232,12 +229,12 @@ int main(int argc, char **argv) {
 	}
 
 	// Get the total number of title tracks on the DVD
-	tracks = dvd_info_num_tracks(vmg_ifo);
+	dvd_info.tracks = dvd_info_num_tracks(vmg_ifo);
 
 	// Exit if track number requested does not exist
-	if(track_number > tracks || track_number < 0) {
+	if(track_number > dvd_info.tracks || track_number < 0) {
 		fprintf(stderr, "Invalid track number %d\n", track_number);
-		fprintf(stderr, "Valid track numbers: 1 to %d\n", tracks);
+		fprintf(stderr, "Valid track numbers: 1 to %d\n", dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -253,7 +250,7 @@ int main(int argc, char **argv) {
 	// GRAB ALL THE THINGS
 	// Total # of video title sets (or IFOs)
 	dvd_info.video_title_sets = dvd_info_num_vts(vmg_ifo);
-	dvd_info.dvd_disc_side = vmg_ifo->vmgi_mat->disc_side;
+	dvd_info.side = vmg_ifo->vmgi_mat->disc_side;
 	dvd_device_title(device_filename, dvd_info.title);
 	dvd_info_provider_id(vmg_ifo, dvd_info.provider_id);
 	dvd_info_vmg_id(vmg_ifo, dvd_info.vmg_id);
@@ -288,13 +285,13 @@ int main(int argc, char **argv) {
 
 	// Disc side
 	printf("Disc Side: ");
-	printf("%i\n", dvd_info.dvd_disc_side);
+	printf("%i\n", dvd_info.side);
 
 	// Video Title Sets / IFOs
 	printf("VTS: %d\n", dvd_info.video_title_sets);
 
 	// Tracks
-	printf("Tracks: %d\n", tracks);
+	printf("Tracks: %d\n", dvd_info.tracks);
 
 	// Longest track number ordered by milliseconds
 	printf("Longest track: ");
