@@ -77,7 +77,6 @@ int unlock_door(const int cdrom) {
 
 }
 
-
 int main(int argc, char **argv) {
 
 	char *str_options;
@@ -221,4 +220,5 @@ int main(int argc, char **argv) {
 	close(cdrom);
 
 	return 0;
+
 }
