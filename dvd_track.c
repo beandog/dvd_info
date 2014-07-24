@@ -103,9 +103,13 @@ int dvd_track_video_height(const ifo_handle_t *track_ifo) {
 
 int dvd_track_video_width(const ifo_handle_t *track_ifo) {
 
-	int video_width = 0;
-	unsigned char picture_size = track_ifo->vtsi_mat->vts_video_attr.picture_size;
-	int video_height = dvd_track_video_height(track_ifo);
+	int video_width;
+	int video_height;
+	unsigned char picture_size;
+
+	video_width = 0;
+	video_height = dvd_track_video_height(track_ifo);
+	picture_size = track_ifo->vtsi_mat->vts_video_attr.picture_size;
 
 	if(video_height == 0)
 		return 0;
