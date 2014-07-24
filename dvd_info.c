@@ -493,6 +493,8 @@ int main(int argc, char **argv) {
 
 		for(stream = 0; stream < dvd_track.subtitles; stream++) {
 
+			memset(&dvd_subtitle, 0, sizeof(dvd_subtitle));
+
 			dvd_subtitle.track = stream + 1;
 			dvd_subtitle.stream = dvd_track_subtitle_stream_id(stream);
 			dvd_track_subtitle_lang_code(track_ifo, stream, dvd_subtitle.lang_code);
