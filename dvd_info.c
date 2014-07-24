@@ -33,9 +33,6 @@ void print_usage(char *binary) {
 
 int main(int argc, char **argv) {
 
-	/** temporary variables */
-	unsigned long x = 0;
-
 	// libdvdread
 	int dvd_fd;
 	dvd_reader_t *dvdread_dvd;
@@ -278,7 +275,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "dvd_info: querying DVD id failed\n");
 	} else {
 		printf("Disc ID: ");
-		for(x = 0; x < sizeof(dvdread_id); x++) {
+		for(int x = 0; x < sizeof(dvdread_id); x++) {
 			printf("%02x", dvdread_id[x]);
 		}
 		printf("\n");
