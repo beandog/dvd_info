@@ -40,6 +40,23 @@ struct dvd_info {
 	uint16_t longest_track;
 };
 
+struct dvd_track {
+	int number;
+	int title_idx;
+	uint8_t vts;
+	uint8_t chapters;
+};
+
+struct dvd_video {
+	char *codec;
+	char *format;
+	char *aspect_ratio;
+	unsigned int width;
+	unsigned int height;
+	bool letterbox;
+	bool pan_and_scan;
+};
+
 int main(int argc, char **argv) {
 
 	// Device hardware
@@ -70,19 +87,18 @@ int main(int argc, char **argv) {
 	memset(dvd_info.vmg_id, '\0', 13);
 
 	// Track
-	int track_number = 0;
-	int title_track_idx;
-	uint8_t title_track_ifo_number;
-	uint8_t chapters;
+	struct dvd_track dvd_track;
+	dvd_track.number = 0;
+	dvd_track.title_idx = 0;
+	dvd_track.vts = 1;
+	dvd_track.chapters = 1;
 
 	// Video
-	char *video_codec;
-	char *video_format;
-	char *aspect_ratio;
-	unsigned int video_height = 0;
-	unsigned int video_width = 720;
-	bool letterbox = false;
-	bool pan_and_scan = false;
+	struct dvd_video dvd_video;
+	dvd_video.height = 0;
+	dvd_video.width = 0;
+	dvd_video.letterbox = false;
+	dvd_video.pan_and_scan = false;
 
 	// Audio
 	uint8_t num_audio_streams;
@@ -97,6 +113,7 @@ int main(int argc, char **argv) {
 	char title_track_length[13] = {'\0'};
 
 	// getopt_long
+	int track_number = 0;
 	int long_index = 0;
 	int opt;
 	// Send 'invalid argument' to stderr
@@ -318,14 +335,16 @@ int main(int argc, char **argv) {
 
 	if(track_number) {
 
+		dvd_track.number = track_number;
+		dvd_track.title_idx = track_number - 1;
+		dvd_track.vts = dvd_track_ifo_number(vmg_ifo, track_number);
+
 		printf("[Track %d]\n", track_number);
 
-		title_track_idx = track_number - 1;
-		title_track_ifo_number = dvd_track_ifo_number(vmg_ifo, track_number);
-		track_ifo = ifoOpen(dvdread_dvd, title_track_ifo_number);
-		vts_ttn = vmg_ifo->tt_srpt->title[title_track_idx].vts_ttn;
+		track_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
+		vts_ttn = vmg_ifo->tt_srpt->title[dvd_track.title_idx].vts_ttn;
 
-		printf("Video Title Set (IFO): %d\n", title_track_ifo_number);
+		printf("Video Title Set (IFO): %d\n", dvd_track.vts);
 
 		if(!track_ifo) {
 			fprintf(stderr, "dvd_info: opening IFO %i failed\n", track_number);
@@ -345,62 +364,64 @@ int main(int argc, char **argv) {
 		vts_pgcit = track_ifo->vts_pgcit;
 		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
 
-		chapters = pgc->nr_of_programs;
+		dvd_track.chapters = pgc->nr_of_programs;
 
-		printf("Chapters: %i\n", chapters);
+		printf("Chapters: %i\n", dvd_track.chapters);
 
 		// Video codec
 		if(dvd_track_mpeg1(track_ifo)) {
-			video_codec = "MPEG1";
+			dvd_video.codec = "MPEG1";
 		} else if(dvd_track_mpeg2(track_ifo)) {
-			video_codec = "MPEG2";
+			dvd_video.codec = "MPEG2";
 		} else {
-			video_codec = "Unknown";
+			dvd_video.codec = "Unknown";
 		}
 
 		// Video format and height
 		if(dvd_track_ntsc_video(track_ifo)) {
-			video_format = "NTSC";
-			video_height = 480;
+			dvd_video.format = "NTSC";
+			dvd_video.height = 480;
+			dvd_video.width = 720;
 		} else if(dvd_track_pal_video(track_ifo)) {
-			video_format = "PAL";
-			video_height = 576;
+			dvd_video.format = "PAL";
+			dvd_video.height = 576;
+			dvd_video.width = 720;
 		} else {
-			video_format = "Unknown";
+			dvd_video.format = "Unknown";
 		}
 
 		// Aspect ratio
 		if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
-			aspect_ratio = "4:3";
+			dvd_video.aspect_ratio = "4:3";
 		else if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
-			aspect_ratio = "16:9";
+			dvd_video.aspect_ratio = "16:9";
 		else {
-			aspect_ratio = "Unknown";
+			dvd_video.aspect_ratio = "Unknown";
 			fprintf(stderr, "Unknown aspect ratio: %i, expected 0 or 3\n", track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio);
 			return 1;
 		}
 
 		// Video width
 		if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 0) {
-			video_width = 720;
+			dvd_video.width = 720;
 		} else if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 1) {
-			video_width = 704;
+			dvd_video.width = 704;
 		} else if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 2) {
-			video_width = 352;
+			dvd_video.width = 352;
 		} else if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 3) {
-			video_width = 352;
-			if(video_height)
-				video_height = video_height / 2;
+			dvd_video.width = 352;
+			if(dvd_video.height)
+				dvd_video.height = dvd_video.height / 2;
 		} else {
 			fprintf(stderr, "Invalid video width: %i\n", track_ifo->vtsi_mat->vts_video_attr.picture_size);
 			return 1;
 		}
 
 		// Letterbox
-		letterbox = dvd_track_letterbox_video(track_ifo);
+		dvd_video.letterbox = dvd_track_letterbox_video(track_ifo);
 
 		// Pan & Scan
-		pan_and_scan = dvd_track_pan_scan_video(track_ifo);
+		dvd_video.pan_and_scan = dvd_track_pan_scan_video(track_ifo);
 
 		// Closed Captioning
 		if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1 || track_ifo->vtsi_mat->vts_video_attr.line21_cc_2) {
@@ -419,34 +440,34 @@ int main(int argc, char **argv) {
 
 		// Video codec
 		printf("Video Codec: ");
-		printf("%s\n", video_codec);
+		printf("%s\n", dvd_video.codec);
 
 		// Video format
 		printf("Video Format: ");
-		printf("%s\n", video_format);
+		printf("%s\n", dvd_video.format);
 
 		// Aspect ratio
 		printf("Aspect Ratio: ");
-		printf("%s\n", aspect_ratio);
+		printf("%s\n", dvd_video.aspect_ratio);
 
 		// Video width
 		printf("Video Width: ");
-		printf("%i\n", video_width);
+		printf("%i\n", dvd_video.width);
 
 		// Video height
 		printf("Video Height: ");
-		printf("%i\n", video_height);
+		printf("%i\n", dvd_video.height);
 
 		// Letterbox
 		printf("Letterbox: ");
-		if(letterbox)
+		if(dvd_video.letterbox)
 			printf("1\n");
 		else
 			printf("0\n");
 
 		// Pan & Scan
 		printf("Pan & Scan: ");
-		if(pan_and_scan)
+		if(dvd_video.pan_and_scan)
 			printf("1\n");
 		else
 			printf("0\n");
