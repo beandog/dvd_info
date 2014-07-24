@@ -59,7 +59,6 @@ int main(int argc, char **argv) {
 	uint8_t dvd_disc_side;
 	char title[33] = {'\0'};
 	char provider_id[33] = {'\0'};
-	bool has_provider_id = false;
 	char vmg_id[13] = {'\0'};
 	uint16_t longest_track;
 	uint16_t longest_track_with_subtitles;
@@ -284,15 +283,7 @@ int main(int argc, char **argv) {
 	printf("Title: ");
 	printf("%s\n", title);
 
-	// provider ID
-	// Max length of provider ID is 32 letters, so create an array
-	// that has enough size to store the letters and a null
-	// terminator.  Also initialize it with all null terminators.
-
-	// Having an empty provider ID is very common.
-	if(provider_id[0] != '\0')
-		has_provider_id = true;
-
+	// Provider ID
 	printf("Provider ID: ");
 	printf("%s\n", provider_id);
 
