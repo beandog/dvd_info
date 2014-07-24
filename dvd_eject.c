@@ -61,13 +61,13 @@ bool is_ready(const int cdrom) {
 
 int open_tray(const int cdrom) {
 
-	return(ioctl(cdrom, CDROMEJECT));
+	return ioctl(cdrom, CDROMEJECT);
 
 }
 
 int close_tray(const int cdrom) {
 
-	return(ioctl(cdrom, CDROMCLOSETRAY));
+	return ioctl(cdrom, CDROMCLOSETRAY);
 
 }
 
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
 		{ 0, 0, 0, 0 }
 	};
 
-	str_options = "frtv";
+	str_options = "rtv";
 	sleepy_time = 1000000;
 	eject = true;
 	retry = false;
@@ -173,7 +173,6 @@ int main(int argc, char **argv) {
 		}
 
 	}
-
 
 	if(eject && is_closed(cdrom)) {
 
