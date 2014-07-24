@@ -29,7 +29,7 @@ bool video_format_ok(unsigned int i) {
 
 bool display_aspect_ratio_ok(unsigned int i) {
 
-	if((i != 0) && (i != 3))
+	if(i != 0 && i != 3)
 		return false;
 	else
 		return true;
