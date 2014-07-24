@@ -16,6 +16,15 @@ unsigned char dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_
 
 }
 
+/**
+ * MPEG version
+ * ifo->vtsi_mat->vts_video_attr.mpeg_version
+ *
+ * 0 = MPEG1
+ * 1 = MPEG2
+ * 2 = Reserved, do not use
+ * 3 = Reserved, do not use
+ */
 unsigned char dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
 
 	if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
@@ -44,6 +53,16 @@ bool dvd_track_mpeg2(const ifo_handle_t *track_ifo) {
 		return false;
 
 }
+
+/*
+ * Standard video format
+ * ifo->vtsi_mat->vts_video_attr.video_format
+ *
+ * 0 = NTSC
+ * 1 = PAL
+ * 2 = Reserved, do not use
+ * 3 = Reserved, do not use
+ */
 
 bool dvd_track_ntsc_video(const ifo_handle_t *track_ifo) {
 
@@ -147,13 +166,22 @@ bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *track_ifo) {
 
 }
 
+/*
+ * Display format
+ * vtsi_mat->vts_video_attr.permitted_df
+ *
+ * 0 = Pan and Scan or Letterbox
+ * 1 = Pan and Scan
+ * 2 = Letterbox (anamorphic video, widescreen?)
+ * 3 = Unset (most likely non-anormphic widescreen?)
+ */
 bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo) {
 
 	unsigned char permitted_df;
 
 	permitted_df = track_ifo->vtsi_mat->vts_video_attr.permitted_df;
 
-	if(permitted_df  == 0 || permitted_df == 2)
+	if(permitted_df == 0 || permitted_df == 2)
 		return true;
 	else
 		return false;
@@ -166,7 +194,7 @@ bool dvd_track_pan_scan_video(const ifo_handle_t *track_ifo) {
 
 	permitted_df = track_ifo->vtsi_mat->vts_video_attr.permitted_df;
 
-	if(permitted_df  == 0 || permitted_df == 1)
+	if(permitted_df == 0 || permitted_df == 1)
 		return true;
 	else
 		return false;
