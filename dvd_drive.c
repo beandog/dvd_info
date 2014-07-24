@@ -23,11 +23,7 @@ int dvd_drive_get_status(const char *device_filename) {
 
 bool dvd_drive_has_media(const char *device_filename) {
 
-	int drive_status;
-
-	drive_status = dvd_drive_get_status(device_filename);
-
-	if(drive_status == CDS_DISC_OK)
+	if(dvd_drive_get_status(device_filename) == CDS_DISC_OK)
 		return true;
 	else
 		return false;
@@ -36,10 +32,7 @@ bool dvd_drive_has_media(const char *device_filename) {
 
 bool dvd_drive_is_open(const char *device_filename) {
 
-	int drive_status;
-	drive_status = dvd_drive_get_status(device_filename);
-
-	if(drive_status == CDS_TRAY_OPEN)
+	if(dvd_drive_get_status(device_filename) == CDS_TRAY_OPEN)
 		return true;
 	else
 		return false;
@@ -60,10 +53,7 @@ bool dvd_drive_is_closed(const char *device_filename) {
 
 bool dvd_drive_is_ready(const char* device_filename) {
 
-	int drive_status;
-	drive_status = dvd_drive_get_status(device_filename);
-
-	if(drive_status != CDS_DRIVE_NOT_READY)
+	if(dvd_drive_get_status(device_filename) != CDS_DRIVE_NOT_READY)
 		return true;
 	else
 		return false;
@@ -72,12 +62,9 @@ bool dvd_drive_is_ready(const char* device_filename) {
 
 void dvd_drive_display_status(const char *device_filename) {
 
-	int drive_status;
 	char *status;
 
-	drive_status = dvd_drive_get_status(device_filename);
-
-	switch(drive_status) {
+	switch(dvd_drive_get_status(device_filename)) {
 		case 1:
 			status = "no disc";
 			break;
