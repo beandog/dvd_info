@@ -313,32 +313,13 @@ int main(int argc, char **argv) {
 	}
 
 	printf("[DVD]\n");
-
-	// DVD title
-	printf("Title: ");
-	printf("%s\n", dvd_info.title);
-
-	// Provider ID
-	printf("Provider ID: ");
-	printf("%s\n", dvd_info.provider_id);
-
-	// VMG ID
-	printf("VMG: ");
-	printf("%s\n", dvd_info.vmg_id);
-
-	// Disc side
-	printf("Disc Side: ");
-	printf("%i\n", dvd_info.side);
-
-	// Video Title Sets / IFOs
+	printf("Title: %s\n", dvd_info.title);
+	printf("Provider ID: %s\n", dvd_info.provider_id);
+	printf("VMG: %s\n", dvd_info.vmg_id);
+	printf("Disc Side: %i\n", dvd_info.side);
 	printf("VTS: %d\n", dvd_info.video_title_sets);
-
-	// Tracks
 	printf("Tracks: %d\n", dvd_info.tracks);
-
-	// Longest track number ordered by milliseconds
-	printf("Longest track: ");
-	printf("%i\n", dvd_info.longest_track);
+	printf("Longest track: %i\n", dvd_info.longest_track);
 	/**
 	printf("Longest track with subtitles: ");
 	printf("%i\n", longest_track_with_subtitles);
