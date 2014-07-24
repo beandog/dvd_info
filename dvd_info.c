@@ -679,4 +679,7 @@ int main(int argc, char **argv) {
 	if(dvdnav_dvd)
 		dvdnav_close(dvdnav_dvd);
 	*/
+
+	return 0;
+
 }
