@@ -24,53 +24,14 @@
 
 void print_usage(char *binary);
 
-/**
- * Output on 'dvd_info -h'
- */
 void print_usage(char *binary) {
 
 	printf("Usage %s [options] [-t track_number] [dvd path]\n", binary);
 	printf("\n");
-	printf("Options:\n");
-	printf("  --ifo-dump		Full dump of all IFO information from libdvdread\n");
-	/*
-	printf("Display DVD info:\n");
-	printf("  --id			Unique DVD identifier\n");
-	printf("  --title		DVD title\n");
-	printf("  --num-tracks		Number of tracks\n");
-	printf("  --num-vts		Number of VTSs\n");
-	printf("  --provider-id 	Provider ID\n");
-	printf("  --serial-id 		Serial ID\n");
-	printf("  --vmg-id		VMG ID\n");
-	printf("  --side		Disc side\n");
-	printf("  --ifo-dump		Full dump of all IFO information\n");
-	printf("\n");
-	printf("Display track info:\n");
-	printf("  --video-codec		Video codec (MPEG1 / MPEG2)\n");
-	printf("  --video-format	Video format (NTSC / PAL )\n");
-	printf("  --aspect-ratio	Aspect ratio (16:9, 4:3)\n");
-	printf("  --video-width		Video width (480, 576, 288)\n");
-	printf("  --video-height	Video height (720, 704, 352)\n");
-	printf("  --letterbox		Letterbox video (0 [no], 1 [yes])\n");
-	printf("  --film-mode		Film mode (film [movie], video [camera])\n");
-	printf("  --num-audio-streams	Number of audio streams\n");
-	printf("  --num-subtitles	Number of VOBSUB subtitles\n");
-	printf("  --length		Playback length in hh:mm:ss.ms\n");
-	printf("\n");
-	printf("Display subtitle info:\n");
-	printf("  --cc			Closed captioning (0 [no], 1 [yes])\n");
-	*/
-	/**
-	printf("\n");
-	printf("Display output formats:\n");
-	printf("  -v, --verbose		Verbose output\n");
-	printf("  -z, --debug		Display debug output\n");
-	*/
 
 }
 
 int main(int argc, char **argv) {
-
 
 	/** temporary variables */
 	unsigned char tmp_buf[16] = {'\0'};
@@ -148,35 +109,10 @@ int main(int argc, char **argv) {
 	// Check for invalid input
 	bool valid_args = true;
 	// Not enabled by an argument, set internally
-	bool display_track = false;
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
 	char *str_options;
 	str_options = "hi:t:vz";
-
-	// The display_* functions are just false by default, enabled by passing options
-	int verbose = 0;
-	int debug = 0;
-	int display_id = 0;
-	int display_title = 0;
-	int display_num_tracks = 0;
-	int display_num_vts = 0;
-	int display_provider_id = 0;
-	int display_serial_id = 0;
-	int display_vmg_id = 0;
-	int display_side = 0;
-	int display_longest_track = 0;
-	int display_ifo_dump = 0;
-	int display_video_format = 0;
-	int display_video_codec = 0;
-	int display_aspect_ratio = 0;
-	int display_video_height = 0;
-	int display_video_width = 0;
-	int display_letterbox = 0;
-	int display_cc = 0;
-	int display_num_audio_streams = 0;
-	int display_num_subtitles = 0;
-	int display_playback_length = 0;
 
 	struct option long_options[] = {
 
@@ -184,42 +120,8 @@ int main(int argc, char **argv) {
 		// long option or the short one.  Fex, '--device' or '-i'
 		{ "device", required_argument, 0, 'i' },
 		{ "track", required_argument, 0, 't' },
-
-		{ "verbose", no_argument, & verbose, 1 },
-		{ "debug", no_argument, & debug, 1 },
-
-		// DVD
-		{ "id", no_argument, & display_id, 1 },
-		{ "title", no_argument, & display_title, 1 },
-		{ "num-tracks", no_argument, & display_num_tracks, 1 },
-		{ "num-vts", no_argument, & display_num_vts, 1 },
-		{ "provider-id", no_argument, & display_provider_id, 1 },
-		{ "serial-id", no_argument, & display_serial_id, 1 },
-		{ "vmg-id", no_argument, & display_vmg_id, 1 },
-		{ "side", no_argument, & display_side, 1 },
-		{ "longest-track", no_argument, & display_longest_track, 1 },
-		{ "ifo-dump", no_argument, & display_ifo_dump, 1 },
-
-		// FIXME add a warning if track information is requested without
-		// specifying a track number.
-		// Video
-		{ "video-format", no_argument, & display_video_format, 1 },
-		{ "video-codec", no_argument, & display_video_codec, 1 },
-		{ "aspect-ratio", no_argument, & display_aspect_ratio, 1 },
-		{ "video-height", no_argument, & display_video_height, 1 },
-		{ "video-width", no_argument, & display_video_width, 1 },
-		{ "letterbox", no_argument, & display_letterbox, 1 },
-
-		// Audio
-		{ "num-audio-streams", no_argument, & display_num_audio_streams, 1 },
-
-		// Subtitles
-		{ "num-subtitles", no_argument, & display_num_subtitles, 1 },
-		{ "cc", no_argument, & display_cc, 1 },
-
-		{ "length", no_argument, & display_playback_length, 1 },
-
 		{ 0, 0, 0, 0 }
+
 	};
 
 	// parse options
@@ -239,25 +141,12 @@ int main(int argc, char **argv) {
 
 			case 't':
 				track_number = atoi(optarg);
-				display_track = true;
-				break;
-
-			case 'v':
-				verbose = 1;
-				break;
-
-			case 'z':
-				debug = 1;
 				break;
 
 			// ignore unknown arguments
 			case '?':
-				break;
-
 			// let getopt_long set the variable
 			case 0:
-				break;
-
 			default:
 				break;
 		}
@@ -273,9 +162,6 @@ int main(int argc, char **argv) {
 	// Exit after all invalid input warnings have been sent
 	if(valid_args == false)
 		return 1;
-
-	if(debug)
-		verbose = 1;
 
 	/** Begin dvd_info :) */
 
@@ -301,10 +187,8 @@ int main(int argc, char **argv) {
 	if(is_hardware) {
 		drive_status = dvd_drive_get_status(device_filename);
 		// FIXME send to stderr
-		if(verbose) {
-			printf("* Drive status: ");
-			dvd_drive_display_status(device_filename);
-		}
+		printf("* Drive status: ");
+		dvd_drive_display_status(device_filename);
 	}
 
 	// Wait for the drive to become ready
@@ -324,13 +208,11 @@ int main(int argc, char **argv) {
 				num_naps = num_naps + 1;
 
 				// This is slightly annoying, even for me.
-				if(verbose)
-					fprintf(stderr, "%i ", num_naps);
+				fprintf(stderr, "%i ", num_naps);
 
 				// Tired of waiting, exiting out
 				if(num_naps == max_num_naps) {
-					if(verbose)
-						fprintf(stderr, "\n");
+					fprintf(stderr, "\n");
 					fprintf(stderr, "dvd_info: tired of waiting for media, quitting\n");
 					return 1;
 				}
@@ -359,7 +241,7 @@ int main(int argc, char **argv) {
 	num_tracks = dvd_info_num_tracks(vmg_ifo);
 
 	// Exit if track number requested does not exist
-	if(display_track && (track_number > num_tracks || track_number < 1)) {
+	if(track_number > num_tracks || track_number < 1) {
 		fprintf(stderr, "Invalid track number %d\n", track_number);
 		fprintf(stderr, "Valid track numbers: 1 to %d\n", num_tracks);
 		ifoClose(vmg_ifo);
@@ -444,22 +326,6 @@ int main(int argc, char **argv) {
 	printf("%i\n", longest_letterbox_track);
 	printf("Longest pan & scan track: ");
 	printf("%i\n", longest_pan_scan_track);
-
-	// --ifo-dump
-	// Display all the IFO information possible
-	if(display_ifo_dump && !display_track) {
-		ifo_print(dvdread_dvd, 0);
-	}
-
-	/**
-	 * IFO information
-	 */
-	// TODO, loop through IFOs and display IFO-specific information, such
-	// as language code, etc.  Also, use this information in dvd_track
-	// functions to flush out possible tracks with data worth accessing.
-	// fex: an IFO with unspecified language is (probably) not going to
-	// have anything worth watching (unless it's a menu?  Don't know the
-	// spec well enough yet to comment).
 
 	/**
 	 * Track information
@@ -656,12 +522,6 @@ int main(int argc, char **argv) {
 
 		}
 
-		// --ifo-dump
-		// Display all the IFO information possible
-		if(display_ifo_dump) {
-			ifo_print(dvdread_dvd, title_track_ifo_number);
-		}
-
 	}
 
 	// Cleanup
@@ -669,7 +529,7 @@ int main(int argc, char **argv) {
 	if(vmg_ifo)
 		ifoClose(vmg_ifo);
 
-	if(display_track && track_ifo)
+	if(track_ifo)
 		ifoClose(track_ifo);
 
 	if(dvdread_dvd)
