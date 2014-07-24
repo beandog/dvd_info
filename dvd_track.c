@@ -207,6 +207,25 @@ int dvd_track_video_format(ifo_handle_t *track_ifo, char *video_format) {
 
 }
 
+int dvd_track_video_aspect_ratio(ifo_handle_t *track_ifo, char *video_aspect_ratio) {
+
+	char *aspect_ratio;
+
+	if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
+		aspect_ratio = "4:3";
+	else if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
+		aspect_ratio = "16:9";
+	else {
+		// Catch wrong integer value burned into DVD
+		aspect_ratio = "";
+	}
+
+	strncpy(video_aspect_ratio, aspect_ratio, 5);
+
+	return 0;
+
+}
+
 int dvd_track_length(dvd_time_t *dvd_time) {
 
 	int framerates[4] = {0, 2500, 0, 2997};
