@@ -29,7 +29,7 @@ int dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const int subtitle
 
 }
 
-int dvd_track_subtitle_stream_id(const ifo_handle_t *vts_ifo, const int subtitle_track) {
+int dvd_track_subtitle_stream_id(const int subtitle_track) {
 
 	int subtitle_stream_id;
 
