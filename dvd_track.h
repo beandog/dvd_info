@@ -142,7 +142,14 @@ bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo);
  */
 bool dvd_track_pan_scan_video(const ifo_handle_t *track_ifo);
 
-void dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec);
+/*
+ * Get the video codec for a track
+ *
+ * @param vts_ifo dvdread track IFO handler
+ * @param video_codec string pointer
+ * @retval success
+ */
+int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec);
 
 /**
  * Get the number of miliseconds for a track's playback time
