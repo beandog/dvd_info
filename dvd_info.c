@@ -77,7 +77,6 @@ int main(int argc, char **argv) {
 	char *aspect_ratio;
 	unsigned int video_height = 0;
 	unsigned int video_width = 720;
-	bool valid_video_width = true;
 	bool letterbox = false;
 
 	// Audio
@@ -376,7 +375,6 @@ int main(int argc, char **argv) {
 			if(video_height)
 				video_height = video_height / 2;
 		} else {
-			valid_video_width = false;
 			fprintf(stderr, "Invalid video width: %i\n", track_ifo->vtsi_mat->vts_video_attr.picture_size);
 			return 1;
 		}
