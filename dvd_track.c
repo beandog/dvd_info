@@ -117,21 +117,17 @@ uint16_t dvd_track_video_width(const ifo_handle_t *track_ifo) {
 	if(video_height == 0)
 		return 0;
 
-	switch(picture_size) {
-
-		case 0:
-			video_width = 720;
-
-		case 1:
-			video_width = 704;
-
-		case 2:
-		case 3:
-			video_width = 352;
-
-		default:
-			video_width = 0;
-
+	if(picture_size == 0) {
+		video_width = 720;
+	} else if(picture_size == 1) {
+		video_width = 704;
+	} else if(picture_size == 2) {
+		video_width = 352;
+	} else if(picture_size == 3) {
+		video_width = 352;
+	} else {
+		// Catch wrong integer values burned in DVD, and guess at the width
+		video_width = 720;
 	}
 
 	return (uint16_t)video_width;
