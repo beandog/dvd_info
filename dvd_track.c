@@ -216,6 +216,23 @@ int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
 
 }
 
+int dvd_track_video_format(ifo_handle_t *track_ifo, char *video_format) {
+
+	char *format;
+
+	if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0)
+		format = "NTSC";
+	else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
+		format = "PAL";
+	else
+		format = "";
+
+	strncpy(video_format, format, 6);
+
+	return 0;
+
+}
+
 int dvd_track_length(dvd_time_t *dvd_time) {
 
 	int framerates[4] = {0, 2500, 0, 2997};
