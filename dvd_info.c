@@ -51,7 +51,7 @@ struct dvd_track {
 };
 
 struct dvd_video {
-	char *codec;
+	char codec[8];
 	char *format;
 	char *aspect_ratio;
 	unsigned int width;
@@ -116,6 +116,7 @@ int main(int argc, char **argv) {
 
 	// Video
 	struct dvd_video dvd_video;
+	memset(dvd_video.codec, '\0', 8);
 	dvd_video.height = 0;
 	dvd_video.width = 0;
 	dvd_video.letterbox = false;
@@ -366,15 +367,7 @@ int main(int argc, char **argv) {
 		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
 		dvd_track_str_length(&pgc->playback_time, dvd_track.length);
 		dvd_track.chapters = pgc->nr_of_programs;
-
-		// Video codec
-		if(dvd_track_mpeg1(track_ifo)) {
-			dvd_video.codec = "MPEG1";
-		} else if(dvd_track_mpeg2(track_ifo)) {
-			dvd_video.codec = "MPEG2";
-		} else {
-			dvd_video.codec = "Unknown";
-		}
+		dvd_track_video_codec(track_ifo, dvd_video.codec);
 
 		// Video format and height
 		if(dvd_track_ntsc_video(track_ifo)) {
