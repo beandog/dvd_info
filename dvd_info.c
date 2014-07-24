@@ -51,7 +51,7 @@ struct dvd_track {
 };
 
 struct dvd_video {
-	char codec[8];
+	char codec[6];
 	char *format;
 	char *aspect_ratio;
 	uint16_t width;
