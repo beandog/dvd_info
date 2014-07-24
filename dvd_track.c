@@ -12,25 +12,15 @@ unsigned char dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_
 	// Should these be the same number
 	// vts_ttn = vmg_ifo->tt_srpt->title[title_track_idx].vts_ttn;
 
-	int idx;
-	unsigned char ifo_number;
-
-	idx = track_number - 1;
-	ifo_number = vmg_ifo->tt_srpt->title[idx].title_set_nr;
-
-	return ifo_number;
+	return vmg_ifo->tt_srpt->title[track_number - 1].title_set_nr;
 
 }
 
 unsigned char dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
 
-	unsigned char mpeg_version;
-
-	mpeg_version = track_ifo->vtsi_mat->vts_video_attr.mpeg_version;
-
-	if(mpeg_version == 0)
+	if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
 		return 1;
-	else if(mpeg_version == 1)
+	else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
 		return 2;
 	else
 		return 0;
@@ -57,11 +47,7 @@ bool dvd_track_mpeg2(const ifo_handle_t *track_ifo) {
 
 bool dvd_track_ntsc_video(const ifo_handle_t *track_ifo) {
 
-	unsigned char video_format;
-
-	video_format = track_ifo->vtsi_mat->vts_video_attr.video_format;
-
-	if(video_format == 0)
+	if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0)
 		return true;
 	else
 		return false;
@@ -70,11 +56,7 @@ bool dvd_track_ntsc_video(const ifo_handle_t *track_ifo) {
 
 bool dvd_track_pal_video(const ifo_handle_t *track_ifo) {
 
-	unsigned char video_format;
-
-	video_format = track_ifo->vtsi_mat->vts_video_attr.video_format;
-
-	if(video_format == 1)
+	if(track_ifo->vtsi_mat->vts_video_attr.video_format == 1)
 		return true;
 	else
 		return false;
@@ -149,11 +131,7 @@ bool dvd_track_valid_aspect_ratio(const ifo_handle_t *track_ifo) {
 
 bool dvd_track_aspect_ratio_4x3(const ifo_handle_t *track_ifo) {
 
-	unsigned char aspect_ratio;
-
-	aspect_ratio = track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio;
-
-	if(aspect_ratio == 0)
+	if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
 		return true;
 	else
 		return false;
@@ -162,11 +140,7 @@ bool dvd_track_aspect_ratio_4x3(const ifo_handle_t *track_ifo) {
 
 bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *track_ifo) {
 
-	unsigned char aspect_ratio;
-
-	aspect_ratio = track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio;
-
-	if(aspect_ratio == 3)
+	if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
 		return true;
 	else
 		return false;
@@ -376,11 +350,7 @@ int dvd_track_num_audio_lang_code_streams(const ifo_handle_t *track_ifo, const c
 
 bool dvd_track_has_audio_lang_code(const ifo_handle_t *track_ifo, const char *lang_code) {
 
-	int num_audio_lang_code_streams;
-
-	num_audio_lang_code_streams = dvd_track_num_audio_lang_code_streams(track_ifo, lang_code);
-
-	if(num_audio_lang_code_streams > 0)
+	if(dvd_track_num_audio_lang_code_streams(track_ifo, lang_code) > 0)
 		return true;
 	else
 		return false;
@@ -392,11 +362,7 @@ bool dvd_track_has_audio_lang_code(const ifo_handle_t *track_ifo, const char *la
 
 uint8_t dvd_track_subtitles(const ifo_handle_t *track_ifo) {
 
-	uint8_t streams;
-
-	streams = track_ifo->vtsi_mat->nr_of_vts_subp_streams;
-
-	return streams;
+	return track_ifo->vtsi_mat->nr_of_vts_subp_streams;
 
 }
 
@@ -426,13 +392,9 @@ uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *track_ifo, 
 
 bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, const char *lang_code) {
 
-	uint8_t streams;
-
-	streams = dvd_track_num_subtitle_lang_code_streams(track_ifo, lang_code);
-
-	if(streams > 0)
+	if(dvd_track_num_subtitle_lang_code_streams(track_ifo, lang_code) > 0)
 		return true;
-
-	return false;
+	else
+		return false;
 
 }
