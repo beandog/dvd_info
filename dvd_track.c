@@ -189,6 +189,19 @@ bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo) {
 
 }
 
+bool dvd_track_pan_scan_video(const ifo_handle_t *track_ifo) {
+
+	unsigned char permitted_df;
+
+	permitted_df = track_ifo->vtsi_mat->vts_video_attr.permitted_df;
+
+	if(permitted_df  == 0 || permitted_df == 1)
+		return true;
+	else
+		return false;
+
+}
+
 int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
 
 	char *codec;
