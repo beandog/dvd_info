@@ -181,20 +181,13 @@ int main(int argc, char **argv) {
 
 	// Poll drive status if it is hardware
 	if(is_hardware) {
-		drive_status = dvd_drive_get_status(device_filename);
-		// FIXME send to stderr
-		printf("* Drive status: ");
-		dvd_drive_display_status(device_filename);
-	}
 
-	// Wait for the drive to become ready
-	// FIXME, make this optional?  Dunno.  Probably not.
-	// At the very least, let the wait value be set. :)
-	if(is_hardware) {
+		drive_status = dvd_drive_get_status(device_filename);
+
+		// Wait for the drive to become ready
 		if(!dvd_drive_has_media(device_filename)) {
 
-			// FIXME send to stderr
-			printf("drive status: ");
+			fprintf(stderr, "drive status: ");
 			dvd_drive_display_status(device_filename);
 
 			fprintf(stderr, "dvd_info: waiting for media\n");
@@ -212,8 +205,11 @@ int main(int argc, char **argv) {
 					fprintf(stderr, "dvd_info: tired of waiting for media, quitting\n");
 					return 1;
 				}
+
 			}
+
 		}
+
 	}
 
 	// begin libdvdread usage
