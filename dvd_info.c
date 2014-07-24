@@ -71,6 +71,7 @@ int main(int argc, char **argv) {
 	int track_number = 0;
 	int title_track_idx;
 	uint8_t title_track_ifo_number;
+	uint8_t chapters;
 
 	// Video
 	char *video_codec;
@@ -338,6 +339,10 @@ int main(int argc, char **argv) {
 
 		vts_pgcit = track_ifo->vts_pgcit;
 		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
+
+		chapters = pgc->nr_of_programs;
+
+		printf("Chapters: %i\n", chapters);
 
 		// Video codec
 		if(dvd_track_mpeg1(track_ifo)) {
