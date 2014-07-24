@@ -45,6 +45,8 @@ struct dvd_track {
 	int title_idx;
 	uint8_t vts;
 	uint8_t chapters;
+	uint8_t audio_tracks;
+	uint8_t subtitles;
 };
 
 struct dvd_video {
@@ -92,6 +94,8 @@ int main(int argc, char **argv) {
 	dvd_track.title_idx = 0;
 	dvd_track.vts = 1;
 	dvd_track.chapters = 1;
+	dvd_track.audio_tracks = 0;
+	dvd_track.subtitles = 0;
 
 	// Video
 	struct dvd_video dvd_video;
@@ -100,11 +104,7 @@ int main(int argc, char **argv) {
 	dvd_video.letterbox = false;
 	dvd_video.pan_and_scan = false;
 
-	// Audio
-	uint8_t num_audio_streams;
-
 	// Subtitles
-	uint8_t subtitles;
 	bool has_cc = false;
 	bool has_cc_1 = false;
 	bool has_cc_2 = false;
@@ -433,10 +433,10 @@ int main(int argc, char **argv) {
 		}
 
 		// Audio streams
-		num_audio_streams = dvd_track_num_audio_streams(track_ifo);
+		dvd_track.audio_tracks = dvd_track_num_audio_streams(track_ifo);
 
 		// Subtitles
-		subtitles = dvd_track_subtitles(track_ifo);
+		dvd_track.subtitles = dvd_track_subtitles(track_ifo);
 
 		// Video codec
 		printf("Video Codec: ");
@@ -481,7 +481,7 @@ int main(int argc, char **argv) {
 
 		// Display number of subtitles
 		printf("Subtitles: ");
-		printf("%i\n", subtitles);
+		printf("%i\n", dvd_track.subtitles);
 
 		// Title track length (HH:MM:SS.MS)
 		dvd_track_str_length(&pgc->playback_time, title_track_length);
@@ -491,7 +491,7 @@ int main(int argc, char **argv) {
 
 		// Audio streams
 		printf("Audio Streams: ");
-		printf("%i\n", num_audio_streams);
+		printf("%i\n", dvd_track.audio_tracks);
 
 		/** Audio Streams **/
 
@@ -501,7 +501,7 @@ int main(int argc, char **argv) {
 		int audio_stream_id;
 		uint8_t stream_idx;
 
-		for(stream_idx = 0; stream_idx < num_audio_streams; stream_idx++) {
+		for(stream_idx = 0; stream_idx < dvd_track.audio_tracks; stream_idx++) {
 			printf("[Audio Track %i:%i]\n", track_number, stream_idx + 1);
 
 			dvd_track_audio_lang_code(track_ifo, stream_idx, lang_code);
@@ -517,7 +517,7 @@ int main(int argc, char **argv) {
 			printf("Stream ID: %i\n", audio_stream_id);
 		}
 
-		for(stream_idx = 0; stream_idx < subtitles; stream_idx++) {
+		for(stream_idx = 0; stream_idx < dvd_track.subtitles; stream_idx++) {
 
 			printf("[Subtitle Track %i:%i]\n", track_number, stream_idx + 1);
 
