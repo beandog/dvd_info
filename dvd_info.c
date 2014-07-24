@@ -46,7 +46,8 @@ int main(int argc, char **argv) {
 	dvd_reader_t *dvdread_dvd;
 	ifo_handle_t *vmg_ifo = NULL;
 	ifo_handle_t *track_ifo = NULL;
-	unsigned char dvdread_id[16] = {'\0'};
+	unsigned char dvdread_ifo_md5[16] = {'\0'};
+	char dvdread_id[33] = {'\0'};
 	uint8_t vts_ttn;
 	pgc_t *pgc;
 	pgcit_t *vts_pgcit;
@@ -228,7 +229,7 @@ int main(int argc, char **argv) {
 	tracks = dvd_info_num_tracks(vmg_ifo);
 
 	// Exit if track number requested does not exist
-	if(track_number > tracks || track_number < 1) {
+	if(track_number > tracks || track_number < 0) {
 		fprintf(stderr, "Invalid track number %d\n", track_number);
 		fprintf(stderr, "Valid track numbers: 1 to %d\n", tracks);
 		ifoClose(vmg_ifo);
@@ -236,11 +237,16 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	// Exit if we cannot get libdvdread DiscID
+	dvdread_retval = DVDDiscID(dvdread_dvd, dvdread_ifo_md5);
+	if(dvdread_retval == -1) {
+		fprintf(stderr, "Querying DVD id failed -- this is probably related to the library not being able to open an IFO.  Check the DVD for physical defects.\n");
+		return 1;
+	}
 
 	// GRAB ALL THE THINGS
 	// Total # of video title sets (or IFOs)
 	video_title_sets = dvd_info_num_vts(vmg_ifo);
-	dvdread_retval = DVDDiscID(dvdread_dvd, dvdread_id);
 	dvd_disc_side = vmg_ifo->vmgi_mat->disc_side;
 	dvd_device_title(device_filename, title);
 	dvd_info_provider_id(vmg_ifo, provider_id);
@@ -251,24 +257,13 @@ int main(int argc, char **argv) {
 	longest_4x3_track = dvd_info_longest_4x3_track(dvdread_dvd);
 	longest_letterbox_track = dvd_info_longest_letterbox_track(dvdread_dvd);
 	longest_pan_scan_track = dvd_info_longest_pan_scan_track(dvdread_dvd);
+	// libdvdread DVDDiscID()
+	// Convert hex values to a string
+	for(unsigned long x = 0; x < 16; x++) {
+		sprintf(&dvdread_id[x * 2], "%02x", dvdread_ifo_md5[x]);
+	}
 
 	printf("[DVD]\n");
-
-	// Display starter information
-	// # Video Title Sets (VTS) / IFOs
-	printf("Total VTS: %d\n", video_title_sets);
-	printf("Tracks: %d\n", tracks);
-
-	// Display DVDDiscID from libdvdread
-	if(dvdread_retval == -1) {
-		fprintf(stderr, "dvd_info: querying DVD id failed\n");
-	} else {
-		printf("Disc ID: ");
-		for(unsigned long x = 0; x < sizeof(dvdread_id); x++) {
-			printf("%02x", dvdread_id[x]);
-		}
-		printf("\n");
-	}
 
 	// DVD title
 	printf("Title: ");
@@ -286,9 +281,16 @@ int main(int argc, char **argv) {
 	printf("Disc Side: ");
 	printf("%i\n", dvd_disc_side);
 
+	// Video Title Sets / IFOs
+	printf("VTS: %d\n", video_title_sets);
+
+	// Tracks
+	printf("Tracks: %d\n", tracks);
+
 	// Longest track number ordered by milliseconds
 	printf("Longest track: ");
 	printf("%i\n", longest_track);
+	/**
 	printf("Longest track with subtitles: ");
 	printf("%i\n", longest_track_with_subtitles);
 	printf("Longest 16x9 track: ");
@@ -299,6 +301,10 @@ int main(int argc, char **argv) {
 	printf("%i\n", longest_letterbox_track);
 	printf("Longest pan & scan track: ");
 	printf("%i\n", longest_pan_scan_track);
+	*/
+
+	// libdvdread MD5 hash of the first 10 IFOs
+	printf("dvdread id: %s\n", dvdread_id);
 
 	/**
 	 * Track information
