@@ -49,21 +49,13 @@ int dvd_device_title(const char *device_filename, char *p) {
 
 uint16_t dvd_info_num_tracks(const ifo_handle_t *ifo) {
 
-	uint16_t num_tracks;
-
-	num_tracks = ifo->tt_srpt->nr_of_srpts;
-
-	return num_tracks;
+	return ifo->tt_srpt->nr_of_srpts;
 
 }
 
 uint16_t dvd_info_num_vts(const ifo_handle_t *ifo) {
 
-	uint16_t num_vts;
-
-	num_vts = ifo->vts_atrt->nr_of_vtss;
-
-	return num_vts;
+	return ifo->vts_atrt->nr_of_vtss;
 }
 
 void dvd_info_provider_id(const ifo_handle_t *ifo, char *p) {
@@ -98,9 +90,7 @@ void dvd_info_vmg_id(const ifo_handle_t *ifo, char *p) {
 
 uint8_t dvd_info_side(const ifo_handle_t *ifo) {
 
-	uint8_t side = ifo->vmgi_mat->disc_side;
-
-	if(side == 2)
+	if(ifo->vmgi_mat->disc_side == 2)
 		return 2;
 	else
 		return 1;
