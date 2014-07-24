@@ -362,24 +362,14 @@ int main(int argc, char **argv) {
 
 	if(track_number) {
 
-		dvd_track.number = track_number;
-		dvd_track.title_idx = track_number - 1;
-		dvd_track.vts = dvd_track_ifo_number(vmg_ifo, track_number);
-
-		printf("[Track %d]\n", track_number);
-
+		// Open IFO
 		track_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
-		vts_ttn = vmg_ifo->tt_srpt->title[dvd_track.title_idx].vts_ttn;
-
-		printf("Video Title Set (IFO): %d\n", dvd_track.vts);
-
 		if(!track_ifo) {
 			fprintf(stderr, "dvd_info: opening IFO %i failed\n", track_number);
 			ifoClose(vmg_ifo);
 			DVDClose(dvdread_dvd);
 			return 1;
 		}
-
 		if(!track_ifo->vtsi_mat) {
 			printf("Could not open vtsi_mat for track %d\n", track_number);
 			ifoClose(vmg_ifo);
@@ -388,12 +378,13 @@ int main(int argc, char **argv) {
 			return 1;
 		}
 
+		dvd_track.number = track_number;
+		dvd_track.title_idx = track_number - 1;
+		dvd_track.vts = dvd_track_ifo_number(vmg_ifo, track_number);
+		vts_ttn = vmg_ifo->tt_srpt->title[dvd_track.title_idx].vts_ttn;
 		vts_pgcit = track_ifo->vts_pgcit;
 		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
-
 		dvd_track.chapters = pgc->nr_of_programs;
-
-		printf("Chapters: %i\n", dvd_track.chapters);
 
 		// Video codec
 		if(dvd_track_mpeg1(track_ifo)) {
@@ -408,24 +399,11 @@ int main(int argc, char **argv) {
 		if(dvd_track_ntsc_video(track_ifo)) {
 			dvd_video.format = "NTSC";
 			dvd_video.height = 480;
-			dvd_video.width = 720;
 		} else if(dvd_track_pal_video(track_ifo)) {
 			dvd_video.format = "PAL";
 			dvd_video.height = 576;
-			dvd_video.width = 720;
 		} else {
 			dvd_video.format = "Unknown";
-		}
-
-		// Aspect ratio
-		if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
-			dvd_video.aspect_ratio = "4:3";
-		else if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
-			dvd_video.aspect_ratio = "16:9";
-		else {
-			dvd_video.aspect_ratio = "Unknown";
-			fprintf(stderr, "Unknown aspect ratio: %i, expected 0 or 3\n", track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio);
-			return 1;
 		}
 
 		// Video width
@@ -440,8 +418,18 @@ int main(int argc, char **argv) {
 			if(dvd_video.height)
 				dvd_video.height = dvd_video.height / 2;
 		} else {
-			fprintf(stderr, "Invalid video width: %i\n", track_ifo->vtsi_mat->vts_video_attr.picture_size);
-			return 1;
+			// Catch wrong integer values burned in DVD, and guess at the width
+			dvd_video.width = 720;
+		}
+
+		// Aspect ratio
+		if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
+			dvd_video.aspect_ratio = "4:3";
+		else if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
+			dvd_video.aspect_ratio = "16:9";
+		else {
+			// Catcch wrong integer value burned into DVD
+			dvd_video.aspect_ratio = "Unknown";
 		}
 
 		// Letterbox
@@ -449,6 +437,8 @@ int main(int argc, char **argv) {
 
 		// Pan & Scan
 		dvd_video.pan_and_scan = dvd_track_pan_scan_video(track_ifo);
+
+
 
 		// Closed Captioning
 		if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1 || track_ifo->vtsi_mat->vts_video_attr.line21_cc_2) {
@@ -466,26 +456,14 @@ int main(int argc, char **argv) {
 		dvd_track.subtitles = dvd_track_subtitles(track_ifo);
 
 		// Video codec
-		printf("Video Codec: ");
-		printf("%s\n", dvd_video.codec);
-
-		// Video format
-		printf("Video Format: ");
-		printf("%s\n", dvd_video.format);
-
-		// Aspect ratio
-		printf("Aspect Ratio: ");
-		printf("%s\n", dvd_video.aspect_ratio);
-
-		// Video width
-		printf("Video Width: ");
-		printf("%i\n", dvd_video.width);
-
-		// Video height
-		printf("Video Height: ");
-		printf("%i\n", dvd_video.height);
-
-		// Letterbox
+		printf("[Track %d]\n", track_number);
+		printf("Video Title Set (IFO): %d\n", dvd_track.vts);
+		printf("Chapters: %i\n", dvd_track.chapters);
+		printf("Video Codec: %s\n", dvd_video.codec);
+		printf("Video Format: %s\n", dvd_video.format);
+		printf("Aspect Ratio: %s\n", dvd_video.aspect_ratio);
+		printf("Video Width: %i\n", dvd_video.width);
+		printf("Video Height: %i\n", dvd_video.height);
 		printf("Letterbox: ");
 		if(dvd_video.letterbox)
 			printf("1\n");
