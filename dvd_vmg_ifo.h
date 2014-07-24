@@ -165,7 +165,7 @@ uint8_t dvd_info_side(const ifo_handle_t *ifo);
  * @param dvdnav dvdnav_t
  * @param p char[17] to copy the string to
  */
-void dvd_info_serial_id(dvdnav_t *dvdnav, char *p);
+// void dvd_info_serial_id(dvdnav_t *dvdnav, char *p);
 
 /**
  * Find the longest track

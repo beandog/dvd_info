@@ -97,6 +97,9 @@ uint8_t dvd_info_side(const ifo_handle_t *ifo) {
 
 }
 
+// Requires libdvdnav
+// TODO add functionality to libdvdread, as well as alternate title
+/*
 void dvd_info_serial_id(dvdnav_t *dvdnav, char *p) {
 
 	const char *serial_id;
@@ -111,6 +114,7 @@ void dvd_info_serial_id(dvdnav_t *dvdnav, char *p) {
 		memset(p, '\0', 17);
 
 }
+*/
 
 uint16_t dvd_info_longest_track(dvd_reader_t *dvdread_dvd) {
 
