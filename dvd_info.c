@@ -386,12 +386,10 @@ int main(int argc, char **argv) {
 		dvd_video.width = dvd_track_video_width(track_ifo);
 		dvd_video.height = dvd_track_video_height(track_ifo);
 		dvd_track_video_aspect_ratio(track_ifo, dvd_video.aspect_ratio);
-
-		// Letterbox
 		dvd_video.letterbox = dvd_track_letterbox_video(track_ifo);
-
-		// Pan & Scan
 		dvd_video.pan_and_scan = dvd_track_pan_scan_video(track_ifo);
+		dvd_track.audio_tracks = dvd_track_num_audio_streams(track_ifo);
+		dvd_track.subtitles = dvd_track_subtitles(track_ifo);
 
 		// Closed Captioning
 		if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1 || track_ifo->vtsi_mat->vts_video_attr.line21_cc_2) {
@@ -401,12 +399,6 @@ int main(int argc, char **argv) {
 			if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_2)
 				dvd_video.closed_captioning[2] = true;
 		}
-
-		// Audio streams
-		dvd_track.audio_tracks = dvd_track_num_audio_streams(track_ifo);
-
-		// Subtitles
-		dvd_track.subtitles = dvd_track_subtitles(track_ifo);
 
 		// Video codec
 		printf("[Track %d]\n", track_number);
