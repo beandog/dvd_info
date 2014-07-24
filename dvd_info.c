@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 	pgcit_t *vts_pgcit;
 
 	// DVD
-	uint16_t num_vts;
+	uint16_t video_title_sets;
 	uint16_t num_tracks;
 	int dvd_disc_id;
 	uint8_t dvd_disc_side;
@@ -244,7 +244,7 @@ int main(int argc, char **argv) {
 
 	// GRAB ALL THE THINGS
 	// Total # of video title sets (or IFOs)
-	num_vts = dvd_info_num_vts(vmg_ifo);
+	video_title_sets = dvd_info_num_vts(vmg_ifo);
 	dvd_disc_id = DVDDiscID(dvdread_dvd, dvdread_id);
 	dvd_disc_side = vmg_ifo->vmgi_mat->disc_side;
 	dvd_device_title(device_filename, title);
@@ -261,7 +261,7 @@ int main(int argc, char **argv) {
 
 	// Display starter information
 	// # Video Title Sets (VTS) / IFOs
-	printf("Total VTS: %d\n", num_vts);
+	printf("Total VTS: %d\n", video_title_sets);
 	printf("Tracks: %d\n", num_tracks);
 
 	// Display DVDDiscID from libdvdread
