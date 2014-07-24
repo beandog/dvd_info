@@ -26,8 +26,7 @@ void print_usage(char *binary);
 
 void print_usage(char *binary) {
 
-	printf("Usage %s [options] [-t track_number] [dvd path]\n", binary);
-	printf("\n");
+	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
 
 }
 
