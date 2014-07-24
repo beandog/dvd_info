@@ -34,7 +34,6 @@ void print_usage(char *binary) {
 int main(int argc, char **argv) {
 
 	/** temporary variables */
-	unsigned char tmp_buf[16] = {'\0'};
 	unsigned long x = 0;
 
 	// libdvdread
@@ -42,6 +41,7 @@ int main(int argc, char **argv) {
 	dvd_reader_t *dvdread_dvd;
 	ifo_handle_t *vmg_ifo;
 	ifo_handle_t *track_ifo = NULL;
+	unsigned char dvdread_id[16] = {'\0'};
 	uint8_t vts_ttn;
 	pgc_t *pgc;
 	pgcit_t *vts_pgcit;
@@ -253,7 +253,7 @@ int main(int argc, char **argv) {
 	// GRAB ALL THE THINGS
 	// Total # of video title sets (or IFOs)
 	num_vts = dvd_info_num_vts(vmg_ifo);
-	dvd_disc_id = DVDDiscID(dvdread_dvd, tmp_buf);
+	dvd_disc_id = DVDDiscID(dvdread_dvd, dvdread_id);
 	dvd_disc_side = vmg_ifo->vmgi_mat->disc_side;
 	dvd_device_title(device_filename, title);
 	dvd_info_provider_id(vmg_ifo, provider_id);
@@ -278,8 +278,8 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "dvd_info: querying DVD id failed\n");
 	} else {
 		printf("Disc ID: ");
-		for(x = 0; x < sizeof(tmp_buf); x++) {
-			printf("%02x", tmp_buf[x]);
+		for(x = 0; x < sizeof(dvdread_id); x++) {
+			printf("%02x", dvdread_id[x]);
 		}
 		printf("\n");
 	}
