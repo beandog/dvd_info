@@ -467,13 +467,6 @@ int main(int argc, char **argv) {
 		printf("Letterbox: %i\n", dvd_video.letterbox ? 1 : 0);
 		printf("Pan & Scan: %i\n", dvd_video.pan_and_scan ? 1 : 0);
 
-		// Closed Captioning
-		// Not sure if this is right or not
-		/*
-		printf("closed captioning: ");
-		printf("1\n");
-		*/
-
 		// Display number of subtitles
 		printf("Subtitles: ");
 		printf("%i\n", dvd_track.subtitles);
