@@ -1,7 +1,3 @@
-/**
- * Functions used to get information about a DVD track
- */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -9,8 +5,6 @@
 #include <dvdread/ifo_read.h>
 #include "dvd_track.h"
 #include "dvd_track_audio.h"
-
-int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec);
 
 unsigned char dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_number) {
 
