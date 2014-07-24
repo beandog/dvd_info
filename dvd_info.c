@@ -422,6 +422,8 @@ int main(int argc, char **argv) {
 		for(stream = 0; stream < dvd_track.audio_tracks; stream++) {
 
 			memset(&dvd_audio, 0, sizeof(dvd_audio));
+			memset(dvd_audio.lang_code, '\0', 3);
+			memset(dvd_audio.codec, '\0', 5);
 
 			dvd_audio.track = stream + 1;
 			dvd_audio.stream = stream;
@@ -441,6 +443,7 @@ int main(int argc, char **argv) {
 		for(stream = 0; stream < dvd_track.subtitles; stream++) {
 
 			memset(&dvd_subtitle, 0, sizeof(dvd_subtitle));
+			memset(dvd_subtitle.lang_code, '\0', 3);
 
 			dvd_subtitle.track = stream + 1;
 			dvd_subtitle.stream = dvd_track_subtitle_stream_id(stream);
