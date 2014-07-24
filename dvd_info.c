@@ -44,6 +44,7 @@ struct dvd_track {
 	int number;
 	int title_idx;
 	uint8_t vts;
+	char length[13];
 	uint8_t chapters;
 	uint8_t audio_tracks;
 	uint8_t subtitles;
@@ -108,6 +109,7 @@ int main(int argc, char **argv) {
 	dvd_track.number = 0;
 	dvd_track.title_idx = 0;
 	dvd_track.vts = 1;
+	memset(dvd_track.length, '\0', 13);
 	dvd_track.chapters = 1;
 	dvd_track.audio_tracks = 0;
 	dvd_track.subtitles = 0;
@@ -135,9 +137,6 @@ int main(int argc, char **argv) {
 	dvd_subtitle.track = 1;
 	dvd_subtitle.stream = 0;
 	memset(dvd_subtitle.lang_code, '\0', 3);
-
-	// Originally 14, causes bug
-	char title_track_length[13] = {'\0'};
 
 	// getopt_long
 	int track_number = 0;
@@ -384,6 +383,7 @@ int main(int argc, char **argv) {
 		vts_ttn = vmg_ifo->tt_srpt->title[dvd_track.title_idx].vts_ttn;
 		vts_pgcit = track_ifo->vts_pgcit;
 		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
+		dvd_track_str_length(&pgc->playback_time, dvd_track.length);
 		dvd_track.chapters = pgc->nr_of_programs;
 
 		// Video codec
@@ -438,8 +438,6 @@ int main(int argc, char **argv) {
 		// Pan & Scan
 		dvd_video.pan_and_scan = dvd_track_pan_scan_video(track_ifo);
 
-
-
 		// Closed Captioning
 		if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1 || track_ifo->vtsi_mat->vts_video_attr.line21_cc_2) {
 			dvd_video.closed_captioning[0] = true;
@@ -467,11 +465,7 @@ int main(int argc, char **argv) {
 		printf("Letterbox: %i\n", dvd_video.letterbox ? 1 : 0);
 		printf("Pan & Scan: %i\n", dvd_video.pan_and_scan ? 1 : 0);
 		printf("Subtitles: %i\n", dvd_track.subtitles);
-
-		// Title track length (HH:MM:SS.MS)
-		dvd_track_str_length(&pgc->playback_time, title_track_length);
-
-		printf("Length: %s\n", title_track_length);
+		printf("Length: %s\n", dvd_track.length);
 
 		// Audio streams
 		printf("Audio Streams: %i\n", dvd_track.audio_tracks);
