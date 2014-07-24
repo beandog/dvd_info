@@ -52,7 +52,7 @@ struct dvd_track {
 
 struct dvd_video {
 	char codec[6];
-	char *format;
+	char format[5];
 	char *aspect_ratio;
 	uint16_t width;
 	uint16_t height;
@@ -116,7 +116,8 @@ int main(int argc, char **argv) {
 
 	// Video
 	struct dvd_video dvd_video;
-	memset(dvd_video.codec, '\0', 8);
+	memset(dvd_video.codec, '\0', 6);
+	memset(dvd_video.format, '\0', 5);
 	dvd_video.height = 0;
 	dvd_video.width = 0;
 	dvd_video.letterbox = false;
@@ -368,17 +369,9 @@ int main(int argc, char **argv) {
 		dvd_track_str_length(&pgc->playback_time, dvd_track.length);
 		dvd_track.chapters = pgc->nr_of_programs;
 		dvd_track_video_codec(track_ifo, dvd_video.codec);
+		dvd_track_video_format(track_ifo, dvd_video.format);
 		dvd_video.width = dvd_track_video_width(track_ifo);
 		dvd_video.height = dvd_track_video_height(track_ifo);
-
-		// Video format and height
-		if(dvd_track_ntsc_video(track_ifo)) {
-			dvd_video.format = "NTSC";
-		} else if(dvd_track_pal_video(track_ifo)) {
-			dvd_video.format = "PAL";
-		} else {
-			dvd_video.format = "Unknown";
-		}
 
 		// Aspect ratio
 		if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
