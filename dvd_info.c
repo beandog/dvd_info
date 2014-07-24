@@ -54,8 +54,8 @@ struct dvd_video {
 	char codec[8];
 	char *format;
 	char *aspect_ratio;
-	unsigned int width;
-	unsigned int height;
+	uint16_t width;
+	uint16_t height;
 	bool letterbox;
 	bool pan_and_scan;
 	bool closed_captioning[3];
@@ -368,32 +368,16 @@ int main(int argc, char **argv) {
 		dvd_track_str_length(&pgc->playback_time, dvd_track.length);
 		dvd_track.chapters = pgc->nr_of_programs;
 		dvd_track_video_codec(track_ifo, dvd_video.codec);
+		dvd_video.width = dvd_track_video_width(track_ifo);
+		dvd_video.height = dvd_track_video_height(track_ifo);
 
 		// Video format and height
 		if(dvd_track_ntsc_video(track_ifo)) {
 			dvd_video.format = "NTSC";
-			dvd_video.height = 480;
 		} else if(dvd_track_pal_video(track_ifo)) {
 			dvd_video.format = "PAL";
-			dvd_video.height = 576;
 		} else {
 			dvd_video.format = "Unknown";
-		}
-
-		// Video width
-		if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 0) {
-			dvd_video.width = 720;
-		} else if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 1) {
-			dvd_video.width = 704;
-		} else if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 2) {
-			dvd_video.width = 352;
-		} else if(track_ifo->vtsi_mat->vts_video_attr.picture_size == 3) {
-			dvd_video.width = 352;
-			if(dvd_video.height)
-				dvd_video.height = dvd_video.height / 2;
-		} else {
-			// Catch wrong integer values burned in DVD, and guess at the width
-			dvd_video.width = 720;
 		}
 
 		// Aspect ratio
