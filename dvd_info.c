@@ -57,6 +57,7 @@ struct dvd_video {
 	unsigned int height;
 	bool letterbox;
 	bool pan_and_scan;
+	bool closed_captioning[3];
 };
 
 struct dvd_audio {
@@ -117,6 +118,9 @@ int main(int argc, char **argv) {
 	dvd_video.width = 0;
 	dvd_video.letterbox = false;
 	dvd_video.pan_and_scan = false;
+	dvd_video.closed_captioning[0] = false;
+	dvd_video.closed_captioning[1] = false;
+	dvd_video.closed_captioning[2] = false;
 
 	// Audio
 	struct dvd_audio dvd_audio;
@@ -131,9 +135,6 @@ int main(int argc, char **argv) {
 	dvd_subtitle.track = 1;
 	dvd_subtitle.stream = 0;
 	memset(dvd_subtitle.lang_code, '\0', 3);
-	bool has_cc = false;
-	bool has_cc_1 = false;
-	bool has_cc_2 = false;
 
 	// Originally 14, causes bug
 	char title_track_length[13] = {'\0'};
@@ -451,11 +452,11 @@ int main(int argc, char **argv) {
 
 		// Closed Captioning
 		if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1 || track_ifo->vtsi_mat->vts_video_attr.line21_cc_2) {
-			has_cc = true;
+			dvd_video.closed_captioning[0] = true;
 			if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1)
-				has_cc_1 = true;
+				dvd_video.closed_captioning[1] = true;
 			if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_2)
-				has_cc_2 = true;
+				dvd_video.closed_captioning[2] = true;
 		}
 
 		// Audio streams
