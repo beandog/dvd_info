@@ -33,8 +33,17 @@ void print_usage(char *binary) {
 
 int main(int argc, char **argv) {
 
-	// libdvdread
+	// Device hardware
 	int dvd_fd;
+	char *device_filename = DEFAULT_DVD_DEVICE;
+	int drive_status;
+	__useconds_t sleepy_time = 1000000;
+	int num_naps = 0;
+	int max_num_naps = 60;
+	bool is_hardware = false;
+	bool is_image = false;
+
+	// libdvdread
 	dvd_reader_t *dvdread_dvd;
 	ifo_handle_t *vmg_ifo;
 	ifo_handle_t *track_ifo = NULL;
@@ -43,14 +52,6 @@ int main(int argc, char **argv) {
 	pgc_t *pgc;
 	pgcit_t *vts_pgcit;
 
-	// Device hardware
-	char *device_filename = DEFAULT_DVD_DEVICE;
-	int drive_status;
-	__useconds_t sleepy_time = 1000000;
-	int num_naps = 0;
-	int max_num_naps = 60;
-	bool is_hardware = false;
-	bool is_image = false;
 
 	// DVD
 	uint16_t num_vts;
