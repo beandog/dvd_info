@@ -1,4 +1,4 @@
-#include "dvd_ifo.h"
+#include "dvd_debug_ifo.h"
 
 bool vmgm_audio_streams_ok(unsigned int i) {
 
