@@ -75,7 +75,6 @@ int main(int argc, char **argv) {
 	char *video_codec;
 	char *video_format;
 	char *aspect_ratio;
-	bool valid_video_codec = false;
 	unsigned int video_height = 0;
 	bool valid_video_format = false;
 	bool valid_video_height = false;
@@ -340,10 +339,8 @@ int main(int argc, char **argv) {
 		// Video codec
 		if(dvd_track_mpeg1(track_ifo)) {
 			video_codec = "MPEG1";
-			valid_video_codec = true;
 		} else if(dvd_track_mpeg2(track_ifo)) {
 			video_codec = "MPEG2";
-			valid_video_codec = true;
 		} else {
 			video_codec = "Unknown";
 		}
