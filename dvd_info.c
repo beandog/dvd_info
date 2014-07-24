@@ -59,6 +59,20 @@ struct dvd_video {
 	bool pan_and_scan;
 };
 
+struct dvd_audio {
+	int track;
+	int stream;
+	char lang_code[3];
+	char codec[5];
+	int channels;
+};
+
+struct dvd_subtitle {
+	int track;
+	int stream;
+	char lang_code[3];
+};
+
 int main(int argc, char **argv) {
 
 	// Device hardware
@@ -104,7 +118,19 @@ int main(int argc, char **argv) {
 	dvd_video.letterbox = false;
 	dvd_video.pan_and_scan = false;
 
+	// Audio
+	struct dvd_audio dvd_audio;
+	uint8_t stream;
+	dvd_audio.track = 1;
+	dvd_audio.stream = 0;
+	memset(dvd_audio.lang_code, '\0', 3);
+	memset(dvd_audio.codec, '\0', 5);
+
 	// Subtitles
+	struct dvd_subtitle dvd_subtitle;
+	dvd_subtitle.track = 1;
+	dvd_subtitle.stream = 0;
+	memset(dvd_subtitle.lang_code, '\0', 3);
 	bool has_cc = false;
 	bool has_cc_1 = false;
 	bool has_cc_2 = false;
@@ -495,34 +521,32 @@ int main(int argc, char **argv) {
 
 		/** Audio Streams **/
 
-		char lang_code[3] = {'\0'};
-		char audio_codec[5] = {'\0'};
-		int audio_channels;
-		int audio_stream_id;
-		uint8_t stream_idx;
+		for(stream = 0; stream < dvd_track.audio_tracks; stream++) {
 
-		for(stream_idx = 0; stream_idx < dvd_track.audio_tracks; stream_idx++) {
-			printf("[Audio Track %i:%i]\n", track_number, stream_idx + 1);
+			dvd_audio.track = stream + 1;
+			dvd_audio.stream = stream;
+			dvd_track_audio_lang_code(track_ifo, stream, dvd_audio.lang_code);
+			dvd_track_audio_codec(track_ifo, stream, dvd_audio.codec);
+			dvd_audio.channels = dvd_track_audio_num_channels(track_ifo, stream);
+			dvd_audio.stream = dvd_track_audio_stream_id(track_ifo, stream);
 
-			dvd_track_audio_lang_code(track_ifo, stream_idx, lang_code);
-			printf("Language Code: %s\n", lang_code);
+			printf("[Audio Track %i:%i]\n", track_number, stream + 1);
+			printf("Language Code: %s\n", dvd_audio.lang_code);
+			printf("Audio Codec: %s\n", dvd_audio.codec);
+			printf("Channels: %i\n", dvd_audio.channels);
+			printf("Stream ID: 0x%x\n", dvd_audio.stream);
 
-			dvd_track_audio_codec(track_ifo, stream_idx, audio_codec);
-			printf("Audio Codec: %s\n", audio_codec);
-
-			audio_channels = dvd_track_audio_num_channels(track_ifo, stream_idx);
-			printf("Channels: %i\n", audio_channels);
-
-			audio_stream_id = dvd_track_audio_stream_id(track_ifo, stream_idx);
-			printf("Stream ID: %i\n", audio_stream_id);
 		}
 
-		for(stream_idx = 0; stream_idx < dvd_track.subtitles; stream_idx++) {
+		for(stream = 0; stream < dvd_track.subtitles; stream++) {
 
-			printf("[Subtitle Track %i:%i]\n", track_number, stream_idx + 1);
+			dvd_subtitle.track = stream + 1;
+			dvd_subtitle.stream = dvd_track_subtitle_stream_id(stream);
+			dvd_track_subtitle_lang_code(track_ifo, stream, dvd_subtitle.lang_code);
 
-			dvd_track_subtitle_lang_code(track_ifo, stream_idx, lang_code);
-			printf("Language Code: %s\n", lang_code);
+			printf("[Subtitle Track %i:%i]\n", track_number, stream + 1);
+			printf("Stream ID: 0x%x\n", dvd_subtitle.stream);
+			printf("Language Code: %s\n", dvd_subtitle.lang_code);
 
 		}
 
