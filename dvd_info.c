@@ -53,7 +53,7 @@ struct dvd_track {
 struct dvd_video {
 	char codec[6];
 	char format[5];
-	char *aspect_ratio;
+	char aspect_ratio[5];
 	uint16_t width;
 	uint16_t height;
 	bool letterbox;
@@ -119,6 +119,7 @@ int main(int argc, char **argv) {
 	struct dvd_video dvd_video;
 	memset(dvd_video.codec, '\0', 6);
 	memset(dvd_video.format, '\0', 5);
+	memset(dvd_video.aspect_ratio, '\0', 5);
 	dvd_video.height = 0;
 	dvd_video.width = 0;
 	dvd_video.letterbox = false;
@@ -384,16 +385,7 @@ int main(int argc, char **argv) {
 		dvd_track_video_format(track_ifo, dvd_video.format);
 		dvd_video.width = dvd_track_video_width(track_ifo);
 		dvd_video.height = dvd_track_video_height(track_ifo);
-
-		// Aspect ratio
-		if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
-			dvd_video.aspect_ratio = "4:3";
-		else if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
-			dvd_video.aspect_ratio = "16:9";
-		else {
-			// Catcch wrong integer value burned into DVD
-			dvd_video.aspect_ratio = "Unknown";
-		}
+		dvd_track_video_aspect_ratio(track_ifo, dvd_video.aspect_ratio);
 
 		// Letterbox
 		dvd_video.letterbox = dvd_track_letterbox_video(track_ifo);
