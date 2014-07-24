@@ -466,20 +466,15 @@ int main(int argc, char **argv) {
 		printf("Video Height: %i\n", dvd_video.height);
 		printf("Letterbox: %i\n", dvd_video.letterbox ? 1 : 0);
 		printf("Pan & Scan: %i\n", dvd_video.pan_and_scan ? 1 : 0);
-
-		// Display number of subtitles
-		printf("Subtitles: ");
-		printf("%i\n", dvd_track.subtitles);
+		printf("Subtitles: %i\n", dvd_track.subtitles);
 
 		// Title track length (HH:MM:SS.MS)
 		dvd_track_str_length(&pgc->playback_time, title_track_length);
 
-		printf("Length: ");
-		printf("%s\n", title_track_length);
+		printf("Length: %s\n", title_track_length);
 
 		// Audio streams
-		printf("Audio Streams: ");
-		printf("%i\n", dvd_track.audio_tracks);
+		printf("Audio Streams: %i\n", dvd_track.audio_tracks);
 
 		/** Audio Streams **/
 
