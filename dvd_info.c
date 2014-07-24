@@ -269,7 +269,6 @@ int main(int argc, char **argv) {
 	printf("Total VTS: %d\n", num_vts);
 	printf("Tracks: %d\n", num_tracks);
 
-	// --id
 	// Display DVDDiscID from libdvdread
 	if(dvd_disc_id == -1) {
 		fprintf(stderr, "dvd_info: querying DVD id failed\n");
@@ -281,13 +280,11 @@ int main(int argc, char **argv) {
 		printf("\n");
 	}
 
-	// --title
-	// Display DVD title
+	// DVD title
 	printf("Title: ");
 	printf("%s\n", title);
 
-	// --provider-id
-	// Display provider ID
+	// provider ID
 	// Max length of provider ID is 32 letters, so create an array
 	// that has enough size to store the letters and a null
 	// terminator.  Also initialize it with all null terminators.
@@ -299,18 +296,15 @@ int main(int argc, char **argv) {
 	printf("Provider ID: ");
 	printf("%s\n", provider_id);
 
-	// --vmg-id
-	// Display VMG ID
+	// VMG ID
 	printf("VMG: ");
 	printf("%s\n", vmg_id);
 
-	// --side
-	// Display disc side
+	// Disc side
 	printf("Disc Side: ");
 	printf("%i\n", dvd_disc_side);
 
-	// --longest-track
-	// Display longest track number ordered by milliseconds
+	// Longest track number ordered by milliseconds
 	printf("Longest track: ");
 	printf("%i\n", longest_track);
 	printf("Longest track with subtitles: ");
@@ -430,47 +424,40 @@ int main(int argc, char **argv) {
 		// Subtitles
 		subtitles = dvd_track_subtitles(track_ifo);
 
-		// --video-codec
-		// Display video codec
+		// Video codec
 		printf("Video Codec: ");
 		printf("%s\n", video_codec);
 
-		// --video-format
-		// Display video format
+		// Video format
 		printf("Video Format: ");
 		printf("%s\n", video_format);
 
-		// --aspect-ratio
-		// Display aspect ratio
+		// Aspect ratio
 		printf("Aspect Ratio: ");
 		printf("%s\n", aspect_ratio);
 
-		// --video-width
-		// Display video width
+		// Video width
 		printf("Video Width: ");
 		printf("%i\n", video_width);
 
-		// --video-height
-		// Display video height
+		// Video height
 		printf("Video Height: ");
 		printf("%i\n", video_height);
 
-		// --letterbox
-		// Display letterbox
+		// Letterbox
 		printf("Letterbox: ");
 		if(letterbox)
 			printf("1\n");
 		else
 			printf("0\n");
 
-		// Display Closed Captioning
+		// Closed Captioning
 		// Not sure if this is right or not
 		/*
 		printf("closed captioning: ");
 		printf("1\n");
 		*/
 
-		// --num-subtitles
 		// Display number of subtitles
 		printf("Subtitles: ");
 		printf("%i\n", subtitles);
@@ -481,8 +468,7 @@ int main(int argc, char **argv) {
 		printf("Length: ");
 		printf("%s\n", title_track_length);
 
-		// --num-audio-streams
-		// Display number of audio streams
+		// Audio streams
 		printf("Audio Streams: ");
 		printf("%i\n", num_audio_streams);
 
