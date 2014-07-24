@@ -8,10 +8,12 @@
 #include <linux/cdrom.h>
 #include "dvd_device.h"
 
-bool dvd_device_access(const char* device_filename) {
+bool dvd_device_access(const char *device_filename) {
 
 	int device_access;
+
 	device_access = access(device_filename, F_OK);
+
 	if(device_access == 0)
 		return true;
 	else
@@ -20,13 +22,14 @@ bool dvd_device_access(const char* device_filename) {
 }
 
 // Returns DVD device file descriptor
-int dvd_device_open(const char* device_filename) {
+int dvd_device_open(const char *device_filename) {
 
 	int dvd_fd;
 
 	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
 
 	return dvd_fd;
+
 }
 
 int dvd_device_close(const int dvd_fd) {
