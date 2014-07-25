@@ -524,8 +524,6 @@ int main(int argc, char **argv) {
 
 		}
 
-		if(d_json == 1)
-			json_object_set_new(json_dvd_track, "audio", json_dvd_audio);
 
 		for(stream = 0; stream < dvd_track.subtitles; stream++) {
 
@@ -555,8 +553,11 @@ int main(int argc, char **argv) {
 
 		}
 
-		if(d_json == 1)
+		if(d_json == 1) {
+			json_object_set_new(json_dvd_track, "audio", json_dvd_audio);
+			json_object_set_new(json_dvd_track, "subtitles", json_dvd_subtitles);
 			json_array_append(json_dvd_tracks, json_dvd_track);
+		}
 
 	}
 
