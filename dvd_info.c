@@ -468,7 +468,7 @@ int main(int argc, char **argv) {
 
 			json_dvd_track = json_object();
 			json_dvd_video = json_object();
-			json_object_set_new(json_dvd_track, "number", json_integer(dvd_track.number));
+			json_object_set_new(json_dvd_track, "track", json_integer(dvd_track.number));
 			json_object_set_new(json_dvd_track, "vts", json_integer(dvd_track.vts));
 			json_object_set_new(json_dvd_track, "chapters", json_integer(dvd_track.chapters));
 			json_object_set_new(json_dvd_track, "length", json_string(dvd_track.length));
@@ -513,7 +513,7 @@ int main(int argc, char **argv) {
 			if(d_json == 1) {
 
 				json_dvd_audio = json_object();
-				json_object_set_new(json_dvd_audio, "ix", json_integer(dvd_audio.track));
+				json_object_set_new(json_dvd_audio, "track", json_integer(dvd_audio.track));
 				json_object_set_new(json_dvd_audio, "lang code", json_string(dvd_audio.lang_code));
 				json_object_set_new(json_dvd_audio, "codec", json_string(dvd_audio.codec));
 				json_object_set_new(json_dvd_audio, "channels", json_integer(dvd_audio.channels));
@@ -545,7 +545,7 @@ int main(int argc, char **argv) {
 			if(d_json == 1) {
 
 				json_dvd_subtitle = json_object();
-				json_object_set_new(json_dvd_subtitle, "number", json_integer(dvd_subtitle.track));
+				json_object_set_new(json_dvd_subtitle, "track", json_integer(dvd_subtitle.track));
 				json_object_set_new(json_dvd_subtitle, "lang code", json_string(dvd_subtitle.lang_code));
 				json_array_append(json_dvd_subtitles, json_dvd_subtitle);
 
