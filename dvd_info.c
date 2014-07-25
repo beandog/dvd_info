@@ -58,7 +58,6 @@ struct dvd_video {
 	uint16_t height;
 	bool letterbox;
 	bool pan_and_scan;
-	bool closed_captioning[3];
 };
 
 struct dvd_audio {
@@ -124,9 +123,6 @@ int main(int argc, char **argv) {
 	dvd_video.width = 0;
 	dvd_video.letterbox = false;
 	dvd_video.pan_and_scan = false;
-	dvd_video.closed_captioning[0] = false;
-	dvd_video.closed_captioning[1] = false;
-	dvd_video.closed_captioning[2] = false;
 
 	// Audio
 	struct dvd_audio dvd_audio;
@@ -389,15 +385,6 @@ int main(int argc, char **argv) {
 		dvd_video.pan_and_scan = dvd_track_pan_scan_video(track_ifo);
 		dvd_track.audio_tracks = dvd_track_num_audio_streams(track_ifo);
 		dvd_track.subtitles = dvd_track_subtitles(track_ifo);
-
-		// Closed Captioning
-		if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1 || track_ifo->vtsi_mat->vts_video_attr.line21_cc_2) {
-			dvd_video.closed_captioning[0] = true;
-			if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_1)
-				dvd_video.closed_captioning[1] = true;
-			if(track_ifo->vtsi_mat->vts_video_attr.line21_cc_2)
-				dvd_video.closed_captioning[2] = true;
-		}
 
 		// Video codec
 		printf("[Track %d]\n", track_number);
