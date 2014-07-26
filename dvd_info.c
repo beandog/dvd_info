@@ -144,6 +144,10 @@ int main(int argc, char **argv) {
 	dvd_subtitle.stream = 0;
 	memset(dvd_subtitle.lang_code, '\0', 3);
 
+	// Chapters
+	uint8_t chapter_number;
+	char chapter_length[14] = {'\0'};
+
 	// JSON variables
 	json_t *json_dvd;
 	json_t *json_dvd_info;
@@ -475,6 +479,15 @@ int main(int argc, char **argv) {
 			printf("Audio Streams: %i\n", dvd_track.audio_tracks);
 
 		}
+
+		if(d_human == 1 && dvd_track.chapters) {
+			printf("[Chapters]\n");
+		}
+		for(chapter_number = 1; chapter_number < dvd_track.chapters + 1; chapter_number++) {
+			dvd_track_str_chapter_length(pgc, chapter_number, chapter_length);
+			if(d_human == 1)
+				printf("Chapter %02d: %s\n", chapter_number, chapter_length);
+		};
 
 		if(d_json == 1) {
 
