@@ -445,3 +445,48 @@ bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, const char 
 		return false;
 
 }
+
+/**
+ * Sourced from lsdvd.c.  I don't understand the logic behind it, and why the
+ * original doesn't access pgc->cell_playback[cell_idx].playback_time directly.
+ * Two things I do know: not to assume a cell is a chapter, and lsdvd's chapter
+ * output has always worked for me, so I'm leaving it alone for now.
+ *
+ * This loops through *all* the chapters and gets the times, but only quits
+ * once the specified one has been found.
+ *
+ * FIXME wrap my head around this some day.
+ */
+int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number, char *p) {
+
+	uint8_t chapters;
+	uint8_t chapter_idx;
+	int program_map_idx;
+	int cell_idx;
+	char chapter_length[14] = {'\0'};
+
+	chapters = pgc->nr_of_programs;
+	chapter_idx = 0;
+	cell_idx = 0;
+
+	for(chapter_idx = 0; chapter_idx < pgc->nr_of_programs; chapter_idx++) {
+
+		program_map_idx = pgc->program_map[chapter_idx + 1];
+
+		if(chapter_idx == chapters - 1)
+			program_map_idx = pgc->nr_of_cells + 1;
+
+		while(cell_idx < program_map_idx - 1) {
+			if(chapter_idx + 1 == chapter_number) {
+				dvd_track_str_length(&pgc->cell_playback[cell_idx].playback_time, chapter_length);
+				strncpy(p, chapter_length, 14);
+				return 0;
+			}
+			cell_idx++;
+		}
+
+	}
+
+	return 1;
+
+}

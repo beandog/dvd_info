@@ -258,3 +258,12 @@ uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *track_ifo, 
  * @return boolean
  */
 bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, const char *lang_code);
+
+/**
+ * Get a string of the length of a chapter in a track.  Format hh:mm:ss.ms
+ *
+ * @param pgc track IFO program chain
+ * @param chapter_number chapter number
+ * @param p string pointer
+ */
+int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number, char *p);
