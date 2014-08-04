@@ -63,6 +63,7 @@ bool device_access(const char *device_filename) {
 int main(int argc, char **argv) {
 
 	int cdrom;
+	int retval;
 	int drive_status;
 	char *device_filename;
 	char default_dvd_device[] = DEFAULT_DVD_DEVICE;
@@ -106,13 +107,18 @@ int main(int argc, char **argv) {
 
 	// Fetch status
 	drive_status = ioctl(cdrom, CDROM_DRIVE_STATUS);
+	retval = close(cdrom);
+
+	if(retval == -1) {
+		fprintf(stderr, "Error closing cdrom object\n");
+		return 1;
+	}
+
 	if(drive_status < 0) {
 		fprintf(stderr, "%s is not a DVD drive\n", device_filename);
 		close(cdrom);
 		return 5;
 	}
-
-	close(cdrom);
 
 	switch(drive_status) {
 		case CDS_NO_DISC:
