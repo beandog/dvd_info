@@ -12,6 +12,69 @@
 
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
 
+/**
+ * dvd_eject.c
+ *
+ * @author Steve Dibb <steve.dibb@gmail.com>
+ * @site http://dvds.beandog.org/
+ *
+ * Opens / closes a disc tray, and decrypts the CSS on the drive to avoid
+ * any spatial anomalies (and hardware devices whining to the kernel about
+ * reading sectors without authentication).  Requires libdvdcss as a
+ * dependency library.
+ *
+ * Three return values: 0 on success, 1 on error, 2 on success and drive has
+ * a DVD inside of it.
+ *
+ * To build:
+ * $ gcc -o dvd_eject dvd_eject.c -l dvdcss
+ *
+ * Usage:
+ * $ dvd_eject -h
+ *
+ * Story mode:
+ *
+ * I've spent a lot of time trying to track down why the hardware will send
+ * errors to the systemlog like so:
+ *
+ * "Sense Key : Illegal Request [current]"
+ * "Add. Sense: Read of scrambled sector without authentication"
+ *
+ * I'm debugging them not because I care about the messages, but becaue if it
+ * happens enough, the drives will eventually lock up and be unable to process
+ * any more discs (until next reboot).
+ *
+ * I've narrowed down two things that help a lot to prevent them as best as I
+ * can:
+ *
+ * 1. Make as *few* calls as possible to the device to check on its status
+ *    (this program does that -- it keeps it to a bare minimum)
+ * 2. Use libdvdcss to authenticate access to the DVD.
+ *
+ * Those two combined seem to help in large amounts, but I've never found
+ * anything that is a sure fire solution.
+ *
+ * The basic logic of this program and reason for it is this: Opening and
+ * closing a disc tray is trivial.  The issue this one works around, however,
+ * is that just because a tray is *closed*, does not mean that it is *ready* to
+ * acess the media in it.  This can cause issues when you do something like
+ * "lsdvd /dev/dvd" and the tray is open.  The tray will close by the call made
+ * through libdvdread / libdvdcss to access the device, but will fail because
+ * the device is not yet in a ready mode.  So there's a gap between "closing" and
+ * "closed and ready".  Fortunately, the Linux kernel allows for checking those
+ * states, and that's the core of the logic here.
+ *
+ * With that in mind, all this does is close or open the tray, wait until it is
+ * a "ready" state again, and then exits.  In addition, if it closes the tray,
+ * it waits until the "ready" state and then decrypts the CSS using libdvdcss.
+ *
+ * If anecdotal evidence has any value ... it works for me. :)
+ *
+ * Good luck, and here's to all the other DVD collectors / multimedia geeks out
+ * there! :D
+ *
+ */
+
 int drive_status(const int cdrom);
 bool has_media(const int cdrom);
 bool is_open(const int cdrom);
