@@ -483,6 +483,7 @@ int main(int argc, char **argv) {
 		if(d_human == 1 && dvd_track.chapters) {
 			printf("[Chapters]\n");
 		}
+		// FIXME add JSON support
 		for(chapter_number = 1; chapter_number < dvd_track.chapters + 1; chapter_number++) {
 			dvd_track_str_chapter_length(pgc, chapter_number, chapter_length);
 			if(d_human == 1)
