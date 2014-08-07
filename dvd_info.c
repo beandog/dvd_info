@@ -509,7 +509,7 @@ int main(int argc, char **argv) {
 
 		if(d_lsdvd == 1) {
 			printf("Title: %02u, ", track_number);
-			printf("Length: %s, ", dvd_track.length);
+			printf("Length: %s ", dvd_track.length);
 			printf("Chapters: %02i, ", dvd_track.chapters);
 			printf("Cells: %02i, ", dvd_track.cells);
 		}
