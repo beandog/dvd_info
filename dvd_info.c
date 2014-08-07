@@ -142,6 +142,7 @@ int main(int argc, char **argv) {
 	uint8_t stream;
 	dvd_audio.track = 1;
 	dvd_audio.stream = 0;
+	dvd_audio.channels = 0;
 	memset(dvd_audio.lang_code, '\0', 3);
 	memset(dvd_audio.codec, '\0', 5);
 
