@@ -591,7 +591,7 @@ int main(int argc, char **argv) {
 		}
 
 		if(d_lsdvd == 1) {
-			printf("Audio streams: %02i, ", dvd_audio.channels);
+			printf("Audio streams: %02i, ", dvd_track.audio_tracks);
 		}
 
 		/** Subtitles **/
