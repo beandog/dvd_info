@@ -330,6 +330,26 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	// Get the total number of title tracks on the DVD
+	dvd_info.tracks = dvd_info_num_tracks(vmg_ifo);
+
+	// Exit if track number requested does not exist
+	if(o_track_number > dvd_info.tracks || o_track_number < 0) {
+		fprintf(stderr, "Invalid track number %d\n", o_track_number);
+		fprintf(stderr, "Valid track numbers: 1 to %d\n", dvd_info.tracks);
+		ifoClose(vmg_ifo);
+		DVDClose(dvdread_dvd);
+		return 1;
+	} else if(o_track_number <= dvd_info.tracks && o_track_number > 0) {
+		d_first_track = (uint16_t)o_track_number;
+		d_last_track = (uint16_t)o_track_number;
+		d_all_tracks = false;
+	} else {
+		d_first_track = 1;
+		d_last_track = dvd_info.tracks;
+		d_all_tracks = true;
+	}
+
 	// Exit if all the IFOs cannot be opened
 	dvd_info.video_title_sets = dvd_info_num_vts(vmg_ifo);
 	for(uint16_t vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
@@ -360,26 +380,6 @@ int main(int argc, char **argv) {
 	if(dvdread_retval == -1) {
 		fprintf(stderr, "Querying DVD id failed -- this is probably related to the library not being able to open an IFO.  Check the DVD for physical defects.\n");
 		return 1;
-	}
-
-	// Get the total number of title tracks on the DVD
-	dvd_info.tracks = dvd_info_num_tracks(vmg_ifo);
-
-	// Exit if track number requested does not exist
-	if(o_track_number > dvd_info.tracks || o_track_number < 0) {
-		fprintf(stderr, "Invalid track number %d\n", o_track_number);
-		fprintf(stderr, "Valid track numbers: 1 to %d\n", dvd_info.tracks);
-		ifoClose(vmg_ifo);
-		DVDClose(dvdread_dvd);
-		return 1;
-	} else if(o_track_number <= dvd_info.tracks && o_track_number > 0) {
-		d_first_track = (uint16_t)o_track_number;
-		d_last_track = (uint16_t)o_track_number;
-		d_all_tracks = false;
-	} else {
-		d_first_track = 1;
-		d_last_track = dvd_info.tracks;
-		d_all_tracks = true;
 	}
 
 	// GRAB ALL THE THINGS
