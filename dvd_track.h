@@ -112,8 +112,8 @@ bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *track_ifo);
  * This function looks at the permitted display format of the DVD.  Possible
  * values for this variable are:
  *
- * 0: Pan & Scan plus Letterbox
- * 1: Pan & Scan
+ * 0: Pan and Scan plus Letterbox
+ * 1: Pan and Scan
  * 2: Letterbox
  * 3: ???
  *

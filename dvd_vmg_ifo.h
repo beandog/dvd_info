@@ -272,11 +272,11 @@ uint16_t dvd_info_longest_4x3_track(dvd_reader_t *dvdread_dvd);
  * - Display Format
  *
  * The possible aspect ratios are 4:3 and 16:9.
- * The possible display formats are Pan & Scan and Letterbox.
+ * The possible display formats are Pan and Scan and Letterbox.
  *
  * It is *not* safe to assume that just because a track has a 4:3 aspect ratio
- * that it is also Pan & Scan.  There are DVDs that have feature titles where
- * black bars are added to letterbox video to force it to Pan & Scan.  These
+ * that it is also Pan and Scan.  There are DVDs that have feature titles where
+ * black bars are added to letterbox video to force it to Pan and Scan.  These
  * are called non-anamorphic DVDs, and are generally a thorn in the side of
  * most DVD videophiles (and why we love Blu-ray so much).  That being said, it
  * is again not safe as a general rule to assume that the best feature track
@@ -294,12 +294,12 @@ uint16_t dvd_info_longest_4x3_track(dvd_reader_t *dvdread_dvd);
 uint16_t dvd_info_longest_letterbox_track(dvd_reader_t *dvdread_dvd);
 
 /**
- * Find the longest track marked as Pan & Scan
+ * Find the longest track marked as Pan and Scan
  *
  * See the previous commentary on the last function for reasoning.
  *
  * @param dvdread_dvd libdvdread handler
- * @return longest track number that has a display format of Pan & Scan, or 0
+ * @return longest track number that has a display format of Pan and Scan, or 0
  * if no tracks with the attribute are found
  */
 uint16_t dvd_info_longest_pan_scan_track(dvd_reader_t *dvdread_dvd);

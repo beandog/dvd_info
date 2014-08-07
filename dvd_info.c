@@ -504,7 +504,7 @@ int main(int argc, char **argv) {
 
 			if(verbose) {
 				printf("Letterbox: %i\n", dvd_video.letterbox ? 1 : 0);
-				printf("Pan & Scan: %i\n", dvd_video.pan_and_scan ? 1 : 0);
+				printf("Pan and Scan: %i\n", dvd_video.pan_and_scan ? 1 : 0);
 				printf("Video Title Set (IFO): %d\n", dvd_track.vts);
 			}
 
