@@ -12,7 +12,6 @@
 #include <dvdread/dvd_udf.h>
 #include <dvdread/ifo_read.h>
 #include <dvdread/ifo_print.h>
-#include <dvdnav/dvdnav.h>
 #include <jansson.h>
 #include "dvd_device.h"
 #include "dvd_drive.h"
@@ -241,7 +240,9 @@ int main(int argc, char **argv) {
 			case 0:
 			default:
 				break;
+
 		}
+
 	}
 
 	if(d_json == 1)
@@ -571,6 +572,7 @@ int main(int argc, char **argv) {
 
 		}
 
+		/** Subtitles **/
 
 		for(stream = 0; stream < dvd_track.subtitles; stream++) {
 
@@ -629,11 +631,6 @@ int main(int argc, char **argv) {
 
 	if(dvdread_dvd)
 		DVDClose(dvdread_dvd);
-
-	/*
-	if(dvdnav_dvd)
-		dvdnav_close(dvdnav_dvd);
-	*/
 
 	return 0;
 
