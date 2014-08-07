@@ -88,6 +88,8 @@ int main(int argc, char **argv) {
 	uint16_t d_first_track = 0;
 	uint16_t d_last_track = 0;
 	uint16_t track_number = 0;
+	uint16_t vts = 1;
+	bool has_invalid_ifos = false;
 
 	// Device hardware
 	int dvd_fd;
@@ -362,29 +364,39 @@ int main(int argc, char **argv) {
 	// Exit if all the IFOs cannot be opened
 	dvd_info.video_title_sets = dvd_info_num_vts(vmg_ifo);
 	bool valid_ifos[dvd_info.video_title_sets];
-	for(uint16_t vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
+	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
 		vts_ifo = ifoOpen(dvdread_dvd, vts);
+
 		if(!vts_ifo) {
 			fprintf(stderr, "Opening VTS IFO %d failed!\n", vts);
 			valid_ifos[vts] = false;
-			ifoClose(vmg_ifo);
-			DVDClose(dvdread_dvd);
-			return 1;
-		}
-
-		if(!vts_ifo->vtsi_mat) {
+			has_invalid_ifos = true;
+		} else if(!vts_ifo->vtsi_mat) {
 			printf("Could not open VTSI_MAT for VTS IFO %d\n", vts);
 			valid_ifos[vts] = false;
-			ifoClose(vmg_ifo);
+			has_invalid_ifos = true;
+		} else {
+			valid_ifos[vts] = true;
 			ifoClose(vts_ifo);
-			DVDClose(dvdread_dvd);
-			return 1;
+			vts_ifo = NULL;
 		}
 
-		valid_ifos[vts] = true;
-		ifoClose(vts_ifo);
-		vts_ifo = NULL;
+	}
+
+	// Exit if the track requested is on an invalid IFO
+	if(has_invalid_ifos && opt_track_number) {
+
+		vts = dvd_track_ifo_number(vmg_ifo, track_number);
+
+		if(valid_ifos[vts] == false) {
+
+			fprintf(stderr, "Could not open IFO %d for track %d, exiting\n", vts, track_number);
+			ifoClose(vmg_ifo);
+			DVDClose(dvdread_dvd);
+			return 1;
+
+		}
 
 	}
 
@@ -471,6 +483,14 @@ int main(int argc, char **argv) {
 
 		// Open IFO
 		dvd_track.vts = dvd_track_ifo_number(vmg_ifo, track_number);
+		vts = dvd_track_ifo_number(vmg_ifo, track_number);
+
+		// Skip track if parent IFO is invalid
+		if(valid_ifos[vts] == false) {
+			fprintf(stderr, "IFO %i for track %i is invalid, skipping track\n", vts, track_number);
+			break;
+		}
+
 		track_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
 
 		dvd_track.number = track_number;
