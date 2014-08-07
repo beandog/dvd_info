@@ -41,7 +41,7 @@ struct dvd_info {
 };
 
 struct dvd_track {
-	int number;
+	int ix;
 	int title_idx;
 	uint8_t vts;
 	char length[13];
@@ -62,7 +62,7 @@ struct dvd_video {
 };
 
 struct dvd_audio {
-	int track;
+	int ix;
 	int stream;
 	char lang_code[3];
 	char codec[5];
@@ -70,7 +70,7 @@ struct dvd_audio {
 };
 
 struct dvd_subtitle {
-	int track;
+	int ix;
 	int stream;
 	char lang_code[3];
 };
@@ -125,7 +125,7 @@ int main(int argc, char **argv) {
 
 	// Track
 	struct dvd_track dvd_track;
-	dvd_track.number = 1;
+	dvd_track.ix = 1;
 	dvd_track.title_idx = 0;
 	dvd_track.vts = 1;
 	memset(dvd_track.length, '\0', 13);
@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
 	// Audio
 	struct dvd_audio dvd_audio;
 	uint8_t stream;
-	dvd_audio.track = 1;
+	dvd_audio.ix = 1;
 	dvd_audio.stream = 0;
 	memset(dvd_audio.lang_code, '\0', 3);
 	memset(dvd_audio.codec, '\0', 5);
@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
 
 	// Subtitles
 	struct dvd_subtitle dvd_subtitle;
-	dvd_subtitle.track = 1;
+	dvd_subtitle.ix = 1;
 	dvd_subtitle.stream = 0;
 	memset(dvd_subtitle.lang_code, '\0', 3);
 
@@ -481,18 +481,17 @@ int main(int argc, char **argv) {
 
 		// Open IFO
 		dvd_track.vts = dvd_track_ifo_number(vmg_ifo, track_number);
-		vts = dvd_track_ifo_number(vmg_ifo, track_number);
 
 		// Skip track if parent IFO is invalid
-		if(valid_ifos[vts] == false) {
-			fprintf(stderr, "IFO %i for track %i is invalid, skipping track\n", vts, track_number);
+		if(valid_ifos[dvd_track.vts] == false) {
+			fprintf(stderr, "IFO %i for track %i is invalid, skipping track\n", dvd_track.vts, track_number);
 			break;
 		}
 
 		track_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
 
-		dvd_track.number = track_number;
-		dvd_track.title_idx = track_number - 1;
+		dvd_track.ix = track_number;
+		dvd_track.title_idx = dvd_track.ix - 1;
 		vts_ttn = vmg_ifo->tt_srpt->title[dvd_track.title_idx].vts_ttn;
 		vts_pgcit = track_ifo->vts_pgcit;
 		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
@@ -512,7 +511,7 @@ int main(int argc, char **argv) {
 		if(d_human == 1) {
 
 			// Video codec
-			printf("[Track %d]\n", track_number);
+			printf("[Track %d]\n", dvd_track.ix);
 			printf("Chapters: %i\n", dvd_track.chapters);
 			printf("Video Codec: %s\n", dvd_video.codec);
 			printf("Video Format: %s\n", dvd_video.format);
@@ -532,7 +531,7 @@ int main(int argc, char **argv) {
 		}
 
 		if(d_lsdvd == 1) {
-			printf("Title: %02u, ", track_number);
+			printf("Title: %02u, ", dvd_track.ix);
 			printf("Length: %s ", dvd_track.length);
 			printf("Chapters: %02i, ", dvd_track.chapters);
 			printf("Cells: %02i, ", dvd_track.cells);
@@ -551,7 +550,7 @@ int main(int argc, char **argv) {
 		if(d_json == 1) {
 
 			json_dvd_track = json_object();
-			json_object_set_new(json_dvd_track, "track", json_integer(dvd_track.number));
+			json_object_set_new(json_dvd_track, "ix", json_integer(dvd_track.ix));
 			json_object_set_new(json_dvd_track, "chapters", json_integer(dvd_track.chapters));
 			json_object_set_new(json_dvd_track, "length", json_string(dvd_track.length));
 			json_object_set_new(json_dvd_track, "audio tracks", json_integer(dvd_track.audio_tracks));
@@ -585,7 +584,7 @@ int main(int argc, char **argv) {
 			memset(dvd_audio.lang_code, '\0', 3);
 			memset(dvd_audio.codec, '\0', 5);
 
-			dvd_audio.track = stream + 1;
+			dvd_audio.ix = stream + 1;
 			dvd_audio.stream = stream;
 			dvd_track_audio_lang_code(track_ifo, stream, dvd_audio.lang_code);
 			dvd_track_audio_codec(track_ifo, stream, dvd_audio.codec);
@@ -594,7 +593,7 @@ int main(int argc, char **argv) {
 
 			if(d_human == 1) {
 
-				printf("[Audio Track %i:%i]\n", track_number, stream + 1);
+				printf("[Audio Track %i:%i]\n", dvd_track.ix, stream + 1);
 				printf("Language Code: %s\n", dvd_audio.lang_code);
 				printf("Audio Codec: %s\n", dvd_audio.codec);
 				printf("Channels: %i\n", dvd_audio.channels);
@@ -605,7 +604,7 @@ int main(int argc, char **argv) {
 			if(d_json == 1) {
 
 				json_dvd_audio = json_object();
-				json_object_set_new(json_dvd_audio, "track", json_integer(dvd_audio.track));
+				json_object_set_new(json_dvd_audio, "ix", json_integer(dvd_audio.ix));
 				json_object_set_new(json_dvd_audio, "lang code", json_string(dvd_audio.lang_code));
 				json_object_set_new(json_dvd_audio, "codec", json_string(dvd_audio.codec));
 				json_object_set_new(json_dvd_audio, "channels", json_integer(dvd_audio.channels));
@@ -630,13 +629,13 @@ int main(int argc, char **argv) {
 			memset(&dvd_subtitle, 0, sizeof(dvd_subtitle));
 			memset(dvd_subtitle.lang_code, '\0', 3);
 
-			dvd_subtitle.track = stream + 1;
+			dvd_subtitle.ix = stream + 1;
 			dvd_subtitle.stream = dvd_track_subtitle_stream_id(stream);
 			dvd_track_subtitle_lang_code(track_ifo, stream, dvd_subtitle.lang_code);
 
 			if(d_human == 1) {
 
-				printf("[Subtitle Track %i:%i]\n", track_number, stream + 1);
+				printf("[Subtitle Track %i:%i]\n", dvd_track.ix, stream + 1);
 				printf("Language Code: %s\n", dvd_subtitle.lang_code);
 				printf("Stream ID: 0x%x\n", dvd_subtitle.stream);
 
@@ -645,7 +644,7 @@ int main(int argc, char **argv) {
 			if(d_json == 1) {
 
 				json_dvd_subtitle = json_object();
-				json_object_set_new(json_dvd_subtitle, "track", json_integer(dvd_subtitle.track));
+				json_object_set_new(json_dvd_subtitle, "ix", json_integer(dvd_subtitle.ix));
 				json_object_set_new(json_dvd_subtitle, "lang code", json_string(dvd_subtitle.lang_code));
 				// FIXME add stream id
 				json_array_append(json_dvd_subtitles, json_dvd_subtitle);
