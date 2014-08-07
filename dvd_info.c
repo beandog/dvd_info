@@ -49,6 +49,7 @@ struct dvd_track {
 	uint8_t chapters;
 	uint8_t audio_tracks;
 	uint8_t subtitles;
+	uint8_t cells;
 };
 
 struct dvd_video {
@@ -455,6 +456,7 @@ int main(int argc, char **argv) {
 		dvd_video.pan_and_scan = dvd_track_pan_scan_video(track_ifo);
 		dvd_track.audio_tracks = dvd_track_num_audio_streams(track_ifo);
 		dvd_track.subtitles = dvd_track_subtitles(track_ifo);
+		dvd_track.cells = pgc->nr_of_cells;
 
 		if(d_human == 1) {
 
@@ -467,6 +469,7 @@ int main(int argc, char **argv) {
 			printf("Video Width: %i\n", dvd_video.width);
 			printf("Video Height: %i\n", dvd_video.height);
 			printf("Subtitles: %i\n", dvd_track.subtitles);
+			printf("Cells: %i\n", dvd_track.cells);
 			printf("Length: %s\n", dvd_track.length);
 
 			if(verbose) {
