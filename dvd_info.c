@@ -83,6 +83,12 @@ int main(int argc, char **argv) {
 	int d_json = 0;
 	int verbose = 0;
 
+	// dvd_info
+	bool d_all_tracks;
+	uint16_t d_first_track = 0;
+	uint16_t d_last_track = 0;
+	uint16_t track_number = 0;
+
 	// Device hardware
 	int dvd_fd;
 	char *device_filename = DEFAULT_DVD_DEVICE;
@@ -175,7 +181,7 @@ int main(int argc, char **argv) {
 	json_dvd_chapter = json_object();
 
 	// getopt_long
-	int track_number = 0;
+	int o_track_number = 0;
 	int long_index = 0;
 	int opt;
 	// Send 'invalid argument' to stderr
@@ -222,7 +228,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 't':
-				track_number = atoi(optarg);
+				o_track_number = atoi(optarg);
 				break;
 
 			case 'v':
@@ -358,12 +364,20 @@ int main(int argc, char **argv) {
 	dvd_info.tracks = dvd_info_num_tracks(vmg_ifo);
 
 	// Exit if track number requested does not exist
-	if(track_number > dvd_info.tracks || track_number < 0) {
-		fprintf(stderr, "Invalid track number %d\n", track_number);
+	if(o_track_number > dvd_info.tracks || o_track_number < 0) {
+		fprintf(stderr, "Invalid track number %d\n", o_track_number);
 		fprintf(stderr, "Valid track numbers: 1 to %d\n", dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
+	} else if(o_track_number <= dvd_info.tracks && o_track_number > 0) {
+		d_first_track = (uint16_t)o_track_number;
+		d_last_track = (uint16_t)o_track_number;
+		d_all_tracks = false;
+	} else {
+		d_first_track = 1;
+		d_last_track = dvd_info.tracks;
+		d_all_tracks = true;
 	}
 
 	// GRAB ALL THE THINGS
@@ -434,7 +448,7 @@ int main(int argc, char **argv) {
 	 * Track information
 	 */
 
-	if(track_number) {
+	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
 		// Open IFO
 		dvd_track.vts = dvd_track_ifo_number(vmg_ifo, track_number);
