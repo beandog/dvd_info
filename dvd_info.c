@@ -187,7 +187,8 @@ int main(int argc, char **argv) {
 	json_dvd_chapter = json_object();
 
 	// getopt_long
-	int o_track_number = 0;
+	bool opt_track_number = false;
+	int arg_track_number = 0;
 	int long_index = 0;
 	int opt;
 	// Send 'invalid argument' to stderr
@@ -234,7 +235,8 @@ int main(int argc, char **argv) {
 				break;
 
 			case 't':
-				o_track_number = atoi(optarg);
+				opt_track_number = true;
+				arg_track_number = atoi(optarg);
 				break;
 
 			case 'v':
@@ -340,15 +342,15 @@ int main(int argc, char **argv) {
 	dvd_info.tracks = dvd_info_num_tracks(vmg_ifo);
 
 	// Exit if track number requested does not exist
-	if(o_track_number > dvd_info.tracks || o_track_number < 0) {
-		fprintf(stderr, "Invalid track number %d\n", o_track_number);
+	if(opt_track_number && (arg_track_number > dvd_info.tracks || arg_track_number < 1)) {
+		fprintf(stderr, "Invalid track number %d\n", arg_track_number);
 		fprintf(stderr, "Valid track numbers: 1 to %d\n", dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
-	} else if(o_track_number <= dvd_info.tracks && o_track_number > 0) {
-		d_first_track = (uint16_t)o_track_number;
-		d_last_track = (uint16_t)o_track_number;
+	} else if(opt_track_number) {
+		d_first_track = (uint16_t)arg_track_number;
+		d_last_track = (uint16_t)arg_track_number;
 		track_number = d_first_track;
 		d_all_tracks = false;
 	} else {
