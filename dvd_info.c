@@ -603,7 +603,8 @@ int main(int argc, char **argv) {
 
 				json_dvd_audio = json_object();
 				json_object_set_new(json_dvd_audio, "ix", json_integer(dvd_audio.ix));
-				json_object_set_new(json_dvd_audio, "lang code", json_string(dvd_audio.lang_code));
+				if(strncmp(dvd_audio.lang_code, "xx", 2) != 0)
+					json_object_set_new(json_dvd_audio, "lang code", json_string(dvd_audio.lang_code));
 				json_object_set_new(json_dvd_audio, "codec", json_string(dvd_audio.codec));
 				json_object_set_new(json_dvd_audio, "channels", json_integer(dvd_audio.channels));
 				json_object_set_new(json_dvd_audio, "stream id", json_integer(dvd_audio.stream));
@@ -643,7 +644,8 @@ int main(int argc, char **argv) {
 
 				json_dvd_subtitle = json_object();
 				json_object_set_new(json_dvd_subtitle, "ix", json_integer(dvd_subtitle.ix));
-				json_object_set_new(json_dvd_subtitle, "lang code", json_string(dvd_subtitle.lang_code));
+				if(strncmp(dvd_subtitle.lang_code, "xx", 2) != 0)
+					json_object_set_new(json_dvd_subtitle, "lang code", json_string(dvd_subtitle.lang_code));
 				// FIXME add stream id
 				json_array_append(json_dvd_subtitles, json_dvd_subtitle);
 
