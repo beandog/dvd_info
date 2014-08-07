@@ -539,19 +539,16 @@ int main(int argc, char **argv) {
 
 		if(d_human == 1 && dvd_track.chapters) {
 			printf("[Chapters]\n");
-		}
-		// FIXME add JSON support
-		for(chapter_number = 1; chapter_number < dvd_track.chapters + 1; chapter_number++) {
-			dvd_track_str_chapter_length(pgc, chapter_number, chapter_length);
-			if(d_human == 1)
+			for(chapter_number = 1; chapter_number < dvd_track.chapters + 1; chapter_number++) {
+				dvd_track_str_chapter_length(pgc, chapter_number, chapter_length);
 				printf("Chapter %02d: %s\n", chapter_number, chapter_length);
-		};
+			};
+		}
 
 		if(d_json == 1) {
 
 			json_dvd_track = json_object();
 			json_object_set_new(json_dvd_track, "ix", json_integer(dvd_track.ix));
-			json_object_set_new(json_dvd_track, "chapters", json_integer(dvd_track.chapters));
 			json_object_set_new(json_dvd_track, "length", json_string(dvd_track.length));
 			json_object_set_new(json_dvd_track, "audio tracks", json_integer(dvd_track.audio_tracks));
 			json_object_set_new(json_dvd_track, "subtitle tracks", json_integer(dvd_track.subtitles));
@@ -570,6 +567,7 @@ int main(int argc, char **argv) {
 			// json_object_set_new(json_dvd_video, "letterbox", json_integer(dvd_video.letterbox));
 			// json_object_set_new(json_dvd_video, "pan and scan", json_integer(dvd_video.pan_and_scan));
 			json_object_set_new(json_dvd_track, "video", json_dvd_video);
+
 
 		}
 
@@ -663,6 +661,28 @@ int main(int argc, char **argv) {
 			if(dvd_track.subtitles)
 				json_object_set_new(json_dvd_track, "subtitles", json_dvd_subtitles);
 			json_array_append(json_dvd_tracks, json_dvd_track);
+		}
+
+		/** Chapters **/
+
+		if(d_json == 1) {
+
+			json_dvd_chapters = json_array();
+
+			for(chapter_number = 1; chapter_number < dvd_track.chapters + 1; chapter_number++) {
+
+				dvd_track_str_chapter_length(pgc, chapter_number, chapter_length);
+
+				json_dvd_chapter = json_object();
+				json_object_set_new(json_dvd_chapter, "ix", json_integer(chapter_number));
+				json_object_set_new(json_dvd_chapter, "length", json_string(chapter_length));
+
+				json_array_append(json_dvd_chapters, json_dvd_chapter);
+
+			};
+
+			json_object_set_new(json_dvd_track, "chapters", json_dvd_chapters);
+
 		}
 
 	}
