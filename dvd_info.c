@@ -352,11 +352,13 @@ int main(int argc, char **argv) {
 
 	// Exit if all the IFOs cannot be opened
 	dvd_info.video_title_sets = dvd_info_num_vts(vmg_ifo);
+	bool valid_ifos[dvd_info.video_title_sets];
 	for(uint16_t vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
 		vts_ifo = ifoOpen(dvdread_dvd, vts);
 		if(!vts_ifo) {
 			fprintf(stderr, "Opening VTS IFO %d failed!\n", vts);
+			valid_ifos[vts] = false;
 			ifoClose(vmg_ifo);
 			DVDClose(dvdread_dvd);
 			return 1;
@@ -364,12 +366,14 @@ int main(int argc, char **argv) {
 
 		if(!vts_ifo->vtsi_mat) {
 			printf("Could not open VTSI_MAT for VTS IFO %d\n", vts);
+			valid_ifos[vts] = false;
 			ifoClose(vmg_ifo);
 			ifoClose(vts_ifo);
 			DVDClose(dvdread_dvd);
 			return 1;
 		}
 
+		valid_ifos[vts] = true;
 		ifoClose(vts_ifo);
 		vts_ifo = NULL;
 
