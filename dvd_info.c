@@ -78,8 +78,9 @@ struct dvd_subtitle {
 int main(int argc, char **argv) {
 
 	// Display output
-	int d_human = 1;
+	int d_human = 0;
 	int d_json = 0;
+	int d_lsdvd = 1;
 	int verbose = 0;
 
 	// dvd_info
@@ -445,6 +446,10 @@ int main(int argc, char **argv) {
 
 	}
 
+	if(d_lsdvd == 1) {
+		printf("Disc Title: %s\n", dvd_info.title);
+	}
+
 	/**
 	 * Track information
 	 */
@@ -496,6 +501,13 @@ int main(int argc, char **argv) {
 			// Audio streams
 			printf("Audio Streams: %i\n", dvd_track.audio_tracks);
 
+		}
+
+		if(d_lsdvd == 1) {
+			printf("Title: %02u, ", track_number);
+			printf("Length: %s, ", dvd_track.length);
+			printf("Chapters: %02i, ", dvd_track.chapters);
+			printf("Cells: %02i, ", dvd_track.cells);
 		}
 
 		if(d_human == 1 && dvd_track.chapters) {
@@ -572,6 +584,10 @@ int main(int argc, char **argv) {
 
 		}
 
+		if(d_lsdvd == 1) {
+			printf("Audio streams: %02i, ", dvd_audio.channels);
+		}
+
 		/** Subtitles **/
 
 		for(stream = 0; stream < dvd_track.subtitles; stream++) {
@@ -604,12 +620,20 @@ int main(int argc, char **argv) {
 
 		}
 
+		if(d_lsdvd == 1) {
+			printf("Subpictures: %02i\n", dvd_track.subtitles);
+		}
+
 		if(d_json == 1) {
 			json_object_set_new(json_dvd_track, "audio", json_dvd_audio);
 			json_object_set_new(json_dvd_track, "subtitles", json_dvd_subtitles);
 			json_array_append(json_dvd_tracks, json_dvd_track);
 		}
 
+	}
+
+	if(d_lsdvd == 1 && d_all_tracks) {
+		printf("Longest track: %02i\n", dvd_info.longest_track);
 	}
 
 	if(d_json == 1) {
