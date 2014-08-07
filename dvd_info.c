@@ -349,6 +349,7 @@ int main(int argc, char **argv) {
 	} else if(o_track_number <= dvd_info.tracks && o_track_number > 0) {
 		d_first_track = (uint16_t)o_track_number;
 		d_last_track = (uint16_t)o_track_number;
+		track_number = d_first_track;
 		d_all_tracks = false;
 	} else {
 		d_first_track = 1;
