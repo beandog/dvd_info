@@ -436,12 +436,10 @@ int main(int argc, char **argv) {
 		printf("Disc Side: %i\n", dvd_info.side);
 		printf("Tracks: %d\n", dvd_info.tracks);
 		printf("Longest track: %i\n", dvd_info.longest_track);
-		if(verbose) {
-			printf("Provider ID: %s\n", dvd_info.provider_id);
-			printf("VMG: %s\n", dvd_info.vmg_id);
-			printf("VTS: %d\n", dvd_info.video_title_sets);
-			printf("dvdread id: %s\n", dvdread_id);
-		}
+		printf("Provider ID: %s\n", dvd_info.provider_id);
+		printf("VMG: %s\n", dvd_info.vmg_id);
+		printf("VTS: %d\n", dvd_info.video_title_sets);
+		printf("dvdread id: %s\n", dvdread_id);
 		/**
 		printf("Longest track with subtitles: ");
 		printf("%i\n", longest_track_with_subtitles);
@@ -464,12 +462,10 @@ int main(int argc, char **argv) {
 		json_object_set_new(json_dvd_info, "side", json_integer(dvd_info.side));
 		json_object_set_new(json_dvd_info, "tracks", json_integer(dvd_info.tracks));
 		json_object_set_new(json_dvd_info, "longest track", json_integer(dvd_info.longest_track));
-		if(verbose) {
-			json_object_set_new(json_dvd_info, "provider id", json_string(dvd_info.provider_id));
-			json_object_set_new(json_dvd_info, "vmg", json_string(dvd_info.vmg_id));
-			json_object_set_new(json_dvd_info, "video title sets", json_integer(dvd_info.video_title_sets));
-			json_object_set_new(json_dvd_info, "dvdread id", json_string(dvdread_id));
-		}
+		json_object_set_new(json_dvd_info, "provider id", json_string(dvd_info.provider_id));
+		json_object_set_new(json_dvd_info, "vmg", json_string(dvd_info.vmg_id));
+		json_object_set_new(json_dvd_info, "video title sets", json_integer(dvd_info.video_title_sets));
+		json_object_set_new(json_dvd_info, "dvdread id", json_string(dvdread_id));
 
 	}
 
@@ -526,12 +522,9 @@ int main(int argc, char **argv) {
 			printf("Subtitles: %i\n", dvd_track.subtitles);
 			printf("Cells: %i\n", dvd_track.cells);
 			printf("Length: %s\n", dvd_track.length);
-
-			if(verbose) {
-				printf("Letterbox: %i\n", dvd_video.letterbox ? 1 : 0);
-				printf("Pan and Scan: %i\n", dvd_video.pan_and_scan ? 1 : 0);
-				printf("Video Title Set (IFO): %d\n", dvd_track.vts);
-			}
+			// printf("Letterbox: %i\n", dvd_video.letterbox ? 1 : 0);
+			// printf("Pan and Scan: %i\n", dvd_video.pan_and_scan ? 1 : 0);
+			printf("Video Title Set (IFO): %d\n", dvd_track.vts);
 
 			// Audio streams
 			printf("Audio Streams: %i\n", dvd_track.audio_tracks);
@@ -605,8 +598,7 @@ int main(int argc, char **argv) {
 				printf("Language Code: %s\n", dvd_audio.lang_code);
 				printf("Audio Codec: %s\n", dvd_audio.codec);
 				printf("Channels: %i\n", dvd_audio.channels);
-				if(verbose)
-					printf("Stream ID: 0x%x\n", dvd_audio.stream);
+				printf("Stream ID: 0x%x\n", dvd_audio.stream);
 
 			}
 
@@ -617,8 +609,7 @@ int main(int argc, char **argv) {
 				json_object_set_new(json_dvd_audio, "lang code", json_string(dvd_audio.lang_code));
 				json_object_set_new(json_dvd_audio, "codec", json_string(dvd_audio.codec));
 				json_object_set_new(json_dvd_audio, "channels", json_integer(dvd_audio.channels));
-				if(verbose)
-					json_object_set_new(json_dvd_audio, "stream id", json_integer(dvd_audio.stream));
+				json_object_set_new(json_dvd_audio, "stream id", json_integer(dvd_audio.stream));
 				json_array_append(json_dvd_audio_tracks, json_dvd_audio);
 
 			}
@@ -647,8 +638,7 @@ int main(int argc, char **argv) {
 
 				printf("[Subtitle Track %i:%i]\n", track_number, stream + 1);
 				printf("Language Code: %s\n", dvd_subtitle.lang_code);
-				if(verbose)
-					printf("Stream ID: 0x%x\n", dvd_subtitle.stream);
+				printf("Stream ID: 0x%x\n", dvd_subtitle.stream);
 
 			}
 
