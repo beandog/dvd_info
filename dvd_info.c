@@ -558,23 +558,25 @@ int main(int argc, char **argv) {
 		if(d_json == 1) {
 
 			json_dvd_track = json_object();
-			json_dvd_video = json_object();
 			json_object_set_new(json_dvd_track, "track", json_integer(dvd_track.number));
 			json_object_set_new(json_dvd_track, "chapters", json_integer(dvd_track.chapters));
 			json_object_set_new(json_dvd_track, "length", json_string(dvd_track.length));
 			json_object_set_new(json_dvd_track, "audio tracks", json_integer(dvd_track.audio_tracks));
 			json_object_set_new(json_dvd_track, "subtitle tracks", json_integer(dvd_track.subtitles));
 			json_object_set_new(json_dvd_track, "cells", json_integer(dvd_track.cells));
+			json_object_set_new(json_dvd_track, "vts", json_integer(dvd_track.vts));
+
+			json_dvd_video = json_object();
 			json_object_set_new(json_dvd_video, "codec", json_string(dvd_video.codec));
 			json_object_set_new(json_dvd_video, "format", json_string(dvd_video.format));
 			json_object_set_new(json_dvd_video, "aspect ratio", json_string(dvd_video.aspect_ratio));
 			json_object_set_new(json_dvd_video, "width", json_integer(dvd_video.width));
 			json_object_set_new(json_dvd_video, "height", json_integer(dvd_video.height));
-			if(verbose) {
-				json_object_set_new(json_dvd_video, "letterbox", json_integer(dvd_video.letterbox));
-				json_object_set_new(json_dvd_video, "pan and scan", json_integer(dvd_video.pan_and_scan));
-				json_object_set_new(json_dvd_track, "vts", json_integer(dvd_track.vts));
-			}
+			// FIXME display permitted df instead, since displaying
+			// "letterbox" or "pan and scan" is subjective, and
+			// possibly incorrect
+			// json_object_set_new(json_dvd_video, "letterbox", json_integer(dvd_video.letterbox));
+			// json_object_set_new(json_dvd_video, "pan and scan", json_integer(dvd_video.pan_and_scan));
 			json_object_set_new(json_dvd_track, "video", json_dvd_video);
 
 		}
