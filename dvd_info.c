@@ -113,27 +113,32 @@ int main(int argc, char **argv) {
 
 	// DVD
 	struct dvd_info dvd_info;
+	dvd_info.video_title_sets = 1;
+	dvd_info.side = 1;
 	memset(dvd_info.title, '\0', 33);
 	memset(dvd_info.provider_id, '\0', 33);
 	memset(dvd_info.vmg_id, '\0', 13);
+	dvd_info.tracks = 1;
+	dvd_info.longest_track = 1;
 
 	// Track
 	struct dvd_track dvd_track;
-	dvd_track.number = 0;
+	dvd_track.number = 1;
 	dvd_track.title_idx = 0;
 	dvd_track.vts = 1;
 	memset(dvd_track.length, '\0', 13);
 	dvd_track.chapters = 1;
 	dvd_track.audio_tracks = 0;
 	dvd_track.subtitles = 0;
+	dvd_track.cells = 1;
 
 	// Video
 	struct dvd_video dvd_video;
 	memset(dvd_video.codec, '\0', 6);
 	memset(dvd_video.format, '\0', 5);
 	memset(dvd_video.aspect_ratio, '\0', 5);
-	dvd_video.height = 0;
 	dvd_video.width = 0;
+	dvd_video.height = 0;
 	dvd_video.letterbox = false;
 	dvd_video.pan_and_scan = false;
 
@@ -142,9 +147,9 @@ int main(int argc, char **argv) {
 	uint8_t stream;
 	dvd_audio.track = 1;
 	dvd_audio.stream = 0;
-	dvd_audio.channels = 0;
 	memset(dvd_audio.lang_code, '\0', 3);
 	memset(dvd_audio.codec, '\0', 5);
+	dvd_audio.channels = 0;
 
 	// Subtitles
 	struct dvd_subtitle dvd_subtitle;
