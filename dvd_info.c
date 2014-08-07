@@ -661,8 +661,10 @@ int main(int argc, char **argv) {
 		}
 
 		if(d_json == 1) {
-			json_object_set_new(json_dvd_track, "audio", json_dvd_audio);
-			json_object_set_new(json_dvd_track, "subtitles", json_dvd_subtitles);
+			if(dvd_track.audio_tracks)
+				json_object_set_new(json_dvd_track, "audio", json_dvd_audio);
+			if(dvd_track.subtitles)
+				json_object_set_new(json_dvd_track, "subtitles", json_dvd_subtitles);
 			json_array_append(json_dvd_tracks, json_dvd_track);
 		}
 
