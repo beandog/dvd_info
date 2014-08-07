@@ -581,6 +581,9 @@ int main(int argc, char **argv) {
 
 		/** Audio Streams **/
 
+		if(d_json)
+			json_dvd_audio_tracks = json_array();
+
 		for(stream = 0; stream < dvd_track.audio_tracks; stream++) {
 
 			memset(&dvd_audio, 0, sizeof(dvd_audio));
@@ -625,6 +628,9 @@ int main(int argc, char **argv) {
 		}
 
 		/** Subtitles **/
+
+		if(d_json)
+			json_dvd_subtitles = json_array();
 
 		for(stream = 0; stream < dvd_track.subtitles; stream++) {
 
