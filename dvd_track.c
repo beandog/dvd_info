@@ -500,7 +500,7 @@ int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number,
 	uint8_t chapter_idx;
 	int program_map_idx;
 	int cell_idx;
-	char chapter_length[14] = {'\0'};
+	char chapter_length[13] = {'\0'};
 
 	chapters = pgc->nr_of_programs;
 	chapter_idx = 0;
@@ -516,7 +516,7 @@ int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number,
 		while(cell_idx < program_map_idx - 1) {
 			if(chapter_idx + 1 == chapter_number) {
 				dvd_track_str_length(&pgc->cell_playback[cell_idx].playback_time, chapter_length);
-				strncpy(p, chapter_length, 14);
+				strncpy(p, chapter_length, 13);
 				return 0;
 			}
 			cell_idx++;
