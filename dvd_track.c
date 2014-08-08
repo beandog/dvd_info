@@ -181,6 +181,12 @@ bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *track_ifo) {
 
 }
 
+unsigned char dvd_track_permitted_df(const ifo_handle_t *track_ifo) {
+
+	return track_ifo->vtsi_mat->vts_video_attr.permitted_df;
+
+}
+
 /*
  * Display format
  * vtsi_mat->vts_video_attr.permitted_df
