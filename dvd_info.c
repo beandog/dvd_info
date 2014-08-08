@@ -42,7 +42,6 @@ struct dvd_info {
 
 struct dvd_track {
 	uint16_t ix;
-	int title_idx;
 	uint8_t vts;
 	uint8_t ttn;
 	char vts_id[13];
@@ -139,7 +138,6 @@ int main(int argc, char **argv) {
 	// Track
 	struct dvd_track dvd_track;
 	dvd_track.ix = 1;
-	dvd_track.title_idx = 0;
 	dvd_track.vts = 1;
 	dvd_track.ttn = 1;
 	memset(dvd_track.vts_id, '\0', 13);
@@ -517,7 +515,6 @@ int main(int argc, char **argv) {
 		track_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
 
 		dvd_track.ix = track_number;
-		dvd_track.title_idx = dvd_track.ix - 1;
 		dvd_track.ttn = vmg_ifo->tt_srpt->title[dvd_track.ix - 1].vts_ttn;
 		dvd_track_vts_id(track_ifo, dvd_track.vts_id);
 		vts_pgcit = track_ifo->vts_pgcit;
