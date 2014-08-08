@@ -117,7 +117,6 @@ int main(int argc, char **argv) {
 	ifo_handle_t *track_ifo = NULL;
 	unsigned char dvdread_ifo_md5[16] = {'\0'};
 	char dvdread_id[33] = {'\0'};
-	uint8_t vts_ttn;
 	pgc_t *pgc;
 	pgcit_t *vts_pgcit;
 	int dvdread_retval;
@@ -513,11 +512,10 @@ int main(int argc, char **argv) {
 
 		dvd_track.ix = track_number;
 		dvd_track.title_idx = dvd_track.ix - 1;
-		vts_ttn = vmg_ifo->tt_srpt->title[dvd_track.title_idx].vts_ttn;
-		dvd_track.ttn = vts_ttn;
+		dvd_track.ttn = vmg_ifo->tt_srpt->title[dvd_track.ix - 1].vts_ttn;
 		dvd_track_vts_id(track_ifo, dvd_track.vts_id);
 		vts_pgcit = track_ifo->vts_pgcit;
-		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
+		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[dvd_track.ttn - 1].ptt[0].pgcn - 1].pgc;
 		dvd_track_str_length(&pgc->playback_time, dvd_track.length);
 		dvd_track.msecs = dvd_track_length(&pgc->playback_time);
 		dvd_track.chapters = pgc->nr_of_programs;
