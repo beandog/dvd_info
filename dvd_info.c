@@ -104,6 +104,7 @@ int main(int argc, char **argv) {
 	uint16_t d_first_track = 0;
 	uint16_t d_last_track = 0;
 	uint16_t track_number = 0;
+	uint16_t total_tracks;
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
 	char c_fps[6] = {'\0'};
@@ -388,6 +389,8 @@ int main(int argc, char **argv) {
 		d_last_track = dvd_info.tracks;
 		d_all_tracks = true;
 	}
+
+	total_tracks = d_last_track - d_first_track + 1;
 
 	// Exit if all the IFOs cannot be opened
 	dvd_info.video_title_sets = dvd_info_num_vts(vmg_ifo);
