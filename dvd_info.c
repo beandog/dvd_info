@@ -95,7 +95,6 @@ struct dvd_cell {
 int main(int argc, char **argv) {
 
 	// Display output
-	int d_human = 0;
 	int d_json = 0;
 	int d_lsdvd = 1;
 	int verbose = 0;
@@ -262,7 +261,6 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'j':
-				d_human = 0;
 				d_json = 1;
 				break;
 
@@ -286,10 +284,8 @@ int main(int argc, char **argv) {
 
 	}
 
-	if(d_json == 1) {
-		d_human = 0;
+	if(d_json == 1)
 		d_lsdvd = 0;
-	}
 
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
@@ -459,34 +455,6 @@ int main(int argc, char **argv) {
 		sprintf(&dvdread_id[x * 2], "%02x", dvdread_ifo_md5[x]);
 	}
 
-	if(d_human == 1) {
-
-		printf("[DVD]\n");
-		printf("Title: %s\n", dvd_info.title);
-		printf("Disc Side: %i\n", dvd_info.side);
-		printf("Tracks: %d\n", dvd_info.tracks);
-		printf("Longest track: %i\n", dvd_info.longest_track);
-		if(strlen(dvd_info.provider_id) > 0)
-			printf("Provider ID: %s\n", dvd_info.provider_id);
-		if(strlen(dvd_info.vmg_id) > 0)
-			printf("VMG: %s\n", dvd_info.vmg_id);
-		printf("VTS: %d\n", dvd_info.video_title_sets);
-		printf("dvdread id: %s\n", dvdread_id);
-		/**
-		printf("Longest track with subtitles: ");
-		printf("%i\n", longest_track_with_subtitles);
-		printf("Longest 16x9 track: ");
-		printf("%i\n", longest_16x9_track);
-		printf("Longest 4x3 track: ");
-		printf("%i\n", longest_4x3_track);
-		printf("Longest letterbox track: ");
-		printf("%i\n", longest_letterbox_track);
-		printf("Longest pan & scan track: ");
-		printf("%i\n", longest_pan_scan_track);
-		*/
-
-	}
-
 	if(d_json == 1) {
 
 		// JSON: DVD basic information
@@ -554,47 +522,11 @@ int main(int argc, char **argv) {
 		else
 			memset(c_fps, '\0', 6);
 
-		if(d_human == 1) {
-
-			// Video codec
-			printf("[Track %d]\n", dvd_track.ix);
-			printf("Chapters: %i\n", dvd_track.chapters);
-			printf("Video Codec: %s\n", dvd_video.codec);
-			printf("Video Format: %s\n", dvd_video.format);
-			printf("Aspect Ratio: %s\n", dvd_video.aspect_ratio);
-			printf("Video Width: %i\n", dvd_video.width);
-			printf("Video Height: %i\n", dvd_video.height);
-			printf("Subtitles: %i\n", dvd_track.subtitles);
-			printf("Cells: %i\n", dvd_track.cells);
-			printf("Length: %s\n", dvd_track.length);
-			// printf("Letterbox: %i\n", dvd_video.letterbox ? 1 : 0);
-			// printf("Pan and Scan: %i\n", dvd_video.pan_and_scan ? 1 : 0);
-			printf("Video Title Set (IFO): %d\n", dvd_track.vts);
-			if(strlen(dvd_track.vts_id) > 0)
-				printf("VTS ID: %s\n", dvd_track.vts_id);
-			printf("TTN: %d\n", dvd_track.ttn);
-			printf("DF: %c\n", dvd_video.df);
-			if(strlen(c_fps) > 0)
-				printf("FPS: %s\n", c_fps);
-
-			// Audio streams
-			printf("Audio Streams: %i\n", dvd_track.audio_tracks);
-
-		}
-
 		if(d_lsdvd == 1) {
 			printf("Title: %02u, ", dvd_track.ix);
 			printf("Length: %s ", dvd_track.length);
 			printf("Chapters: %02i, ", dvd_track.chapters);
 			printf("Cells: %02i, ", dvd_track.cells);
-		}
-
-		if(d_human == 1 && dvd_track.chapters) {
-			printf("[Chapters]\n");
-			for(dvd_chapter.ix = 1; dvd_chapter.ix < dvd_track.chapters + 1; dvd_chapter.ix++) {
-				dvd_track_str_chapter_length(pgc, dvd_chapter.ix, dvd_chapter.length);
-				printf("Chapter %02d: %s\n", dvd_chapter.ix, dvd_chapter.length);
-			};
 		}
 
 		if(d_json == 1) {
@@ -658,16 +590,6 @@ int main(int argc, char **argv) {
 			dvd_audio.stream = dvd_track_audio_stream_id(track_ifo, stream);
 			snprintf(dvd_audio.stream_id, 5, "0x%x", dvd_audio.stream);
 
-			if(d_human == 1) {
-
-				printf("[Audio Track %i:%i]\n", dvd_track.ix, stream + 1);
-				printf("Language Code: %s\n", dvd_audio.lang_code);
-				printf("Audio Codec: %s\n", dvd_audio.codec);
-				printf("Channels: %i\n", dvd_audio.channels);
-				printf("Stream ID: 0x%x\n", dvd_audio.stream);
-
-			}
-
 			if(d_json == 1) {
 
 				json_dvd_audio = json_object();
@@ -702,14 +624,6 @@ int main(int argc, char **argv) {
 			dvd_subtitle.stream = dvd_track_subtitle_stream_id(stream);
 			snprintf(dvd_subtitle.stream_id, 5, "0x%x", dvd_subtitle.stream);
 			dvd_track_subtitle_lang_code(track_ifo, stream, dvd_subtitle.lang_code);
-
-			if(d_human == 1) {
-
-				printf("[Subtitle Track %i:%i]\n", dvd_track.ix, stream + 1);
-				printf("Language Code: %s\n", dvd_subtitle.lang_code);
-				printf("Stream ID: %s\n", dvd_subtitle.stream_id);
-
-			}
 
 			if(d_json == 1) {
 
