@@ -474,10 +474,6 @@ int main(int argc, char **argv) {
 
 	}
 
-	if(d_lsdvd == 1) {
-		printf("Disc Title: %s\n", dvd_info.title);
-	}
-
 	/**
 	 * Track information
 	 */
@@ -526,13 +522,6 @@ int main(int argc, char **argv) {
 			snprintf(c_fps, 6, "%02.02f", dvd_video.fps);
 		else
 			memset(c_fps, '\0', 6);
-
-		if(d_lsdvd == 1) {
-			printf("Title: %02u, ", dvd_track.ix);
-			printf("Length: %s ", dvd_track.length);
-			printf("Chapters: %02i, ", dvd_track.chapters);
-			printf("Cells: %02i, ", dvd_track.cells);
-		}
 
 		if(d_json == 1) {
 
@@ -611,10 +600,6 @@ int main(int argc, char **argv) {
 
 		}
 
-		if(d_lsdvd == 1) {
-			printf("Audio streams: %02i, ", dvd_track.audio_tracks);
-		}
-
 		/** Subtitles **/
 
 		if(d_json)
@@ -641,10 +626,6 @@ int main(int argc, char **argv) {
 
 			}
 
-		}
-
-		if(d_lsdvd == 1) {
-			printf("Subpictures: %02i\n", dvd_track.subtitles);
 		}
 
 		if(d_json == 1) {
@@ -681,9 +662,6 @@ int main(int argc, char **argv) {
 
 	}
 
-	if(d_lsdvd == 1 && d_all_tracks) {
-		printf("Longest track: %02i\n", dvd_info.longest_track);
-	}
 
 	if(d_json == 1) {
 
@@ -693,6 +671,32 @@ int main(int argc, char **argv) {
 		printf("%s\n", json_dumps(json_dvd, JSON_INDENT(1) + JSON_PRESERVE_ORDER));
 
 	}
+
+	// Display output in lsdvd compatability mode
+	struct dvd_track *track;
+
+	if(d_lsdvd == 1)
+		printf("Disc Title: %s\n", dvd_info.title);
+
+	for(track_number = 1; track_number < total_tracks + 1; track_number++) {
+
+		track = &dvd_tracks[track_number - 1];
+
+		if(d_lsdvd == 1) {
+
+			printf("Title: %02u, ", track->ix);
+			printf("Length: %s ", track->length);
+			printf("Chapters: %02i, ", track->chapters);
+			printf("Cells: %02i, ", track->cells);
+			printf("Audio streams: %02i, ", track->audio_tracks);
+			printf("Subpictures: %02i\n", track->subtitles);
+
+		}
+
+	}
+
+	if(d_lsdvd && d_all_tracks)
+		printf("Longest track: %02i\n", dvd_info.longest_track);
 
 
 	// Cleanup
