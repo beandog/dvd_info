@@ -62,6 +62,7 @@ struct dvd_video {
 	bool letterbox;
 	bool pan_and_scan;
 	unsigned char df;
+	double fps;
 };
 
 struct dvd_audio {
@@ -93,6 +94,7 @@ int main(int argc, char **argv) {
 	uint16_t track_number = 0;
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
+	char c_fps[6] = {'\0'};
 
 	// Device hardware
 	int dvd_fd;
@@ -149,6 +151,7 @@ int main(int argc, char **argv) {
 	dvd_video.letterbox = false;
 	dvd_video.pan_and_scan = false;
 	dvd_video.df = 0;
+	dvd_video.fps = 0;
 
 	// Audio
 	struct dvd_audio dvd_audio;
@@ -521,6 +524,15 @@ int main(int argc, char **argv) {
 		dvd_track.subtitles = dvd_track_subtitles(track_ifo);
 		dvd_track.cells = pgc->nr_of_cells;
 
+		// Frames per second is a double, convert to a string for display format
+		dvd_video.fps = dvd_track_fps(&pgc->playback_time);
+		// It is possible to have a negative value, so only set, and later display
+		// the string if it is a positive number
+		if(dvd_video.fps > 0)
+			snprintf(c_fps, 6, "%02.02f", dvd_video.fps);
+		else
+			memset(c_fps, '\0', 6);
+
 		if(d_human == 1) {
 
 			// Video codec
@@ -541,6 +553,8 @@ int main(int argc, char **argv) {
 				printf("VTS ID: %s\n", dvd_track.vts_id);
 			printf("TTN: %d\n", dvd_track.ttn);
 			printf("DF: %c\n", dvd_video.df);
+			if(strlen(c_fps) > 0)
+				printf("FPS: %s\n", c_fps);
 
 			// Audio streams
 			printf("Audio Streams: %i\n", dvd_track.audio_tracks);
@@ -563,6 +577,7 @@ int main(int argc, char **argv) {
 		}
 
 		if(d_json == 1) {
+
 
 			json_dvd_track = json_object();
 			json_object_set_new(json_dvd_track, "ix", json_integer(dvd_track.ix));
@@ -588,6 +603,9 @@ int main(int argc, char **argv) {
 				json_object_set_new(json_dvd_video, "df", json_string("Pan and Scan"));
 			else if(dvd_video.df == 2)
 				json_object_set_new(json_dvd_video, "df", json_string("Letterbox"));
+			// Only display FPS if it's been populated as a string
+			if(strlen(c_fps) > 0)
+				json_object_set_new(json_dvd_video, "fps", json_string(c_fps));
 			// FIXME display permitted df instead, since displaying
 			// "letterbox" or "pan and scan" is subjective, and
 			// possibly incorrect
