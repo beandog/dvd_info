@@ -61,6 +61,7 @@ struct dvd_video {
 	uint16_t height;
 	bool letterbox;
 	bool pan_and_scan;
+	unsigned char df;
 };
 
 struct dvd_audio {
@@ -147,6 +148,7 @@ int main(int argc, char **argv) {
 	dvd_video.height = 0;
 	dvd_video.letterbox = false;
 	dvd_video.pan_and_scan = false;
+	dvd_video.df = 0;
 
 	// Audio
 	struct dvd_audio dvd_audio;
@@ -514,6 +516,7 @@ int main(int argc, char **argv) {
 		dvd_track_video_aspect_ratio(track_ifo, dvd_video.aspect_ratio);
 		dvd_video.letterbox = dvd_track_letterbox_video(track_ifo);
 		dvd_video.pan_and_scan = dvd_track_pan_scan_video(track_ifo);
+		dvd_video.df = dvd_track_permitted_df(track_ifo);
 		dvd_track.audio_tracks = dvd_track_num_audio_streams(track_ifo);
 		dvd_track.subtitles = dvd_track_subtitles(track_ifo);
 		dvd_track.cells = pgc->nr_of_cells;
@@ -537,6 +540,7 @@ int main(int argc, char **argv) {
 			if(strlen(dvd_track.vts_id) > 0)
 				printf("VTS ID: %s\n", dvd_track.vts_id);
 			printf("TTN: %d\n", dvd_track.ttn);
+			printf("DF: %c\n", dvd_video.df);
 
 			// Audio streams
 			printf("Audio Streams: %i\n", dvd_track.audio_tracks);
@@ -577,6 +581,13 @@ int main(int argc, char **argv) {
 			json_object_set_new(json_dvd_video, "aspect ratio", json_string(dvd_video.aspect_ratio));
 			json_object_set_new(json_dvd_video, "width", json_integer(dvd_video.width));
 			json_object_set_new(json_dvd_video, "height", json_integer(dvd_video.height));
+			// FIXME needs cleanup
+			if(dvd_video.df == 0)
+				json_object_set_new(json_dvd_video, "df", json_string("Pan and Scan + Letterbox"));
+			else if(dvd_video.df == 1)
+				json_object_set_new(json_dvd_video, "df", json_string("Pan and Scan"));
+			else if(dvd_video.df == 2)
+				json_object_set_new(json_dvd_video, "df", json_string("Letterbox"));
 			// FIXME display permitted df instead, since displaying
 			// "letterbox" or "pan and scan" is subjective, and
 			// possibly incorrect
