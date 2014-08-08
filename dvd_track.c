@@ -275,6 +275,16 @@ int dvd_track_video_aspect_ratio(ifo_handle_t *track_ifo, char *video_aspect_rat
 
 }
 
+double dvd_track_fps(dvd_time_t *dvd_time) {
+
+	double frames_per_s[4] = {-1.0, 25.00, -1.0, 29.97};
+
+	double fps = frames_per_s[(dvd_time->frame_u & 0xc0) >> 6];
+
+	return fps;
+
+}
+
 int dvd_track_length(dvd_time_t *dvd_time) {
 
 	int framerates[4] = {0, 2500, 0, 2997};
