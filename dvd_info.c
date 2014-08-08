@@ -41,7 +41,7 @@ struct dvd_info {
 };
 
 struct dvd_track {
-	int ix;
+	uint16_t ix;
 	int title_idx;
 	uint8_t vts;
 	uint8_t ttn;
@@ -68,7 +68,7 @@ struct dvd_video {
 };
 
 struct dvd_audio {
-	int ix;
+	uint8_t ix;
 	int stream;
 	char stream_id[5];
 	char lang_code[3];
@@ -77,7 +77,7 @@ struct dvd_audio {
 };
 
 struct dvd_subtitle {
-	int ix;
+	uint8_t ix;
 	int stream;
 	char stream_id[5];
 	char lang_code[3];
