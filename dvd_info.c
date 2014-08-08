@@ -44,6 +44,7 @@ struct dvd_track {
 	int ix;
 	int title_idx;
 	uint8_t vts;
+	uint8_t ttn;
 	char length[13];
 	uint8_t chapters;
 	uint8_t audio_tracks;
@@ -493,6 +494,7 @@ int main(int argc, char **argv) {
 		dvd_track.ix = track_number;
 		dvd_track.title_idx = dvd_track.ix - 1;
 		vts_ttn = vmg_ifo->tt_srpt->title[dvd_track.title_idx].vts_ttn;
+		dvd_track.ttn = vts_ttn;
 		vts_pgcit = track_ifo->vts_pgcit;
 		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
 		dvd_track_str_length(&pgc->playback_time, dvd_track.length);
@@ -524,6 +526,7 @@ int main(int argc, char **argv) {
 			// printf("Letterbox: %i\n", dvd_video.letterbox ? 1 : 0);
 			// printf("Pan and Scan: %i\n", dvd_video.pan_and_scan ? 1 : 0);
 			printf("Video Title Set (IFO): %d\n", dvd_track.vts);
+			printf("TTN: %d\n", dvd_track.ttn);
 
 			// Audio streams
 			printf("Audio Streams: %i\n", dvd_track.audio_tracks);
@@ -554,6 +557,7 @@ int main(int argc, char **argv) {
 			json_object_set_new(json_dvd_track, "subtitle tracks", json_integer(dvd_track.subtitles));
 			json_object_set_new(json_dvd_track, "cells", json_integer(dvd_track.cells));
 			json_object_set_new(json_dvd_track, "vts", json_integer(dvd_track.vts));
+			json_object_set_new(json_dvd_track, "ttn", json_integer(dvd_track.ttn));
 
 			json_dvd_video = json_object();
 			json_object_set_new(json_dvd_video, "codec", json_string(dvd_video.codec));
