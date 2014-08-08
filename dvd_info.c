@@ -482,6 +482,8 @@ int main(int argc, char **argv) {
 	 * Track information
 	 */
 
+	struct dvd_track dvd_tracks[total_tracks];
+
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
 		// Open IFO
@@ -675,6 +677,8 @@ int main(int argc, char **argv) {
 
 		}
 
+		memmove(&dvd_tracks[track_number - 1], &dvd_track, sizeof(dvd_track));
+
 	}
 
 	if(d_lsdvd == 1 && d_all_tracks) {
@@ -689,6 +693,7 @@ int main(int argc, char **argv) {
 		printf("%s\n", json_dumps(json_dvd, JSON_INDENT(1) + JSON_PRESERVE_ORDER));
 
 	}
+
 
 	// Cleanup
 
