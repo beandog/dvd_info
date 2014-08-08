@@ -79,6 +79,7 @@ struct dvd_audio {
 struct dvd_subtitle {
 	int ix;
 	int stream;
+	char stream_id[5];
 	char lang_code[3];
 };
 
@@ -172,6 +173,7 @@ int main(int argc, char **argv) {
 	struct dvd_subtitle dvd_subtitle;
 	dvd_subtitle.ix = 1;
 	dvd_subtitle.stream = 0;
+	memset(dvd_subtitle.stream_id, '\0', 5);
 	memset(dvd_subtitle.lang_code, '\0', 3);
 
 	// Chapters
@@ -687,13 +689,14 @@ int main(int argc, char **argv) {
 
 			dvd_subtitle.ix = stream + 1;
 			dvd_subtitle.stream = dvd_track_subtitle_stream_id(stream);
+			snprintf(dvd_subtitle.stream_id, 5, "0x%x", dvd_subtitle.stream);
 			dvd_track_subtitle_lang_code(track_ifo, stream, dvd_subtitle.lang_code);
 
 			if(d_human == 1) {
 
 				printf("[Subtitle Track %i:%i]\n", dvd_track.ix, stream + 1);
 				printf("Language Code: %s\n", dvd_subtitle.lang_code);
-				printf("Stream ID: 0x%x\n", dvd_subtitle.stream);
+				printf("Stream ID: %s\n", dvd_subtitle.stream_id);
 
 			}
 
@@ -703,7 +706,7 @@ int main(int argc, char **argv) {
 				json_object_set_new(json_dvd_subtitle, "ix", json_integer(dvd_subtitle.ix));
 				if(strncmp(dvd_subtitle.lang_code, "xx", 2) != 0)
 					json_object_set_new(json_dvd_subtitle, "lang code", json_string(dvd_subtitle.lang_code));
-				// FIXME add stream id
+				json_object_set_new(json_dvd_subtitle, "stream id", json_string(dvd_subtitle.stream_id));
 				json_array_append(json_dvd_subtitles, json_dvd_subtitle);
 
 			}
