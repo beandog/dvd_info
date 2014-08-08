@@ -463,7 +463,7 @@ int main(int argc, char **argv) {
 		json_object_set_new(json_dvd_info, "tracks", json_integer(dvd_info.tracks));
 		json_object_set_new(json_dvd_info, "longest track", json_integer(dvd_info.longest_track));
 		json_object_set_new(json_dvd_info, "provider id", json_string(dvd_info.provider_id));
-		json_object_set_new(json_dvd_info, "vmg", json_string(dvd_info.vmg_id));
+		json_object_set_new(json_dvd_info, "vmg id", json_string(dvd_info.vmg_id));
 		json_object_set_new(json_dvd_info, "video title sets", json_integer(dvd_info.video_title_sets));
 		json_object_set_new(json_dvd_info, "dvdread id", json_string(dvdread_id));
 
