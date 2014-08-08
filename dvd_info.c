@@ -64,6 +64,7 @@ struct dvd_video {
 	bool pan_and_scan;
 	unsigned char df;
 	double fps;
+	uint8_t angles;
 };
 
 struct dvd_audio {
@@ -154,6 +155,7 @@ int main(int argc, char **argv) {
 	dvd_video.pan_and_scan = false;
 	dvd_video.df = 0;
 	dvd_video.fps = 0;
+	dvd_video.angles = 1;
 
 	// Audio
 	struct dvd_audio dvd_audio;
@@ -523,6 +525,7 @@ int main(int argc, char **argv) {
 		dvd_video.letterbox = dvd_track_letterbox_video(track_ifo);
 		dvd_video.pan_and_scan = dvd_track_pan_scan_video(track_ifo);
 		dvd_video.df = dvd_track_permitted_df(track_ifo);
+		dvd_video.angles = dvd_track_angles(vmg_ifo, track_number);
 		dvd_track.audio_tracks = dvd_track_num_audio_streams(track_ifo);
 		dvd_track.subtitles = dvd_track_subtitles(track_ifo);
 		dvd_track.cells = pgc->nr_of_cells;
@@ -607,6 +610,7 @@ int main(int argc, char **argv) {
 				json_object_set_new(json_dvd_video, "df", json_string("Pan and Scan"));
 			else if(dvd_video.df == 2)
 				json_object_set_new(json_dvd_video, "df", json_string("Letterbox"));
+			json_object_set_new(json_dvd_video, "angles", json_integer(dvd_video.angles));
 			// Only display FPS if it's been populated as a string
 			if(strlen(c_fps) > 0)
 				json_object_set_new(json_dvd_video, "fps", json_string(c_fps));
