@@ -90,7 +90,7 @@ struct dvd_chapter {
 struct dvd_cell {
 	uint8_t ix;
 	char length[13];
-}
+};
 
 int main(int argc, char **argv) {
 
