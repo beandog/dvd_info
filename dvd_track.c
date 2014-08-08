@@ -16,6 +16,21 @@ unsigned char dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_
 
 }
 
+void dvd_track_vts_id(const ifo_handle_t *ifo, char *p) {
+
+	unsigned long n;
+
+	n = strlen(ifo->vtsi_mat->vts_identifier);
+
+	// Copy the string only if it has characters, otherwise set the string
+	// to zero length anyway.
+	if(n > 0)
+		strncpy(p, ifo->vtsi_mat->vts_identifier, 12);
+	else
+		memset(p, '\0', 13);
+
+}
+
 /**
  * MPEG version
  * ifo->vtsi_mat->vts_video_attr.mpeg_version

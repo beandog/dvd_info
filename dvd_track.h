@@ -11,6 +11,15 @@
 uint8_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_number);
 
 /**
+ * Get the track's VTS id
+ * Possible that it's blank, usually set to DVDVIDEO-VTS otherwise.
+ *
+ * @param ifo libdvdread IFO handle
+ * @param p char[13] to copy string to
+ */
+void dvd_track_vts_id(const ifo_handle_t *ifo, char *p);
+
+/**
  * Get the MPEG video codec version
  *
  * @param track_ifo dvdread track IFO handler
