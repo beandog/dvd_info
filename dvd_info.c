@@ -70,6 +70,7 @@ struct dvd_video {
 struct dvd_audio {
 	int ix;
 	int stream;
+	char stream_id[5];
 	char lang_code[3];
 	char codec[5];
 	int channels;
@@ -162,6 +163,7 @@ int main(int argc, char **argv) {
 	uint8_t stream;
 	dvd_audio.ix = 1;
 	dvd_audio.stream = 0;
+	memset(dvd_audio.stream_id, '\0', 5);
 	memset(dvd_audio.lang_code, '\0', 3);
 	memset(dvd_audio.codec, '\0', 5);
 	dvd_audio.channels = 0;
@@ -641,6 +643,7 @@ int main(int argc, char **argv) {
 			dvd_track_audio_codec(track_ifo, stream, dvd_audio.codec);
 			dvd_audio.channels = dvd_track_audio_num_channels(track_ifo, stream);
 			dvd_audio.stream = dvd_track_audio_stream_id(track_ifo, stream);
+			snprintf(dvd_audio.stream_id, 5, "0x%x", dvd_audio.stream);
 
 			if(d_human == 1) {
 
@@ -660,7 +663,8 @@ int main(int argc, char **argv) {
 					json_object_set_new(json_dvd_audio, "lang code", json_string(dvd_audio.lang_code));
 				json_object_set_new(json_dvd_audio, "codec", json_string(dvd_audio.codec));
 				json_object_set_new(json_dvd_audio, "channels", json_integer(dvd_audio.channels));
-				json_object_set_new(json_dvd_audio, "stream id", json_integer(dvd_audio.stream));
+				json_object_set_new(json_dvd_audio, "stream", json_integer(dvd_audio.stream));
+				json_object_set_new(json_dvd_audio, "stream id", json_string(dvd_audio.stream_id));
 				json_array_append(json_dvd_audio_tracks, json_dvd_audio);
 
 			}
