@@ -440,8 +440,10 @@ int main(int argc, char **argv) {
 		printf("Disc Side: %i\n", dvd_info.side);
 		printf("Tracks: %d\n", dvd_info.tracks);
 		printf("Longest track: %i\n", dvd_info.longest_track);
-		printf("Provider ID: %s\n", dvd_info.provider_id);
-		printf("VMG: %s\n", dvd_info.vmg_id);
+		if(strlen(dvd_info.provider_id) > 0)
+			printf("Provider ID: %s\n", dvd_info.provider_id);
+		if(strlen(dvd_info.vmg_id) > 0)
+			printf("VMG: %s\n", dvd_info.vmg_id);
 		printf("VTS: %d\n", dvd_info.video_title_sets);
 		printf("dvdread id: %s\n", dvdread_id);
 		/**
@@ -466,8 +468,10 @@ int main(int argc, char **argv) {
 		json_object_set_new(json_dvd_info, "side", json_integer(dvd_info.side));
 		json_object_set_new(json_dvd_info, "tracks", json_integer(dvd_info.tracks));
 		json_object_set_new(json_dvd_info, "longest track", json_integer(dvd_info.longest_track));
-		json_object_set_new(json_dvd_info, "provider id", json_string(dvd_info.provider_id));
-		json_object_set_new(json_dvd_info, "vmg id", json_string(dvd_info.vmg_id));
+		if(strlen(dvd_info.provider_id) > 0)
+			json_object_set_new(json_dvd_info, "provider id", json_string(dvd_info.provider_id));
+		if(strlen(dvd_info.vmg_id) > 0)
+			json_object_set_new(json_dvd_info, "vmg id", json_string(dvd_info.vmg_id));
 		json_object_set_new(json_dvd_info, "video title sets", json_integer(dvd_info.video_title_sets));
 		json_object_set_new(json_dvd_info, "dvdread id", json_string(dvdread_id));
 
@@ -530,7 +534,8 @@ int main(int argc, char **argv) {
 			// printf("Letterbox: %i\n", dvd_video.letterbox ? 1 : 0);
 			// printf("Pan and Scan: %i\n", dvd_video.pan_and_scan ? 1 : 0);
 			printf("Video Title Set (IFO): %d\n", dvd_track.vts);
-			printf("VTS ID: %s\n", dvd_track.vts_id);
+			if(strlen(dvd_track.vts_id) > 0)
+				printf("VTS ID: %s\n", dvd_track.vts_id);
 			printf("TTN: %d\n", dvd_track.ttn);
 
 			// Audio streams
@@ -562,7 +567,8 @@ int main(int argc, char **argv) {
 			json_object_set_new(json_dvd_track, "subtitle tracks", json_integer(dvd_track.subtitles));
 			json_object_set_new(json_dvd_track, "cells", json_integer(dvd_track.cells));
 			json_object_set_new(json_dvd_track, "vts", json_integer(dvd_track.vts));
-			json_object_set_new(json_dvd_track, "vts id", json_string(dvd_track.vts_id));
+			if(strlen(dvd_track.vts_id) > 0)
+				json_object_set_new(json_dvd_track, "vts id", json_string(dvd_track.vts_id));
 			json_object_set_new(json_dvd_track, "ttn", json_integer(dvd_track.ttn));
 
 			json_dvd_video = json_object();
