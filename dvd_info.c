@@ -47,6 +47,7 @@ struct dvd_track {
 	uint8_t ttn;
 	char vts_id[13];
 	char length[13];
+	int msecs;
 	uint8_t chapters;
 	uint8_t audio_tracks;
 	uint8_t subtitles;
@@ -136,6 +137,7 @@ int main(int argc, char **argv) {
 	dvd_track.ttn = 1;
 	memset(dvd_track.vts_id, '\0', 13);
 	memset(dvd_track.length, '\0', 13);
+	dvd_track.msecs = 0;
 	dvd_track.chapters = 1;
 	dvd_track.audio_tracks = 0;
 	dvd_track.subtitles = 0;
@@ -511,6 +513,7 @@ int main(int argc, char **argv) {
 		vts_pgcit = track_ifo->vts_pgcit;
 		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
 		dvd_track_str_length(&pgc->playback_time, dvd_track.length);
+		dvd_track.msecs = dvd_track_length(&pgc->playback_time);
 		dvd_track.chapters = pgc->nr_of_programs;
 		dvd_track_video_codec(track_ifo, dvd_video.codec);
 		dvd_track_video_format(track_ifo, dvd_video.format);
@@ -582,6 +585,7 @@ int main(int argc, char **argv) {
 			json_dvd_track = json_object();
 			json_object_set_new(json_dvd_track, "ix", json_integer(dvd_track.ix));
 			json_object_set_new(json_dvd_track, "length", json_string(dvd_track.length));
+			json_object_set_new(json_dvd_track, "msecs", json_integer(dvd_track.msecs));
 			json_object_set_new(json_dvd_track, "audio tracks", json_integer(dvd_track.audio_tracks));
 			json_object_set_new(json_dvd_track, "subtitle tracks", json_integer(dvd_track.subtitles));
 			json_object_set_new(json_dvd_track, "cells", json_integer(dvd_track.cells));
