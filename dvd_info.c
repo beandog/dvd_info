@@ -83,6 +83,11 @@ struct dvd_subtitle {
 	char lang_code[3];
 };
 
+struct dvd_chapter {
+	uint8_t ix;
+	char length[13];
+};
+
 int main(int argc, char **argv) {
 
 	// Display output
@@ -176,8 +181,9 @@ int main(int argc, char **argv) {
 	memset(dvd_subtitle.lang_code, '\0', 3);
 
 	// Chapters
-	uint8_t chapter_number;
-	char chapter_length[14] = {'\0'};
+	struct dvd_chapter dvd_chapter;
+	dvd_chapter.ix = 0;
+	memset(dvd_chapter.length, '\0', 13);
 
 	// JSON variables
 	json_t *json_dvd;
@@ -578,9 +584,9 @@ int main(int argc, char **argv) {
 
 		if(d_human == 1 && dvd_track.chapters) {
 			printf("[Chapters]\n");
-			for(chapter_number = 1; chapter_number < dvd_track.chapters + 1; chapter_number++) {
-				dvd_track_str_chapter_length(pgc, chapter_number, chapter_length);
-				printf("Chapter %02d: %s\n", chapter_number, chapter_length);
+			for(dvd_chapter.ix = 1; dvd_chapter.ix < dvd_track.chapters + 1; dvd_chapter.ix++) {
+				dvd_track_str_chapter_length(pgc, dvd_chapter.ix, dvd_chapter.length);
+				printf("Chapter %02d: %s\n", dvd_chapter.ix, dvd_chapter.length);
 			};
 		}
 
@@ -729,13 +735,13 @@ int main(int argc, char **argv) {
 
 			json_dvd_chapters = json_array();
 
-			for(chapter_number = 1; chapter_number < dvd_track.chapters + 1; chapter_number++) {
+			for(dvd_chapter.ix = 1; dvd_chapter.ix < dvd_track.chapters + 1; dvd_chapter.ix++) {
 
-				dvd_track_str_chapter_length(pgc, chapter_number, chapter_length);
+				dvd_track_str_chapter_length(pgc, dvd_chapter.ix, dvd_chapter.length);
 
 				json_dvd_chapter = json_object();
-				json_object_set_new(json_dvd_chapter, "ix", json_integer(chapter_number));
-				json_object_set_new(json_dvd_chapter, "length", json_string(chapter_length));
+				json_object_set_new(json_dvd_chapter, "ix", json_integer(dvd_chapter.ix));
+				json_object_set_new(json_dvd_chapter, "length", json_string(dvd_chapter.length));
 
 				json_array_append(json_dvd_chapters, json_dvd_chapter);
 
