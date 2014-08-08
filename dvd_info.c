@@ -87,6 +87,11 @@ struct dvd_chapter {
 	char length[13];
 };
 
+struct dvd_cell {
+	uint8_t ix;
+	char length[13];
+}
+
 int main(int argc, char **argv) {
 
 	// Display output
@@ -182,6 +187,11 @@ int main(int argc, char **argv) {
 	struct dvd_chapter dvd_chapter;
 	dvd_chapter.ix = 0;
 	memset(dvd_chapter.length, '\0', 13);
+
+	// Cells
+	struct dvd_cell dvd_cell;
+	dvd_cell.ix = 0;
+	memset(dvd_cell.length, '\0', 13);
 
 	// JSON variables
 	json_t *json_dvd;
