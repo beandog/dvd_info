@@ -179,7 +179,7 @@ int main(int argc, char **argv) {
 	printf("* Device: %s\n", device_filename);
 
 	// Wait for the device to be ready before performing any actions
-	while(is_ready(cdrom) == false) {
+	while(wait == true && is_ready(cdrom) == false) {
 		printf("* Prepping crew, sir.\n");
 		usleep(sleepy_time);
 	}
