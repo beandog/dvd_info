@@ -375,7 +375,7 @@ int main(int argc, char **argv) {
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks || arg_track_number < 1)) {
 		fprintf(stderr, "Invalid track number %d\n", arg_track_number);
-		fprintf(stderr, "Valid track numbers: 1 to %d\n", dvd_info.tracks);
+		fprintf(stderr, "Valid track numbers: 1 to %u\n", dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -400,11 +400,11 @@ int main(int argc, char **argv) {
 		vts_ifo = ifoOpen(dvdread_dvd, vts);
 
 		if(!vts_ifo) {
-			fprintf(stderr, "Opening VTS IFO %d failed!\n", vts);
+			fprintf(stderr, "Opening VTS IFO %u failed!\n", vts);
 			valid_ifos[vts] = false;
 			has_invalid_ifos = true;
 		} else if(!vts_ifo->vtsi_mat) {
-			printf("Could not open VTSI_MAT for VTS IFO %d\n", vts);
+			printf("Could not open VTSI_MAT for VTS IFO %u\n", vts);
 			valid_ifos[vts] = false;
 			has_invalid_ifos = true;
 		} else {
@@ -422,7 +422,7 @@ int main(int argc, char **argv) {
 
 		if(valid_ifos[vts] == false) {
 
-			fprintf(stderr, "Could not open IFO %d for track %d, exiting\n", vts, track_number);
+			fprintf(stderr, "Could not open IFO %u for track %u, exiting\n", vts, track_number);
 			ifoClose(vmg_ifo);
 			DVDClose(dvdread_dvd);
 			return 1;
@@ -487,7 +487,7 @@ int main(int argc, char **argv) {
 
 		// Skip track if parent IFO is invalid
 		if(valid_ifos[dvd_track.vts] == false) {
-			fprintf(stderr, "IFO %i for track %i is invalid, skipping track\n", dvd_track.vts, track_number);
+			fprintf(stderr, "IFO %u for track %u is invalid, skipping track\n", dvd_track.vts, track_number);
 			break;
 		}
 
@@ -686,17 +686,17 @@ int main(int argc, char **argv) {
 
 			printf("Title: %02u, ", track->ix);
 			printf("Length: %s ", track->length);
-			printf("Chapters: %02i, ", track->chapters);
-			printf("Cells: %02i, ", track->cells);
-			printf("Audio streams: %02i, ", track->audio_tracks);
-			printf("Subpictures: %02i\n", track->subtitles);
+			printf("Chapters: %02u, ", track->chapters);
+			printf("Cells: %02u, ", track->cells);
+			printf("Audio streams: %02u, ", track->audio_tracks);
+			printf("Subpictures: %02u\n", track->subtitles);
 
 		}
 
 	}
 
 	if(d_lsdvd && d_all_tracks)
-		printf("Longest track: %02i\n", dvd_info.longest_track);
+		printf("Longest track: %02u\n", dvd_info.longest_track);
 
 
 	// Cleanup
