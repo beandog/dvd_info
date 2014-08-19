@@ -125,9 +125,8 @@ uint16_t dvd_info_num_vts(const ifo_handle_t *ifo);
  * These should *not* be considered as unique identifiers for discs.
  *
  * @param ifo dvdread IFO handle
- * @param p char[33] to copy string to
  */
-void dvd_info_provider_id(const ifo_handle_t *ifo, char *p);
+char *dvd_info_provider_id(const ifo_handle_t *ifo);
 
 /**
  * Get the DVD's VMG id

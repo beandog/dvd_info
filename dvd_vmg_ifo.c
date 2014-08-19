@@ -58,18 +58,9 @@ uint16_t dvd_info_num_vts(const ifo_handle_t *ifo) {
 	return ifo->vts_atrt->nr_of_vtss;
 }
 
-void dvd_info_provider_id(const ifo_handle_t *ifo, char *p) {
+char *dvd_info_provider_id(const ifo_handle_t *ifo) {
 
-	unsigned long n;
-
-	n = strlen(ifo->vmgi_mat->provider_identifier);
-
-	// Copy the string only if it has characters, otherwise set the string
-	// to zero length anyway.
-	if(n > 0)
-		strncpy(p, ifo->vmgi_mat->provider_identifier, 32);
-	else
-		memset(p, '\0', 33);
+	return strdup(ifo->vmgi_mat->provider_identifier);
 
 }
 
