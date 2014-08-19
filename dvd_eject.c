@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
@@ -94,11 +95,14 @@ int main(int argc, char **argv) {
 	__useconds_t sleepy_time;
 	int cdrom;
 	char *device_filename;
+	int starbase;
 	bool eject_open, eject_close;
 	bool tray_open;
 	bool tray_has_media;
 	bool retry;
 	bool wait;
+	int max_waiting_times;
+	int times_waited;
 	int retval;
 	bool d_help;
 	// dvdcss_t *dvdcss;
@@ -109,6 +113,7 @@ int main(int argc, char **argv) {
 		{ 0, 0, 0, 0 }
 	};
 
+	starbase = 51;
 	str_options = "ghrt";
 	sleepy_time = 1000000;
 	eject_open = true;
@@ -117,6 +122,8 @@ int main(int argc, char **argv) {
 	tray_has_media = false;
 	retry = false;
 	wait = true;
+	max_waiting_times = 15;
+	times_waited = 0;
 	retval = 0;
 	d_help = false;
 
@@ -156,10 +163,15 @@ int main(int argc, char **argv) {
 	else
 		device_filename = DEFAULT_DVD_DEVICE;
 
+	if(strlen(device_filename) == 11 && strcmp("/dev/bluray", device_filename) == 0) {
+		starbase = 71;
+	}
+
 	cdrom = open(device_filename, O_RDONLY | O_NONBLOCK);
 
 	if(cdrom < 0) {
 		printf("error opening %s\n", device_filename);
+		printf("errno: %i\n", errno);
 		return 1;
 	}
 
@@ -178,37 +190,65 @@ int main(int argc, char **argv) {
 		printf("[Close Drive Tray]\n");
 	printf("* Device: %s\n", device_filename);
 
-	// Wait for the device to be ready before performing any actions
-	while(wait == true && is_ready(cdrom) == false) {
-		printf("* Prepping crew, sir.\n");
-		usleep(sleepy_time);
+	if(wait == false && is_ready(cdrom) == false) {
+		printf("* No waiting requested, and device is not ready.  Exiting\n");
+		close(cdrom);
+		return 0;
 	}
-	printf("* The bridge is now at your command.\n");
+
+	printf("* Prepping crew, sir ...");
+	// Wait for the device to be ready before performing any actions
+	while(is_ready(cdrom) == false) {
+		printf(".");
+		usleep(sleepy_time);
+		times_waited += 1;
+		if(times_waited == max_waiting_times) {
+			printf("\n");
+			printf("* Waited %i, tired of waiting, trying workarounds\n", max_waiting_times);
+			printf("* Closing and reopening device\n");
+			if(close(cdrom) == 0) {
+				printf("* Closing file descriptor worked\n");
+			} else {
+				printf("* Closing file descriptor failed, continuing anyway\n");
+				printf("errno: %i\n", errno);
+			}
+			printf("* Reopening file descriptor\n");
+			cdrom = open(device_filename, O_RDONLY | O_NONBLOCK);
+			if(cdrom == 0) {
+				printf("* Closing and reopening file descriptor worked, checking if device is ready now\n");
+				if(is_ready(cdrom) == false) {
+					printf("* Drive still not marked as ready, quitting\n");
+					close(cdrom);
+					return 1;
+				}
+				printf("* Opening file descriptor failed, exiting\n");
+				printf("errno: %i\n", errno);
+				return 1;
+			}
+		}
+	}
+
+	printf(" at your command!\n");
 
 	tray_open = is_open(cdrom);
 	tray_has_media = has_media(cdrom);
 
 	if(tray_open)
-		printf("* Docking port open.\n");
+		printf("* Docking port status: open\n");
 	else {
-		printf("* Docking port closed.\n");
-		if(tray_has_media)
-			printf("* Has media\n");
-		else
-			printf("* No media\n");
+		printf("* Docking port status: closed\n");
+		if(!tray_has_media)
+			printf("* Shuttle bay empty\n");
 	}
 
 	// Check for silly users
 	if(eject_open && tray_open) {
-
-		printf("* Are you lost, captain?\n");
+	//	printf("* Are you sure you belong on the bridge, sir?\n");
 		close(cdrom);
 		return 0;
-
 	}
-	if(eject_close && !tray_open) {
 
-		printf("* Are you sure you belong on the bridge, sir?\n");
+	if(eject_close && !tray_open) {
 
 		if(has_media(cdrom)) {
 			printf("* Scanning Deck C section 55 for anomalies ... ");
@@ -233,14 +273,16 @@ int main(int argc, char **argv) {
 		printf("* Leaving space dock ...\n");
 		retval = open_tray(cdrom);
 
+		printf("* Awaiting clearance for warp speed, captain ...");
 		while((wait == true) && (is_ready(cdrom) == false)) {
-			printf("* Awaiting clearance for warp speed, captain.\n");
+			printf(".");
 			usleep(sleepy_time);
 		}
-		printf("* Blast off!\n");
 
 		// Do one last nap
 		usleep(1000000);
+
+		printf(" engaging at warp 5.1 sir!\n");
 
 		close(cdrom);
 
