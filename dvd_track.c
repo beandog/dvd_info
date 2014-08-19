@@ -22,9 +22,10 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const int track_number) {
 
 }
 
+// FIXME check for invalid characters
 char *dvd_track_vts_id(const ifo_handle_t *ifo) {
 
-	return strdup(ifo->vtsi_mat->vts_identifier);
+	return strndup(ifo->vtsi_mat->vts_identifier, 12);
 
 }
 
@@ -345,7 +346,7 @@ int dvd_track_time_hours(dvd_time_t *dvd_time) {
 
 char *dvd_track_str_length(dvd_time_t *dvd_time) {
 
-	char length[13];
+	char length[12] = {'\0'};
 	int hours;
 	int minutes;
 	int seconds;
@@ -356,9 +357,9 @@ char *dvd_track_str_length(dvd_time_t *dvd_time) {
 	seconds = dvd_track_time_seconds(dvd_time);
 	milliseconds = dvd_track_time_milliseconds(dvd_time);
 
-	snprintf(length, 13, "%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
+	snprintf(length, 12, "%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
 
-	return strdup(length);
+	return strndup(length, 12);
 
 }
 
