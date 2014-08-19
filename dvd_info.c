@@ -678,7 +678,7 @@ int main(int argc, char **argv) {
 	if(d_lsdvd == 1)
 		printf("Disc Title: %s\n", dvd_info.title);
 
-	for(track_number = 1; track_number < total_tracks + 1; track_number++) {
+	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
 		track = &dvd_tracks[track_number - 1];
 
