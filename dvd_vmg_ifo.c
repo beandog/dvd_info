@@ -66,11 +66,7 @@ char *dvd_info_provider_id(const ifo_handle_t *ifo) {
 
 char *dvd_info_vmg_id(const ifo_handle_t *ifo) {
 
-	if(strlen(ifo->vmgi_mat->vmg_identifier)) {
-		return strdup(ifo->vmgi_mat->vmg_identifier);
-	} else {
-		return "";
-	}
+	return strdup(ifo->vmgi_mat->vmg_identifier);
 
 }
 
