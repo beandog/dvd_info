@@ -352,8 +352,9 @@ int dvd_track_time_hours(dvd_time_t *dvd_time) {
 
 }
 
-void dvd_track_str_length(dvd_time_t *dvd_time, char *p) {
+char *dvd_track_str_length(dvd_time_t *dvd_time) {
 
+	char length[13];
 	int hours;
 	int minutes;
 	int seconds;
@@ -364,7 +365,9 @@ void dvd_track_str_length(dvd_time_t *dvd_time, char *p) {
 	seconds = dvd_track_time_seconds(dvd_time);
 	milliseconds = dvd_track_time_milliseconds(dvd_time);
 
-	snprintf(p, 13, "%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
+	snprintf(length, 13, "%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
+
+	return strdup(length);
 
 }
 
@@ -515,8 +518,8 @@ int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number,
 
 		while(cell_idx < program_map_idx - 1) {
 			if(chapter_idx + 1 == chapter_number) {
-				dvd_track_str_length(&pgc->cell_playback[cell_idx].playback_time, chapter_length);
-				strncpy(p, chapter_length, 13);
+				strncpy(chapter_length, dvd_track_str_length(&pgc->cell_playback[cell_idx].playback_time), 12);
+				strncpy(p, chapter_length, 12);
 				return 0;
 			}
 			cell_idx++;
