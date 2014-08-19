@@ -22,18 +22,9 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const int track_number) {
 
 }
 
-void dvd_track_vts_id(const ifo_handle_t *ifo, char *p) {
+char *dvd_track_vts_id(const ifo_handle_t *ifo) {
 
-	unsigned long n;
-
-	n = strlen(ifo->vtsi_mat->vts_identifier);
-
-	// Copy the string only if it has characters, otherwise set the string
-	// to zero length anyway.
-	if(n > 0)
-		strncpy(p, ifo->vtsi_mat->vts_identifier, 12);
-	else
-		memset(p, '\0', 13);
+	return strdup(ifo->vtsi_mat->vts_identifier);
 
 }
 

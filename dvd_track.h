@@ -15,9 +15,8 @@ uint8_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_number
  * Possible that it's blank, usually set to DVDVIDEO-VTS otherwise.
  *
  * @param ifo libdvdread IFO handle
- * @param p char[13] to copy string to
  */
-void dvd_track_vts_id(const ifo_handle_t *ifo, char *p);
+char *dvd_track_vts_id(const ifo_handle_t *ifo);
 
 uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const int track_number);
 

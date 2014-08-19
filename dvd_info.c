@@ -495,7 +495,7 @@ int main(int argc, char **argv) {
 
 		dvd_track.ix = track_number;
 		dvd_track.ttn = vmg_ifo->tt_srpt->title[dvd_track.ix - 1].vts_ttn;
-		dvd_track_vts_id(track_ifo, dvd_track.vts_id);
+		strncpy(dvd_track.vts_id, dvd_track_vts_id(track_ifo), 12);
 		vts_pgcit = track_ifo->vts_pgcit;
 		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[dvd_track.ttn - 1].ptt[0].pgcn - 1].pgc;
 		strncpy(dvd_track.length, dvd_track_str_length(&pgc->playback_time), 12);
