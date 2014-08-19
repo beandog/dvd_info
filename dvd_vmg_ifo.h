@@ -135,9 +135,8 @@ void dvd_info_provider_id(const ifo_handle_t *ifo, char *p);
  * blank, it is probably 'DVDVIDEO-VMG'.
  *
  * @param ifo libdvdread IFO handle
- * @param p char[13] to copy string to
  */
-void dvd_info_vmg_id(const ifo_handle_t *ifo, char *p);
+char *dvd_info_vmg_id(const ifo_handle_t *ifo);
 
 /**
  * Get the DVD side

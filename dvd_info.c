@@ -442,7 +442,7 @@ int main(int argc, char **argv) {
 	dvd_info.side = vmg_ifo->vmgi_mat->disc_side;
 	dvd_device_title(device_filename, dvd_info.title);
 	dvd_info_provider_id(vmg_ifo, dvd_info.provider_id);
-	dvd_info_vmg_id(vmg_ifo, dvd_info.vmg_id);
+	strncpy(dvd_info.vmg_id, dvd_info_vmg_id(vmg_ifo), 12);
 	dvd_info.longest_track = dvd_info_longest_track(dvdread_dvd);
 
 	/*
