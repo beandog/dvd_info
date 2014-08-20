@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 	ifo_handle_t *ifo;
 	dvd_file_t *dvdread_ifo_file;
 	ssize_t ifo_filesize;
-	unsigned char *buffer = NULL;
+	uint8_t *buffer = NULL;
 	ssize_t bytes_read;
 	ssize_t ifo_bytes_written;
 	ssize_t bup_bytes_written;
@@ -165,7 +165,7 @@ int main(int argc, char **argv) {
 
 		// Allocate enough memory for the buffer, *now that we know the filesize*
 		// printf("* Allocating buffer\n");
-		buffer = (unsigned char *)malloc((unsigned long)ifo_filesize * sizeof(unsigned char));
+		buffer = (uint8_t *)malloc((unsigned long)ifo_filesize * sizeof(uint8_t));
 
 		if(buffer == NULL) {
 			printf("* Could not allocate memory for buffer\n");

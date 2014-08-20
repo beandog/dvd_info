@@ -104,7 +104,7 @@ bool dvd_track_pal_video(const ifo_handle_t *track_ifo) {
 uint16_t dvd_track_video_height(const ifo_handle_t *track_ifo) {
 
 	int video_height;
-	unsigned char picture_size;
+	uint8_t picture_size;
 
 	video_height = 0;
 	picture_size = track_ifo->vtsi_mat->vts_video_attr.picture_size;
@@ -128,7 +128,7 @@ uint16_t dvd_track_video_width(const ifo_handle_t *track_ifo) {
 
 	int video_width;
 	uint16_t video_height;
-	unsigned char picture_size;
+	uint8_t picture_size;
 
 	video_width = 0;
 	video_height = dvd_track_video_height(track_ifo);
@@ -181,7 +181,7 @@ bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *track_ifo) {
 
 }
 
-unsigned char dvd_track_permitted_df(const ifo_handle_t *track_ifo) {
+uint8_t dvd_track_permitted_df(const ifo_handle_t *track_ifo) {
 
 	return track_ifo->vtsi_mat->vts_video_attr.permitted_df;
 
@@ -198,7 +198,7 @@ unsigned char dvd_track_permitted_df(const ifo_handle_t *track_ifo) {
  */
 bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo) {
 
-	unsigned char permitted_df;
+	uint8_t permitted_df;
 
 	permitted_df = track_ifo->vtsi_mat->vts_video_attr.permitted_df;
 
@@ -211,7 +211,7 @@ bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo) {
 
 bool dvd_track_pan_scan_video(const ifo_handle_t *track_ifo) {
 
-	unsigned char permitted_df;
+	uint8_t permitted_df;
 
 	permitted_df = track_ifo->vtsi_mat->vts_video_attr.permitted_df;
 
@@ -522,7 +522,7 @@ int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number,
 char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_track) {
 
 	char lang_code[3] = {'\0'};
-	unsigned char lang_type;
+	uint8_t lang_type;
 	audio_attr_t *audio_attr;
 
 	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_track];
@@ -542,7 +542,7 @@ char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_t
 // FIXME check for multi channel extension
 char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t stream) {
 
-	unsigned char audio_codec;
+	uint8_t audio_codec;
 	char *audio_codecs[7] = { "ac3", "", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
 	audio_attr_t *audio_attr;
 
@@ -555,7 +555,7 @@ char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t stream)
 
 uint8_t dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const uint8_t audio_track) {
 
-	unsigned char uc_num_channels;
+	uint8_t uc_num_channels;
 	uint8_t num_channels;
 	audio_attr_t *audio_attr;
 

@@ -103,7 +103,7 @@ bool dvd_track_aspect_ratio_4x3(const ifo_handle_t *track_ifo);
 bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *track_ifo);
 
 /**
- * Get the permitted_df field for a track.  Returns the unsigned char
+ * Get the permitted_df field for a track.  Returns the uint8_t
  * directly, error checking should be done to see if it's valid or not.
  *
  * 0 = Pan and Scan or Letterbox
@@ -112,9 +112,9 @@ bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *track_ifo);
  * 3 = Unset
  *
  * @param track_ifo dvdread track IFO handler
- * @return unsigned char
+ * @return uint8_t
  */
-unsigned char dvd_track_permitted_df(const ifo_handle_t *track_ifo);
+uint8_t dvd_track_permitted_df(const ifo_handle_t *track_ifo);
 
 /** FIXME
  *

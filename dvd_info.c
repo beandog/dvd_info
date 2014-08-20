@@ -58,7 +58,7 @@ struct dvd_video {
 	uint16_t height;
 	bool letterbox;
 	bool pan_and_scan;
-	unsigned char df;
+	uint8_t df;
 	char fps[DVD_VIDEO_FPS + 1];
 	uint8_t angles;
 };
@@ -108,8 +108,8 @@ int main(int argc, char **argv) {
 	char *device_filename = DEFAULT_DVD_DEVICE;
 	int drive_status;
 	__useconds_t sleepy_time = 1000000;
-	int num_naps = 0;
-	int max_num_naps = 60;
+	uint8_t num_naps = 0;
+	uint8_t max_num_naps = 60;
 	bool is_hardware = false;
 	bool is_image = false;
 
@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
 	ifo_handle_t *vmg_ifo = NULL;
 	ifo_handle_t *vts_ifo = NULL;
 	ifo_handle_t *track_ifo = NULL;
-	unsigned char dvdread_ifo_md5[16] = {'\0'};
+	uint8_t dvdread_ifo_md5[16] = {'\0'};
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
 	pgc_t *pgc;
 	pgcit_t *vts_pgcit;
