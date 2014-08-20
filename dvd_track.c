@@ -7,7 +7,7 @@
 #include "dvd_info.h"
 #include "dvd_track.h"
 
-unsigned char dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_number) {
+uint8_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_number) {
 
 	// TODO research
 	// Should these be the same number
