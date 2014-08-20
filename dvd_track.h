@@ -8,7 +8,9 @@
  * @param vmg_ifo dvdread handler for primary IFO
  * @return IFO number
  */
-uint8_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_number);
+uint8_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_number);
+
+uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_number);
 
 /**
  * Get the track's VTS id
@@ -17,8 +19,6 @@ uint8_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_number
  * @param ifo libdvdread IFO handle
  */
 char *dvd_track_vts_id(const ifo_handle_t *ifo);
-
-uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const int track_number);
 
 /**
  * Get the MPEG video codec version

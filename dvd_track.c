@@ -7,7 +7,7 @@
 #include "dvd_info.h"
 #include "dvd_track.h"
 
-uint8_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_number) {
+uint8_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
 
 	// TODO research
 	// Should these be the same number
@@ -17,7 +17,7 @@ uint8_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_number
 
 }
 
-uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const int track_number) {
+uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
 
 	return vmg_ifo->tt_srpt->title[track_number - 1].nr_of_angles;
 
