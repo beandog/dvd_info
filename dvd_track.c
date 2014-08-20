@@ -483,7 +483,7 @@ bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, const char 
  *
  * FIXME wrap my head around this some day.
  */
-int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number, char *p) {
+char *dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number) {
 
 	uint8_t chapters;
 	uint8_t chapter_idx;
@@ -504,16 +504,15 @@ int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number,
 
 		while(cell_idx < program_map_idx - 1) {
 			if(chapter_idx + 1 == chapter_number) {
-				strncpy(chapter_length, dvd_track_str_length(&pgc->cell_playback[cell_idx].playback_time), DVD_TRACK_LENGTH);
-				strncpy(p, chapter_length, DVD_TRACK_LENGTH);
-				return 0;
+				strncpy(chapter_length, dvd_track_str_length(&pgc->cell_playback[cell_idx].playback_time), DVD_CHAPTER_LENGTH);
+				return strndup(chapter_length, DVD_CHAPTER_LENGTH);
 			}
 			cell_idx++;
 		}
 
 	}
 
-	return 1;
+	return "";
 
 }
 

@@ -625,7 +625,7 @@ int main(int argc, char **argv) {
 
 			for(dvd_chapter.ix = 1; dvd_chapter.ix < dvd_track.chapters + 1; dvd_chapter.ix++) {
 
-				dvd_track_str_chapter_length(pgc, dvd_chapter.ix, dvd_chapter.length);
+				strncpy(dvd_chapter.length, dvd_track_str_chapter_length(pgc, dvd_chapter.ix), DVD_CHAPTER_LENGTH);
 
 				json_dvd_chapter = json_object();
 				json_object_set_new(json_dvd_chapter, "ix", json_integer(dvd_chapter.ix));

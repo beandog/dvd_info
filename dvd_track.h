@@ -289,9 +289,8 @@ bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, const char 
  *
  * @param pgc track IFO program chain
  * @param chapter_number chapter number
- * @param p string pointer
  */
-int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number, char *p);
+char *dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number);
 
 /**
  * Get the audio language code for a track.  A two-character string that is a
