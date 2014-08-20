@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <dvdread/ifo_types.h>
 #include <dvdread/ifo_read.h>
+#include "dvd_info.h"
 #include "dvd_track.h"
 #include "dvd_track_audio.h"
 
@@ -25,7 +26,7 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const int track_number) {
 // FIXME check for invalid characters
 char *dvd_track_vts_id(const ifo_handle_t *ifo) {
 
-	return strndup(ifo->vtsi_mat->vts_identifier, 12);
+	return strndup(ifo->vtsi_mat->vts_identifier, DVD_TRACK_VTS_ID);
 
 }
 
@@ -231,7 +232,7 @@ int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
 	else
 		codec = "";
 
-	strncpy(video_codec, codec, 6);
+	strncpy(video_codec, codec, DVD_VIDEO_CODEC);
 
 	return 0;
 
@@ -248,7 +249,7 @@ int dvd_track_video_format(ifo_handle_t *track_ifo, char *video_format) {
 	else
 		format = "";
 
-	strncpy(video_format, format, 6);
+	strncpy(video_format, format, DVD_VIDEO_FORMAT);
 
 	return 0;
 
@@ -267,7 +268,7 @@ int dvd_track_video_aspect_ratio(ifo_handle_t *track_ifo, char *video_aspect_rat
 		aspect_ratio = "";
 	}
 
-	strncpy(video_aspect_ratio, aspect_ratio, 5);
+	strncpy(video_aspect_ratio, aspect_ratio, DVD_VIDEO_ASPECT_RATIO);
 
 	return 0;
 
@@ -346,7 +347,7 @@ int dvd_track_time_hours(dvd_time_t *dvd_time) {
 
 char *dvd_track_str_length(dvd_time_t *dvd_time) {
 
-	char length[12] = {'\0'};
+	char length[DVD_TRACK_LENGTH + 1] = {'\0'};
 	int hours;
 	int minutes;
 	int seconds;
@@ -357,9 +358,9 @@ char *dvd_track_str_length(dvd_time_t *dvd_time) {
 	seconds = dvd_track_time_seconds(dvd_time);
 	milliseconds = dvd_track_time_milliseconds(dvd_time);
 
-	snprintf(length, 12, "%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
+	snprintf(length, DVD_TRACK_LENGTH, "%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
 
-	return strndup(length, 12);
+	return strndup(length, DVD_TRACK_LENGTH);
 
 }
 
@@ -407,7 +408,7 @@ int dvd_track_num_audio_lang_code_streams(const ifo_handle_t *track_ifo, const c
 
 	int num_track_audio_streams;
 	int num_lang_streams;
-	char lang_code[3] = {'\0'};
+	char lang_code[DVD_AUDIO_LANG_CODE + 1] = {'\0'};
 	int audio_track;
 
 	num_track_audio_streams = dvd_track_num_audio_streams(track_ifo);
@@ -417,7 +418,7 @@ int dvd_track_num_audio_lang_code_streams(const ifo_handle_t *track_ifo, const c
 
 		dvd_track_audio_lang_code(track_ifo, audio_track, lang_code);
 
-		if(strncmp(lang_code, p, 3) == 0) {
+		if(strncmp(lang_code, p, DVD_AUDIO_LANG_CODE) == 0) {
 			num_lang_streams++;
 		}
 
@@ -450,7 +451,7 @@ uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *track_ifo, 
 	uint8_t streams;
 	uint8_t matches;
 	uint8_t idx;
-	char str[3] = {'\0'};
+	char str[DVD_SUBTITLE_LANG_CODE + 1] = {'\0'};
 
 	streams = dvd_track_subtitles(track_ifo);
 	matches = 0;
@@ -459,7 +460,7 @@ uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *track_ifo, 
 
 		dvd_track_audio_lang_code(track_ifo, idx, str);
 
-		if(strncmp(str, lang_code, 3) == 0) {
+		if(strncmp(str, lang_code, DVD_SUBTITLE_LANG_CODE) == 0) {
 			matches++;
 		}
 
@@ -495,7 +496,7 @@ int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number,
 	uint8_t chapter_idx;
 	int program_map_idx;
 	int cell_idx;
-	char chapter_length[13] = {'\0'};
+	char chapter_length[DVD_CHAPTER_LENGTH + 1] = {'\0'};
 
 	chapters = pgc->nr_of_programs;
 	chapter_idx = 0;
@@ -510,8 +511,8 @@ int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number,
 
 		while(cell_idx < program_map_idx - 1) {
 			if(chapter_idx + 1 == chapter_number) {
-				strncpy(chapter_length, dvd_track_str_length(&pgc->cell_playback[cell_idx].playback_time), 12);
-				strncpy(p, chapter_length, 12);
+				strncpy(chapter_length, dvd_track_str_length(&pgc->cell_playback[cell_idx].playback_time), DVD_TRACK_LENGTH);
+				strncpy(p, chapter_length, DVD_TRACK_LENGTH);
 				return 0;
 			}
 			cell_idx++;
