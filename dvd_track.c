@@ -227,20 +227,14 @@ bool dvd_track_pan_scan_video(const ifo_handle_t *track_ifo) {
 
 }
 
-int dvd_track_video_codec(ifo_handle_t *track_ifo, char *video_codec) {
-
-	char *codec;
+char *dvd_track_video_codec(ifo_handle_t *track_ifo) {
 
 	if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
-		codec = "MPEG1";
+		return "MPEG1";
 	else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
-		codec = "MPEG2";
+		return "MPEG2";
 	else
-		codec = "";
-
-	strncpy(video_codec, codec, DVD_VIDEO_CODEC);
-
-	return 0;
+		return "";
 
 }
 
