@@ -380,13 +380,13 @@ uint8_t dvd_track_num_audio_streams(const ifo_handle_t *track_ifo) {
 uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *track_ifo) {
 
 	uint8_t num_active_audio_streams;
-	int idx;
+	uint8_t idx;
 	pgc_t *pgc;
 
 	num_active_audio_streams = 0;
 	pgc = track_ifo->vts_pgcit->pgci_srp[0].pgc;
 
-	for(idx = 0; idx < 8; idx++) {
+	for(idx = 0; idx < DVD_AUDIO_STREAM_LIMIT; idx++) {
 
 		if(pgc->audio_control[idx] & 0x8000)
 			num_active_audio_streams++;
@@ -397,12 +397,12 @@ uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *track_ifo) {
 
 }
 
-int dvd_track_num_audio_lang_code_streams(const ifo_handle_t *track_ifo, const char *p) {
+uint8_t dvd_track_num_audio_lang_code_streams(const ifo_handle_t *track_ifo, const char *p) {
 
-	int num_track_audio_streams;
-	int num_lang_streams;
+	uint8_t num_track_audio_streams;
+	uint8_t num_lang_streams;
 	char lang_code[DVD_AUDIO_LANG_CODE + 1] = {'\0'};
-	int audio_track;
+	uint8_t audio_track;
 
 	num_track_audio_streams = dvd_track_num_audio_streams(track_ifo);
 	num_lang_streams = 0;
@@ -553,25 +553,25 @@ char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t stream)
 
 }
 
-int dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const int audio_track) {
+uint8_t dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const uint8_t audio_track) {
 
 	unsigned char uc_num_channels;
-	int num_channels;
+	uint8_t num_channels;
 	audio_attr_t *audio_attr;
 
 	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_track];
 	uc_num_channels = audio_attr->channels;
-	num_channels = (int)uc_num_channels + 1;
+	num_channels = uc_num_channels + 1;
 
 	return num_channels;
 
 }
 
-char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const int audio_track) {
+char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const uint8_t audio_track) {
 
-	int audio_id[7] = {0x80, 0, 0xC0, 0xC0, 0xA0, 0, 0x88};
-	unsigned char audio_format;
-	int audio_stream_id = 0;
+	uint8_t audio_id[7] = {0x80, 0, 0xC0, 0xC0, 0xA0, 0, 0x88};
+	uint8_t audio_format;
+	uint8_t audio_stream_id = 0;
 	audio_attr_t *audio_attr;
 	char str[DVD_AUDIO_STREAM_ID + 1] = {'\0'};
 
@@ -592,7 +592,7 @@ char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const int audio_t
 // if it's an invalid language.  If it's missing one, set it to unknown (for example)
 // but if it's invalid, maybe guess that it's in English, or something?  Dunno.
 // Having a best-guess approach might not be bad, maybe even look at region codes
-char *dvd_track_subtitle_lang_code(const ifo_handle_t *track_ifo, const int subtitle_track) {
+char *dvd_track_subtitle_lang_code(const ifo_handle_t *track_ifo, const uint8_t subtitle_track) {
 
 	char lang_code[3] = {'\0'};
 	subp_attr_t *subp_attr;
@@ -612,7 +612,7 @@ char *dvd_track_subtitle_lang_code(const ifo_handle_t *track_ifo, const int subt
 
 }
 
-char *dvd_track_subtitle_stream_id(const int subtitle_track) {
+char *dvd_track_subtitle_stream_id(const uint8_t subtitle_track) {
 
 	char str[DVD_SUBTITLE_STREAM_ID + 1] = {'\0'};
 

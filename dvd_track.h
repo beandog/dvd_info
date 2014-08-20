@@ -245,7 +245,7 @@ uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *track_ifo);
  * @param lang_code language code
  * @return number of subtitles
  */
-int dvd_track_num_audio_lang_code_streams(const ifo_handle_t *track_ifo, const char *lang_code);
+uint8_t dvd_track_num_audio_lang_code_streams(const ifo_handle_t *track_ifo, const char *lang_code);
 
 /**
  * Check if a DVD track has a specific audio language
@@ -330,7 +330,7 @@ char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t stream)
  * @param audio_track audio track number
  * @return num channels
  */
-int dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const int audio_track);
+uint8_t dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const uint8_t audio_track);
 
 /**
  * Get the stream ID for an audio track
@@ -341,7 +341,7 @@ int dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const int audio_
  * @param audio_track audio track number
  * @return audio stream id
  */
-char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const int audio_track);
+char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const uint8_t audio_track);
 
 /**
  * Get the lang code of a subtitle track for a title track
@@ -350,7 +350,7 @@ char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const int audio_t
  * @param subtitle_track subtitle track number
  * @retval lang code
  */
-char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const int subtitle_track);
+char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint8_t subtitle_track);
 
 /**
  * Get the stream ID for a subtitle, an index that starts at 0x20
@@ -361,4 +361,4 @@ char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const int subtit
  * @param subtitle_track subtitle track number
  * @return stream id
  */
-char *dvd_track_subtitle_stream_id(const int subtitle_track);
+char *dvd_track_subtitle_stream_id(const uint8_t subtitle_track);
