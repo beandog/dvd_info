@@ -288,9 +288,8 @@ int main(int argc, char **argv) {
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
 	// of '/dev/dvd'.
-	if (argv[optind]) {
+	if (argv[optind])
 		device_filename = argv[optind];
-	}
 
 	// Exit after all invalid input warnings have been sent
 	if(valid_args == false)
@@ -522,7 +521,6 @@ int main(int argc, char **argv) {
 
 		if(d_json == 1) {
 
-
 			json_dvd_track = json_object();
 			json_object_set_new(json_dvd_track, "ix", json_integer(dvd_track.ix));
 			json_object_set_new(json_dvd_track, "length", json_string(dvd_track.length));
@@ -695,7 +693,6 @@ int main(int argc, char **argv) {
 
 	if(d_lsdvd && d_all_tracks)
 		printf("Longest track: %02u\n", dvd_info.longest_track);
-
 
 	// Cleanup
 
