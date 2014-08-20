@@ -561,7 +561,7 @@ int main(int argc, char **argv) {
 
 			dvd_audio.ix = stream + 1;
 			strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(track_ifo, stream), DVD_AUDIO_LANG_CODE);
-			dvd_track_audio_codec(track_ifo, stream, dvd_audio.codec);
+			strncpy(dvd_audio.codec, dvd_track_audio_codec(track_ifo, stream), DVD_AUDIO_CODEC);
 			dvd_audio.channels = dvd_track_audio_num_channels(track_ifo, stream);
 			strncpy(dvd_audio.stream_id, dvd_track_audio_stream_id(track_ifo, stream), DVD_AUDIO_STREAM_ID);
 

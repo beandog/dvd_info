@@ -309,13 +309,12 @@ char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_t
 /**
  * Get the codec for an audio track.
  *
- * Examples: AC3 (Dolby Digital), DTS, SDDS, MPEG1, MPEG2, LPCM
+ * Possible values: AC3, MPEG1, MPEG2, LPCM, SDDS, DTS
  * @param track_ifo dvdread track IFO handler
- * @param audio_track audio track number
- * @param p string pointer
- * @return success
+ * @param stream audio track number
+ * @return audio codec
  */
-int dvd_track_audio_codec(const ifo_handle_t *track_ifo, const int audio_track, char *p);
+char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t stream);
 
 /**
  * Get the number of channels for an audio track

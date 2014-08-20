@@ -544,18 +544,16 @@ char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_t
 // same for lpcm; also a bug if it reports #5, and defaults to bug report if
 // any above 6 (or under 0)
 // FIXME check for multi channel extension
-int dvd_track_audio_codec(const ifo_handle_t *track_ifo, const int audio_track, char *p) {
+char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t stream) {
 
 	unsigned char audio_codec;
-	char *audio_codecs[7] = { "ac3", "?", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
+	char *audio_codecs[7] = { "ac3", "", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
 	audio_attr_t *audio_attr;
 
-	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_track];
+	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[stream];
 	audio_codec = audio_attr->audio_format;
 
-	strncpy(p, audio_codecs[audio_codec], 5);
-
-	return 0;
+	return strndup(audio_codecs[audio_codec], DVD_AUDIO_CODEC);
 
 }
 
