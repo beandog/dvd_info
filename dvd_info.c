@@ -538,7 +538,8 @@ int main(int argc, char **argv) {
 			json_object_set_new(json_dvd_track, "ttn", json_integer(dvd_track.ttn));
 
 			json_dvd_video = json_object();
-			json_object_set_new(json_dvd_video, "codec", json_string(dvd_video.codec));
+			if(strlen(dvd_video.codec))
+				json_object_set_new(json_dvd_video, "codec", json_string(dvd_video.codec));
 			json_object_set_new(json_dvd_video, "format", json_string(dvd_video.format));
 			json_object_set_new(json_dvd_video, "aspect ratio", json_string(dvd_video.aspect_ratio));
 			json_object_set_new(json_dvd_video, "width", json_integer(dvd_video.width));
