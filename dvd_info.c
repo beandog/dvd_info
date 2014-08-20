@@ -542,7 +542,8 @@ int main(int argc, char **argv) {
 				json_object_set_new(json_dvd_video, "codec", json_string(dvd_video.codec));
 			if(strlen(dvd_video.format))
 				json_object_set_new(json_dvd_video, "format", json_string(dvd_video.format));
-			json_object_set_new(json_dvd_video, "aspect ratio", json_string(dvd_video.aspect_ratio));
+			if(strlen(dvd_video.aspect_ratio))
+				json_object_set_new(json_dvd_video, "aspect ratio", json_string(dvd_video.aspect_ratio));
 			json_object_set_new(json_dvd_video, "width", json_integer(dvd_video.width));
 			json_object_set_new(json_dvd_video, "height", json_integer(dvd_video.height));
 			// FIXME needs cleanup
