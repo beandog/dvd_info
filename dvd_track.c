@@ -24,14 +24,14 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const int track_number) {
 }
 
 // FIXME check for invalid characters
-char *dvd_track_vts_id(const ifo_handle_t *ifo) {
+char *dvd_track_vts_id(const ifo_handle_t *track_ifo) {
 
-	for(unsigned long i = 0; i < strlen(ifo->vtsi_mat->vts_identifier); i++) {
-		if(!isascii(ifo->vtsi_mat->vts_identifier[i]))
+	for(unsigned long i = 0; i < strlen(track_ifo->vtsi_mat->vts_identifier); i++) {
+		if(!isascii(track_ifo->vtsi_mat->vts_identifier[i]))
 			return "";
 	}
 
-	return strndup(ifo->vtsi_mat->vts_identifier, DVD_TRACK_VTS_ID);
+	return strndup(track_ifo->vtsi_mat->vts_identifier, DVD_TRACK_VTS_ID);
 
 }
 
@@ -583,12 +583,12 @@ int dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const int audio_tra
 // if it's an invalid language.  If it's missing one, set it to unknown (for example)
 // but if it's invalid, maybe guess that it's in English, or something?  Dunno.
 // Having a best-guess approach might not be bad, maybe even look at region codes
-char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const int subtitle_track) {
+char *dvd_track_subtitle_lang_code(const ifo_handle_t *track_ifo, const int subtitle_track) {
 
 	char lang_code[3] = {'\0'};
 	subp_attr_t *subp_attr;
 
-	subp_attr = &vts_ifo->vtsi_mat->vts_subp_attr[subtitle_track];
+	subp_attr = &track_ifo->vtsi_mat->vts_subp_attr[subtitle_track];
 
 	// Same check as ifo_print
 	if(subp_attr->type == 0 && subp_attr->lang_code == 0 && subp_attr->zero1 == 0 && subp_attr->zero2 == 0 && subp_attr->lang_extension == 0) {
