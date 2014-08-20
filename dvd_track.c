@@ -45,7 +45,7 @@ char *dvd_track_vts_id(const ifo_handle_t *ifo) {
  * 2 = Reserved, do not use
  * 3 = Reserved, do not use
  */
-unsigned char dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
+uint8_t dvd_track_mpeg_version(const ifo_handle_t *track_ifo) {
 
 	if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
 		return 1;
