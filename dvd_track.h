@@ -192,6 +192,8 @@ char *dvd_track_video_aspect_ratio(const ifo_handle_t *track_ifo);
 
 double dvd_track_fps(dvd_time_t *dvd_time);
 
+char *dvd_track_str_fps(dvd_time_t *dvd_time);
+
 /**
  * Get the number of miliseconds for a track's playback time
  *

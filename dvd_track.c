@@ -269,6 +269,24 @@ double dvd_track_fps(dvd_time_t *dvd_time) {
 
 }
 
+char *dvd_track_str_fps(dvd_time_t *dvd_time) {
+
+	char str[DVD_VIDEO_FPS + 1];
+
+	double frames_per_s[4] = {-1.0, 25.00, -1.0, 29.97};
+
+	double fps = frames_per_s[(dvd_time->frame_u & 0xc0) >> 6];
+
+	if(fps > 0) {
+
+		snprintf(str, DVD_VIDEO_FPS + 1, "%02.02f", fps);
+		return strndup(str, DVD_VIDEO_FPS);
+
+	} else
+		return "";
+
+}
+
 unsigned int dvd_track_length(dvd_time_t *dvd_time) {
 
 	unsigned int framerates[4] = {0, 2500, 0, 2997};
