@@ -1,6 +1,6 @@
 #include "dvd_debug_ifo.h"
 
-bool vmgm_audio_streams_ok(unsigned int i) {
+bool vmgm_audio_streams_ok(uint32_t i) {
 
 	if(i > 1)
 		return false;
@@ -9,7 +9,7 @@ bool vmgm_audio_streams_ok(unsigned int i) {
 
 }
 
-bool mpeg_version_ok(unsigned int i) {
+bool mpeg_version_ok(uint32_t i) {
 
 	if(i > 1)
 		return false;
@@ -18,7 +18,7 @@ bool mpeg_version_ok(unsigned int i) {
 
 }
 
-bool video_format_ok(unsigned int i) {
+bool video_format_ok(uint32_t i) {
 
 	if(i > 1)
 		return false;
@@ -27,7 +27,7 @@ bool video_format_ok(unsigned int i) {
 
 }
 
-bool display_aspect_ratio_ok(unsigned int i) {
+bool display_aspect_ratio_ok(uint32_t i) {
 
 	if(i != 0 && i != 3)
 		return false;
@@ -36,7 +36,7 @@ bool display_aspect_ratio_ok(unsigned int i) {
 
 }
 
-bool permitted_df_ok(unsigned int i) {
+bool permitted_df_ok(uint32_t i) {
 
 	if(i > 3)
 		return false;
@@ -45,7 +45,7 @@ bool permitted_df_ok(unsigned int i) {
 
 }
 
-bool line21_cc_ok(unsigned int video_format, unsigned int line21_cc) {
+bool line21_cc_ok(uint32_t video_format, uint32_t line21_cc) {
 
 	if(video_format != 0 && line21_cc > 0)
 		return false;
@@ -54,7 +54,7 @@ bool line21_cc_ok(unsigned int video_format, unsigned int line21_cc) {
 
 }
 
-bool video_picture_size_ok(unsigned int i) {
+bool video_picture_size_ok(uint32_t i) {
 
 	if(i > 3)
 		return false;
@@ -63,7 +63,7 @@ bool video_picture_size_ok(unsigned int i) {
 
 }
 
-bool letterboxed_ok(unsigned int i) {
+bool letterboxed_ok(uint32_t i) {
 
 	if(i > 1)
 		return false;
@@ -72,7 +72,7 @@ bool letterboxed_ok(unsigned int i) {
 
 }
 
-bool film_mode_ok(unsigned int i) {
+bool film_mode_ok(uint32_t i) {
 
 	if(i > 1)
 		return false;
@@ -81,7 +81,7 @@ bool film_mode_ok(unsigned int i) {
 
 }
 
-bool audio_format_ok(unsigned int i) {
+bool audio_format_ok(uint32_t i) {
 
 	if(i == 1 || i == 5 || i > 6)
 		return false;
@@ -90,7 +90,7 @@ bool audio_format_ok(unsigned int i) {
 
 }
 
-bool quantization_ok(unsigned int i) {
+bool quantization_ok(uint32_t i) {
 
 	if(i > 3)
 		return false;
@@ -99,7 +99,7 @@ bool quantization_ok(unsigned int i) {
 
 }
 
-bool sample_frequency_ok(unsigned int i) {
+bool sample_frequency_ok(uint32_t i) {
 
 	if(i > 1)
 		return false;
@@ -108,7 +108,7 @@ bool sample_frequency_ok(unsigned int i) {
 
 }
 
-bool channels_ok(unsigned int i) {
+bool channels_ok(uint32_t i) {
 
 	if(i > 5)
 		return false;
