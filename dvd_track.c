@@ -402,14 +402,14 @@ uint8_t dvd_track_num_audio_lang_code_streams(const ifo_handle_t *track_ifo, con
 	uint8_t num_track_audio_streams;
 	uint8_t num_lang_streams;
 	char lang_code[DVD_AUDIO_LANG_CODE + 1] = {'\0'};
-	uint8_t audio_track;
+	uint8_t i;
 
 	num_track_audio_streams = dvd_track_num_audio_streams(track_ifo);
 	num_lang_streams = 0;
 
-	for(audio_track = 0; audio_track < num_track_audio_streams; audio_track++) {
+	for(i = 0; i < num_track_audio_streams; i++) {
 
-		strncpy(lang_code, dvd_track_audio_lang_code(track_ifo, audio_track), DVD_AUDIO_LANG_CODE);
+		strncpy(lang_code, dvd_track_audio_lang_code(track_ifo, i), DVD_AUDIO_LANG_CODE);
 
 		if(strncmp(lang_code, p, DVD_AUDIO_LANG_CODE) == 0) {
 			num_lang_streams++;
@@ -443,15 +443,15 @@ uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *track_ifo, 
 
 	uint8_t streams;
 	uint8_t matches;
-	uint8_t idx;
+	uint8_t i;
 	char str[DVD_SUBTITLE_LANG_CODE + 1] = {'\0'};
 
 	streams = dvd_track_subtitles(track_ifo);
 	matches = 0;
 
-	for(idx = 0; idx < streams; idx++) {
+	for(i = 0; i < streams; i++) {
 
-		strncpy(str, dvd_track_subtitle_lang_code(track_ifo, idx), DVD_SUBTITLE_LANG_CODE);
+		strncpy(str, dvd_track_subtitle_lang_code(track_ifo, i), DVD_SUBTITLE_LANG_CODE);
 
 		if(strncmp(str, lang_code, DVD_SUBTITLE_LANG_CODE) == 0) {
 			matches++;
@@ -519,13 +519,13 @@ int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number,
 
 // Note: Remember that the language code is set in the IFO
 // See dvdread/ifo_print.c for same functionality (error checking)
-char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_track) {
+char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {
 
 	char lang_code[3] = {'\0'};
 	uint8_t lang_type;
 	audio_attr_t *audio_attr;
 
-	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_track];
+	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_stream];
 	lang_type = audio_attr->lang_type;
 
 	if(lang_type != 1)
@@ -540,26 +540,26 @@ char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_t
 // same for lpcm; also a bug if it reports #5, and defaults to bug report if
 // any above 6 (or under 0)
 // FIXME check for multi channel extension
-char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t stream) {
+char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {
 
 	uint8_t audio_codec;
 	char *audio_codecs[7] = { "ac3", "", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
 	audio_attr_t *audio_attr;
 
-	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[stream];
+	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_stream];
 	audio_codec = audio_attr->audio_format;
 
 	return strndup(audio_codecs[audio_codec], DVD_AUDIO_CODEC);
 
 }
 
-uint8_t dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const uint8_t audio_track) {
+uint8_t dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {
 
 	uint8_t uc_num_channels;
 	uint8_t num_channels;
 	audio_attr_t *audio_attr;
 
-	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_track];
+	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_stream];
 	uc_num_channels = audio_attr->channels;
 	num_channels = uc_num_channels + 1;
 
@@ -567,7 +567,7 @@ uint8_t dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const uint8_
 
 }
 
-char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const uint8_t audio_track) {
+char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {
 
 	uint8_t audio_id[7] = {0x80, 0, 0xC0, 0xC0, 0xA0, 0, 0x88};
 	uint8_t audio_format;
@@ -575,9 +575,9 @@ char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const uint8_t aud
 	audio_attr_t *audio_attr;
 	char str[DVD_AUDIO_STREAM_ID + 1] = {'\0'};
 
-	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_track];
+	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_stream];
 	audio_format = audio_attr->audio_format;
-	audio_stream_id = audio_id[audio_format] + audio_track;
+	audio_stream_id = audio_id[audio_format] + audio_stream;
 
 	snprintf(str, DVD_AUDIO_STREAM_ID + 1, "0x%x", audio_stream_id);
 

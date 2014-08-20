@@ -300,10 +300,10 @@ int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number,
  * Examples: en: English, fr: French, es: Spanish
  *
  * @param track_ifo dvdread track IFO handler
- * @param audio_track audio track number
+ * @param audio_stream audio track number
  * @return language code
  */
-char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_track);
+char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8_t audio_stream);
 
 
 /**
@@ -311,10 +311,10 @@ char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_t
  *
  * Possible values: AC3, MPEG1, MPEG2, LPCM, SDDS, DTS
  * @param track_ifo dvdread track IFO handler
- * @param stream audio track number
+ * @param audio_stream audio track number
  * @return audio codec
  */
-char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t stream);
+char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t audio_stream);
 
 /**
  * Get the number of channels for an audio track
