@@ -501,7 +501,7 @@ int main(int argc, char **argv) {
 		dvd_track.msecs = dvd_track_length(&pgc->playback_time);
 		dvd_track.chapters = pgc->nr_of_programs;
 		strncpy(dvd_video.codec, dvd_track_video_codec(track_ifo), DVD_VIDEO_CODEC);
-		dvd_track_video_format(track_ifo, dvd_video.format);
+		strncpy(dvd_video.format, dvd_track_video_format(track_ifo), DVD_VIDEO_FORMAT);
 		dvd_video.width = dvd_track_video_width(track_ifo);
 		dvd_video.height = dvd_track_video_height(track_ifo);
 		dvd_track_video_aspect_ratio(track_ifo, dvd_video.aspect_ratio);

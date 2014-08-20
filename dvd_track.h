@@ -178,10 +178,9 @@ char *dvd_track_video_codec(ifo_handle_t *track_ifo);
  * Get the video format for a track
  *
  * @param vts_ifo dvdread track IFO handler
- * @param video_codec string pointer
- * @retval success
+ * @retval video format
  */
-int dvd_track_video_format(ifo_handle_t *track_ifo, char *video_codec);
+char *dvd_track_video_format(ifo_handle_t *track_ifo);
 
 /*
  * Get the video aspect ratio for a track

@@ -238,20 +238,14 @@ char *dvd_track_video_codec(ifo_handle_t *track_ifo) {
 
 }
 
-int dvd_track_video_format(ifo_handle_t *track_ifo, char *video_format) {
-
-	char *format;
+char *dvd_track_video_format(ifo_handle_t *track_ifo) {
 
 	if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0)
-		format = "NTSC";
+		return "NTSC";
 	else if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
-		format = "PAL";
+		return  "PAL";
 	else
-		format = "";
-
-	strncpy(video_format, format, DVD_VIDEO_FORMAT);
-
-	return 0;
+		return "";
 
 }
 
