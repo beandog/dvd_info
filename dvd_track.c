@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
 #include <dvdread/ifo_types.h>
 #include <dvdread/ifo_read.h>
 #include "dvd_info.h"
@@ -25,6 +26,11 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const int track_number) {
 
 // FIXME check for invalid characters
 char *dvd_track_vts_id(const ifo_handle_t *ifo) {
+
+	for(unsigned long i = 0; i < strlen(ifo->vtsi_mat->vts_identifier); i++) {
+		if(!isascii(ifo->vtsi_mat->vts_identifier[i]))
+			return "";
+	}
 
 	return strndup(ifo->vtsi_mat->vts_identifier, DVD_TRACK_VTS_ID);
 
