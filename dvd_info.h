@@ -1,0 +1,25 @@
+#define DEFAULT_DVD_DEVICE "/dev/dvd"
+
+// String lengths for DVD metadata
+#define DVD_TITLE 32
+#define DVD_PROVIDER_ID 32
+#define DVD_VMG_ID 12
+#define DVD_DVDREAD_ID 32
+
+#define DVD_TRACK_VTS_ID 12
+#define DVD_TRACK_LENGTH 12
+
+#define DVD_VIDEO_CODEC 5
+#define DVD_VIDEO_FORMAT 4
+#define DVD_VIDEO_ASPECT_RATIO 4
+
+#define DVD_AUDIO_STREAM_ID 4
+#define DVD_AUDIO_LANG_CODE 2
+#define DVD_AUDIO_CODEC 4
+
+#define DVD_SUBTITLE_STREAM_ID 4
+#define DVD_SUBTITLE_LANG_CODE 2
+
+#define DVD_CHAPTER_LENGTH 12
+
+#define DVD_CELL_LENGTH 12
