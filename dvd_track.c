@@ -270,11 +270,11 @@ double dvd_track_fps(dvd_time_t *dvd_time) {
 
 }
 
-int dvd_track_length(dvd_time_t *dvd_time) {
+unsigned int dvd_track_length(dvd_time_t *dvd_time) {
 
-	int framerates[4] = {0, 2500, 0, 2997};
-	int framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
-	int milliseconds = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
+	unsigned int framerates[4] = {0, 2500, 0, 2997};
+	unsigned int framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
+	unsigned int milliseconds = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
 	milliseconds += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
 	milliseconds += (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f)) * 1000;
 
@@ -285,11 +285,11 @@ int dvd_track_length(dvd_time_t *dvd_time) {
 
 }
 
-int dvd_track_time_milliseconds(dvd_time_t *dvd_time) {
+unsigned int dvd_track_time_milliseconds(dvd_time_t *dvd_time) {
 
-	int framerates[4] = {0, 2500, 0, 2997};
-	int framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
-	int milliseconds = 0;
+	unsigned int framerates[4] = {0, 2500, 0, 2997};
+	unsigned int framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
+	unsigned int milliseconds = 0;
 
 	if(framerate > 0)
 		milliseconds += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
@@ -298,9 +298,9 @@ int dvd_track_time_milliseconds(dvd_time_t *dvd_time) {
 
 }
 
-int dvd_track_time_seconds(dvd_time_t *dvd_time) {
+unsigned int dvd_track_time_seconds(dvd_time_t *dvd_time) {
 
-	int seconds = ((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f);
+	unsigned int seconds = ((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f);
 
 	if(seconds > 59)
 		seconds -= 60;
@@ -309,9 +309,9 @@ int dvd_track_time_seconds(dvd_time_t *dvd_time) {
 
 }
 
-int dvd_track_time_minutes(dvd_time_t *dvd_time) {
+unsigned int dvd_track_time_minutes(dvd_time_t *dvd_time) {
 
-	int minutes = ((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f);
+	unsigned int minutes = ((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f);
 
 	if(minutes > 59)
 		minutes -= 60;
@@ -320,9 +320,9 @@ int dvd_track_time_minutes(dvd_time_t *dvd_time) {
 
 }
 
-int dvd_track_time_hours(dvd_time_t *dvd_time) {
+unsigned int dvd_track_time_hours(dvd_time_t *dvd_time) {
 
-	int hours = ((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f);
+	unsigned int hours = ((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f);
 
 	if(hours > 59)
 		hours -= 60;
@@ -334,17 +334,17 @@ int dvd_track_time_hours(dvd_time_t *dvd_time) {
 char *dvd_track_str_length(dvd_time_t *dvd_time) {
 
 	char length[DVD_TRACK_LENGTH + 1] = {'\0'};
-	int hours;
-	int minutes;
-	int seconds;
-	int milliseconds;
+	unsigned int hours;
+	unsigned int minutes;
+	unsigned int seconds;
+	unsigned int milliseconds;
 
 	hours = dvd_track_time_hours(dvd_time);
 	minutes = dvd_track_time_minutes(dvd_time);
 	seconds = dvd_track_time_seconds(dvd_time);
 	milliseconds = dvd_track_time_milliseconds(dvd_time);
 
-	snprintf(length, DVD_TRACK_LENGTH, "%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
+	snprintf(length, DVD_TRACK_LENGTH + 1, "%02u:%02u:%02u.%03u", hours, minutes, seconds, milliseconds);
 
 	return strndup(length, DVD_TRACK_LENGTH);
 

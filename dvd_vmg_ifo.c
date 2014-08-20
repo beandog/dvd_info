@@ -110,8 +110,8 @@ uint16_t dvd_info_longest_track(dvd_reader_t *dvdread_dvd) {
 	uint8_t vts_ttn;
 	pgcit_t *vts_pgcit;
 	pgc_t *pgc;
-	int ms;
-	int max_len;
+	unsigned int ms;
+	unsigned int max_len;
 
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	track = 0;
@@ -177,8 +177,8 @@ uint16_t dvd_info_longest_track_with_subtitles(dvd_reader_t *dvdread_dvd) {
 	uint8_t vts_ttn;
 	pgcit_t *vts_pgcit;
 	pgc_t *pgc;
-	int ms;
-	int max_len;
+	unsigned int ms;
+	unsigned int max_len;
 
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	track = 0;
@@ -256,8 +256,8 @@ uint16_t dvd_info_longest_16x9_track(dvd_reader_t *dvdread_dvd) {
 	uint8_t vts_ttn;
 	pgcit_t *vts_pgcit;
 	pgc_t *pgc;
-	int ms;
-	int max_len;
+	unsigned int ms;
+	unsigned int max_len;
 
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	track = 0;
@@ -328,8 +328,8 @@ uint16_t dvd_info_longest_4x3_track(dvd_reader_t *dvdread_dvd) {
 	uint8_t vts_ttn;
 	pgcit_t *vts_pgcit;
 	pgc_t *pgc;
-	int ms;
-	int max_len;
+	unsigned int ms;
+	unsigned int max_len;
 
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	track = 0;
@@ -400,8 +400,8 @@ uint16_t dvd_info_longest_letterbox_track(dvd_reader_t *dvdread_dvd) {
 	uint8_t vts_ttn;
 	pgcit_t *vts_pgcit;
 	pgc_t *pgc;
-	int ms;
-	int max_len;
+	unsigned int ms;
+	unsigned int max_len;
 
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	track = 0;
@@ -472,8 +472,8 @@ uint16_t dvd_info_longest_pan_scan_track(dvd_reader_t *dvdread_dvd) {
 	uint8_t vts_ttn;
 	pgcit_t *vts_pgcit;
 	pgc_t *pgc;
-	int ms;
-	int max_len;
+	unsigned int ms;
+	unsigned int max_len;
 
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	track = 0;

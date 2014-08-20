@@ -45,7 +45,7 @@ struct dvd_track {
 	uint8_t ttn;
 	char vts_id[DVD_TRACK_VTS_ID + 1];
 	char length[DVD_TRACK_LENGTH + 1];
-	int msecs;
+	unsigned int msecs;
 	uint8_t chapters;
 	uint8_t audio_tracks;
 	uint8_t subtitles;

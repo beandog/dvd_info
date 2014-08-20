@@ -200,15 +200,15 @@ double dvd_track_fps(dvd_time_t *dvd_time);
  * @param dvd_time dvdread dvd_time struct
  * @return miliseconds
  */
-int dvd_track_length(dvd_time_t *dvd_time);
+unsigned int dvd_track_length(dvd_time_t *dvd_time);
 
-int dvd_track_time_milliseconds(dvd_time_t *dvd_time);
+unsigned int dvd_track_time_milliseconds(dvd_time_t *dvd_time);
 
-int dvd_track_time_seconds(dvd_time_t *dvd_time);
+unsigned int dvd_track_time_seconds(dvd_time_t *dvd_time);
 
-int dvd_track_time_minutes(dvd_time_t *dvd_time);
+unsigned int dvd_track_time_minutes(dvd_time_t *dvd_time);
 
-int dvd_track_time_hours(dvd_time_t *dvd_time);
+unsigned int dvd_track_time_hours(dvd_time_t *dvd_time);
 
 char *dvd_track_str_length(dvd_time_t *dvd_time);
 
