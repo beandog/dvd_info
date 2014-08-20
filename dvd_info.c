@@ -587,7 +587,7 @@ int main(int argc, char **argv) {
 
 				json_dvd_audio = json_object();
 				json_object_set_new(json_dvd_audio, "ix", json_integer(dvd_audio.ix));
-				if(strlen(dvd_audio.lang_code) == 2)
+				if(strlen(dvd_audio.lang_code) == DVD_AUDIO_LANG_CODE)
 					json_object_set_new(json_dvd_audio, "lang code", json_string(dvd_audio.lang_code));
 				json_object_set_new(json_dvd_audio, "codec", json_string(dvd_audio.codec));
 				json_object_set_new(json_dvd_audio, "channels", json_integer(dvd_audio.channels));
