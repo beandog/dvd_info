@@ -136,6 +136,7 @@ int main(int argc, char **argv) {
 
 	// Track
 	struct dvd_track dvd_track;
+	struct dvd_track *track;
 	dvd_track.ix = 1;
 	dvd_track.vts = 1;
 	dvd_track.ttn = 1;
@@ -654,9 +655,6 @@ int main(int argc, char **argv) {
 		printf("%s\n", json_dumps(json_dvd, JSON_INDENT(1) + JSON_PRESERVE_ORDER));
 
 	}
-
-	// Display output in lsdvd compatability mode
-	struct dvd_track *track;
 
 	if(d_lsdvd == 1)
 		printf("Disc Title: %s\n", dvd_info.title);
