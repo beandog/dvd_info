@@ -568,8 +568,7 @@ int main(int argc, char **argv) {
 			strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(track_ifo, stream), DVD_AUDIO_LANG_CODE);
 			dvd_track_audio_codec(track_ifo, stream, dvd_audio.codec);
 			dvd_audio.channels = dvd_track_audio_num_channels(track_ifo, stream);
-			dvd_audio.stream = dvd_track_audio_stream_id(track_ifo, stream);
-			snprintf(dvd_audio.stream_id, DVD_AUDIO_STREAM_ID + 1, "0x%x", dvd_audio.stream);
+			strncpy(dvd_audio.stream_id, dvd_track_audio_stream_id(track_ifo, stream), DVD_AUDIO_STREAM_ID);
 
 			if(d_json == 1) {
 
@@ -579,7 +578,6 @@ int main(int argc, char **argv) {
 					json_object_set_new(json_dvd_audio, "lang code", json_string(dvd_audio.lang_code));
 				json_object_set_new(json_dvd_audio, "codec", json_string(dvd_audio.codec));
 				json_object_set_new(json_dvd_audio, "channels", json_integer(dvd_audio.channels));
-				json_object_set_new(json_dvd_audio, "stream", json_integer(dvd_audio.stream));
 				json_object_set_new(json_dvd_audio, "stream id", json_string(dvd_audio.stream_id));
 				json_array_append(json_dvd_audio_tracks, json_dvd_audio);
 

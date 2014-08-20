@@ -340,9 +340,9 @@ int dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const int audio_
  *
  * @param track_ifo dvdread track IFO handler
  * @param audio_track audio track number
- * @return audio stream ID
+ * @return audio stream id
  */
-int dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const int audio_track);
+char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const int audio_track);
 
 /**
  * Get the lang code of a subtitle track for a title track
