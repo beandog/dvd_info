@@ -6,7 +6,6 @@
 #include <dvdread/ifo_read.h>
 #include "dvd_info.h"
 #include "dvd_track.h"
-#include "dvd_track_audio.h"
 
 unsigned char dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const int track_number) {
 
@@ -507,5 +506,112 @@ int dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number,
 	}
 
 	return 1;
+
+}
+
+// Note: Remember that the language code is set in the IFO
+// See dvdread/ifo_print.c for same functionality (error checking)
+char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_track) {
+
+	char lang_code[3] = {'\0'};
+	unsigned char lang_type;
+	audio_attr_t *audio_attr;
+
+	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_track];
+	lang_type = audio_attr->lang_type;
+
+	if(lang_type != 1)
+		return "";
+
+	snprintf(lang_code, DVD_AUDIO_LANG_CODE, "%c%c", audio_attr->lang_code >> 8, audio_attr->lang_code & 0xff);
+	return strndup(lang_code, DVD_AUDIO_LANG_CODE);
+
+}
+
+// FIXME see dvdread/ifo_print.c:196 for how it handles mpeg2ext with drc, no drc,
+// same for lpcm; also a bug if it reports #5, and defaults to bug report if
+// any above 6 (or under 0)
+// FIXME check for multi channel extension
+int dvd_track_audio_codec(const ifo_handle_t *track_ifo, const int audio_track, char *p) {
+
+	unsigned char audio_codec;
+	char *audio_codecs[7] = { "ac3", "?", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
+	audio_attr_t *audio_attr;
+
+	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_track];
+	audio_codec = audio_attr->audio_format;
+
+	strncpy(p, audio_codecs[audio_codec], 5);
+
+	return 0;
+
+}
+
+int dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const int audio_track) {
+
+	unsigned char uc_num_channels;
+	int num_channels;
+	audio_attr_t *audio_attr;
+
+	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_track];
+	uc_num_channels = audio_attr->channels;
+	num_channels = (int)uc_num_channels + 1;
+
+	return num_channels;
+
+}
+
+int dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const int audio_track) {
+
+	int audio_id[7] = {0x80, 0, 0xC0, 0xC0, 0xA0, 0, 0x88};
+	unsigned char audio_format;
+	int audio_stream_id = 0;
+	audio_attr_t *audio_attr;
+
+	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_track];
+	audio_format = audio_attr->audio_format;
+	audio_stream_id = audio_id[audio_format] + audio_track;
+
+	return audio_stream_id;
+
+}
+
+// TODO this function could stand a lot of strict error checking to see what the subtitle status is, and offer different return codes
+// Have dvd_debug check for issues here.
+// FIXME use isalpha()
+// FIXME I want to have some kind of distinguishment in here, and for audio tracks
+// if it's an invalid language.  If it's missing one, set it to unknown (for example)
+// but if it's invalid, maybe guess that it's in English, or something?  Dunno.
+// Having a best-guess approach might not be bad, maybe even look at region codes
+int dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const int subtitle_track, char *p) {
+
+	char lang_code[3] = {'\0'};
+	subp_attr_t *subp_attr;
+
+	subp_attr = &vts_ifo->vtsi_mat->vts_subp_attr[subtitle_track];
+
+	// Same check as ifo_print
+	if(subp_attr->type == 0 && subp_attr->lang_code == 0 && subp_attr->zero1 == 0 && subp_attr->zero2 == 0 && subp_attr->lang_extension == 0) {
+		strncpy(p, "xx", 3);
+		return 1;
+	}
+
+	snprintf(lang_code, 3, "%c%c", subp_attr->lang_code >> 8, subp_attr->lang_code & 0xff);
+	// Following the same logic as lsdvd -- if the first char is invalid(?)
+	// then set it to 'xx' as well.
+	if(!lang_code[0]) {
+		strncpy(p, "xx", 3);
+		return 2;
+	}
+
+	strncpy(p, lang_code, 3);
+
+	return 0;
+
+}
+
+int dvd_track_subtitle_stream_id(const int subtitle_track) {
+
+	return 0x20 + subtitle_track;
 
 }

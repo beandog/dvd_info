@@ -18,8 +18,6 @@
 #include "dvd_drive.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
-#include "dvd_track_audio.h"
-#include "dvd_track_subtitle.h"
 
 void print_usage(char *binary);
 

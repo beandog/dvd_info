@@ -14,8 +14,6 @@
 #include <dvdnav/dvdnav.h>
 #include <dvdread/ifo_print.h>
 #include "dvd_track.h"
-#include "dvd_track_audio.h"
-#include "dvd_track_subtitle.h"
 
 /**
  * Functions used to get basic DVD data:
