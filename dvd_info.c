@@ -133,9 +133,9 @@ int main(int argc, char **argv) {
 	struct dvd_info dvd_info;
 	dvd_info.video_title_sets = 1;
 	dvd_info.side = 1;
-	memset(dvd_info.title, '\0', DVD_TITLE + 1);
-	memset(dvd_info.provider_id, '\0', DVD_PROVIDER_ID + 1);
-	memset(dvd_info.vmg_id, '\0', DVD_VMG_ID + 1);
+	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
+	memset(dvd_info.provider_id, '\0', sizeof(dvd_info.provider_id));
+	memset(dvd_info.vmg_id, '\0', sizeof(dvd_info.vmg_id));
 	dvd_info.tracks = 1;
 	dvd_info.longest_track = 1;
 
@@ -144,8 +144,8 @@ int main(int argc, char **argv) {
 	dvd_track.ix = 1;
 	dvd_track.vts = 1;
 	dvd_track.ttn = 1;
-	memset(dvd_track.vts_id, '\0', DVD_TRACK_VTS_ID + 1);
-	memset(dvd_track.length, '\0', DVD_TRACK_LENGTH + 1);
+	memset(dvd_track.vts_id, '\0', sizeof(dvd_track.vts_id));
+	memset(dvd_track.length, '\0', sizeof(dvd_track.length));
 	dvd_track.msecs = 0;
 	dvd_track.chapters = 1;
 	dvd_track.audio_tracks = 0;
@@ -154,9 +154,9 @@ int main(int argc, char **argv) {
 
 	// Video
 	struct dvd_video dvd_video;
-	memset(dvd_video.codec, '\0', DVD_VIDEO_CODEC + 1);
-	memset(dvd_video.format, '\0', DVD_VIDEO_FORMAT + 1);
-	memset(dvd_video.aspect_ratio, '\0', DVD_VIDEO_ASPECT_RATIO + 1);
+	memset(dvd_video.codec, '\0', sizeof(dvd_video.codec));
+	memset(dvd_video.format, '\0', sizeof(dvd_video.format));
+	memset(dvd_video.aspect_ratio, '\0', sizeof(dvd_video.aspect_ratio));
 	dvd_video.width = 0;
 	dvd_video.height = 0;
 	dvd_video.letterbox = false;
@@ -170,27 +170,27 @@ int main(int argc, char **argv) {
 	uint8_t stream;
 	dvd_audio.ix = 1;
 	dvd_audio.stream = 0;
-	memset(dvd_audio.stream_id, '\0', DVD_AUDIO_STREAM_ID + 1);
-	memset(dvd_audio.lang_code, '\0', DVD_AUDIO_LANG_CODE + 1);
-	memset(dvd_audio.codec, '\0', DVD_AUDIO_CODEC + 1);
+	memset(dvd_audio.stream_id, '\0', sizeof(dvd_audio.stream_id));
+	memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
+	memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
 	dvd_audio.channels = 0;
 
 	// Subtitles
 	struct dvd_subtitle dvd_subtitle;
 	dvd_subtitle.ix = 1;
 	dvd_subtitle.stream = 0;
-	memset(dvd_subtitle.stream_id, '\0', DVD_SUBTITLE_STREAM_ID + 1);
-	memset(dvd_subtitle.lang_code, '\0', DVD_SUBTITLE_LANG_CODE + 1);
+	memset(dvd_subtitle.stream_id, '\0', sizeof(dvd_subtitle.stream_id));
+	memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
 
 	// Chapters
 	struct dvd_chapter dvd_chapter;
 	dvd_chapter.ix = 0;
-	memset(dvd_chapter.length, '\0', DVD_CHAPTER_LENGTH + 1);
+	memset(dvd_chapter.length, '\0', sizeof(dvd_chapter.length));
 
 	// Cells
 	struct dvd_cell dvd_cell;
 	dvd_cell.ix = 0;
-	memset(dvd_cell.length, '\0', DVD_CELL_LENGTH + 1);
+	memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
 
 	// JSON variables
 	json_t *json_dvd;
@@ -520,7 +520,7 @@ int main(int argc, char **argv) {
 		if(dvd_video.fps > 0)
 			snprintf(c_fps, 6, "%02.02f", dvd_video.fps);
 		else
-			memset(c_fps, '\0', 6);
+			memset(c_fps, '\0', sizeof(c_fps));
 
 		if(d_json == 1) {
 
@@ -572,8 +572,8 @@ int main(int argc, char **argv) {
 		for(stream = 0; stream < dvd_track.audio_tracks; stream++) {
 
 			memset(&dvd_audio, 0, sizeof(dvd_audio));
-			memset(dvd_audio.lang_code, '\0', DVD_AUDIO_LANG_CODE + 1);
-			memset(dvd_audio.codec, '\0', DVD_AUDIO_CODEC + 1);
+			memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
+			memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
 
 			dvd_audio.ix = stream + 1;
 			dvd_audio.stream = stream;
@@ -607,7 +607,7 @@ int main(int argc, char **argv) {
 		for(stream = 0; stream < dvd_track.subtitles; stream++) {
 
 			memset(&dvd_subtitle, 0, sizeof(dvd_subtitle));
-			memset(dvd_subtitle.lang_code, '\0', 3);
+			memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
 
 			dvd_subtitle.ix = stream + 1;
 			dvd_subtitle.stream = dvd_track_subtitle_stream_id(stream);
