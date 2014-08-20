@@ -530,7 +530,7 @@ char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8_t aud
 	if(lang_type != 1)
 		return "";
 
-	snprintf(lang_code, DVD_AUDIO_LANG_CODE, "%c%c", audio_attr->lang_code >> 8, audio_attr->lang_code & 0xff);
+	snprintf(lang_code, DVD_AUDIO_LANG_CODE + 1, "%c%c", audio_attr->lang_code >> 8, audio_attr->lang_code & 0xff);
 	return strndup(lang_code, DVD_AUDIO_LANG_CODE);
 
 }
