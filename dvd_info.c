@@ -59,7 +59,7 @@ struct dvd_video {
 	bool letterbox;
 	bool pan_and_scan;
 	unsigned char df;
-	double fps;
+	char fps[DVD_VIDEO_FPS + 1];
 	uint8_t angles;
 };
 
@@ -104,7 +104,6 @@ int main(int argc, char **argv) {
 	uint16_t total_tracks;
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
-	char c_fps[6] = {'\0'};
 
 	// Device hardware
 	int dvd_fd;
@@ -160,7 +159,7 @@ int main(int argc, char **argv) {
 	dvd_video.letterbox = false;
 	dvd_video.pan_and_scan = false;
 	dvd_video.df = 0;
-	dvd_video.fps = 0;
+	memset(dvd_video.fps, '\0', sizeof(dvd_video.fps));
 	dvd_video.angles = 1;
 
 	// Audio
@@ -509,15 +508,7 @@ int main(int argc, char **argv) {
 		dvd_track.audio_tracks = dvd_track_num_audio_streams(track_ifo);
 		dvd_track.subtitles = dvd_track_subtitles(track_ifo);
 		dvd_track.cells = pgc->nr_of_cells;
-
-		// Frames per second is a double, convert to a string for display format
-		dvd_video.fps = dvd_track_fps(&pgc->playback_time);
-		// It is possible to have a negative value, so only set, and later display
-		// the string if it is a positive number
-		if(dvd_video.fps > 0)
-			snprintf(c_fps, 6, "%02.02f", dvd_video.fps);
-		else
-			memset(c_fps, '\0', sizeof(c_fps));
+		strncpy(dvd_video.fps, dvd_track_str_fps(&pgc->playback_time), DVD_VIDEO_FPS);
 
 		if(d_json == 1) {
 
@@ -549,8 +540,8 @@ int main(int argc, char **argv) {
 				json_object_set_new(json_dvd_video, "df", json_string("Letterbox"));
 			json_object_set_new(json_dvd_video, "angles", json_integer(dvd_video.angles));
 			// Only display FPS if it's been populated as a string
-			if(strlen(c_fps) > 0)
-				json_object_set_new(json_dvd_video, "fps", json_string(c_fps));
+			if(strlen(dvd_video.fps))
+				json_object_set_new(json_dvd_video, "fps", json_string(dvd_video.fps));
 			// FIXME display permitted df instead, since displaying
 			// "letterbox" or "pan and scan" is subjective, and
 			// possibly incorrect

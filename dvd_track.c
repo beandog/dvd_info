@@ -280,6 +280,7 @@ char *dvd_track_str_fps(dvd_time_t *dvd_time) {
 	if(fps > 0) {
 
 		snprintf(str, DVD_VIDEO_FPS + 1, "%02.02f", fps);
+
 		return strndup(str, DVD_VIDEO_FPS);
 
 	} else
