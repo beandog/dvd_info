@@ -356,7 +356,10 @@ char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const int subtit
 /**
  * Get the stream ID for a subtitle, an index that starts at 0x20
  *
+ * This is only here for lsdvd output compatability.  The function just adds
+ * the index to 0x20.
+ *
  * @param subtitle_track subtitle track number
- * @return stream ID
+ * @return stream id
  */
-int dvd_track_subtitle_stream_id(const int subtitle_track);
+char *dvd_track_subtitle_stream_id(const int subtitle_track);

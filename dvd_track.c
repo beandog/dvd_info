@@ -618,8 +618,12 @@ char *dvd_track_subtitle_lang_code(const ifo_handle_t *track_ifo, const int subt
 
 }
 
-int dvd_track_subtitle_stream_id(const int subtitle_track) {
+char *dvd_track_subtitle_stream_id(const int subtitle_track) {
 
-	return 0x20 + subtitle_track;
+	char str[DVD_SUBTITLE_STREAM_ID + 1] = {'\0'};
+
+	snprintf(str, DVD_SUBTITLE_STREAM_ID + 1, "0x%x", 0x20 + subtitle_track);
+
+	return strndup(str, DVD_SUBTITLE_STREAM_ID);
 
 }
