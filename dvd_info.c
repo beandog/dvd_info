@@ -90,6 +90,7 @@ struct dvd_cell {
 int main(int argc, char **argv) {
 
 	// Display output
+	int d_json = 0;
 	int d_lsdvd = 1;
 	int verbose = 0;
 
@@ -187,6 +188,31 @@ int main(int argc, char **argv) {
 	dvd_cell.ix = 0;
 	memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
 
+	// JSON variables
+	json_t *json_dvd;
+	json_t *json_dvd_info;
+	json_t *json_dvd_tracks;
+	json_t *json_dvd_track;
+	json_t *json_dvd_video;
+	json_t *json_dvd_audio_tracks;
+	json_t *json_dvd_audio;
+	json_t *json_dvd_subtitles;
+	json_t *json_dvd_subtitle;
+	json_t *json_dvd_chapters;
+	json_t *json_dvd_chapter;
+
+	json_dvd = json_object();
+	json_dvd_info = json_object();
+	json_dvd_tracks = json_array();
+	json_dvd_track = json_object();
+	json_dvd_video = json_object();
+	json_dvd_audio_tracks = json_array();
+	json_dvd_audio = json_object();
+	json_dvd_subtitles = json_array();
+	json_dvd_subtitle = json_object();
+	json_dvd_chapters = json_array();
+	json_dvd_chapter = json_object();
+
 	// getopt_long
 	bool opt_track_number = false;
 	int arg_track_number = 0;
@@ -200,10 +226,11 @@ int main(int argc, char **argv) {
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
 	char *str_options;
-	str_options = "hi:t:v";
+	str_options = "hi:jt:v";
 
 	struct option long_options[] = {
 
+		{ "json", no_argument, & d_json, 1 },
 		{ "verbose", no_argument, & verbose, 1 },
 
 		// Entries with both a name and a value, will take either the
@@ -229,6 +256,10 @@ int main(int argc, char **argv) {
 				device_filename = optarg;
 				break;
 
+			case 'j':
+				d_json = 1;
+				break;
+
 			case 't':
 				opt_track_number = true;
 				arg_track_number = atoi(optarg);
@@ -248,6 +279,9 @@ int main(int argc, char **argv) {
 		}
 
 	}
+
+	if(d_json == 1)
+		d_lsdvd = 0;
 
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
@@ -418,6 +452,22 @@ int main(int argc, char **argv) {
 		sprintf(&dvdread_id[x * 2], "%02x", dvdread_ifo_md5[x]);
 	}
 
+	if(d_json == 1) {
+
+		// JSON: DVD basic information
+		json_object_set_new(json_dvd_info, "title", json_string(dvd_info.title));
+		json_object_set_new(json_dvd_info, "side", json_integer(dvd_info.side));
+		json_object_set_new(json_dvd_info, "tracks", json_integer(dvd_info.tracks));
+		json_object_set_new(json_dvd_info, "longest track", json_integer(dvd_info.longest_track));
+		if(strlen(dvd_info.provider_id) > 0)
+			json_object_set_new(json_dvd_info, "provider id", json_string(dvd_info.provider_id));
+		if(strlen(dvd_info.vmg_id) > 0)
+			json_object_set_new(json_dvd_info, "vmg id", json_string(dvd_info.vmg_id));
+		json_object_set_new(json_dvd_info, "video title sets", json_integer(dvd_info.video_title_sets));
+		json_object_set_new(json_dvd_info, "dvdread id", json_string(dvdread_id));
+
+	}
+
 	/**
 	 * Track information
 	 */
@@ -459,7 +509,52 @@ int main(int argc, char **argv) {
 		dvd_track.cells = pgc->nr_of_cells;
 		strncpy(dvd_video.fps, dvd_track_str_fps(&pgc->playback_time), DVD_VIDEO_FPS);
 
+		if(d_json == 1) {
+
+			json_dvd_track = json_object();
+			json_object_set_new(json_dvd_track, "ix", json_integer(dvd_track.ix));
+			json_object_set_new(json_dvd_track, "length", json_string(dvd_track.length));
+			json_object_set_new(json_dvd_track, "msecs", json_integer(dvd_track.msecs));
+			json_object_set_new(json_dvd_track, "cells", json_integer(dvd_track.cells));
+			json_object_set_new(json_dvd_track, "vts", json_integer(dvd_track.vts));
+			if(strlen(dvd_track.vts_id) > 0)
+				json_object_set_new(json_dvd_track, "vts id", json_string(dvd_track.vts_id));
+			json_object_set_new(json_dvd_track, "ttn", json_integer(dvd_track.ttn));
+
+			json_dvd_video = json_object();
+			if(strlen(dvd_video.codec))
+				json_object_set_new(json_dvd_video, "codec", json_string(dvd_video.codec));
+			if(strlen(dvd_video.format))
+				json_object_set_new(json_dvd_video, "format", json_string(dvd_video.format));
+			if(strlen(dvd_video.aspect_ratio))
+				json_object_set_new(json_dvd_video, "aspect ratio", json_string(dvd_video.aspect_ratio));
+			json_object_set_new(json_dvd_video, "width", json_integer(dvd_video.width));
+			json_object_set_new(json_dvd_video, "height", json_integer(dvd_video.height));
+			// FIXME needs cleanup
+			if(dvd_video.df == 0)
+				json_object_set_new(json_dvd_video, "df", json_string("Pan and Scan + Letterbox"));
+			else if(dvd_video.df == 1)
+				json_object_set_new(json_dvd_video, "df", json_string("Pan and Scan"));
+			else if(dvd_video.df == 2)
+				json_object_set_new(json_dvd_video, "df", json_string("Letterbox"));
+			json_object_set_new(json_dvd_video, "angles", json_integer(dvd_video.angles));
+			// Only display FPS if it's been populated as a string
+			if(strlen(dvd_video.fps))
+				json_object_set_new(json_dvd_video, "fps", json_string(dvd_video.fps));
+			// FIXME display permitted df instead, since displaying
+			// "letterbox" or "pan and scan" is subjective, and
+			// possibly incorrect
+			// json_object_set_new(json_dvd_video, "letterbox", json_integer(dvd_video.letterbox));
+			// json_object_set_new(json_dvd_video, "pan and scan", json_integer(dvd_video.pan_and_scan));
+			json_object_set_new(json_dvd_track, "video", json_dvd_video);
+
+
+		}
+
 		/** Audio Streams **/
+
+		if(d_json)
+			json_dvd_audio_tracks = json_array();
 
 		for(audio_stream = 0; audio_stream < dvd_track.audio_tracks; audio_stream++) {
 
@@ -473,9 +568,25 @@ int main(int argc, char **argv) {
 			dvd_audio.channels = dvd_track_audio_num_channels(track_ifo, audio_stream);
 			strncpy(dvd_audio.stream_id, dvd_track_audio_stream_id(track_ifo, audio_stream), DVD_AUDIO_STREAM_ID);
 
+			if(d_json == 1) {
+
+				json_dvd_audio = json_object();
+				json_object_set_new(json_dvd_audio, "ix", json_integer(dvd_audio.ix));
+				if(strlen(dvd_audio.lang_code) == DVD_AUDIO_LANG_CODE)
+					json_object_set_new(json_dvd_audio, "lang code", json_string(dvd_audio.lang_code));
+				json_object_set_new(json_dvd_audio, "codec", json_string(dvd_audio.codec));
+				json_object_set_new(json_dvd_audio, "channels", json_integer(dvd_audio.channels));
+				json_object_set_new(json_dvd_audio, "stream id", json_string(dvd_audio.stream_id));
+				json_array_append(json_dvd_audio_tracks, json_dvd_audio);
+
+			}
+
 		}
 
 		/** Subtitles **/
+
+		if(d_json)
+			json_dvd_subtitles = json_array();
 
 		for(subtitle_stream = 0; subtitle_stream < dvd_track.subtitles; subtitle_stream++) {
 
@@ -486,20 +597,63 @@ int main(int argc, char **argv) {
 			strncpy(dvd_subtitle.stream_id, dvd_track_subtitle_stream_id(subtitle_stream), DVD_SUBTITLE_STREAM_ID);
 			strncpy(dvd_subtitle.lang_code, dvd_track_subtitle_lang_code(track_ifo, subtitle_stream), DVD_SUBTITLE_LANG_CODE);
 
+			if(d_json == 1) {
+
+				json_dvd_subtitle = json_object();
+				json_object_set_new(json_dvd_subtitle, "ix", json_integer(dvd_subtitle.ix));
+				if(strlen(dvd_subtitle.lang_code) == DVD_SUBTITLE_LANG_CODE)
+					json_object_set_new(json_dvd_subtitle, "lang code", json_string(dvd_subtitle.lang_code));
+				json_array_append(json_dvd_subtitles, json_dvd_subtitle);
+
+			}
+
+		}
+
+		if(d_json == 1) {
+
+			if(dvd_track.audio_tracks)
+				json_object_set_new(json_dvd_track, "audio", json_dvd_audio_tracks);
+			if(dvd_track.subtitles)
+				json_object_set_new(json_dvd_track, "subtitles", json_dvd_subtitles);
+			json_array_append(json_dvd_tracks, json_dvd_track);
+
 		}
 
 		/** Chapters **/
+
+		if(d_json == 1)
+			json_dvd_chapters = json_array();
 
 		for(dvd_chapter.ix = 1; dvd_chapter.ix < dvd_track.chapters + 1; dvd_chapter.ix++) {
 
 			strncpy(dvd_chapter.length, dvd_track_str_chapter_length(pgc, dvd_chapter.ix), DVD_CHAPTER_LENGTH);
 
+			if(d_json == 1) {
+				json_dvd_chapter = json_object();
+				json_object_set_new(json_dvd_chapter, "ix", json_integer(dvd_chapter.ix));
+				json_object_set_new(json_dvd_chapter, "length", json_string(dvd_chapter.length));
+				json_array_append(json_dvd_chapters, json_dvd_chapter);
+			}
+
 		};
+
+		if(d_json == 1)
+			json_object_set_new(json_dvd_track, "chapters", json_dvd_chapters);
 
 		memmove(&dvd_tracks[track_number - 1], &dvd_track, sizeof(dvd_track));
 
 	}
 
+	if(d_json == 1) {
+
+		json_object_set_new(json_dvd, "dvd", json_dvd_info);
+
+		if(track_number > 0)
+			json_object_set_new(json_dvd, "tracks", json_dvd_tracks);
+
+		printf("%s\n", json_dumps(json_dvd, JSON_INDENT(1) + JSON_PRESERVE_ORDER));
+
+	}
 
 	// Display output in lsdvd compatability mode
 	struct dvd_track *track;
