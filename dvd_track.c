@@ -402,7 +402,7 @@ int dvd_track_num_audio_lang_code_streams(const ifo_handle_t *track_ifo, const c
 
 	for(audio_track = 0; audio_track < num_track_audio_streams; audio_track++) {
 
-		dvd_track_audio_lang_code(track_ifo, audio_track, lang_code);
+		strncpy(lang_code, dvd_track_audio_lang_code(track_ifo, audio_track), DVD_AUDIO_LANG_CODE);
 
 		if(strncmp(lang_code, p, DVD_AUDIO_LANG_CODE) == 0) {
 			num_lang_streams++;

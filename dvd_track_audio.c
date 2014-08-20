@@ -1,7 +1,16 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <ctype.h>
+#include <dvdread/ifo_types.h>
+#include <dvdread/ifo_read.h>
+#include "dvd_info.h"
+#include "dvd_track.h"
 #include "dvd_track_audio.h"
 
 // Note: Remember that the language code is set in the IFO
-int dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_track, char *p) {
+// See dvdread/ifo_print.c for same functionality (error checking)
+char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_track) {
 
 	char lang_code[3] = {'\0'};
 	unsigned char lang_type;
@@ -10,34 +19,11 @@ int dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_tra
 	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_track];
 	lang_type = audio_attr->lang_type;
 
-	if(lang_type == 0) {
+	if(lang_type != 1)
+		return "";
 
-		// See dvdread/ifo_print.c for same functionality (error checking)
-		if(audio_attr->lang_code != 0 && audio_attr->lang_code != 0xffff) {
-
-			fprintf(stderr, "libdvdread bug? lang_code: 0x%x\n", audio_attr->lang_code);
-			return 1;
-
-		}
-
-		strncpy(p, "xx", 3);
-
-	} else if(lang_type == 1) {
-
-		snprintf(lang_code, 3, "%c%c", audio_attr->lang_code >> 8, audio_attr->lang_code & 0xff);
-		strncpy(p, lang_code, 3);
-
-	} else {
-
-		// See dvdread/ifo_print.c for same functionality (error checking)
-		fprintf(stderr, "libdvdread bug? Unknown lang code: 0x%x\n", audio_attr->lang_code);
-		strncpy(p, "", 3);
-
-		return 1;
-
-	}
-
-	return 0;
+	snprintf(lang_code, DVD_AUDIO_LANG_CODE, "%c%c", audio_attr->lang_code >> 8, audio_attr->lang_code & 0xff);
+	return strndup(lang_code, DVD_AUDIO_LANG_CODE);
 
 }
 

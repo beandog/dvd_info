@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-#include <dvdread/ifo_types.h>
-
 /**
  * Get the audio language code for a track.  A two-character string that is a
  * short name for a language.
@@ -10,10 +6,9 @@
  *
  * @param track_ifo dvdread track IFO handler
  * @param audio_track audio track number
- * @param p string pointer
- * @return success
+ * @return language code
  */
-int dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_track, char *p);
+char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const int audio_track);
 
 
 /**
