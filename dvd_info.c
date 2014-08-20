@@ -65,7 +65,6 @@ struct dvd_video {
 
 struct dvd_audio {
 	uint8_t ix;
-	int stream;
 	char stream_id[DVD_AUDIO_STREAM_ID + 1];
 	char lang_code[DVD_AUDIO_LANG_CODE + 1];
 	char codec[DVD_AUDIO_CODEC + 1];
@@ -166,7 +165,6 @@ int main(int argc, char **argv) {
 	struct dvd_audio dvd_audio;
 	uint8_t stream;
 	dvd_audio.ix = 1;
-	dvd_audio.stream = 0;
 	memset(dvd_audio.stream_id, '\0', sizeof(dvd_audio.stream_id));
 	memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
 	memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
@@ -564,7 +562,6 @@ int main(int argc, char **argv) {
 			memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
 
 			dvd_audio.ix = stream + 1;
-			dvd_audio.stream = stream;
 			strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(track_ifo, stream), DVD_AUDIO_LANG_CODE);
 			dvd_track_audio_codec(track_ifo, stream, dvd_audio.codec);
 			dvd_audio.channels = dvd_track_audio_num_channels(track_ifo, stream);
