@@ -156,11 +156,7 @@ uint16_t dvd_track_video_width(const ifo_handle_t *track_ifo) {
 
 bool dvd_track_valid_aspect_ratio(const ifo_handle_t *track_ifo) {
 
-	unsigned char aspect_ratio;
-
-	aspect_ratio = track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio;
-
-	if(aspect_ratio == 0 || aspect_ratio == 3)
+	if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0 || track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
 		return true;
 	else
 		return false;
