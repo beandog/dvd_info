@@ -527,8 +527,6 @@ int main(int argc, char **argv) {
 			json_object_set_new(json_dvd_track, "ix", json_integer(dvd_track.ix));
 			json_object_set_new(json_dvd_track, "length", json_string(dvd_track.length));
 			json_object_set_new(json_dvd_track, "msecs", json_integer(dvd_track.msecs));
-			json_object_set_new(json_dvd_track, "audio tracks", json_integer(dvd_track.audio_tracks));
-			json_object_set_new(json_dvd_track, "subtitle tracks", json_integer(dvd_track.subtitles));
 			json_object_set_new(json_dvd_track, "cells", json_integer(dvd_track.cells));
 			json_object_set_new(json_dvd_track, "vts", json_integer(dvd_track.vts));
 			if(strlen(dvd_track.vts_id) > 0)
