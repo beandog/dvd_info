@@ -271,11 +271,10 @@ double dvd_track_fps(dvd_time_t *dvd_time) {
 
 char *dvd_track_str_fps(dvd_time_t *dvd_time) {
 
-	char str[DVD_VIDEO_FPS + 1];
+	char str[DVD_VIDEO_FPS + 1] = {'\0'};
+	double fps;
 
-	double frames_per_s[4] = {-1.0, 25.00, -1.0, 29.97};
-
-	double fps = frames_per_s[(dvd_time->frame_u & 0xc0) >> 6];
+	fps = dvd_track_fps(dvd_time);
 
 	if(fps > 0) {
 
