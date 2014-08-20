@@ -583,7 +583,7 @@ int dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const int audio_tra
 // if it's an invalid language.  If it's missing one, set it to unknown (for example)
 // but if it's invalid, maybe guess that it's in English, or something?  Dunno.
 // Having a best-guess approach might not be bad, maybe even look at region codes
-int dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const int subtitle_track, char *p) {
+char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const int subtitle_track) {
 
 	char lang_code[3] = {'\0'};
 	subp_attr_t *subp_attr;
@@ -592,21 +592,14 @@ int dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const int subtitle
 
 	// Same check as ifo_print
 	if(subp_attr->type == 0 && subp_attr->lang_code == 0 && subp_attr->zero1 == 0 && subp_attr->zero2 == 0 && subp_attr->lang_extension == 0) {
-		strncpy(p, "xx", 3);
-		return 1;
+		return "";
 	}
+	snprintf(lang_code, DVD_SUBTITLE_LANG_CODE + 1, "%c%c", subp_attr->lang_code >> 8, subp_attr->lang_code & 0xff);
 
-	snprintf(lang_code, 3, "%c%c", subp_attr->lang_code >> 8, subp_attr->lang_code & 0xff);
-	// Following the same logic as lsdvd -- if the first char is invalid(?)
-	// then set it to 'xx' as well.
-	if(!lang_code[0]) {
-		strncpy(p, "xx", 3);
-		return 2;
-	}
+	if(!isalpha(lang_code[0]) || !isalpha(lang_code[1]))
+		return "";
 
-	strncpy(p, lang_code, 3);
-
-	return 0;
+	return strndup(lang_code, DVD_SUBTITLE_LANG_CODE);
 
 }
 

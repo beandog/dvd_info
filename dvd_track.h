@@ -347,12 +347,9 @@ int dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const int audio_tra
  *
  * @param vts_ifo dvdread track IFO handler
  * @param subtitle_track subtitle track number
- * @param p string pointer
- * @retval success
- * @retval 1 all the subpicture attributes are unset
- * @retval 2 the lang_code for the subpicture attribute is unset
+ * @retval lang code
  */
-int dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const int subtitle_track, char *p);
+char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const int subtitle_track);
 
 /**
  * Get the stream ID for a subtitle, an index that starts at 0x20

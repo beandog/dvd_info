@@ -613,7 +613,7 @@ int main(int argc, char **argv) {
 			dvd_subtitle.ix = stream + 1;
 			dvd_subtitle.stream = dvd_track_subtitle_stream_id(stream);
 			snprintf(dvd_subtitle.stream_id, DVD_SUBTITLE_STREAM_ID + 1, "0x%x", dvd_subtitle.stream);
-			dvd_track_subtitle_lang_code(track_ifo, stream, dvd_subtitle.lang_code);
+			strncpy(dvd_subtitle.lang_code, dvd_track_subtitle_lang_code(track_ifo, stream), DVD_SUBTITLE_LANG_CODE);
 
 			if(d_json == 1) {
 
