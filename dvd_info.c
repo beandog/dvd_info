@@ -584,7 +584,7 @@ int main(int argc, char **argv) {
 			dvd_track_audio_codec(track_ifo, stream, dvd_audio.codec);
 			dvd_audio.channels = dvd_track_audio_num_channels(track_ifo, stream);
 			dvd_audio.stream = dvd_track_audio_stream_id(track_ifo, stream);
-			snprintf(dvd_audio.stream_id, DVD_AUDIO_STREAM_ID, "0x%x", dvd_audio.stream);
+			snprintf(dvd_audio.stream_id, DVD_AUDIO_STREAM_ID + 1, "0x%x", dvd_audio.stream);
 
 			if(d_json == 1) {
 
@@ -614,7 +614,7 @@ int main(int argc, char **argv) {
 
 			dvd_subtitle.ix = stream + 1;
 			dvd_subtitle.stream = dvd_track_subtitle_stream_id(stream);
-			snprintf(dvd_subtitle.stream_id, DVD_SUBTITLE_STREAM_ID, "0x%x", dvd_subtitle.stream);
+			snprintf(dvd_subtitle.stream_id, DVD_SUBTITLE_STREAM_ID + 1, "0x%x", dvd_subtitle.stream);
 			dvd_track_subtitle_lang_code(track_ifo, stream, dvd_subtitle.lang_code);
 
 			if(d_json == 1) {
