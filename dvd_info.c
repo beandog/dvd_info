@@ -618,7 +618,7 @@ int main(int argc, char **argv) {
 
 				json_dvd_subtitle = json_object();
 				json_object_set_new(json_dvd_subtitle, "ix", json_integer(dvd_subtitle.ix));
-				if(strncmp(dvd_subtitle.lang_code, "xx", DVD_SUBTITLE_LANG_CODE) != 0)
+				if(strlen(dvd_subtitle.lang_code) == DVD_SUBTITLE_LANG_CODE)
 					json_object_set_new(json_dvd_subtitle, "lang code", json_string(dvd_subtitle.lang_code));
 				json_object_set_new(json_dvd_subtitle, "stream id", json_string(dvd_subtitle.stream_id));
 				json_array_append(json_dvd_subtitles, json_dvd_subtitle);
