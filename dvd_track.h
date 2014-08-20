@@ -172,7 +172,7 @@ bool dvd_track_pan_scan_video(const ifo_handle_t *track_ifo);
  * @param vts_ifo dvdread track IFO handler
  * @retval video codec
  */
-char *dvd_track_video_codec(ifo_handle_t *track_ifo);
+char *dvd_track_video_codec(const ifo_handle_t *track_ifo);
 
 /*
  * Get the video format for a track
@@ -180,7 +180,7 @@ char *dvd_track_video_codec(ifo_handle_t *track_ifo);
  * @param vts_ifo dvdread track IFO handler
  * @retval video format
  */
-char *dvd_track_video_format(ifo_handle_t *track_ifo);
+char *dvd_track_video_format(const ifo_handle_t *track_ifo);
 
 /*
  * Get the video aspect ratio for a track

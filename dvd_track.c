@@ -227,7 +227,7 @@ bool dvd_track_pan_scan_video(const ifo_handle_t *track_ifo) {
 
 }
 
-char *dvd_track_video_codec(ifo_handle_t *track_ifo) {
+char *dvd_track_video_codec(const ifo_handle_t *track_ifo) {
 
 	if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
 		return "MPEG1";
@@ -238,7 +238,7 @@ char *dvd_track_video_codec(ifo_handle_t *track_ifo) {
 
 }
 
-char *dvd_track_video_format(ifo_handle_t *track_ifo) {
+char *dvd_track_video_format(const ifo_handle_t *track_ifo) {
 
 	if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0)
 		return "NTSC";
