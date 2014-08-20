@@ -249,22 +249,14 @@ char *dvd_track_video_format(ifo_handle_t *track_ifo) {
 
 }
 
-int dvd_track_video_aspect_ratio(ifo_handle_t *track_ifo, char *video_aspect_ratio) {
-
-	char *aspect_ratio;
+char *dvd_track_video_aspect_ratio(const ifo_handle_t *track_ifo) {
 
 	if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
-		aspect_ratio = "4:3";
+		return "4:3";
 	else if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
-		aspect_ratio = "16:9";
-	else {
-		// Catch wrong integer value burned into DVD
-		aspect_ratio = "";
-	}
-
-	strncpy(video_aspect_ratio, aspect_ratio, DVD_VIDEO_ASPECT_RATIO);
-
-	return 0;
+		return "16:9";
+	else
+		return "";
 
 }
 

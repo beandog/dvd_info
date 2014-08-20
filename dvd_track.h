@@ -186,10 +186,9 @@ char *dvd_track_video_format(ifo_handle_t *track_ifo);
  * Get the video aspect ratio for a track
  *
  * @param vts_ifo dvdread track IFO handler
- * @param aspect_ratio string pointer
- * @retval success
+ * @retval aspect ratio
  */
-int dvd_track_video_aspect_ratio(ifo_handle_t *track_ifo, char *aspect_ratio);
+char *dvd_track_video_aspect_ratio(const ifo_handle_t *track_ifo);
 
 double dvd_track_fps(dvd_time_t *dvd_time);
 

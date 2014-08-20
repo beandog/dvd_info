@@ -504,7 +504,7 @@ int main(int argc, char **argv) {
 		strncpy(dvd_video.format, dvd_track_video_format(track_ifo), DVD_VIDEO_FORMAT);
 		dvd_video.width = dvd_track_video_width(track_ifo);
 		dvd_video.height = dvd_track_video_height(track_ifo);
-		dvd_track_video_aspect_ratio(track_ifo, dvd_video.aspect_ratio);
+		strncpy(dvd_video.aspect_ratio, dvd_track_video_aspect_ratio(track_ifo), DVD_VIDEO_ASPECT_RATIO);
 		dvd_video.letterbox = dvd_track_letterbox_video(track_ifo);
 		dvd_video.pan_and_scan = dvd_track_pan_scan_video(track_ifo);
 		dvd_video.df = dvd_track_permitted_df(track_ifo);
