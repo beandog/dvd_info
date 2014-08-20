@@ -443,7 +443,7 @@ uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *track_ifo, 
 
 	for(idx = 0; idx < streams; idx++) {
 
-		dvd_track_audio_lang_code(track_ifo, idx, str);
+		strncpy(str, dvd_track_subtitle_lang_code(track_ifo, idx), DVD_SUBTITLE_LANG_CODE);
 
 		if(strncmp(str, lang_code, DVD_SUBTITLE_LANG_CODE) == 0) {
 			matches++;
