@@ -419,6 +419,8 @@ int main(int argc, char **argv) {
 	dvdread_retval = DVDDiscID(dvdread_dvd, dvdread_ifo_md5);
 	if(dvdread_retval == -1) {
 		fprintf(stderr, "Querying DVD id failed -- this is probably related to the library not being able to open an IFO.  Check the DVD for physical defects.\n");
+		ifoClose(vmg_ifo);
+		DVDClose(dvdread_dvd);
 		return 1;
 	}
 
