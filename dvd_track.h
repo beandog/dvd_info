@@ -214,7 +214,7 @@ uint32_t dvd_track_time_minutes(dvd_time_t *dvd_time);
 
 uint32_t dvd_track_time_hours(dvd_time_t *dvd_time);
 
-char *dvd_track_str_length(dvd_time_t *dvd_time);
+char *dvd_track_str_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
 /** Audio Streams **/
 

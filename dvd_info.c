@@ -482,7 +482,7 @@ int main(int argc, char **argv) {
 		strncpy(dvd_track.vts_id, dvd_track_vts_id(vts_ifo), DVD_TRACK_VTS_ID);
 		vts_pgcit = vts_ifo->vts_pgcit;
 		pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[dvd_track.ttn - 1].ptt[0].pgcn - 1].pgc;
-		strncpy(dvd_track.length, dvd_track_str_length(&pgc->playback_time), DVD_TRACK_LENGTH);
+		strncpy(dvd_track.length, dvd_track_str_length(vmg_ifo, vts_ifo, dvd_track.ix), DVD_TRACK_LENGTH);
 		dvd_track.msecs = dvd_track_length(&pgc->playback_time);
 		dvd_track.chapters = pgc->nr_of_programs;
 		strncpy(dvd_video.codec, dvd_track_video_codec(vts_ifo), DVD_VIDEO_CODEC);

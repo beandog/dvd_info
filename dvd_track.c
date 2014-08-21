@@ -350,13 +350,22 @@ uint32_t dvd_track_time_hours(dvd_time_t *dvd_time) {
 
 }
 
-char *dvd_track_str_length(dvd_time_t *dvd_time) {
+char *dvd_track_str_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
+	uint8_t ttn;
+	pgcit_t *vts_pgcit;
+	pgc_t *pgc;
+	dvd_time_t *dvd_time;
 	char length[DVD_TRACK_LENGTH + 1] = {'\0'};
 	uint32_t hours;
 	uint32_t minutes;
 	uint32_t seconds;
 	uint32_t milliseconds;
+
+	ttn = dvd_track_ttn(vmg_ifo, track_number);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	dvd_time = &pgc->playback_time;
 
 	hours = dvd_track_time_hours(dvd_time);
 	minutes = dvd_track_time_minutes(dvd_time);
@@ -510,8 +519,12 @@ char *dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_numbe
 
 		while(cell_idx < program_map_idx - 1) {
 			if(chapter_idx + 1 == chapter_number) {
+				// FIXME function call
+				/*
 				strncpy(chapter_length, dvd_track_str_length(&pgc->cell_playback[cell_idx].playback_time), DVD_CHAPTER_LENGTH);
 				return strndup(chapter_length, DVD_CHAPTER_LENGTH);
+				*/
+				return "";
 			}
 			cell_idx++;
 		}
