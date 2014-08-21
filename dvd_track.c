@@ -303,14 +303,16 @@ uint32_t dvd_track_milliseconds(dvd_time_t *dvd_time) {
 
 	uint32_t framerates[4] = {0, 2500, 0, 2997};
 	uint32_t framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
-	uint32_t milliseconds = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
-	milliseconds += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
-	milliseconds += (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f)) * 1000;
+	uint32_t i;
+
+	i = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
+	i += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
+	i += (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f)) * 1000;
 
 	if(framerate > 0)
-		milliseconds += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
+		i += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
 
-	return milliseconds;
+	return i;
 
 }
 
