@@ -299,16 +299,24 @@ char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
 
 }
 
-uint32_t dvd_track_milliseconds(dvd_time_t *dvd_time) {
+uint32_t dvd_track_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
+	uint8_t ttn;
+	pgcit_t *vts_pgcit;
+	pgc_t *pgc;
+	dvd_time_t *dvd_time;
 	uint32_t framerates[4] = {0, 2500, 0, 2997};
-	uint32_t framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
+	uint32_t framerate;
 	uint32_t i;
 
+	ttn = dvd_track_ttn(vmg_ifo, track_number);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	dvd_time = &pgc->playback_time;
 	i = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
 	i += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
 	i += (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f)) * 1000;
-
+	framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
 	if(framerate > 0)
 		i += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
 
@@ -362,11 +370,7 @@ uint32_t dvd_time_hours(dvd_time_t *dvd_time) {
 
 }
 
-// FIXME
-// Cleanup and split up into differen functions:
-// - function to return the total milliseconds of a track or chapter
-// - function to convert total milliseconds to hh:mm:ss.ms string
-char *dvd_track_str_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+char *dvd_track_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
 	uint8_t ttn;
 	pgcit_t *vts_pgcit;

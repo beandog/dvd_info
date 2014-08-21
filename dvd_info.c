@@ -476,8 +476,8 @@ int main(int argc, char **argv) {
 		dvd_track.ix = track_number;
 		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.ix);
 		strncpy(dvd_track.vts_id, dvd_track_vts_id(vts_ifo), DVD_TRACK_VTS_ID);
-		strncpy(dvd_track.length, dvd_track_str_length(vmg_ifo, vts_ifo, dvd_track.ix), DVD_TRACK_LENGTH);
-		// dvd_track.msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, dvd_track.ix);
+		strncpy(dvd_track.length, dvd_track_length(vmg_ifo, vts_ifo, dvd_track.ix), DVD_TRACK_LENGTH);
+		dvd_track.msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, dvd_track.ix);
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.ix);
 		strncpy(dvd_video.codec, dvd_track_video_codec(vts_ifo), DVD_VIDEO_CODEC);
 		strncpy(dvd_video.format, dvd_track_video_format(vts_ifo), DVD_VIDEO_FORMAT);
