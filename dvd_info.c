@@ -100,6 +100,9 @@ int main(int argc, char **argv) {
 	uint16_t track_number = 1;
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
+	uint8_t c;
+	uint16_t s;
+	uint32_t i;
 
 	// Device hardware
 	int dvd_fd;
