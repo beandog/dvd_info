@@ -247,6 +247,7 @@ int main(int argc, char **argv) {
 
 			case 'j':
 				d_json = 1;
+				d_lsdvd = 0;
 				break;
 
 			case 't':
@@ -264,9 +265,6 @@ int main(int argc, char **argv) {
 		}
 
 	}
-
-	if(d_json == 1)
-		d_lsdvd = 0;
 
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
