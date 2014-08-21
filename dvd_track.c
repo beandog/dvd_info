@@ -370,16 +370,23 @@ char *dvd_track_str_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 	pgcit_t *vts_pgcit;
 	pgc_t *pgc;
 	dvd_time_t *dvd_time;
-	char length[DVD_TRACK_LENGTH + 1] = {'\0'};
-	uint32_t hours;
-	uint32_t minutes;
-	uint32_t seconds;
-	uint32_t milliseconds;
 
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 	dvd_time = &pgc->playback_time;
+
+	return strndup(dvd_time_length(dvd_time), DVD_TRACK_LENGTH);
+
+}
+
+char *dvd_time_length(dvd_time_t *dvd_time) {
+
+	char length[DVD_TRACK_LENGTH + 1] = {'\0'};
+	uint32_t hours;
+	uint32_t minutes;
+	uint32_t seconds;
+	uint32_t milliseconds;
 
 	hours = dvd_time_hours(dvd_time);
 	minutes = dvd_time_minutes(dvd_time);
