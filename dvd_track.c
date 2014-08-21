@@ -17,6 +17,12 @@ uint8_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_n
 
 }
 
+uint8_t dvd_track_ttn(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
+
+	return vmg_ifo->tt_srpt->title[track_number - 1].vts_ttn;
+
+}
+
 uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
 
 	return vmg_ifo->tt_srpt->title[track_number - 1].nr_of_angles;

@@ -478,7 +478,7 @@ int main(int argc, char **argv) {
 		vts_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
 
 		dvd_track.ix = track_number;
-		dvd_track.ttn = vmg_ifo->tt_srpt->title[dvd_track.ix - 1].vts_ttn;
+		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.ix);
 		strncpy(dvd_track.vts_id, dvd_track_vts_id(vts_ifo), DVD_TRACK_VTS_ID);
 		vts_pgcit = vts_ifo->vts_pgcit;
 		pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[dvd_track.ttn - 1].ptt[0].pgcn - 1].pgc;
