@@ -95,10 +95,10 @@ int main(int argc, char **argv) {
 	int verbose = 0;
 
 	// dvd_info
-	bool d_all_tracks;
-	uint16_t d_first_track = 0;
-	uint16_t d_last_track = 0;
-	uint16_t track_number = 0;
+	bool d_all_tracks = true;
+	uint16_t d_first_track = 1;
+	uint16_t d_last_track = 1;
+	uint16_t track_number = 1;
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
 
@@ -113,14 +113,14 @@ int main(int argc, char **argv) {
 	bool is_image = false;
 
 	// libdvdread
-	dvd_reader_t *dvdread_dvd;
+	dvd_reader_t *dvdread_dvd = NULL;
 	ifo_handle_t *vmg_ifo = NULL;
 	ifo_handle_t *vts_ifo = NULL;
 	ifo_handle_t *track_ifo = NULL;
 	uint8_t dvdread_ifo_md5[16] = {'\0'};
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
-	pgc_t *pgc;
-	pgcit_t *vts_pgcit;
+	pgc_t *pgc = NULL;
+	pgcit_t *vts_pgcit = NULL;
 	int dvdread_retval;
 
 	// DVD
@@ -161,8 +161,7 @@ int main(int argc, char **argv) {
 
 	// Audio
 	struct dvd_audio dvd_audio;
-	uint8_t audio_stream;
-	audio_stream = 0;
+	uint8_t audio_stream = 0;
 	dvd_audio.ix = 1;
 	memset(dvd_audio.stream_id, '\0', sizeof(dvd_audio.stream_id));
 	memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
@@ -171,8 +170,7 @@ int main(int argc, char **argv) {
 
 	// Subtitles
 	struct dvd_subtitle dvd_subtitle;
-	uint8_t subtitle_stream;
-	subtitle_stream = 0;
+	uint8_t subtitle_stream = 0;
 	dvd_subtitle.ix = 1;
 	memset(dvd_subtitle.stream_id, '\0', sizeof(dvd_subtitle.stream_id));
 	memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
