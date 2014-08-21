@@ -135,7 +135,6 @@ int main(int argc, char **argv) {
 
 	// Track
 	struct dvd_track dvd_track;
-	struct dvd_track *track;
 	dvd_track.ix = 1;
 	dvd_track.vts = 1;
 	dvd_track.ttn = 1;
@@ -658,16 +657,16 @@ int main(int argc, char **argv) {
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
-		track = &dvd_tracks[track_number - 1];
+		dvd_track = dvd_tracks[track_number - 1];
 
 		if(d_lsdvd == 1) {
 
-			printf("Title: %02u, ", track->ix);
-			printf("Length: %s ", track->length);
-			printf("Chapters: %02u, ", track->chapters);
-			printf("Cells: %02u, ", track->cells);
-			printf("Audio streams: %02u, ", track->audio_tracks);
-			printf("Subpictures: %02u\n", track->subtitles);
+			printf("Title: %02u, ", dvd_track.ix);
+			printf("Length: %s ", dvd_track.length);
+			printf("Chapters: %02u, ", dvd_track.chapters);
+			printf("Cells: %02u, ", dvd_track.cells);
+			printf("Audio streams: %02u, ", dvd_track.audio_tracks);
+			printf("Subpictures: %02u\n", dvd_track.subtitles);
 
 		}
 
