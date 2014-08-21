@@ -99,7 +99,6 @@ int main(int argc, char **argv) {
 	uint16_t d_first_track = 0;
 	uint16_t d_last_track = 0;
 	uint16_t track_number = 0;
-	uint16_t total_tracks;
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
 
@@ -385,8 +384,6 @@ int main(int argc, char **argv) {
 		d_all_tracks = true;
 	}
 
-	total_tracks = d_last_track - d_first_track + 1;
-
 	// Exit if all the IFOs cannot be opened
 	dvd_info.video_title_sets = dvd_info_num_vts(vmg_ifo);
 	bool valid_ifos[dvd_info.video_title_sets];
@@ -473,7 +470,7 @@ int main(int argc, char **argv) {
 	 * Track information
 	 */
 
-	struct dvd_track dvd_tracks[total_tracks];
+	struct dvd_track dvd_tracks[dvd_info.tracks];
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
