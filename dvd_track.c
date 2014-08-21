@@ -550,6 +550,9 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
  * once the specified one has been found.
  *
  * FIXME wrap my head around this some day.
+ *
+ * FIXME add a function similar to dvd_track_milliseconds() to get the number
+ * for a chapter as well.
  */
 char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
