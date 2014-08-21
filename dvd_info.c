@@ -116,7 +116,6 @@ int main(int argc, char **argv) {
 	dvd_reader_t *dvdread_dvd = NULL;
 	ifo_handle_t *vmg_ifo = NULL;
 	ifo_handle_t *vts_ifo = NULL;
-	ifo_handle_t *track_ifo = NULL;
 	uint8_t dvdread_ifo_md5[16] = {'\0'};
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
 	pgc_t *pgc = NULL;
@@ -476,27 +475,27 @@ int main(int argc, char **argv) {
 			break;
 		}
 
-		track_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
+		vts_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
 
 		dvd_track.ix = track_number;
 		dvd_track.ttn = vmg_ifo->tt_srpt->title[dvd_track.ix - 1].vts_ttn;
-		strncpy(dvd_track.vts_id, dvd_track_vts_id(track_ifo), DVD_TRACK_VTS_ID);
-		vts_pgcit = track_ifo->vts_pgcit;
-		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[dvd_track.ttn - 1].ptt[0].pgcn - 1].pgc;
+		strncpy(dvd_track.vts_id, dvd_track_vts_id(vts_ifo), DVD_TRACK_VTS_ID);
+		vts_pgcit = vts_ifo->vts_pgcit;
+		pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[dvd_track.ttn - 1].ptt[0].pgcn - 1].pgc;
 		strncpy(dvd_track.length, dvd_track_str_length(&pgc->playback_time), DVD_TRACK_LENGTH);
 		dvd_track.msecs = dvd_track_length(&pgc->playback_time);
 		dvd_track.chapters = pgc->nr_of_programs;
-		strncpy(dvd_video.codec, dvd_track_video_codec(track_ifo), DVD_VIDEO_CODEC);
-		strncpy(dvd_video.format, dvd_track_video_format(track_ifo), DVD_VIDEO_FORMAT);
-		dvd_video.width = dvd_track_video_width(track_ifo);
-		dvd_video.height = dvd_track_video_height(track_ifo);
-		strncpy(dvd_video.aspect_ratio, dvd_track_video_aspect_ratio(track_ifo), DVD_VIDEO_ASPECT_RATIO);
-		dvd_video.letterbox = dvd_track_letterbox_video(track_ifo);
-		dvd_video.pan_and_scan = dvd_track_pan_scan_video(track_ifo);
-		dvd_video.df = dvd_track_permitted_df(track_ifo);
+		strncpy(dvd_video.codec, dvd_track_video_codec(vts_ifo), DVD_VIDEO_CODEC);
+		strncpy(dvd_video.format, dvd_track_video_format(vts_ifo), DVD_VIDEO_FORMAT);
+		dvd_video.width = dvd_track_video_width(vts_ifo);
+		dvd_video.height = dvd_track_video_height(vts_ifo);
+		strncpy(dvd_video.aspect_ratio, dvd_track_video_aspect_ratio(vts_ifo), DVD_VIDEO_ASPECT_RATIO);
+		dvd_video.letterbox = dvd_track_letterbox_video(vts_ifo);
+		dvd_video.pan_and_scan = dvd_track_pan_scan_video(vts_ifo);
+		dvd_video.df = dvd_track_permitted_df(vts_ifo);
 		dvd_video.angles = dvd_track_angles(vmg_ifo, track_number);
-		dvd_track.audio_tracks = dvd_track_num_audio_streams(track_ifo);
-		dvd_track.subtitles = dvd_track_subtitles(track_ifo);
+		dvd_track.audio_tracks = dvd_track_num_audio_streams(vts_ifo);
+		dvd_track.subtitles = dvd_track_subtitles(vts_ifo);
 		dvd_track.cells = pgc->nr_of_cells;
 		strncpy(dvd_video.fps, dvd_track_str_fps(&pgc->playback_time), DVD_VIDEO_FPS);
 
@@ -554,10 +553,10 @@ int main(int argc, char **argv) {
 			memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
 
 			dvd_audio.ix = c + 1;
-			strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(track_ifo, c), DVD_AUDIO_LANG_CODE);
-			strncpy(dvd_audio.codec, dvd_track_audio_codec(track_ifo, c), DVD_AUDIO_CODEC);
-			dvd_audio.channels = dvd_track_audio_num_channels(track_ifo, c);
-			strncpy(dvd_audio.stream_id, dvd_track_audio_stream_id(track_ifo, c), DVD_AUDIO_STREAM_ID);
+			strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(vts_ifo, c), DVD_AUDIO_LANG_CODE);
+			strncpy(dvd_audio.codec, dvd_track_audio_codec(vts_ifo, c), DVD_AUDIO_CODEC);
+			dvd_audio.channels = dvd_track_audio_num_channels(vts_ifo, c);
+			strncpy(dvd_audio.stream_id, dvd_track_audio_stream_id(vts_ifo, c), DVD_AUDIO_STREAM_ID);
 
 			if(d_json == 1) {
 
@@ -586,7 +585,7 @@ int main(int argc, char **argv) {
 
 			dvd_subtitle.ix = c + 1;
 			strncpy(dvd_subtitle.stream_id, dvd_track_subtitle_stream_id(c), DVD_SUBTITLE_STREAM_ID);
-			strncpy(dvd_subtitle.lang_code, dvd_track_subtitle_lang_code(track_ifo, c), DVD_SUBTITLE_LANG_CODE);
+			strncpy(dvd_subtitle.lang_code, dvd_track_subtitle_lang_code(vts_ifo, c), DVD_SUBTITLE_LANG_CODE);
 
 			if(d_json == 1) {
 
@@ -676,8 +675,8 @@ int main(int argc, char **argv) {
 	if(vmg_ifo)
 		ifoClose(vmg_ifo);
 
-	if(track_ifo)
-		ifoClose(track_ifo);
+	if(vts_ifo)
+		ifoClose(vts_ifo);
 
 	if(dvdread_dvd)
 		DVDClose(dvdread_dvd);
