@@ -268,7 +268,6 @@ int main(int argc, char **argv) {
 	if(d_json)
 		d_lsdvd = 0;
 
-
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
 	// of '/dev/dvd'.
