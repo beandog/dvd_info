@@ -171,7 +171,6 @@ int main(int argc, char **argv) {
 
 	// Subtitles
 	struct dvd_subtitle dvd_subtitle;
-	uint8_t subtitle_stream = 0;
 	dvd_subtitle.ix = 1;
 	memset(dvd_subtitle.stream_id, '\0', sizeof(dvd_subtitle.stream_id));
 	memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
@@ -579,14 +578,14 @@ int main(int argc, char **argv) {
 		if(d_json)
 			json_dvd_subtitles = json_array();
 
-		for(subtitle_stream = 0; subtitle_stream < dvd_track.subtitles; subtitle_stream++) {
+		for(c = 0; c < dvd_track.subtitles; c++) {
 
 			memset(&dvd_subtitle, 0, sizeof(dvd_subtitle));
 			memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
 
-			dvd_subtitle.ix = subtitle_stream + 1;
-			strncpy(dvd_subtitle.stream_id, dvd_track_subtitle_stream_id(subtitle_stream), DVD_SUBTITLE_STREAM_ID);
-			strncpy(dvd_subtitle.lang_code, dvd_track_subtitle_lang_code(track_ifo, subtitle_stream), DVD_SUBTITLE_LANG_CODE);
+			dvd_subtitle.ix = c + 1;
+			strncpy(dvd_subtitle.stream_id, dvd_track_subtitle_stream_id(c), DVD_SUBTITLE_STREAM_ID);
+			strncpy(dvd_subtitle.lang_code, dvd_track_subtitle_lang_code(track_ifo, c), DVD_SUBTITLE_LANG_CODE);
 
 			if(d_json == 1) {
 
