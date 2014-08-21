@@ -360,6 +360,10 @@ uint32_t dvd_time_hours(dvd_time_t *dvd_time) {
 
 }
 
+// FIXME
+// Cleanup and split up into differen functions:
+// - function to return the total milliseconds of a track or chapter
+// - function to convert total milliseconds to hh:mm:ss.ms string
 char *dvd_track_str_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
 	uint8_t ttn;
