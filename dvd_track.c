@@ -7,6 +7,9 @@
 #include "dvd_info.h"
 #include "dvd_track.h"
 
+// FIXME - *all* functions that accept vmg_ifo or track_ifo as arguments need to
+// verify that it is the correct IFO.  Check that the track number exists as well.
+
 uint8_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
 
 	// TODO research
@@ -271,25 +274,32 @@ double dvd_track_fps(dvd_time_t *dvd_time) {
 
 }
 
-char *dvd_track_str_fps(dvd_time_t *dvd_time) {
+char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
 	char str[DVD_VIDEO_FPS + 1] = {'\0'};
 	double fps;
+	uint8_t ttn;
+	pgcit_t *vts_pgcit;
+	pgc_t *pgc;
+	dvd_time_t *dvd_time;
+
+	ttn = dvd_track_ttn(vmg_ifo, track_number);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	dvd_time = &pgc->playback_time;
 
 	fps = dvd_track_fps(dvd_time);
 
 	if(fps > 0) {
-
 		snprintf(str, DVD_VIDEO_FPS + 1, "%02.02f", fps);
-
 		return strndup(str, DVD_VIDEO_FPS);
-
-	} else
+	} else {
 		return "";
+	}
 
 }
 
-uint32_t dvd_track_length(dvd_time_t *dvd_time) {
+uint32_t dvd_track_milliseconds(dvd_time_t *dvd_time) {
 
 	uint32_t framerates[4] = {0, 2500, 0, 2997};
 	uint32_t framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
@@ -304,49 +314,49 @@ uint32_t dvd_track_length(dvd_time_t *dvd_time) {
 
 }
 
-uint32_t dvd_track_time_milliseconds(dvd_time_t *dvd_time) {
+uint32_t dvd_time_milliseconds(dvd_time_t *dvd_time) {
 
 	uint32_t framerates[4] = {0, 2500, 0, 2997};
 	uint32_t framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
-	uint32_t milliseconds = 0;
+	uint32_t i = 0;
 
 	if(framerate > 0)
-		milliseconds += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
+		i += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
 
-	return milliseconds;
-
-}
-
-uint32_t dvd_track_time_seconds(dvd_time_t *dvd_time) {
-
-	uint32_t seconds = ((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f);
-
-	if(seconds > 59)
-		seconds -= 60;
-
-	return seconds;
+	return i;
 
 }
 
-uint32_t dvd_track_time_minutes(dvd_time_t *dvd_time) {
+uint32_t dvd_time_seconds(dvd_time_t *dvd_time) {
 
-	uint32_t minutes = ((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f);
+	uint32_t i = ((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f);
 
-	if(minutes > 59)
-		minutes -= 60;
+	if(i > 59)
+		i -= 60;
 
-	return minutes;
+	return i;
 
 }
 
-uint32_t dvd_track_time_hours(dvd_time_t *dvd_time) {
+uint32_t dvd_time_minutes(dvd_time_t *dvd_time) {
 
-	uint32_t hours = ((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f);
+	uint32_t i = ((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f);
 
-	if(hours > 59)
-		hours -= 60;
+	if(i > 59)
+		i -= 60;
 
-	return hours;
+	return i;
+
+}
+
+uint32_t dvd_time_hours(dvd_time_t *dvd_time) {
+
+	uint32_t i = ((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f);
+
+	if(i > 59)
+		i -= 60;
+
+	return i;
 
 }
 
@@ -367,10 +377,10 @@ char *dvd_track_str_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 	dvd_time = &pgc->playback_time;
 
-	hours = dvd_track_time_hours(dvd_time);
-	minutes = dvd_track_time_minutes(dvd_time);
-	seconds = dvd_track_time_seconds(dvd_time);
-	milliseconds = dvd_track_time_milliseconds(dvd_time);
+	hours = dvd_time_hours(dvd_time);
+	minutes = dvd_time_minutes(dvd_time);
+	seconds = dvd_time_seconds(dvd_time);
+	milliseconds = dvd_time_milliseconds(dvd_time);
 
 	snprintf(length, DVD_TRACK_LENGTH + 1, "%02u:%02u:%02u.%03u", hours, minutes, seconds, milliseconds);
 
@@ -487,6 +497,32 @@ bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, const char 
 
 }
 
+uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+
+	uint8_t ttn;
+	pgcit_t *vts_pgcit;
+	pgc_t *pgc;
+	ttn = dvd_track_ttn(vmg_ifo, track_number);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+
+	return pgc->nr_of_programs;
+
+}
+
+uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+
+	uint8_t ttn;
+	pgcit_t *vts_pgcit;
+	pgc_t *pgc;
+	ttn = dvd_track_ttn(vmg_ifo, track_number);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+
+	return pgc->nr_of_cells;
+
+}
+
 /**
  * Sourced from lsdvd.c.  I don't understand the logic behind it, and why the
  * original doesn't access pgc->cell_playback[cell_idx].playback_time directly.
@@ -498,14 +534,20 @@ bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, const char 
  *
  * FIXME wrap my head around this some day.
  */
-char *dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number) {
+char *dvd_track_str_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
+	uint8_t ttn;
+	pgcit_t *vts_pgcit;
+	pgc_t *pgc;
 	uint8_t chapters;
 	uint8_t chapter_idx;
 	int program_map_idx;
 	int cell_idx;
-	char chapter_length[DVD_CHAPTER_LENGTH + 1] = {'\0'};
+	// char chapter_length[DVD_CHAPTER_LENGTH + 1] = {'\0'};
 
+	ttn = dvd_track_ttn(vmg_ifo, track_number);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 	chapters = pgc->nr_of_programs;
 	chapter_idx = 0;
 	cell_idx = 0;

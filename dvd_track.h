@@ -194,7 +194,7 @@ char *dvd_track_video_aspect_ratio(const ifo_handle_t *track_ifo);
 
 double dvd_track_fps(dvd_time_t *dvd_time);
 
-char *dvd_track_str_fps(dvd_time_t *dvd_time);
+char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
 /**
  * Get the number of miliseconds for a track's playback time
@@ -206,13 +206,15 @@ char *dvd_track_str_fps(dvd_time_t *dvd_time);
  */
 uint32_t dvd_track_length(dvd_time_t *dvd_time);
 
-uint32_t dvd_track_time_milliseconds(dvd_time_t *dvd_time);
+uint32_t dvd_track_milliseconds(dvd_time_t *dvd_time);
 
-uint32_t dvd_track_time_seconds(dvd_time_t *dvd_time);
+uint32_t dvd_time_milliseconds(dvd_time_t *dvd_time);
 
-uint32_t dvd_track_time_minutes(dvd_time_t *dvd_time);
+uint32_t dvd_time_seconds(dvd_time_t *dvd_time);
 
-uint32_t dvd_track_time_hours(dvd_time_t *dvd_time);
+uint32_t dvd_time_minutes(dvd_time_t *dvd_time);
+
+uint32_t dvd_time_hours(dvd_time_t *dvd_time);
 
 char *dvd_track_str_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
@@ -286,13 +288,15 @@ uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *track_ifo, 
  */
 bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *track_ifo, const char *lang_code);
 
+uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
+
+uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
+
 /**
  * Get a string of the length of a chapter in a track.  Format hh:mm:ss.ms
  *
- * @param pgc track IFO program chain
- * @param chapter_number chapter number
  */
-char *dvd_track_str_chapter_length(const pgc_t *pgc, const uint8_t chapter_number);
+char *dvd_track_str_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t chapter_number);
 
 /**
  * Get the audio language code for a track.  A two-character string that is a
