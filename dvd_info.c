@@ -118,8 +118,6 @@ int main(int argc, char **argv) {
 	ifo_handle_t *vts_ifo = NULL;
 	uint8_t dvdread_ifo_md5[16] = {'\0'};
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
-	pgc_t *pgc = NULL;
-	pgcit_t *vts_pgcit = NULL;
 	int dvdread_retval;
 
 	// DVD
@@ -478,11 +476,9 @@ int main(int argc, char **argv) {
 		dvd_track.ix = track_number;
 		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.ix);
 		strncpy(dvd_track.vts_id, dvd_track_vts_id(vts_ifo), DVD_TRACK_VTS_ID);
-		vts_pgcit = vts_ifo->vts_pgcit;
-		pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[dvd_track.ttn - 1].ptt[0].pgcn - 1].pgc;
 		strncpy(dvd_track.length, dvd_track_str_length(vmg_ifo, vts_ifo, dvd_track.ix), DVD_TRACK_LENGTH);
-		dvd_track.msecs = dvd_track_length(&pgc->playback_time);
-		dvd_track.chapters = pgc->nr_of_programs;
+		// dvd_track.msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, dvd_track.ix);
+		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.ix);
 		strncpy(dvd_video.codec, dvd_track_video_codec(vts_ifo), DVD_VIDEO_CODEC);
 		strncpy(dvd_video.format, dvd_track_video_format(vts_ifo), DVD_VIDEO_FORMAT);
 		dvd_video.width = dvd_track_video_width(vts_ifo);
@@ -491,11 +487,11 @@ int main(int argc, char **argv) {
 		dvd_video.letterbox = dvd_track_letterbox_video(vts_ifo);
 		dvd_video.pan_and_scan = dvd_track_pan_scan_video(vts_ifo);
 		dvd_video.df = dvd_track_permitted_df(vts_ifo);
-		dvd_video.angles = dvd_track_angles(vmg_ifo, track_number);
+		dvd_video.angles = dvd_track_angles(vmg_ifo, dvd_track.ix);
 		dvd_track.audio_tracks = dvd_track_num_audio_streams(vts_ifo);
 		dvd_track.subtitles = dvd_track_subtitles(vts_ifo);
-		dvd_track.cells = pgc->nr_of_cells;
-		strncpy(dvd_video.fps, dvd_track_str_fps(&pgc->playback_time), DVD_VIDEO_FPS);
+		dvd_track.cells = dvd_track_cells(vmg_ifo, vts_ifo, dvd_track.ix);
+		strncpy(dvd_video.fps, dvd_track_str_fps(vmg_ifo, vts_ifo, dvd_track.ix), DVD_VIDEO_FPS);
 
 		if(d_json == 1) {
 
@@ -616,7 +612,7 @@ int main(int argc, char **argv) {
 
 			dvd_chapter.ix = c + 1;
 
-			strncpy(dvd_chapter.length, dvd_track_str_chapter_length(pgc, dvd_chapter.ix), DVD_CHAPTER_LENGTH);
+			strncpy(dvd_chapter.length, dvd_track_str_chapter_length(vmg_ifo, vts_ifo, dvd_track.ix, dvd_chapter.ix), DVD_CHAPTER_LENGTH);
 
 			if(d_json == 1) {
 				json_dvd_chapter = json_object();
