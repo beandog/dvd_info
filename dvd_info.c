@@ -383,10 +383,13 @@ int main(int argc, char **argv) {
 			fprintf(stderr, "Opening VTS IFO %u failed!\n", vts);
 			valid_ifos[vts] = false;
 			has_invalid_ifos = true;
+			vts_ifo = NULL;
 		} else if(!vts_ifo->vtsi_mat) {
 			printf("Could not open VTSI_MAT for VTS IFO %u\n", vts);
 			valid_ifos[vts] = false;
 			has_invalid_ifos = true;
+			ifoClose(vts_ifo);
+			vts_ifo = NULL;
 		} else {
 			valid_ifos[vts] = true;
 			ifoClose(vts_ifo);
