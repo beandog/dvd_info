@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
 
 	// Device hardware
 	int dvd_fd;
-	char *device_filename = DEFAULT_DVD_DEVICE;
+	char *device_filename;
 	int drive_status;
 	__useconds_t sleepy_time = 1000000;
 	uint8_t num_naps = 0;
@@ -223,7 +223,7 @@ int main(int argc, char **argv) {
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
 	char *str_options;
-	str_options = "hi:jt:v";
+	str_options = "hjt:v";
 
 	struct option long_options[] = {
 
@@ -248,10 +248,6 @@ int main(int argc, char **argv) {
 			case 'h':
 				print_usage(argv[0]);
 				return 0;
-
-			case 'i':
-				device_filename = optarg;
-				break;
 
 			case 'j':
 				d_json = 1;
@@ -285,6 +281,8 @@ int main(int argc, char **argv) {
 	// of '/dev/dvd'.
 	if (argv[optind])
 		device_filename = argv[optind];
+	else
+		device_filename = DEFAULT_DVD_DEVICE;
 
 	// Exit after all invalid input warnings have been sent
 	if(valid_args == false)
