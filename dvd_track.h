@@ -288,7 +288,7 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
  * Get a string of the length of a chapter in a track.  Format hh:mm:ss.ms
  *
  */
-char *dvd_track_str_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t chapter_number);
+char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t chapter_number);
 
 /**
  * Get the audio language code for a track.  A two-character string that is a

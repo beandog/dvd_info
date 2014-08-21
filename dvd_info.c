@@ -616,7 +616,7 @@ int main(int argc, char **argv) {
 
 			dvd_chapter.ix = c + 1;
 
-			strncpy(dvd_chapter.length, dvd_track_str_chapter_length(vmg_ifo, vts_ifo, dvd_track.ix, dvd_chapter.ix), DVD_CHAPTER_LENGTH);
+			strncpy(dvd_chapter.length, dvd_chapter_length(vmg_ifo, vts_ifo, dvd_track.ix, dvd_chapter.ix), DVD_CHAPTER_LENGTH);
 
 			if(d_json == 1) {
 				json_dvd_chapter = json_object();

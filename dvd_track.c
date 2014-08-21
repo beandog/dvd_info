@@ -551,7 +551,7 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
  *
  * FIXME wrap my head around this some day.
  */
-char *dvd_track_str_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
+char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
 	uint8_t ttn;
 	pgcit_t *vts_pgcit;
@@ -560,7 +560,7 @@ char *dvd_track_str_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle
 	uint8_t chapter_idx;
 	int program_map_idx;
 	int cell_idx;
-	// char chapter_length[DVD_CHAPTER_LENGTH + 1] = {'\0'};
+	char chapter_length[DVD_CHAPTER_LENGTH + 1] = {'\0'};
 
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
@@ -578,12 +578,8 @@ char *dvd_track_str_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle
 
 		while(cell_idx < program_map_idx - 1) {
 			if(chapter_idx + 1 == chapter_number) {
-				// FIXME function call
-				/*
-				strncpy(chapter_length, dvd_track_str_length(&pgc->cell_playback[cell_idx].playback_time), DVD_CHAPTER_LENGTH);
+				strncpy(chapter_length, dvd_time_length(&pgc->cell_playback[cell_idx].playback_time), DVD_CHAPTER_LENGTH);
 				return strndup(chapter_length, DVD_CHAPTER_LENGTH);
-				*/
-				return "";
 			}
 			cell_idx++;
 		}
