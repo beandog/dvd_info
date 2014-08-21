@@ -163,7 +163,6 @@ int main(int argc, char **argv) {
 
 	// Audio
 	struct dvd_audio dvd_audio;
-	uint8_t audio_stream = 0;
 	dvd_audio.ix = 1;
 	memset(dvd_audio.stream_id, '\0', sizeof(dvd_audio.stream_id));
 	memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
@@ -548,17 +547,17 @@ int main(int argc, char **argv) {
 		if(d_json)
 			json_dvd_audio_tracks = json_array();
 
-		for(audio_stream = 0; audio_stream < dvd_track.audio_tracks; audio_stream++) {
+		for(c = 0; c < dvd_track.audio_tracks; c++) {
 
 			memset(&dvd_audio, 0, sizeof(dvd_audio));
 			memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
 			memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
 
-			dvd_audio.ix = audio_stream + 1;
-			strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(track_ifo, audio_stream), DVD_AUDIO_LANG_CODE);
-			strncpy(dvd_audio.codec, dvd_track_audio_codec(track_ifo, audio_stream), DVD_AUDIO_CODEC);
-			dvd_audio.channels = dvd_track_audio_num_channels(track_ifo, audio_stream);
-			strncpy(dvd_audio.stream_id, dvd_track_audio_stream_id(track_ifo, audio_stream), DVD_AUDIO_STREAM_ID);
+			dvd_audio.ix = c + 1;
+			strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(track_ifo, c), DVD_AUDIO_LANG_CODE);
+			strncpy(dvd_audio.codec, dvd_track_audio_codec(track_ifo, c), DVD_AUDIO_CODEC);
+			dvd_audio.channels = dvd_track_audio_num_channels(track_ifo, c);
+			strncpy(dvd_audio.stream_id, dvd_track_audio_stream_id(track_ifo, c), DVD_AUDIO_STREAM_ID);
 
 			if(d_json == 1) {
 
