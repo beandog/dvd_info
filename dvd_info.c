@@ -638,7 +638,7 @@ int main(int argc, char **argv) {
 		if(d_json == 1)
 			json_object_set_new(json_dvd_track, "chapters", json_dvd_chapters);
 
-		memmove(&dvd_tracks[track_number - 1], &dvd_track, sizeof(dvd_track));
+		dvd_tracks[track_number - 1] = dvd_track;
 
 	}
 
