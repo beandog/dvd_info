@@ -107,9 +107,6 @@ uint16_t dvd_info_longest_track(dvd_reader_t *dvdread_dvd) {
 	uint16_t longest_track;
 	uint16_t idx;
 	uint8_t ifo_number;
-	uint8_t vts_ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
 	uint32_t ms;
 	uint32_t max_len;
 
@@ -136,10 +133,7 @@ uint16_t dvd_info_longest_track(dvd_reader_t *dvdread_dvd) {
 		if(!track_ifo)
 			return 0;
 
-		vts_ttn = vmg_ifo->tt_srpt->title[idx].vts_ttn;
-		vts_pgcit = track_ifo->vts_pgcit;
-		pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
-		ms = dvd_time_milliseconds(&pgc->playback_time);
+		ms = dvd_track_milliseconds(vmg_ifo, track_ifo, track);
 
 		// The *first* track with the longest length will still be the
 		// response.
@@ -174,9 +168,6 @@ uint16_t dvd_info_longest_track_with_subtitles(dvd_reader_t *dvdread_dvd) {
 	uint8_t max_subtitles;
 	uint16_t idx;
 	uint8_t ifo_number;
-	uint8_t vts_ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
 	uint32_t ms;
 	uint32_t max_len;
 
@@ -212,10 +203,7 @@ uint16_t dvd_info_longest_track_with_subtitles(dvd_reader_t *dvdread_dvd) {
 
 				max_subtitles = subtitles;
 
-				vts_ttn = vmg_ifo->tt_srpt->title[idx].vts_ttn;
-				vts_pgcit = track_ifo->vts_pgcit;
-				pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
-				ms = dvd_time_milliseconds(&pgc->playback_time);
+				ms = dvd_track_milliseconds(vmg_ifo, track_ifo, track);
 
 				// The *first* track with the longest length will still be the
 				// response.
@@ -253,9 +241,6 @@ uint16_t dvd_info_longest_16x9_track(dvd_reader_t *dvdread_dvd) {
 	bool aspect_ratio_16x9;
 	uint16_t idx;
 	uint8_t ifo_number;
-	uint8_t vts_ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
 	uint32_t ms;
 	uint32_t max_len;
 
@@ -286,10 +271,7 @@ uint16_t dvd_info_longest_16x9_track(dvd_reader_t *dvdread_dvd) {
 
 		if(aspect_ratio_16x9) {
 
-			vts_ttn = vmg_ifo->tt_srpt->title[idx].vts_ttn;
-			vts_pgcit = track_ifo->vts_pgcit;
-			pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
-			ms = dvd_time_milliseconds(&pgc->playback_time);
+			ms = dvd_track_milliseconds(vmg_ifo, track_ifo, track);
 
 			// The *first* track with the longest length will still be the
 			// response.
@@ -325,9 +307,6 @@ uint16_t dvd_info_longest_4x3_track(dvd_reader_t *dvdread_dvd) {
 	bool aspect_ratio_4x3;
 	uint16_t idx;
 	uint8_t ifo_number;
-	uint8_t vts_ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
 	uint32_t ms;
 	uint32_t max_len;
 
@@ -358,10 +337,7 @@ uint16_t dvd_info_longest_4x3_track(dvd_reader_t *dvdread_dvd) {
 
 		if(aspect_ratio_4x3) {
 
-			vts_ttn = vmg_ifo->tt_srpt->title[idx].vts_ttn;
-			vts_pgcit = track_ifo->vts_pgcit;
-			pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
-			ms = dvd_time_milliseconds(&pgc->playback_time);
+			ms = dvd_track_milliseconds(vmg_ifo, track_ifo, track);
 
 			// The *first* track with the longest length will still be the
 			// response.
@@ -397,9 +373,6 @@ uint16_t dvd_info_longest_letterbox_track(dvd_reader_t *dvdread_dvd) {
 	bool letterboxed;
 	uint16_t idx;
 	uint8_t ifo_number;
-	uint8_t vts_ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
 	uint32_t ms;
 	uint32_t max_len;
 
@@ -430,10 +403,7 @@ uint16_t dvd_info_longest_letterbox_track(dvd_reader_t *dvdread_dvd) {
 
 		if(letterboxed) {
 
-			vts_ttn = vmg_ifo->tt_srpt->title[idx].vts_ttn;
-			vts_pgcit = track_ifo->vts_pgcit;
-			pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
-			ms = dvd_time_milliseconds(&pgc->playback_time);
+			ms = dvd_track_milliseconds(vmg_ifo, track_ifo, track);
 
 			// The *first* track with the longest length will still be the
 			// response.
@@ -469,9 +439,6 @@ uint16_t dvd_info_longest_pan_scan_track(dvd_reader_t *dvdread_dvd) {
 	bool pan_and_scan;
 	uint16_t idx;
 	uint8_t ifo_number;
-	uint8_t vts_ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
 	uint32_t ms;
 	uint32_t max_len;
 
@@ -502,10 +469,7 @@ uint16_t dvd_info_longest_pan_scan_track(dvd_reader_t *dvdread_dvd) {
 
 		if(pan_and_scan) {
 
-			vts_ttn = vmg_ifo->tt_srpt->title[idx].vts_ttn;
-			vts_pgcit = track_ifo->vts_pgcit;
-			pgc = vts_pgcit->pgci_srp[track_ifo->vts_ptt_srpt->title[vts_ttn - 1].ptt[0].pgcn - 1].pgc;
-			ms = dvd_time_milliseconds(&pgc->playback_time);
+			ms = dvd_track_milliseconds(vmg_ifo, track_ifo, track);
 
 			// The *first* track with the longest length will still be the
 			// response.
