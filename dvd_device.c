@@ -1,12 +1,7 @@
-#include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
 #include <fcntl.h>
-#include <linux/cdrom.h>
-#include "dvd_device.h"
 
 bool dvd_device_access(const char *device_filename) {
 
