@@ -1,19 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <inttypes.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <getopt.h>
-#include <linux/cdrom.h>
-#include <dvdread/dvd_reader.h>
-#include <dvdread/dvd_udf.h>
-#include <dvdread/ifo_read.h>
-#include <dvdnav/dvdnav.h>
-#include <dvdread/ifo_print.h>
-#include "dvd_track.h"
 
 /**
  * Functions used to get basic DVD data:
