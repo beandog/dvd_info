@@ -592,6 +592,8 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 
 }
 
+// FIXME I really need to wrap my head properly around the chapter / cell
+// relationship so I hopefully don't have to loop through so much data.
 uint32_t dvd_chapter_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
 	uint8_t ttn;
@@ -640,6 +642,20 @@ uint32_t dvd_chapter_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_
 	}
 
 	return 0;
+
+}
+
+uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
+
+	uint8_t ttn;
+	pgcit_t *vts_pgcit;
+	pgc_t *pgc;
+
+	ttn = dvd_track_ttn(vmg_ifo, track_number);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+
+	return pgc->program_map[chapter_number - 1];
 
 }
 

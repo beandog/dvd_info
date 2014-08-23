@@ -81,6 +81,7 @@ struct dvd_chapter {
 	uint8_t chapter;
 	char length[DVD_CHAPTER_LENGTH + 1];
 	uint32_t msecs;
+	uint8_t startcell;
 };
 
 struct dvd_cell {
@@ -175,6 +176,7 @@ int main(int argc, char **argv) {
 	struct dvd_chapter dvd_chapter;
 	dvd_chapter.chapter = 0;
 	memset(dvd_chapter.length, '\0', sizeof(dvd_chapter.length));
+	dvd_chapter.startcell = 1;
 
 	// Cells
 	struct dvd_cell dvd_cell;
@@ -620,11 +622,14 @@ int main(int argc, char **argv) {
 			strncpy(dvd_chapter.length, dvd_chapter_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter), DVD_CHAPTER_LENGTH);
 			dvd_chapter.msecs = dvd_chapter_milliseconds(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 
+			dvd_chapter.startcell = dvd_chapter_startcell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
+
 			if(d_json == 1) {
 				json_dvd_chapter = json_object();
 				json_object_set_new(json_dvd_chapter, "chapter", json_integer(dvd_chapter.chapter));
 				json_object_set_new(json_dvd_chapter, "length", json_string(dvd_chapter.length));
 				json_object_set_new(json_dvd_chapter, "msecs", json_integer(dvd_chapter.msecs));
+				json_object_set_new(json_dvd_chapter, "startcell", json_integer(dvd_chapter.startcell));
 				json_array_append(json_dvd_chapters, json_dvd_chapter);
 			}
 
