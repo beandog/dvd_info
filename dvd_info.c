@@ -87,6 +87,7 @@ struct dvd_chapter {
 struct dvd_cell {
 	uint8_t cell;
 	char length[DVD_CELL_LENGTH + 1];
+	uint32_t msecs;
 };
 
 int main(int argc, char **argv) {
@@ -180,8 +181,9 @@ int main(int argc, char **argv) {
 
 	// Cells
 	struct dvd_cell dvd_cell;
-	dvd_cell.cell = 0;
+	dvd_cell.cell = 1;
 	memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
+	dvd_cell.msecs = 0;
 
 	// JSON variables
 	json_t *json_dvd;
@@ -195,6 +197,8 @@ int main(int argc, char **argv) {
 	json_t *json_dvd_subtitle;
 	json_t *json_dvd_chapters;
 	json_t *json_dvd_chapter;
+	json_t *json_dvd_cells;
+	json_t *json_dvd_cell;
 
 	json_dvd = json_object();
 	json_dvd_info = json_object();
@@ -207,6 +211,8 @@ int main(int argc, char **argv) {
 	json_dvd_subtitle = json_object();
 	json_dvd_chapters = json_array();
 	json_dvd_chapter = json_object();
+	json_dvd_cells = json_array();
+	json_dvd_cell = json_object();
 
 	// getopt_long
 	bool opt_track_number = false;
@@ -506,7 +512,6 @@ int main(int argc, char **argv) {
 			json_object_set_new(json_dvd_track, "track", json_integer(dvd_track.track));
 			json_object_set_new(json_dvd_track, "length", json_string(dvd_track.length));
 			json_object_set_new(json_dvd_track, "msecs", json_integer(dvd_track.msecs));
-			json_object_set_new(json_dvd_track, "cells", json_integer(dvd_track.cells));
 			json_object_set_new(json_dvd_track, "vts", json_integer(dvd_track.vts));
 			if(strlen(dvd_track.vts_id) > 0)
 				json_object_set_new(json_dvd_track, "vts id", json_string(dvd_track.vts_id));
@@ -637,6 +642,34 @@ int main(int argc, char **argv) {
 
 		if(d_json == 1)
 			json_object_set_new(json_dvd_track, "chapters", json_dvd_chapters);
+
+		/** Cells **/
+
+		if(d_json == 1)
+			json_dvd_cells = json_array();
+
+		for(c = 0; c < dvd_track.cells; c++) {
+
+			memset(&dvd_cell, 0, sizeof(dvd_cell));
+			memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
+
+			dvd_cell.cell = c + 1;
+
+			strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell), DVD_CELL_LENGTH);
+			dvd_cell.msecs = dvd_cell_milliseconds(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+
+			if(d_json == 1) {
+				json_dvd_cell = json_object();
+				json_object_set_new(json_dvd_cell, "cell", json_integer(dvd_cell.cell));
+				json_object_set_new(json_dvd_cell, "length", json_string(dvd_cell.length));
+				json_object_set_new(json_dvd_cell, "msecs", json_integer(dvd_cell.msecs));
+				json_array_append(json_dvd_cells, json_dvd_cell);
+			}
+
+		}
+
+		if(d_json == 1)
+			json_object_set_new(json_dvd_track, "cells", json_dvd_cells);
 
 		dvd_tracks[track_number - 1] = dvd_track;
 

@@ -659,6 +659,36 @@ uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 
 }
 
+uint32_t dvd_cell_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
+
+	uint8_t ttn;
+	pgcit_t *vts_pgcit;
+	pgc_t *pgc;
+	uint32_t msecs;
+
+	ttn = dvd_track_ttn(vmg_ifo, track_number);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	msecs = dvd_time_milliseconds(&pgc->cell_playback[cell_number - 1].playback_time);
+
+	return msecs;
+
+}
+
+const char *dvd_cell_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
+
+	uint8_t ttn;
+	pgcit_t *vts_pgcit;
+	pgc_t *pgc;
+
+	ttn = dvd_track_ttn(vmg_ifo, track_number);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+
+	return strndup(dvd_time_length(&pgc->cell_playback[cell_number - 1].playback_time), DVD_CELL_LENGTH);
+
+}
+
 // Note: Remember that the language code is set in the IFO
 // See dvdread/ifo_print.c for same functionality (error checking)
 const char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {
