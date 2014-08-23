@@ -302,6 +302,7 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
  */
 const char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8_t audio_stream);
 
+uint32_t dvd_chapter_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number);
 
 /**
  * Get the codec for an audio track.

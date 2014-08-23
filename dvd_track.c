@@ -592,6 +592,57 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 
 }
 
+uint32_t dvd_chapter_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
+
+	uint8_t ttn;
+	pgcit_t *vts_pgcit;
+	pgc_t *pgc;
+	dvd_time_t *dvd_time;
+	uint32_t framerates[4] = {0, 2500, 0, 2997};
+	uint32_t framerate;
+	uint32_t i;
+	uint8_t chapters;
+	uint8_t chapter_idx;
+	uint8_t program_map_idx;
+	uint8_t cell_idx;
+
+	ttn = dvd_track_ttn(vmg_ifo, track_number);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	chapters = pgc->nr_of_programs;
+	chapter_idx = 0;
+	cell_idx = 0;
+
+	for(chapter_idx = 0; chapter_idx < pgc->nr_of_programs; chapter_idx++) {
+
+		program_map_idx = pgc->program_map[chapter_idx + 1];
+
+		if(chapter_idx == chapters - 1)
+			program_map_idx = pgc->nr_of_cells + 1;
+
+		while(cell_idx < program_map_idx - 1) {
+			if(chapter_idx + 1 == chapter_number) {
+
+				dvd_time = &pgc->playback_time;
+				i = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
+				i += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
+				i += (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f)) * 1000;
+				framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
+				if(framerate > 0)
+					i += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
+
+				return i;
+
+			}
+			cell_idx++;
+		}
+
+	}
+
+	return 0;
+
+}
+
 // Note: Remember that the language code is set in the IFO
 // See dvdread/ifo_print.c for same functionality (error checking)
 const char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {

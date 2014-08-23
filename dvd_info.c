@@ -80,6 +80,7 @@ struct dvd_subtitle {
 struct dvd_chapter {
 	uint8_t ix;
 	char length[DVD_CHAPTER_LENGTH + 1];
+	uint32_t msecs;
 };
 
 struct dvd_cell {
@@ -617,11 +618,13 @@ int main(int argc, char **argv) {
 			dvd_chapter.ix = c + 1;
 
 			strncpy(dvd_chapter.length, dvd_chapter_length(vmg_ifo, vts_ifo, dvd_track.ix, dvd_chapter.ix), DVD_CHAPTER_LENGTH);
+			dvd_chapter.msecs = dvd_chapter_milliseconds(vmg_ifo, vts_ifo, dvd_track.ix, dvd_chapter.ix);
 
 			if(d_json == 1) {
 				json_dvd_chapter = json_object();
 				json_object_set_new(json_dvd_chapter, "ix", json_integer(dvd_chapter.ix));
 				json_object_set_new(json_dvd_chapter, "length", json_string(dvd_chapter.length));
+				json_object_set_new(json_dvd_chapter, "msecs", json_integer(dvd_chapter.msecs));
 				json_array_append(json_dvd_chapters, json_dvd_chapter);
 			}
 
