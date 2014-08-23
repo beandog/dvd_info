@@ -32,7 +32,7 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_numbe
 }
 
 // FIXME check for invalid characters
-char *dvd_track_vts_id(const ifo_handle_t *track_ifo) {
+const char *dvd_track_vts_id(const ifo_handle_t *track_ifo) {
 
 	for(unsigned long i = 0; i < strlen(track_ifo->vtsi_mat->vts_identifier); i++) {
 		if(!isascii(track_ifo->vtsi_mat->vts_identifier[i]))
@@ -230,7 +230,7 @@ bool dvd_track_pan_scan_video(const ifo_handle_t *track_ifo) {
 
 }
 
-char *dvd_track_video_codec(const ifo_handle_t *track_ifo) {
+const char *dvd_track_video_codec(const ifo_handle_t *track_ifo) {
 
 	if(track_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
 		return "MPEG1";
@@ -241,7 +241,7 @@ char *dvd_track_video_codec(const ifo_handle_t *track_ifo) {
 
 }
 
-char *dvd_track_video_format(const ifo_handle_t *track_ifo) {
+const char *dvd_track_video_format(const ifo_handle_t *track_ifo) {
 
 	if(track_ifo->vtsi_mat->vts_video_attr.video_format == 0)
 		return "NTSC";
@@ -252,7 +252,7 @@ char *dvd_track_video_format(const ifo_handle_t *track_ifo) {
 
 }
 
-char *dvd_track_video_aspect_ratio(const ifo_handle_t *track_ifo) {
+const char *dvd_track_video_aspect_ratio(const ifo_handle_t *track_ifo) {
 
 	if(track_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
 		return "4:3";
@@ -273,7 +273,7 @@ double dvd_track_fps(dvd_time_t *dvd_time) {
 
 }
 
-char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+const char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
 	char str[DVD_VIDEO_FPS + 1] = {'\0'};
 	double fps;
@@ -369,7 +369,7 @@ uint32_t dvd_time_hours(dvd_time_t *dvd_time) {
 
 }
 
-char *dvd_track_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+const char *dvd_track_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
 	uint8_t ttn;
 	pgcit_t *vts_pgcit;
@@ -385,7 +385,7 @@ char *dvd_track_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo,
 
 }
 
-char *dvd_time_length(dvd_time_t *dvd_time) {
+const char *dvd_time_length(dvd_time_t *dvd_time) {
 
 	char length[DVD_TRACK_LENGTH + 1] = {'\0'};
 	uint32_t hours;
@@ -553,7 +553,7 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
  * FIXME add a function similar to dvd_track_milliseconds() to get the number
  * for a chapter as well.
  */
-char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
+const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
 	uint8_t ttn;
 	pgcit_t *vts_pgcit;
@@ -594,7 +594,7 @@ char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_if
 
 // Note: Remember that the language code is set in the IFO
 // See dvdread/ifo_print.c for same functionality (error checking)
-char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {
+const char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {
 
 	char lang_code[3] = {'\0'};
 	uint8_t lang_type;
@@ -615,7 +615,7 @@ char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8_t aud
 // same for lpcm; also a bug if it reports #5, and defaults to bug report if
 // any above 6 (or under 0)
 // FIXME check for multi channel extension
-char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {
+const char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {
 
 	uint8_t audio_codec;
 	char *audio_codecs[7] = { "ac3", "", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
@@ -642,7 +642,7 @@ uint8_t dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const uint8_
 
 }
 
-char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {
+const char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {
 
 	uint8_t audio_id[7] = {0x80, 0, 0xC0, 0xC0, 0xA0, 0, 0x88};
 	uint8_t audio_format;
@@ -667,7 +667,7 @@ char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const uint8_t aud
 // if it's an invalid language.  If it's missing one, set it to unknown (for example)
 // but if it's invalid, maybe guess that it's in English, or something?  Dunno.
 // Having a best-guess approach might not be bad, maybe even look at region codes
-char *dvd_track_subtitle_lang_code(const ifo_handle_t *track_ifo, const uint8_t subtitle_track) {
+const char *dvd_track_subtitle_lang_code(const ifo_handle_t *track_ifo, const uint8_t subtitle_track) {
 
 	char lang_code[3] = {'\0'};
 	subp_attr_t *subp_attr;
@@ -687,7 +687,7 @@ char *dvd_track_subtitle_lang_code(const ifo_handle_t *track_ifo, const uint8_t 
 
 }
 
-char *dvd_track_subtitle_stream_id(const uint8_t subtitle_track) {
+const char *dvd_track_subtitle_stream_id(const uint8_t subtitle_track) {
 
 	char str[DVD_SUBTITLE_STREAM_ID + 1] = {'\0'};
 

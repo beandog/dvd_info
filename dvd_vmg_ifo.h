@@ -108,7 +108,7 @@ uint16_t dvd_info_num_vts(const ifo_handle_t *ifo);
  *
  * @param ifo dvdread IFO handle
  */
-char *dvd_info_provider_id(const ifo_handle_t *ifo);
+const char *dvd_info_provider_id(const ifo_handle_t *ifo);
 
 /**
  * Get the DVD's VMG id
@@ -117,7 +117,7 @@ char *dvd_info_provider_id(const ifo_handle_t *ifo);
  *
  * @param ifo libdvdread IFO handle
  */
-char *dvd_info_vmg_id(const ifo_handle_t *ifo);
+const char *dvd_info_vmg_id(const ifo_handle_t *ifo);
 
 /**
  * Get the DVD side

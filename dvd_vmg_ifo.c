@@ -64,13 +64,13 @@ uint16_t dvd_info_num_vts(const ifo_handle_t *ifo) {
 	return ifo->vts_atrt->nr_of_vtss;
 }
 
-char *dvd_info_provider_id(const ifo_handle_t *ifo) {
+const char *dvd_info_provider_id(const ifo_handle_t *ifo) {
 
 	return strndup(ifo->vmgi_mat->provider_identifier, 32);
 
 }
 
-char *dvd_info_vmg_id(const ifo_handle_t *ifo) {
+const char *dvd_info_vmg_id(const ifo_handle_t *ifo) {
 
 	return strndup(ifo->vmgi_mat->vmg_identifier, 12);
 

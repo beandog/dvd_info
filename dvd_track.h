@@ -20,7 +20,7 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_numbe
  *
  * @param ifo libdvdread IFO handle
  */
-char *dvd_track_vts_id(const ifo_handle_t *ifo);
+const char *dvd_track_vts_id(const ifo_handle_t *ifo);
 
 /**
  * Get the MPEG video codec version
@@ -174,7 +174,7 @@ bool dvd_track_pan_scan_video(const ifo_handle_t *track_ifo);
  * @param vts_ifo dvdread track IFO handler
  * @retval video codec
  */
-char *dvd_track_video_codec(const ifo_handle_t *track_ifo);
+const char *dvd_track_video_codec(const ifo_handle_t *track_ifo);
 
 /*
  * Get the video format for a track
@@ -182,7 +182,7 @@ char *dvd_track_video_codec(const ifo_handle_t *track_ifo);
  * @param vts_ifo dvdread track IFO handler
  * @retval video format
  */
-char *dvd_track_video_format(const ifo_handle_t *track_ifo);
+const char *dvd_track_video_format(const ifo_handle_t *track_ifo);
 
 /*
  * Get the video aspect ratio for a track
@@ -190,13 +190,13 @@ char *dvd_track_video_format(const ifo_handle_t *track_ifo);
  * @param vts_ifo dvdread track IFO handler
  * @retval aspect ratio
  */
-char *dvd_track_video_aspect_ratio(const ifo_handle_t *track_ifo);
+const char *dvd_track_video_aspect_ratio(const ifo_handle_t *track_ifo);
 
 double dvd_track_fps(dvd_time_t *dvd_time);
 
-char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
+const char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
-char *dvd_track_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
+const char *dvd_track_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
 uint32_t dvd_track_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
@@ -208,7 +208,7 @@ uint32_t dvd_time_minutes(dvd_time_t *dvd_time);
 
 uint32_t dvd_time_hours(dvd_time_t *dvd_time);
 
-char *dvd_time_length(dvd_time_t *dvd_time);
+const char *dvd_time_length(dvd_time_t *dvd_time);
 
 /** Audio Streams **/
 
@@ -288,7 +288,7 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
  * Get a string of the length of a chapter in a track.  Format hh:mm:ss.ms
  *
  */
-char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t chapter_number);
+const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t chapter_number);
 
 /**
  * Get the audio language code for a track.  A two-character string that is a
@@ -300,7 +300,7 @@ char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_if
  * @param audio_stream audio track number
  * @return language code
  */
-char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8_t audio_stream);
+const char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8_t audio_stream);
 
 
 /**
@@ -311,7 +311,7 @@ char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8_t aud
  * @param audio_stream audio track number
  * @return audio codec
  */
-char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t audio_stream);
+const char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t audio_stream);
 
 /**
  * Get the number of channels for an audio track
@@ -338,7 +338,7 @@ uint8_t dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const uint8_
  * @param audio_track audio track number
  * @return audio stream id
  */
-char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const uint8_t audio_track);
+const char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const uint8_t audio_track);
 
 /**
  * Get the lang code of a subtitle track for a title track
@@ -347,7 +347,7 @@ char *dvd_track_audio_stream_id(const ifo_handle_t *track_ifo, const uint8_t aud
  * @param subtitle_track subtitle track number
  * @retval lang code
  */
-char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint8_t subtitle_track);
+const char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint8_t subtitle_track);
 
 /**
  * Get the stream ID for a subtitle, an index that starts at 0x20
@@ -358,4 +358,4 @@ char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint8_t su
  * @param subtitle_track subtitle track number
  * @return stream id
  */
-char *dvd_track_subtitle_stream_id(const uint8_t subtitle_track);
+const char *dvd_track_subtitle_stream_id(const uint8_t subtitle_track);
