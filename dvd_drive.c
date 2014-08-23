@@ -1,9 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
-#include <unistd.h>
 #include <sys/ioctl.h>
-#include <fcntl.h>
 #include <linux/cdrom.h>
 #include "dvd_device.h"
 #include "dvd_drive.h"
