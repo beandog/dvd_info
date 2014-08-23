@@ -623,7 +623,7 @@ uint32_t dvd_chapter_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_
 		while(cell_idx < program_map_idx - 1) {
 			if(chapter_idx + 1 == chapter_number) {
 
-				dvd_time = &pgc->playback_time;
+				dvd_time = &pgc->cell_playback[cell_idx].playback_time;
 				i = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
 				i += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
 				i += (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f)) * 1000;
