@@ -664,14 +664,23 @@ uint32_t dvd_cell_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 	uint8_t ttn;
 	pgcit_t *vts_pgcit;
 	pgc_t *pgc;
-	uint32_t msecs;
+	dvd_time_t *dvd_time;
+	uint32_t framerates[4] = {0, 2500, 0, 2997};
+	uint32_t framerate;
+	uint32_t i;
 
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
-	msecs = dvd_time_milliseconds(&pgc->cell_playback[cell_number - 1].playback_time);
+	dvd_time = &pgc->cell_playback[cell_number - 1].playback_time;
+	i = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
+	i += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
+	i += (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f)) * 1000;
+	framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
+	if(framerate > 0)
+		i += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
 
-	return msecs;
+	return i;
 
 }
 
