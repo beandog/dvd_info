@@ -227,12 +227,23 @@ uint8_t dvd_track_num_audio_streams(const ifo_handle_t *track_ifo);
  * This is useful for debugging, and flushing out either badly mastered DVDs or
  * getting a closer identifier of how many streams this has.
  *
- * Haven't examined enough DVDs yet to verify that either one is more accurate.
+ * Some software uses this number of audio streams in the pgc instead of the
+ * one in the VTSI MAT, such as mplayer and HandBrake, which will skip over
+ * the other ones completely.
  *
  * @param track_ifo dvdread track IFO handler
  * @return number of PGC audio streams marked as active
  */
 uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *track_ifo);
+
+/**
+ * Look through the program chain to see if an audio track is flagged as
+ * active or not.
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @return boolean
+ */
+uint8_t dvd_track_active_audio_stream(const ifo_handle_t *track_ifo, uint8_t idx);
 
 /**
  * Get the number of audio streams for a specific language
@@ -261,6 +272,25 @@ bool dvd_track_has_audio_lang_code(const ifo_handle_t *track_ifo, const char *la
  * @return number of subtitles
  */
 uint8_t dvd_track_subtitles(const ifo_handle_t *track_ifo);
+
+/**
+ * Get the number of subtitle streams marked as active.
+ *
+ * When looking at which subtitles that can be accessed by software, such as
+ * MPlayer or HandBrake, these are the amount that they will display.
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @return number of active subtitles
+ */
+uint8_t dvd_track_active_subtitles(const ifo_handle_t *track_ifo);
+
+/**
+ * Check if a subtitle stream is flagged as active or not.
+ *
+ * @param track_ifo dvdread track IFO handler
+ * @return boolean
+ */
+uint8_t dvd_track_active_subtitle(const ifo_handle_t *track_ifo, uint8_t idx);
 
 /**
  * Get the number of subtitle streams for a specific language

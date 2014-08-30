@@ -65,6 +65,7 @@ struct dvd_video {
 
 struct dvd_audio {
 	uint8_t track;
+	uint8_t active;
 	char stream_id[DVD_AUDIO_STREAM_ID + 1];
 	char lang_code[DVD_AUDIO_LANG_CODE + 1];
 	char codec[DVD_AUDIO_CODEC + 1];
@@ -73,6 +74,7 @@ struct dvd_audio {
 
 struct dvd_subtitle {
 	uint8_t track;
+	uint8_t active;
 	char stream_id[DVD_SUBTITLE_STREAM_ID + 1];
 	char lang_code[DVD_SUBTITLE_LANG_CODE + 1];
 };
@@ -162,6 +164,7 @@ int main(int argc, char **argv) {
 	// Audio
 	struct dvd_audio dvd_audio;
 	dvd_audio.track = 1;
+	dvd_audio.active = 0;
 	memset(dvd_audio.stream_id, '\0', sizeof(dvd_audio.stream_id));
 	memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
 	memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
@@ -170,6 +173,7 @@ int main(int argc, char **argv) {
 	// Subtitles
 	struct dvd_subtitle dvd_subtitle;
 	dvd_subtitle.track = 1;
+	dvd_subtitle.active = 0;
 	memset(dvd_subtitle.stream_id, '\0', sizeof(dvd_subtitle.stream_id));
 	memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
 
@@ -559,6 +563,7 @@ int main(int argc, char **argv) {
 			memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
 
 			dvd_audio.track = c + 1;
+			dvd_audio.active = dvd_track_active_audio_stream(vts_ifo, c);
 			strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(vts_ifo, c), DVD_AUDIO_LANG_CODE);
 			strncpy(dvd_audio.codec, dvd_track_audio_codec(vts_ifo, c), DVD_AUDIO_CODEC);
 			dvd_audio.channels = dvd_track_audio_num_channels(vts_ifo, c);
@@ -568,6 +573,7 @@ int main(int argc, char **argv) {
 
 				json_dvd_audio = json_object();
 				json_object_set_new(json_dvd_audio, "track", json_integer(dvd_audio.track));
+				json_object_set_new(json_dvd_audio, "active", json_integer(dvd_audio.active));
 				if(strlen(dvd_audio.lang_code) == DVD_AUDIO_LANG_CODE)
 					json_object_set_new(json_dvd_audio, "lang code", json_string(dvd_audio.lang_code));
 				json_object_set_new(json_dvd_audio, "codec", json_string(dvd_audio.codec));
@@ -590,6 +596,7 @@ int main(int argc, char **argv) {
 			memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
 
 			dvd_subtitle.track = c + 1;
+			dvd_subtitle.active = dvd_track_active_subtitle(vts_ifo, c);
 			strncpy(dvd_subtitle.stream_id, dvd_track_subtitle_stream_id(c), DVD_SUBTITLE_STREAM_ID);
 			strncpy(dvd_subtitle.lang_code, dvd_track_subtitle_lang_code(vts_ifo, c), DVD_SUBTITLE_LANG_CODE);
 
@@ -597,6 +604,7 @@ int main(int argc, char **argv) {
 
 				json_dvd_subtitle = json_object();
 				json_object_set_new(json_dvd_subtitle, "track", json_integer(dvd_subtitle.track));
+				json_object_set_new(json_dvd_subtitle, "active", json_integer(dvd_subtitle.active));
 				if(strlen(dvd_subtitle.lang_code) == DVD_SUBTITLE_LANG_CODE)
 					json_object_set_new(json_dvd_subtitle, "lang code", json_string(dvd_subtitle.lang_code));
 				json_object_set_new(json_dvd_subtitle, "stream id", json_string(dvd_subtitle.stream_id));
