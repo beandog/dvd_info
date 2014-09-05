@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
 
 	// Device hardware
 	int dvd_fd;
-	char *device_filename;
+	const char *device_filename;
 	int drive_status;
 	__useconds_t sleepy_time = 1000000;
 	uint8_t num_naps = 0;
@@ -230,7 +230,7 @@ int main(int argc, char **argv) {
 	// Not enabled by an argument, set internally
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
-	char *str_options;
+	const char *str_options;
 	str_options = "hjt:";
 
 	struct option long_options[] = {

@@ -774,7 +774,7 @@ const char *dvd_track_audio_lang_code(const ifo_handle_t *track_ifo, const uint8
 const char *dvd_track_audio_codec(const ifo_handle_t *track_ifo, const uint8_t audio_stream) {
 
 	uint8_t audio_codec;
-	char *audio_codecs[7] = { "ac3", "", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
+	const char *audio_codecs[7] = { "ac3", "", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
 	audio_attr_t *audio_attr;
 
 	audio_attr = &track_ifo->vtsi_mat->vts_audio_attr[audio_stream];
