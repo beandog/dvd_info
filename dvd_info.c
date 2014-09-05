@@ -110,12 +110,10 @@ int main(int argc, char **argv) {
 	// Device hardware
 	int dvd_fd;
 	const char *device_filename;
-	int drive_status;
 	__useconds_t sleepy_time = 1000000;
 	uint8_t num_naps = 0;
 	uint8_t max_num_naps = 60;
 	bool is_hardware = false;
-	bool is_image = false;
 
 	// libdvdread
 	dvd_reader_t *dvdread_dvd = NULL;
@@ -311,12 +309,9 @@ int main(int argc, char **argv) {
 
 	// Check if it is hardware or an image file
 	is_hardware = dvd_device_is_hardware(device_filename);
-	is_image = dvd_device_is_image(device_filename);
 
 	// Poll drive status if it is hardware
 	if(is_hardware) {
-
-		drive_status = dvd_drive_get_status(device_filename);
 
 		// Wait for the drive to become ready
 		if(!dvd_drive_has_media(device_filename)) {
