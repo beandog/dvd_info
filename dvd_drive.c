@@ -59,7 +59,7 @@ bool dvd_drive_is_ready(const char* device_filename) {
 
 void dvd_drive_display_status(const char *device_filename) {
 
-	char *status;
+	const char *status;
 
 	switch(dvd_drive_get_status(device_filename)) {
 		case 1:
