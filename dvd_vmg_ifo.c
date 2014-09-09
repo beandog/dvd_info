@@ -39,7 +39,6 @@ int dvd_device_title(const char *device_filename, char *p) {
 	fclose(filehandle);
 
 	// A nice way to trim the string. :)
-	// FIXME: could use an rtrim function in general
 	y = strlen(dvd_title);
 	while(y-- > 2) {
 		if(dvd_title[y] == ' ') {
