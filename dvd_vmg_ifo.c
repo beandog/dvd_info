@@ -111,7 +111,7 @@ uint16_t dvd_info_longest_track(dvd_reader_t *dvdread_dvd) {
 	uint16_t track;
 	uint16_t longest_track;
 	uint16_t idx;
-	uint8_t ifo_number;
+	uint16_t ifo_number;
 	uint32_t ms;
 	uint32_t max_len;
 
@@ -172,7 +172,7 @@ uint16_t dvd_info_longest_track_with_subtitles(dvd_reader_t *dvdread_dvd) {
 	uint8_t subtitles;
 	uint8_t max_subtitles;
 	uint16_t idx;
-	uint8_t ifo_number;
+	uint16_t ifo_number;
 	uint32_t ms;
 	uint32_t max_len;
 
@@ -245,7 +245,7 @@ uint16_t dvd_info_longest_16x9_track(dvd_reader_t *dvdread_dvd) {
 	uint16_t longest_track;
 	bool aspect_ratio_16x9;
 	uint16_t idx;
-	uint8_t ifo_number;
+	uint16_t ifo_number;
 	uint32_t ms;
 	uint32_t max_len;
 
@@ -311,7 +311,7 @@ uint16_t dvd_info_longest_4x3_track(dvd_reader_t *dvdread_dvd) {
 	uint16_t longest_track;
 	bool aspect_ratio_4x3;
 	uint16_t idx;
-	uint8_t ifo_number;
+	uint16_t ifo_number;
 	uint32_t ms;
 	uint32_t max_len;
 
@@ -377,7 +377,7 @@ uint16_t dvd_info_longest_letterbox_track(dvd_reader_t *dvdread_dvd) {
 	uint16_t longest_track;
 	bool letterboxed;
 	uint16_t idx;
-	uint8_t ifo_number;
+	uint16_t ifo_number;
 	uint32_t ms;
 	uint32_t max_len;
 
@@ -443,7 +443,7 @@ uint16_t dvd_info_longest_pan_scan_track(dvd_reader_t *dvdread_dvd) {
 	uint16_t longest_track;
 	bool pan_and_scan;
 	uint16_t idx;
-	uint8_t ifo_number;
+	uint16_t ifo_number;
 	uint32_t ms;
 	uint32_t max_len;
 

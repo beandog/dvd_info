@@ -9,7 +9,7 @@
 // FIXME - *all* functions that accept vmg_ifo or track_ifo as arguments need to
 // verify that it is the correct IFO.  Check that the track number exists as well.
 
-uint8_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
+uint16_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
 
 	// TODO research
 	// Should these be the same number
