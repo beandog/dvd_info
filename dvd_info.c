@@ -97,6 +97,7 @@ int main(int argc, char **argv) {
 	// Display output
 	int d_json = 0;
 	int d_lsdvd = 1;
+	int d_ini = 0;
 	int d_debug = 0;
 
 	// dvd_info
@@ -235,6 +236,7 @@ int main(int argc, char **argv) {
 	struct option long_options[] = {
 
 		{ "json", no_argument, & d_json, 1 },
+		{ "ini", no_argument, & d_ini, 1 },
 		{ "debug", no_argument, & d_debug, 1 },
 
 		// Entries with both a name and a value, will take either the
@@ -259,6 +261,8 @@ int main(int argc, char **argv) {
 			case 'j':
 				d_json = 1;
 				d_lsdvd = 0;
+				d_ini = 0;
+				d_debug = 0;
 				break;
 
 			case 't':
@@ -269,6 +273,7 @@ int main(int argc, char **argv) {
 			case 'z':
 				d_json = 0;
 				d_lsdvd = 0;
+				d_ini = 0;
 				d_debug = 1;
 				break;
 
@@ -284,7 +289,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Handle --json argument
-	if(d_json || d_debug)
+	if(d_json || d_ini || d_debug)
 		d_lsdvd = 0;
 
 	// If '-i /dev/device' is not passed, then set it to the string
@@ -474,6 +479,23 @@ int main(int argc, char **argv) {
 
 	}
 
+	// .INI style output
+	if(d_ini == 1) {
+
+		printf("[DVD]\n");
+		printf("title = %s\n", dvd_info.title);
+		printf("side = %d\n", dvd_info.side);
+		printf("tracks = %d\n", dvd_info.tracks);
+		printf("longest_track = %d\n", dvd_info.longest_track);
+		if(strlen(dvd_info.provider_id) > 0)
+			printf("provider_id = %s\n", dvd_info.provider_id);
+		if(strlen(dvd_info.vmg_id) > 0)
+			printf("vmg_id = %s\n", dvd_info.vmg_id);
+		printf("video_title_sets = %d\n", dvd_info.video_title_sets);
+		printf("dvdread_id = %s\n", dvdread_id);
+
+	}
+
 	/**
 	 * Track information
 	 */
@@ -551,6 +573,16 @@ int main(int argc, char **argv) {
 			// json_object_set_new(json_dvd_video, "pan and scan", json_integer(dvd_video.pan_and_scan));
 			json_object_set_new(json_dvd_track, "video", json_dvd_video);
 
+
+		}
+
+		if(d_ini == 1) {
+
+			printf("\n");
+			printf("[Track %d]\n", dvd_track.track);
+			printf("ttn = %d\n", dvd_track.ttn);
+			printf("vts_id = %s\n", dvd_track.vts_id);
+			printf("length = %s\n", dvd_track.length);
 
 		}
 
