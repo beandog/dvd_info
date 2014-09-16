@@ -510,7 +510,8 @@ int main(int argc, char **argv) {
 		// Skip track if parent IFO is invalid
 		if(valid_ifos[dvd_track.vts] == false) {
 			fprintf(stderr, "IFO %u for track %u is invalid, skipping track\n", dvd_track.vts, track_number);
-			break;
+			dvd_tracks[track_number - 1] = dvd_track;
+			continue;
 		}
 
 		vts_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
