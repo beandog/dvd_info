@@ -516,8 +516,8 @@ int main(int argc, char **argv) {
 		vts_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
 
 		dvd_track.track = track_number;
-		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
 		dvd_track.vts = dvd_track_ifo_number(vmg_ifo, dvd_track.track);
+		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
 		strncpy(dvd_track.vts_id, dvd_track_vts_id(vts_ifo), DVD_TRACK_VTS_ID);
 		strncpy(dvd_track.length, dvd_track_length(vmg_ifo, vts_ifo, dvd_track.track), DVD_TRACK_LENGTH);
 		dvd_track.msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, dvd_track.track);
@@ -581,6 +581,7 @@ int main(int argc, char **argv) {
 
 			printf("\n");
 			printf("[Track %d]\n", dvd_track.track);
+			printf("vts = %d\n", dvd_track.vts);
 			printf("ttn = %d\n", dvd_track.ttn);
 			printf("vts_id = %s\n", dvd_track.vts_id);
 			printf("length = %s\n", dvd_track.length);
