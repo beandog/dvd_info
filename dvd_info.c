@@ -97,6 +97,7 @@ int main(int argc, char **argv) {
 	// Display output
 	int d_json = 0;
 	int d_lsdvd = 1;
+	int d_debug = 0;
 
 	// dvd_info
 	bool d_all_tracks = true;
@@ -229,11 +230,12 @@ int main(int argc, char **argv) {
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
 	const char *str_options;
-	str_options = "hjt:";
+	str_options = "hjt:z";
 
 	struct option long_options[] = {
 
 		{ "json", no_argument, & d_json, 1 },
+		{ "debug", no_argument, & d_debug, 1 },
 
 		// Entries with both a name and a value, will take either the
 		// long option or the short one.  Fex, '--device' or '-i'
@@ -264,6 +266,12 @@ int main(int argc, char **argv) {
 				arg_track_number = atoi(optarg);
 				break;
 
+			case 'z':
+				d_json = 0;
+				d_lsdvd = 0;
+				d_debug = 1;
+				break;
+
 			// ignore unknown arguments
 			case '?':
 			// let getopt_long set the variable
@@ -276,7 +284,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Handle --json argument
-	if(d_json)
+	if(d_json || d_debug)
 		d_lsdvd = 0;
 
 	// If '-i /dev/device' is not passed, then set it to the string
