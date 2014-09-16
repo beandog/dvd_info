@@ -39,7 +39,7 @@ struct dvd_info {
 
 struct dvd_track {
 	uint16_t track;
-	uint16_t vts;
+	uint8_t vts;
 	uint8_t ttn;
 	char vts_id[DVD_TRACK_VTS_ID + 1];
 	char length[DVD_TRACK_LENGTH + 1];
