@@ -136,7 +136,7 @@ uint16_t dvd_info_longest_track(dvd_reader_t *dvdread_dvd) {
 		track_ifo = ifoOpen(dvdread_dvd, ifo_number);
 
 		if(!track_ifo)
-			return 0;
+			continue;
 
 		ms = dvd_track_milliseconds(vmg_ifo, track_ifo, track);
 
@@ -198,7 +198,7 @@ uint16_t dvd_info_longest_track_with_subtitles(dvd_reader_t *dvdread_dvd) {
 		track_ifo = ifoOpen(dvdread_dvd, ifo_number);
 
 		if(!track_ifo)
-			return 0;
+			continue;
 
 		subtitles = dvd_track_subtitles(track_ifo);
 
@@ -270,7 +270,7 @@ uint16_t dvd_info_longest_16x9_track(dvd_reader_t *dvdread_dvd) {
 		track_ifo = ifoOpen(dvdread_dvd, ifo_number);
 
 		if(!track_ifo)
-			return 0;
+			continue;
 
 		aspect_ratio_16x9 = dvd_track_aspect_ratio_16x9(track_ifo);
 
@@ -336,7 +336,7 @@ uint16_t dvd_info_longest_4x3_track(dvd_reader_t *dvdread_dvd) {
 		track_ifo = ifoOpen(dvdread_dvd, ifo_number);
 
 		if(!track_ifo)
-			return 0;
+			continue;
 
 		aspect_ratio_4x3 = dvd_track_aspect_ratio_4x3(track_ifo);
 
@@ -402,7 +402,7 @@ uint16_t dvd_info_longest_letterbox_track(dvd_reader_t *dvdread_dvd) {
 		track_ifo = ifoOpen(dvdread_dvd, ifo_number);
 
 		if(!track_ifo)
-			return 0;
+			continue;
 
 		letterboxed = dvd_track_letterbox_video(track_ifo);
 
@@ -468,7 +468,7 @@ uint16_t dvd_info_longest_pan_scan_track(dvd_reader_t *dvdread_dvd) {
 		track_ifo = ifoOpen(dvdread_dvd, ifo_number);
 
 		if(!track_ifo)
-			return 0;
+			continue;
 
 		pan_and_scan = dvd_track_pan_scan_video(track_ifo);
 
