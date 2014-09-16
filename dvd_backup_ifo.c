@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 	uint16_t ifo_number = 0;
 	bool is_hardware = false;
 	bool verbose = false;
-	char *device_filename = DEFAULT_DVD_DEVICE;
+	const char *device_filename = DEFAULT_DVD_DEVICE;
 	dvd_reader_t *dvdread_dvd;
 	ifo_handle_t *ifo;
 	dvd_file_t *dvdread_ifo_file;
