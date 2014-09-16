@@ -737,6 +737,10 @@ int main(int argc, char **argv) {
 
 		dvd_track = dvd_tracks[track_number - 1];
 
+		// Skip track if parent IFO is invalid
+		if(valid_ifos[dvd_track.vts] == false)
+			continue;
+
 		if(d_lsdvd == 1) {
 
 			printf("Title: %02u, ", dvd_track.track);
