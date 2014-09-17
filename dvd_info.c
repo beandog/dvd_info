@@ -26,8 +26,9 @@ void print_usage(char *binary) {
 	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
 	printf("\n");
 	printf("Options:\n");
-	printf("  -j, --json	Display output in JSON format\n");
-	printf("  -k, --ini	Display output in INI format\n");
+	printf("  -j, --json		Display output in JSON format\n");
+	printf("  -k, --ini		Display output in INI format\n");
+	printf("  -t, --track [number]	Limit to one title track\n");
 	printf("\n");
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
@@ -257,7 +258,6 @@ int main(int argc, char **argv) {
 
 		// Entries with both a name and a value, will take either the
 		// long option or the short one.  Fex, '--device' or '-i'
-		{ "device", required_argument, 0, 'i' },
 		{ "track", required_argument, 0, 't' },
 		{ 0, 0, 0, 0 }
 
