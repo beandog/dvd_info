@@ -24,6 +24,22 @@ void print_usage(char *binary);
 void print_usage(char *binary) {
 
 	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
+	printf("\n");
+	printf("Options:\n");
+	printf("  -j, --json	Display output in JSON format\n");
+	printf("  -k, --ini	Display output in INI format\n");
+	printf("\n");
+	printf("DVD path can be a directory, a device filename, or a local file.\n");
+	printf("\n");
+	printf("Examples:\n");
+	printf("  dvd_info /dev/dvd	# Read a DVD drive directly\n");
+	printf("  dvd_info movie.iso	# Read an image file\n");
+	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
+	printf("\n");
+	printf("Default output is similar in syntax to 'lsdvd' program, and is\n");
+	printf("not as verbose as INI or JSON format.\n");
+	printf("\n");
+	printf("See 'man dvd_info' for more details, or http://dvds.beandog.org/\n");
 
 }
 
@@ -231,7 +247,7 @@ int main(int argc, char **argv) {
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
 	const char *str_options;
-	str_options = "hjt:z";
+	str_options = "hjkt:z";
 
 	struct option long_options[] = {
 
@@ -262,6 +278,13 @@ int main(int argc, char **argv) {
 				d_json = 1;
 				d_lsdvd = 0;
 				d_ini = 0;
+				d_debug = 0;
+				break;
+
+			case 'k':
+				d_json = 0;
+				d_lsdvd = 0;
+				d_ini = 1;
 				d_debug = 0;
 				break;
 
