@@ -53,14 +53,14 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_numbe
 }
 
 // FIXME check for invalid characters
-const char *dvd_track_vts_id(const ifo_handle_t *track_ifo) {
+const char *dvd_vts_id(const ifo_handle_t *track_ifo) {
 
 	for(unsigned long i = 0; i < strlen(track_ifo->vtsi_mat->vts_identifier); i++) {
 		if(!isascii(track_ifo->vtsi_mat->vts_identifier[i]))
 			return "";
 	}
 
-	return strndup(track_ifo->vtsi_mat->vts_identifier, DVD_TRACK_VTS_ID);
+	return strndup(track_ifo->vtsi_mat->vts_identifier, DVD_VTS_ID);
 
 }
 

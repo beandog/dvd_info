@@ -85,12 +85,16 @@ int main(int argc, char **argv) {
 	dvd_info.tracks = 1;
 	dvd_info.longest_track = 1;
 
+	// Video Title Set
+	struct dvd_vts dvd_vts;
+	dvd_vts.vts = 1;
+	memset(dvd_vts.id, '\0', sizeof(dvd_vts.id));
+
 	// Track
 	struct dvd_track dvd_track;
 	dvd_track.track = 1;
 	dvd_track.vts = 1;
 	dvd_track.ttn = 1;
-	memset(dvd_track.vts_id, '\0', sizeof(dvd_track.vts_id));
 	memset(dvd_track.length, '\0', sizeof(dvd_track.length));
 	dvd_track.msecs = 0;
 	dvd_track.chapters = 1;
@@ -442,7 +446,6 @@ int main(int argc, char **argv) {
 		dvd_track.track = track_number;
 		dvd_track.vts = dvd_track_ifo_number(vmg_ifo, dvd_track.track);
 		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
-		strncpy(dvd_track.vts_id, dvd_track_vts_id(vts_ifo), DVD_TRACK_VTS_ID);
 		strncpy(dvd_track.length, dvd_track_length(vmg_ifo, vts_ifo, dvd_track.track), DVD_TRACK_LENGTH);
 		dvd_track.msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
@@ -621,8 +624,6 @@ int main(int argc, char **argv) {
 			json_object_set_new(json_dvd_track, "length", json_string(dvd_track.length));
 			json_object_set_new(json_dvd_track, "msecs", json_integer(dvd_track.msecs));
 			json_object_set_new(json_dvd_track, "vts", json_integer(dvd_track.vts));
-			if(strlen(dvd_track.vts_id))
-				json_object_set_new(json_dvd_track, "vts id", json_string(dvd_track.vts_id));
 			json_object_set_new(json_dvd_track, "ttn", json_integer(dvd_track.ttn));
 
 			if(strlen(dvd_video.codec))

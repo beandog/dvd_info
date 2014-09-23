@@ -6,7 +6,8 @@
 #define DVD_VMG_ID 12
 #define DVD_DVDREAD_ID 32
 
-#define DVD_TRACK_VTS_ID 12
+#define DVD_VTS_ID 12
+
 #define DVD_TRACK_LENGTH 12
 
 #define DVD_VIDEO_CODEC 5
@@ -37,6 +38,11 @@ struct dvd_info {
 	char vmg_id[DVD_VMG_ID + 1];
 	uint16_t tracks;
 	uint16_t longest_track;
+};
+
+struct dvd_vts {
+	uint16_t vts;
+	char id[DVD_VTS_ID + 1];
 };
 
 struct dvd_video {
@@ -85,7 +91,6 @@ struct dvd_track {
 	uint16_t track;
 	uint16_t vts;
 	uint8_t ttn;
-	char vts_id[DVD_TRACK_VTS_ID + 1];
 	char length[DVD_TRACK_LENGTH + 1];
 	uint32_t msecs;
 	uint8_t chapters;
