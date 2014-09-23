@@ -54,19 +54,6 @@ struct dvd_info {
 	uint16_t longest_track;
 };
 
-struct dvd_track {
-	uint16_t track;
-	uint16_t vts;
-	uint8_t ttn;
-	char vts_id[DVD_TRACK_VTS_ID + 1];
-	char length[DVD_TRACK_LENGTH + 1];
-	uint32_t msecs;
-	uint8_t chapters;
-	uint8_t audio_tracks;
-	uint8_t subtitles;
-	uint8_t cells;
-};
-
 struct dvd_video {
 	char codec[DVD_VIDEO_CODEC + 1];
 	char format[DVD_VIDEO_FORMAT + 1];
@@ -107,6 +94,24 @@ struct dvd_cell {
 	uint8_t cell;
 	char length[DVD_CELL_LENGTH + 1];
 	uint32_t msecs;
+};
+
+struct dvd_track {
+	uint16_t track;
+	uint16_t vts;
+	uint8_t ttn;
+	char vts_id[DVD_TRACK_VTS_ID + 1];
+	char length[DVD_TRACK_LENGTH + 1];
+	uint32_t msecs;
+	uint8_t chapters;
+	uint8_t audio_tracks;
+	uint8_t subtitles;
+	uint8_t cells;
+	struct dvd_video dvd_video;
+	struct dvd_audio *dvd_audio_tracks;
+	struct dvd_subtitle *dvd_subtitles;
+	struct dvd_chapter *dvd_chapters;
+	struct dvd_cell *dvd_cells;
 };
 
 int main(int argc, char **argv) {
@@ -486,22 +491,6 @@ int main(int argc, char **argv) {
 		sprintf(&dvdread_id[x * 2], "%02x", dvdread_ifo_md5[x]);
 	}
 
-	if(d_json == 1) {
-
-		// JSON: DVD basic information
-		json_object_set_new(json_dvd_info, "title", json_string(dvd_info.title));
-		json_object_set_new(json_dvd_info, "side", json_integer(dvd_info.side));
-		json_object_set_new(json_dvd_info, "tracks", json_integer(dvd_info.tracks));
-		json_object_set_new(json_dvd_info, "longest track", json_integer(dvd_info.longest_track));
-		if(strlen(dvd_info.provider_id) > 0)
-			json_object_set_new(json_dvd_info, "provider id", json_string(dvd_info.provider_id));
-		if(strlen(dvd_info.vmg_id) > 0)
-			json_object_set_new(json_dvd_info, "vmg id", json_string(dvd_info.vmg_id));
-		json_object_set_new(json_dvd_info, "video title sets", json_integer(dvd_info.video_title_sets));
-		json_object_set_new(json_dvd_info, "dvdread id", json_string(dvdread_id));
-
-	}
-
 	// .INI style output
 	if(d_ini == 1) {
 
@@ -510,9 +499,9 @@ int main(int argc, char **argv) {
 		printf("side = %d\n", dvd_info.side);
 		printf("tracks = %d\n", dvd_info.tracks);
 		printf("longest_track = %d\n", dvd_info.longest_track);
-		if(strlen(dvd_info.provider_id) > 0)
+		if(strlen(dvd_info.provider_id))
 			printf("provider_id = %s\n", dvd_info.provider_id);
-		if(strlen(dvd_info.vmg_id) > 0)
+		if(strlen(dvd_info.vmg_id))
 			printf("vmg_id = %s\n", dvd_info.vmg_id);
 		printf("video_title_sets = %d\n", dvd_info.video_title_sets);
 		printf("dvdread_id = %s\n", dvdread_id);
@@ -546,6 +535,9 @@ int main(int argc, char **argv) {
 		strncpy(dvd_track.length, dvd_track_length(vmg_ifo, vts_ifo, dvd_track.track), DVD_TRACK_LENGTH);
 		dvd_track.msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
+
+		/** Video **/
+
 		strncpy(dvd_video.codec, dvd_track_video_codec(vts_ifo), DVD_VIDEO_CODEC);
 		strncpy(dvd_video.format, dvd_track_video_format(vts_ifo), DVD_VIDEO_FORMAT);
 		dvd_video.width = dvd_track_video_width(vts_ifo);
@@ -560,18 +552,145 @@ int main(int argc, char **argv) {
 		dvd_track.cells = dvd_track_cells(vmg_ifo, vts_ifo, dvd_track.track);
 		strncpy(dvd_video.fps, dvd_track_str_fps(vmg_ifo, vts_ifo, dvd_track.track), DVD_VIDEO_FPS);
 
-		if(d_json == 1) {
+		dvd_track.dvd_video = dvd_video;
+
+		if(d_ini == 1) {
+
+			printf("\n");
+			printf("[Track %d]\n", dvd_track.track);
+			printf("vts = %d\n", dvd_track.vts);
+			printf("ttn = %d\n", dvd_track.ttn);
+			printf("vts_id = %s\n", dvd_track.vts_id);
+			printf("length = %s\n", dvd_track.length);
+
+		}
+
+		/** Audio Streams **/
+
+		dvd_track.dvd_audio_tracks = calloc(dvd_track.audio_tracks, sizeof(*dvd_track.dvd_audio_tracks));
+
+		if(dvd_track.audio_tracks && dvd_track.dvd_audio_tracks != NULL) {
+
+			for(c = 0; c < dvd_track.audio_tracks; c++) {
+
+				memset(&dvd_audio, 0, sizeof(dvd_audio));
+				memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
+				memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
+
+				dvd_audio.track = c + 1;
+				dvd_audio.active = dvd_track_active_audio_stream(vts_ifo, c);
+				strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(vts_ifo, c), DVD_AUDIO_LANG_CODE);
+				strncpy(dvd_audio.codec, dvd_track_audio_codec(vts_ifo, c), DVD_AUDIO_CODEC);
+				dvd_audio.channels = dvd_track_audio_num_channels(vts_ifo, c);
+				strncpy(dvd_audio.stream_id, dvd_track_audio_stream_id(vts_ifo, c), DVD_AUDIO_STREAM_ID);
+
+				dvd_track.dvd_audio_tracks[c] = dvd_audio;
+
+			}
+
+		}
+
+		/** Subtitles **/
+
+		dvd_track.dvd_subtitles = calloc(dvd_track.subtitles, sizeof(*dvd_track.dvd_subtitles));
+
+		if(dvd_track.subtitles && dvd_track.dvd_subtitles != NULL) {
+
+			for(c = 0; c < dvd_track.subtitles; c++) {
+
+				memset(&dvd_subtitle, 0, sizeof(dvd_subtitle));
+				memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
+
+				dvd_subtitle.track = c + 1;
+				dvd_subtitle.active = dvd_track_active_subtitle(vts_ifo, c);
+				strncpy(dvd_subtitle.stream_id, dvd_track_subtitle_stream_id(c), DVD_SUBTITLE_STREAM_ID);
+				strncpy(dvd_subtitle.lang_code, dvd_track_subtitle_lang_code(vts_ifo, c), DVD_SUBTITLE_LANG_CODE);
+
+				dvd_track.dvd_subtitles[c] = dvd_subtitle;
+
+			}
+
+		}
+
+		/** Chapters **/
+
+		dvd_track.dvd_chapters = calloc(dvd_track.chapters, sizeof(*dvd_track.dvd_chapters));
+
+		if(dvd_track.chapters && dvd_track.dvd_chapters != NULL) {
+
+			for(c = 0; c < dvd_track.chapters; c++) {
+
+				dvd_chapter.chapter = c + 1;
+
+				strncpy(dvd_chapter.length, dvd_chapter_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter), DVD_CHAPTER_LENGTH);
+				dvd_chapter.msecs = dvd_chapter_milliseconds(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
+
+				dvd_chapter.startcell = dvd_chapter_startcell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
+
+				dvd_track.dvd_chapters[c] = dvd_chapter;
+
+			};
+
+		}
+
+		/** Cells **/
+
+		dvd_track.dvd_cells = calloc(dvd_track.cells, sizeof(*dvd_track.dvd_cells));
+
+		if(dvd_track.cells && dvd_track.dvd_cells != NULL) {
+
+			for(c = 0; c < dvd_track.cells; c++) {
+
+				memset(&dvd_cell, 0, sizeof(dvd_cell));
+				memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
+
+				dvd_cell.cell = c + 1;
+
+				strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell), DVD_CELL_LENGTH);
+				dvd_cell.msecs = dvd_cell_milliseconds(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+
+				dvd_track.dvd_cells[c] = dvd_cell;
+
+			}
+
+		}
+
+		dvd_tracks[track_number - 1] = dvd_track;
+
+	}
+
+	/** JSON display output **/
+
+	if(d_json == 1) {
+
+		// DVD
+		json_object_set_new(json_dvd_info, "title", json_string(dvd_info.title));
+		json_object_set_new(json_dvd_info, "side", json_integer(dvd_info.side));
+		json_object_set_new(json_dvd_info, "tracks", json_integer(dvd_info.tracks));
+		json_object_set_new(json_dvd_info, "longest track", json_integer(dvd_info.longest_track));
+		if(strlen(dvd_info.provider_id))
+			json_object_set_new(json_dvd_info, "provider id", json_string(dvd_info.provider_id));
+		if(strlen(dvd_info.vmg_id))
+			json_object_set_new(json_dvd_info, "vmg id", json_string(dvd_info.vmg_id));
+		json_object_set_new(json_dvd_info, "video title sets", json_integer(dvd_info.video_title_sets));
+		json_object_set_new(json_dvd_info, "dvdread id", json_string(dvdread_id));
+
+		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
+
+			dvd_track = dvd_tracks[track_number - 1];
+			dvd_video = dvd_tracks[track_number - 1].dvd_video;
 
 			json_dvd_track = json_object();
+			json_dvd_video = json_object();
+
 			json_object_set_new(json_dvd_track, "track", json_integer(dvd_track.track));
 			json_object_set_new(json_dvd_track, "length", json_string(dvd_track.length));
 			json_object_set_new(json_dvd_track, "msecs", json_integer(dvd_track.msecs));
 			json_object_set_new(json_dvd_track, "vts", json_integer(dvd_track.vts));
-			if(strlen(dvd_track.vts_id) > 0)
+			if(strlen(dvd_track.vts_id))
 				json_object_set_new(json_dvd_track, "vts id", json_string(dvd_track.vts_id));
 			json_object_set_new(json_dvd_track, "ttn", json_integer(dvd_track.ttn));
 
-			json_dvd_video = json_object();
 			if(strlen(dvd_video.codec))
 				json_object_set_new(json_dvd_video, "codec", json_string(dvd_video.codec));
 			if(strlen(dvd_video.format))
@@ -598,158 +717,112 @@ int main(int argc, char **argv) {
 			// json_object_set_new(json_dvd_video, "pan and scan", json_integer(dvd_video.pan_and_scan));
 			json_object_set_new(json_dvd_track, "video", json_dvd_video);
 
+			// Audio tracks
 
-		}
+			if(dvd_track.audio_tracks) {
 
-		if(d_ini == 1) {
+				json_dvd_audio_tracks = json_array();
 
-			printf("\n");
-			printf("[Track %d]\n", dvd_track.track);
-			printf("vts = %d\n", dvd_track.vts);
-			printf("ttn = %d\n", dvd_track.ttn);
-			printf("vts_id = %s\n", dvd_track.vts_id);
-			printf("length = %s\n", dvd_track.length);
+				for(c = 0; c < dvd_track.audio_tracks; c++) {
 
-		}
+					dvd_audio = dvd_track.dvd_audio_tracks[c];
 
-		/** Audio Streams **/
+					json_dvd_audio = json_object();
 
-		if(d_json)
-			json_dvd_audio_tracks = json_array();
+					json_object_set_new(json_dvd_audio, "track", json_integer(dvd_audio.track));
+					json_object_set_new(json_dvd_audio, "active", json_integer(dvd_audio.active));
+					if(strlen(dvd_audio.lang_code) == DVD_AUDIO_LANG_CODE)
+						json_object_set_new(json_dvd_audio, "lang code", json_string(dvd_audio.lang_code));
+					json_object_set_new(json_dvd_audio, "codec", json_string(dvd_audio.codec));
+					json_object_set_new(json_dvd_audio, "channels", json_integer(dvd_audio.channels));
+					json_object_set_new(json_dvd_audio, "stream id", json_string(dvd_audio.stream_id));
+					json_array_append(json_dvd_audio_tracks, json_dvd_audio);
 
-		for(c = 0; c < dvd_track.audio_tracks; c++) {
+				}
 
-			memset(&dvd_audio, 0, sizeof(dvd_audio));
-			memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
-			memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
-
-			dvd_audio.track = c + 1;
-			dvd_audio.active = dvd_track_active_audio_stream(vts_ifo, c);
-			strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(vts_ifo, c), DVD_AUDIO_LANG_CODE);
-			strncpy(dvd_audio.codec, dvd_track_audio_codec(vts_ifo, c), DVD_AUDIO_CODEC);
-			dvd_audio.channels = dvd_track_audio_num_channels(vts_ifo, c);
-			strncpy(dvd_audio.stream_id, dvd_track_audio_stream_id(vts_ifo, c), DVD_AUDIO_STREAM_ID);
-
-			if(d_json == 1) {
-
-				json_dvd_audio = json_object();
-				json_object_set_new(json_dvd_audio, "track", json_integer(dvd_audio.track));
-				json_object_set_new(json_dvd_audio, "active", json_integer(dvd_audio.active));
-				if(strlen(dvd_audio.lang_code) == DVD_AUDIO_LANG_CODE)
-					json_object_set_new(json_dvd_audio, "lang code", json_string(dvd_audio.lang_code));
-				json_object_set_new(json_dvd_audio, "codec", json_string(dvd_audio.codec));
-				json_object_set_new(json_dvd_audio, "channels", json_integer(dvd_audio.channels));
-				json_object_set_new(json_dvd_audio, "stream id", json_string(dvd_audio.stream_id));
-				json_array_append(json_dvd_audio_tracks, json_dvd_audio);
-
-			}
-
-		}
-
-		/** Subtitles **/
-
-		if(d_json)
-			json_dvd_subtitles = json_array();
-
-		for(c = 0; c < dvd_track.subtitles; c++) {
-
-			memset(&dvd_subtitle, 0, sizeof(dvd_subtitle));
-			memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
-
-			dvd_subtitle.track = c + 1;
-			dvd_subtitle.active = dvd_track_active_subtitle(vts_ifo, c);
-			strncpy(dvd_subtitle.stream_id, dvd_track_subtitle_stream_id(c), DVD_SUBTITLE_STREAM_ID);
-			strncpy(dvd_subtitle.lang_code, dvd_track_subtitle_lang_code(vts_ifo, c), DVD_SUBTITLE_LANG_CODE);
-
-			if(d_json == 1) {
-
-				json_dvd_subtitle = json_object();
-				json_object_set_new(json_dvd_subtitle, "track", json_integer(dvd_subtitle.track));
-				json_object_set_new(json_dvd_subtitle, "active", json_integer(dvd_subtitle.active));
-				if(strlen(dvd_subtitle.lang_code) == DVD_SUBTITLE_LANG_CODE)
-					json_object_set_new(json_dvd_subtitle, "lang code", json_string(dvd_subtitle.lang_code));
-				json_object_set_new(json_dvd_subtitle, "stream id", json_string(dvd_subtitle.stream_id));
-				json_array_append(json_dvd_subtitles, json_dvd_subtitle);
-
-			}
-
-		}
-
-		if(d_json == 1) {
-
-			if(dvd_track.audio_tracks)
 				json_object_set_new(json_dvd_track, "audio", json_dvd_audio_tracks);
-			if(dvd_track.subtitles)
+
+			}
+
+			// Subtitles
+
+			if(dvd_track.subtitles) {
+
+				json_dvd_subtitles = json_array();
+
+				for(c = 0; c < dvd_track.subtitles; c++) {
+
+					dvd_subtitle = dvd_track.dvd_subtitles[c];
+
+					json_dvd_subtitle = json_object();
+
+					json_object_set_new(json_dvd_subtitle, "track", json_integer(dvd_subtitle.track));
+					json_object_set_new(json_dvd_subtitle, "active", json_integer(dvd_subtitle.active));
+					if(strlen(dvd_subtitle.lang_code) == DVD_SUBTITLE_LANG_CODE)
+						json_object_set_new(json_dvd_subtitle, "lang code", json_string(dvd_subtitle.lang_code));
+					json_object_set_new(json_dvd_subtitle, "stream id", json_string(dvd_subtitle.stream_id));
+					json_array_append(json_dvd_subtitles, json_dvd_subtitle);
+
+				}
+
 				json_object_set_new(json_dvd_track, "subtitles", json_dvd_subtitles);
+
+			}
+
+			// Chapters
+
+			if(dvd_track.chapters) {
+
+				json_dvd_chapters = json_array();
+
+				for(c = 0; c < dvd_track.chapters; c++) {
+
+					dvd_chapter = dvd_track.dvd_chapters[c];
+
+					json_dvd_chapter = json_object();
+
+					json_object_set_new(json_dvd_chapter, "chapter", json_integer(dvd_chapter.chapter));
+					json_object_set_new(json_dvd_chapter, "length", json_string(dvd_chapter.length));
+					json_object_set_new(json_dvd_chapter, "msecs", json_integer(dvd_chapter.msecs));
+					json_object_set_new(json_dvd_chapter, "startcell", json_integer(dvd_chapter.startcell));
+					json_array_append(json_dvd_chapters, json_dvd_chapter);
+
+				}
+
+				json_object_set_new(json_dvd_track, "chapters", json_dvd_chapters);
+
+			}
+
+			// Cells
+
+			if(dvd_track.cells) {
+
+				json_dvd_cells = json_array();
+
+				for(c = 0; c < dvd_track.cells; c++) {
+
+					dvd_cell = dvd_track.dvd_cells[c];
+
+					json_dvd_cell = json_object();
+
+					json_object_set_new(json_dvd_cell, "cell", json_integer(dvd_cell.cell));
+					json_object_set_new(json_dvd_cell, "length", json_string(dvd_cell.length));
+					json_object_set_new(json_dvd_cell, "msecs", json_integer(dvd_cell.msecs));
+					json_array_append(json_dvd_cells, json_dvd_cell);
+
+				}
+
+				json_object_set_new(json_dvd_track, "cells", json_dvd_cells);
+
+			}
+
 			json_array_append(json_dvd_tracks, json_dvd_track);
 
 		}
 
-		/** Chapters **/
-
-		if(d_json == 1)
-			json_dvd_chapters = json_array();
-
-		for(c = 0; c < dvd_track.chapters; c++) {
-
-			dvd_chapter.chapter = c + 1;
-
-			strncpy(dvd_chapter.length, dvd_chapter_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter), DVD_CHAPTER_LENGTH);
-			dvd_chapter.msecs = dvd_chapter_milliseconds(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
-
-			dvd_chapter.startcell = dvd_chapter_startcell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
-
-			if(d_json == 1) {
-				json_dvd_chapter = json_object();
-				json_object_set_new(json_dvd_chapter, "chapter", json_integer(dvd_chapter.chapter));
-				json_object_set_new(json_dvd_chapter, "length", json_string(dvd_chapter.length));
-				json_object_set_new(json_dvd_chapter, "msecs", json_integer(dvd_chapter.msecs));
-				json_object_set_new(json_dvd_chapter, "startcell", json_integer(dvd_chapter.startcell));
-				json_array_append(json_dvd_chapters, json_dvd_chapter);
-			}
-
-		};
-
-		if(d_json == 1)
-			json_object_set_new(json_dvd_track, "chapters", json_dvd_chapters);
-
-		/** Cells **/
-
-		if(d_json == 1)
-			json_dvd_cells = json_array();
-
-		for(c = 0; c < dvd_track.cells; c++) {
-
-			memset(&dvd_cell, 0, sizeof(dvd_cell));
-			memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
-
-			dvd_cell.cell = c + 1;
-
-			strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell), DVD_CELL_LENGTH);
-			dvd_cell.msecs = dvd_cell_milliseconds(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-
-			if(d_json == 1) {
-				json_dvd_cell = json_object();
-				json_object_set_new(json_dvd_cell, "cell", json_integer(dvd_cell.cell));
-				json_object_set_new(json_dvd_cell, "length", json_string(dvd_cell.length));
-				json_object_set_new(json_dvd_cell, "msecs", json_integer(dvd_cell.msecs));
-				json_array_append(json_dvd_cells, json_dvd_cell);
-			}
-
-		}
-
-		if(d_json == 1)
-			json_object_set_new(json_dvd_track, "cells", json_dvd_cells);
-
-		dvd_tracks[track_number - 1] = dvd_track;
-
-	}
-
-	if(d_json == 1) {
-
 		json_object_set_new(json_dvd, "dvd", json_dvd_info);
 
-		if(track_number > 0)
+		if(track_number)
 			json_object_set_new(json_dvd, "tracks", json_dvd_tracks);
 
 		printf("%s\n", json_dumps(json_dvd, JSON_INDENT(1) + JSON_PRESERVE_ORDER));
