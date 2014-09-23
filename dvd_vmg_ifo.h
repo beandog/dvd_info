@@ -1,3 +1,7 @@
+// FIXME cleanup duplicate defines
+#define DVD_TITLE 32
+#define DVD_PROVIDER_ID 32
+#define DVD_VMG_ID 12
 
 /**
  * Functions used to get basic DVD data:
@@ -37,13 +41,8 @@
  * This whole function is mostly lifted from lsdvd.
  *
  * @param device_filename device filename
- * @param p char[33] to copy string to
- * @retval 0 success
- * @retval 1 could not open device
- * @retval 2 could not seek file
- * @retval 3 could not read the title
  */
-int dvd_device_title(const char *device_filename, char *p);
+const char *dvd_device_title(const char *device_filename);
 
 /**
  * Get the number of tracks on a DVD

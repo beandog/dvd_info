@@ -6,9 +6,9 @@
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
 
-int dvd_device_title(const char *device_filename, char *p) {
+const char *dvd_device_title(const char *device_filename) {
 
-	char dvd_title[33] = {'\0'};
+	char dvd_title[DVD_TITLE + 1] = {'\0'};
 	FILE *filehandle = 0;
 	size_t x;
 	size_t y;
@@ -16,7 +16,7 @@ int dvd_device_title(const char *device_filename, char *p) {
 	// If we can't even open the device, exit quietly
 	filehandle = fopen(device_filename, "r");
 	if(filehandle == NULL) {
-		return 1;
+		return "";
 	}
 
 	// The DVD title is actually on the disc, and doesn't need the dvdread
@@ -26,14 +26,14 @@ int dvd_device_title(const char *device_filename, char *p) {
 	// first.
 	if(fseek(filehandle, 32808, SEEK_SET) == -1) {
 		fclose(filehandle);
-		return 2;
+		return "";
 	}
 
-	x = fread(dvd_title, 1, 32, filehandle);
-	dvd_title[32] = '\0';
+	x = fread(dvd_title, 1, DVD_TITLE, filehandle);
+	dvd_title[DVD_TITLE] = '\0';
 	if(x == 0) {
 		fclose(filehandle);
-		return 3;
+		return "";
 	}
 
 	fclose(filehandle);
@@ -46,9 +46,7 @@ int dvd_device_title(const char *device_filename, char *p) {
 		}
 	}
 
-	strncpy(p, dvd_title, 32);
-
-	return 0;
+	return strndup(dvd_title, DVD_TITLE);
 
 }
 
@@ -65,13 +63,13 @@ uint16_t dvd_info_num_vts(const ifo_handle_t *ifo) {
 
 const char *dvd_info_provider_id(const ifo_handle_t *ifo) {
 
-	return strndup(ifo->vmgi_mat->provider_identifier, 32);
+	return strndup(ifo->vmgi_mat->provider_identifier, DVD_PROVIDER_ID);
 
 }
 
 const char *dvd_info_vmg_id(const ifo_handle_t *ifo) {
 
-	return strndup(ifo->vmgi_mat->vmg_identifier, 12);
+	return strndup(ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID);
 
 }
 
