@@ -559,6 +559,35 @@ int main(int argc, char **argv) {
 
 	}
 
+	/** lsdvd style output (default) **/
+
+	if(d_lsdvd == 1) {
+
+		printf("Disc Title: %s\n", dvd_info.title);
+
+		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
+
+			dvd_track = dvd_tracks[track_number - 1];
+
+			// Skip track if parent IFO is invalid
+			if(valid_ifos[dvd_track.vts] == false)
+				continue;
+
+			printf("Title: %02u, ", dvd_track.track);
+			printf("Length: %s ", dvd_track.length);
+			printf("Chapters: %02u, ", dvd_track.chapters);
+			printf("Cells: %02u, ", dvd_track.cells);
+			printf("Audio streams: %02u, ", dvd_track.audio_tracks);
+			printf("Subpictures: %02u\n", dvd_track.subtitles);
+
+		}
+
+		if(d_all_tracks)
+			printf("Longest track: %02u\n", dvd_info.longest_track);
+
+	}
+
+
 	/** JSON display output **/
 
 	if(d_json == 1) {
@@ -863,33 +892,6 @@ int main(int argc, char **argv) {
 		}
 
 	}
-
-	if(d_lsdvd == 1)
-		printf("Disc Title: %s\n", dvd_info.title);
-
-	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
-
-		dvd_track = dvd_tracks[track_number - 1];
-
-		// Skip track if parent IFO is invalid
-		if(valid_ifos[dvd_track.vts] == false)
-			continue;
-
-		if(d_lsdvd == 1) {
-
-			printf("Title: %02u, ", dvd_track.track);
-			printf("Length: %s ", dvd_track.length);
-			printf("Chapters: %02u, ", dvd_track.chapters);
-			printf("Cells: %02u, ", dvd_track.cells);
-			printf("Audio streams: %02u, ", dvd_track.audio_tracks);
-			printf("Subpictures: %02u\n", dvd_track.subtitles);
-
-		}
-
-	}
-
-	if(d_lsdvd && d_all_tracks)
-		printf("Longest track: %02u\n", dvd_info.longest_track);
 
 	// Cleanup
 
