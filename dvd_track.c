@@ -15,19 +15,40 @@ uint16_t dvd_track_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_
 	// Should these be the same number
 	// vts_ttn = vmg_ifo->tt_srpt->title[title_track_idx].vts_ttn;
 
-	return vmg_ifo->tt_srpt->title[track_number - 1].title_set_nr;
+	uint16_t ifo_number;
+
+	ifo_number = vmg_ifo->tt_srpt->title[track_number - 1].title_set_nr;
+
+	if(ifo_number >= 0)
+		return ifo_number;
+	else
+		return 1;
 
 }
 
 uint8_t dvd_track_ttn(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
 
-	return vmg_ifo->tt_srpt->title[track_number - 1].vts_ttn;
+	uint8_t ttn;
+
+	ttn = vmg_ifo->tt_srpt->title[track_number - 1].vts_ttn;
+
+	if(ttn > 0)
+		return ttn;
+	else
+		return 1;
 
 }
 
 uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
 
-	return vmg_ifo->tt_srpt->title[track_number - 1].nr_of_angles;
+	uint8_t angles;
+
+	angles = vmg_ifo->tt_srpt->title[track_number - 1].nr_of_angles;
+
+	if(angles >= 0)
+		return angles;
+	else
+		return 0;
 
 }
 
@@ -191,7 +212,14 @@ bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *track_ifo) {
 
 uint8_t dvd_track_permitted_df(const ifo_handle_t *track_ifo) {
 
-	return track_ifo->vtsi_mat->vts_video_attr.permitted_df;
+	uint8_t permitted_df;
+
+	permitted_df = track_ifo->vtsi_mat->vts_video_attr.permitted_df;
+
+	if(permitted_df >= 0)
+		return permitted_df;
+	else
+		return 0;
 
 }
 
@@ -408,7 +436,14 @@ const char *dvd_time_length(dvd_time_t *dvd_time) {
 
 uint8_t dvd_track_num_audio_streams(const ifo_handle_t *track_ifo) {
 
-	return track_ifo->vtsi_mat->nr_of_vts_audio_streams;
+	uint8_t audio_streams;
+
+	audio_streams = track_ifo->vtsi_mat->nr_of_vts_audio_streams;
+
+	if(audio_streams >= 0)
+		return audio_streams;
+	else
+		return 0;
 
 }
 
@@ -491,7 +526,14 @@ bool dvd_track_has_audio_lang_code(const ifo_handle_t *track_ifo, const char *la
 
 uint8_t dvd_track_subtitles(const ifo_handle_t *track_ifo) {
 
-	return track_ifo->vtsi_mat->nr_of_vts_subp_streams;
+	uint8_t subtitles;
+
+	subtitles = track_ifo->vtsi_mat->nr_of_vts_subp_streams;
+
+	if(subtitles >= 0)
+		return subtitles;
+	else
+		return 0;
 
 }
 
@@ -568,11 +610,18 @@ uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 	uint8_t ttn;
 	pgcit_t *vts_pgcit;
 	pgc_t *pgc;
+	uint8_t chapters;
+
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
-	return pgc->nr_of_programs;
+	chapters = pgc->nr_of_programs;
+
+	if(chapters > 0)
+		return chapters;
+	else
+		return 0;
 
 }
 
@@ -581,11 +630,18 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
 	uint8_t ttn;
 	pgcit_t *vts_pgcit;
 	pgc_t *pgc;
+	uint8_t cells;
+
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
-	return pgc->nr_of_cells;
+	cells = pgc->nr_of_cells;
+
+	if(cells >= 0)
+		return cells;
+	else
+		return 0;
 
 }
 
@@ -700,12 +756,18 @@ uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 	uint8_t ttn;
 	pgcit_t *vts_pgcit;
 	pgc_t *pgc;
+	uint8_t startcell;
 
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
-	return pgc->program_map[chapter_number - 1];
+	startcell = pgc->program_map[chapter_number - 1];
+
+	if(startcell > 0)
+		return startcell;
+	else
+		return 1;
 
 }
 
@@ -794,7 +856,10 @@ uint8_t dvd_track_audio_num_channels(const ifo_handle_t *track_ifo, const uint8_
 	uc_num_channels = audio_attr->channels;
 	num_channels = uc_num_channels + 1;
 
-	return num_channels;
+	if(num_channels >= 0)
+		return num_channels;
+	else
+		return 0;
 
 }
 
