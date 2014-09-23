@@ -223,15 +223,6 @@ uint8_t dvd_track_permitted_df(const ifo_handle_t *track_ifo) {
 
 }
 
-/*
- * Display format
- * vtsi_mat->vts_video_attr.permitted_df
- *
- * 0 = Pan and Scan or Letterbox
- * 1 = Pan and Scan
- * 2 = Letterbox (anamorphic video, widescreen?)
- * 3 = Unset (most likely non-anormphic widescreen?)
- */
 bool dvd_track_letterbox_video(const ifo_handle_t *track_ifo) {
 
 	uint8_t permitted_df;

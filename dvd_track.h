@@ -130,6 +130,8 @@ uint8_t dvd_track_permitted_df(const ifo_handle_t *track_ifo);
  *
  * FIXME is that I need to clarify / document / code all the possible options
  * when it comes to widescreen (16x9), letterbox, pan & scan.
+ *
+ * See also http://stnsoft.com/DVD/ifo.html
  */
 
 /**
@@ -141,7 +143,7 @@ uint8_t dvd_track_permitted_df(const ifo_handle_t *track_ifo);
  * 0: Pan and Scan plus Letterbox
  * 1: Pan and Scan
  * 2: Letterbox
- * 3: ???
+ * 3: Unset (most likely non-anormphic widescreen?)
  *
  * @param track_ifo dvdread track IFO handler
  * @return boolean
