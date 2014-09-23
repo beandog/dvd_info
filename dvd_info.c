@@ -577,11 +577,12 @@ int main(int argc, char **argv) {
 
 		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
+			dvd_track = dvd_tracks[track_number - 1];
+
 			// Skip track if parent IFO is invalid
 			if(valid_ifos[dvd_track.vts] == false)
 				continue;
 
-			dvd_track = dvd_tracks[track_number - 1];
 			dvd_video = dvd_tracks[track_number - 1].dvd_video;
 
 			json_dvd_track = json_object();
@@ -755,11 +756,12 @@ int main(int argc, char **argv) {
 
 		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
+			dvd_track = dvd_tracks[track_number - 1];
+
 			// Skip track if parent IFO is invalid
 			if(valid_ifos[dvd_track.vts] == false)
 				continue;
 
-			dvd_track = dvd_tracks[track_number - 1];
 			dvd_video = dvd_track.dvd_video;
 
 			printf("\n");
