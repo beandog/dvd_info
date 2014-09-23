@@ -419,23 +419,6 @@ int main(int argc, char **argv) {
 		sprintf(&dvdread_id[x * 2], "%02x", dvdread_ifo_md5[x]);
 	}
 
-	// .INI style output
-	if(d_ini == 1) {
-
-		printf("[DVD]\n");
-		printf("title = %s\n", dvd_info.title);
-		printf("side = %d\n", dvd_info.side);
-		printf("tracks = %d\n", dvd_info.tracks);
-		printf("longest_track = %d\n", dvd_info.longest_track);
-		if(strlen(dvd_info.provider_id))
-			printf("provider_id = %s\n", dvd_info.provider_id);
-		if(strlen(dvd_info.vmg_id))
-			printf("vmg_id = %s\n", dvd_info.vmg_id);
-		printf("video_title_sets = %d\n", dvd_info.video_title_sets);
-		printf("dvdread_id = %s\n", dvdread_id);
-
-	}
-
 	/**
 	 * Track information
 	 */
@@ -481,17 +464,6 @@ int main(int argc, char **argv) {
 		strncpy(dvd_video.fps, dvd_track_str_fps(vmg_ifo, vts_ifo, dvd_track.track), DVD_VIDEO_FPS);
 
 		dvd_track.dvd_video = dvd_video;
-
-		if(d_ini == 1) {
-
-			printf("\n");
-			printf("[Track %d]\n", dvd_track.track);
-			printf("vts = %d\n", dvd_track.vts);
-			printf("ttn = %d\n", dvd_track.ttn);
-			printf("vts_id = %s\n", dvd_track.vts_id);
-			printf("length = %s\n", dvd_track.length);
-
-		}
 
 		/** Audio Streams **/
 
@@ -628,12 +600,14 @@ int main(int argc, char **argv) {
 			json_object_set_new(json_dvd_video, "width", json_integer(dvd_video.width));
 			json_object_set_new(json_dvd_video, "height", json_integer(dvd_video.height));
 			// FIXME needs cleanup
+			/*
 			if(dvd_video.df == 0)
 				json_object_set_new(json_dvd_video, "df", json_string("Pan and Scan + Letterbox"));
 			else if(dvd_video.df == 1)
 				json_object_set_new(json_dvd_video, "df", json_string("Pan and Scan"));
 			else if(dvd_video.df == 2)
 				json_object_set_new(json_dvd_video, "df", json_string("Letterbox"));
+			*/
 			json_object_set_new(json_dvd_video, "angles", json_integer(dvd_video.angles));
 			// Only display FPS if it's been populated as a string
 			if(strlen(dvd_video.fps))
@@ -754,6 +728,129 @@ int main(int argc, char **argv) {
 			json_object_set_new(json_dvd, "tracks", json_dvd_tracks);
 
 		printf("%s\n", json_dumps(json_dvd, JSON_INDENT(1) + JSON_PRESERVE_ORDER));
+
+	}
+
+	// INI style format
+
+	if(d_ini == 1) {
+
+		printf("[dvd]\n");
+		printf("dvdread_id = \"%s\"\n", dvdread_id);
+		printf("longest_track = %u\n", dvd_info.longest_track);
+		if(strlen(dvd_info.provider_id))
+			printf("provider_id = \"%s\"\n", dvd_info.provider_id);
+		printf("side = %u\n", dvd_info.side);
+		printf("title = \"%s\"\n", dvd_info.title);
+		printf("title_tracks = %u\n", dvd_info.tracks);
+		printf("video_title_sets = %u\n", dvd_info.video_title_sets);
+		if(strlen(dvd_info.vmg_id))
+			printf("vmg_id = \"%s\"\n", dvd_info.vmg_id);
+
+		// Title tracks
+
+		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
+
+			dvd_track = dvd_tracks[track_number - 1];
+			dvd_video = dvd_track.dvd_video;
+
+			printf("\n");
+			printf("[title_track:%u]\n", dvd_track.track);
+			printf("angles = %u\n", dvd_video.angles);
+			if(strlen(dvd_video.aspect_ratio))
+				printf("aspect_ratio = \"%s\"\n", dvd_video.aspect_ratio);
+			printf("audio_tracks = %u\n", dvd_track.audio_tracks);
+			if(strlen(dvd_video.codec))
+				printf("codec = \"%s\"\n", dvd_video.codec);
+			if(strlen(dvd_video.format))
+				printf("format = \"%s\"\n", dvd_video.format);
+			if(strlen(dvd_video.fps))
+				printf("fps = \"%s\"\n", dvd_video.fps);
+			printf("length = \"%s\"\n", dvd_track.length);
+			printf("ttn = %u\n", dvd_track.ttn);
+			printf("vts = %u\n", dvd_track.vts);
+
+			// FIXME display correct values
+			/*
+			if(dvd_video.df == 0) {
+				printf("letterbox = true\n");
+				printf("pan_and_scan = true\n");
+			} else if(dvd_video.df == 1) {
+				printf("letterbox = false\n");
+				printf("pan_and_scan = true\n");
+			} else if(dvd_video.df == 2) {
+				printf("letterbox = true\n");
+				printf("pan_and_scan = false\n");
+			}
+			*/
+
+			// Audio tracks
+
+			for(c = 0; c < dvd_track.audio_tracks; c++) {
+
+				dvd_audio = dvd_track.dvd_audio_tracks[c];
+
+				printf("\n");
+				printf("[audio_track:%u.%u]\n", dvd_track.track, dvd_audio.track);
+				printf("active = %s\n", dvd_audio.active == 0 ? "false" : "true");
+				printf("channels = %u\n", dvd_audio.channels);
+				printf("codec = \"%s\"\n", dvd_audio.codec);
+				if(strlen(dvd_audio.lang_code))
+					printf("lang_code = \"%s\"\n", dvd_audio.lang_code);
+				printf("stream_id = \"%s\"\n", dvd_audio.stream_id);
+
+			}
+
+			// Subtitles
+
+			for(c = 0; c < dvd_track.subtitles; c++) {
+
+				dvd_subtitle = dvd_track.dvd_subtitles[c];
+
+				printf("\n");
+				printf("[subtitle_track:%u.%u]\n", dvd_track.track, dvd_subtitle.track);
+				printf("active = %s\n", dvd_subtitle.active == 0 ? "false" : "true");
+				if(strlen(dvd_subtitle.lang_code))
+					printf("lang_code = \"%s\"\n", dvd_subtitle.lang_code);
+				printf("stream_id = \"%s\"\n", dvd_subtitle.stream_id);
+
+			}
+
+			// Chapters
+
+			if(dvd_track.chapters) {
+
+				for(c = 0; c < dvd_track.chapters; c++) {
+
+					dvd_chapter = dvd_track.dvd_chapters[c];
+
+					printf("\n");
+					printf("[chapter:%u.%u]\n", dvd_track.track, dvd_chapter.chapter);
+					printf("length = \"%s\"\n", dvd_chapter.length);
+					printf("msecs = %u\n", dvd_chapter.msecs);
+					printf("startcell = %u\n", dvd_chapter.startcell);
+
+				}
+
+			}
+
+			// Cells
+
+			if(dvd_track.cells) {
+
+				for(c = 0; c < dvd_track.cells; c++) {
+
+					dvd_cell = dvd_track.dvd_cells[c];
+
+					printf("\n");
+					printf("[cell:%u.%u]\n", dvd_track.track, dvd_cell.cell);
+					printf("length = \"%s\"\n", dvd_cell.length);
+
+				}
+
+			}
+
+		}
 
 	}
 
