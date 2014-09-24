@@ -18,9 +18,9 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_numbe
  * Get the track's VTS id
  * Possible that it's blank, usually set to DVDVIDEO-VTS otherwise.
  *
- * @param ifo libdvdread IFO handle
+ * @param vts_ifo libdvdread IFO handle
  */
-const char *dvd_vts_id(const ifo_handle_t *ifo);
+const char *dvd_vts_id(const ifo_handle_t *vts_ifo);
 
 /**
  * Get the MPEG video codec version
