@@ -381,7 +381,7 @@ int main(int argc, char **argv) {
 	// Exit if the track requested is on an invalid IFO
 	if(has_invalid_ifos && opt_track_number) {
 
-		vts = dvd_track_ifo_number(vmg_ifo, track_number);
+		vts = dvd_vts_ifo_number(vmg_ifo, track_number);
 
 		if(valid_ifos[vts] == false) {
 
@@ -432,7 +432,7 @@ int main(int argc, char **argv) {
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
 		// Open IFO
-		dvd_track.vts = dvd_track_ifo_number(vmg_ifo, track_number);
+		dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, track_number);
 
 		// Skip track if parent IFO is invalid
 		if(valid_ifos[dvd_track.vts] == false) {
@@ -444,7 +444,7 @@ int main(int argc, char **argv) {
 		vts_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
 
 		dvd_track.track = track_number;
-		dvd_track.vts = dvd_track_ifo_number(vmg_ifo, dvd_track.track);
+		dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, dvd_track.track);
 		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
 		strncpy(dvd_track.length, dvd_track_length(vmg_ifo, vts_ifo, dvd_track.track), DVD_TRACK_LENGTH);
 		dvd_track.msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, dvd_track.track);
