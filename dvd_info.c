@@ -332,7 +332,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Get the total number of title tracks on the DVD
-	dvd_info.tracks = dvd_info_num_tracks(vmg_ifo);
+	dvd_info.tracks = dvd_tracks(vmg_ifo);
 
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks || arg_track_number < 1)) {
@@ -353,7 +353,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Exit if all the IFOs cannot be opened
-	dvd_info.video_title_sets = dvd_info_num_vts(vmg_ifo);
+	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
 	bool valid_ifos[dvd_info.video_title_sets];
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
@@ -405,10 +405,10 @@ int main(int argc, char **argv) {
 
 	// GRAB ALL THE THINGS
 	dvd_info.side = vmg_ifo->vmgi_mat->disc_side;
-	strncpy(dvd_info.title, dvd_device_title(device_filename), DVD_TITLE);
-	strncpy(dvd_info.provider_id, dvd_info_provider_id(vmg_ifo), DVD_PROVIDER_ID);
-	strncpy(dvd_info.vmg_id, dvd_info_vmg_id(vmg_ifo), DVD_VMG_ID);
-	dvd_info.longest_track = dvd_info_longest_track(dvdread_dvd);
+	strncpy(dvd_info.title, dvd_title(device_filename), DVD_TITLE);
+	strncpy(dvd_info.provider_id, dvd_provider_id(vmg_ifo), DVD_PROVIDER_ID);
+	strncpy(dvd_info.vmg_id, dvd_vmg_id(vmg_ifo), DVD_VMG_ID);
+	dvd_info.longest_track = dvd_longest_track(dvdread_dvd);
 
 	/*
 	longest_track_with_subtitles = dvd_info_longest_track_with_subtitles(dvdread_dvd);

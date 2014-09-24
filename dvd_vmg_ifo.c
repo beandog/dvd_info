@@ -6,7 +6,7 @@
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
 
-const char *dvd_device_title(const char *device_filename) {
+const char *dvd_title(const char *device_filename) {
 
 	char dvd_title[DVD_TITLE + 1] = {'\0'};
 	FILE *filehandle = 0;
@@ -50,24 +50,24 @@ const char *dvd_device_title(const char *device_filename) {
 
 }
 
-uint16_t dvd_info_num_tracks(const ifo_handle_t *ifo) {
+uint16_t dvd_tracks(const ifo_handle_t *ifo) {
 
 	return ifo->tt_srpt->nr_of_srpts;
 
 }
 
-uint16_t dvd_info_num_vts(const ifo_handle_t *ifo) {
+uint16_t dvd_video_title_sets(const ifo_handle_t *ifo) {
 
 	return ifo->vts_atrt->nr_of_vtss;
 }
 
-const char *dvd_info_provider_id(const ifo_handle_t *ifo) {
+const char *dvd_provider_id(const ifo_handle_t *ifo) {
 
 	return strndup(ifo->vmgi_mat->provider_identifier, DVD_PROVIDER_ID);
 
 }
 
-const char *dvd_info_vmg_id(const ifo_handle_t *ifo) {
+const char *dvd_vmg_id(const ifo_handle_t *ifo) {
 
 	return strndup(ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID);
 
@@ -101,7 +101,7 @@ void dvd_info_serial_id(dvdnav_t *dvdnav, char *p) {
 }
 */
 
-uint16_t dvd_info_longest_track(dvd_reader_t *dvdread_dvd) {
+uint16_t dvd_longest_track(dvd_reader_t *dvdread_dvd) {
 
 	ifo_handle_t *vmg_ifo;
 	ifo_handle_t *track_ifo;
