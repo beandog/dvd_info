@@ -69,18 +69,18 @@ const char *dvd_title(const char *device_filename);
  * The Black Cauldron (Walt Disney): 99
  * Searching For Bobby Fischer: 4
  *
- * @param ifo dvdread IFO handle
+ * @param vmg_ifo dvdread IFO handle
  * @return num tracks
  */
-uint16_t dvd_tracks(const ifo_handle_t *ifo);
+uint16_t dvd_tracks(const ifo_handle_t *vmg_ifo);
 
 /**
  * Get the number of VTS on a DVD
  *
- * @param ifo dvdread IFO handle
+ * @param vmg_ifo dvdread IFO handle
  * @return num VTS
  */
-uint16_t dvd_video_title_sets(const ifo_handle_t *ifo);
+uint16_t dvd_video_title_sets(const ifo_handle_t *vmg_ifo);
 
 /**
  * Get the provider ID
@@ -104,18 +104,18 @@ uint16_t dvd_video_title_sets(const ifo_handle_t *ifo);
  *
  * These should *not* be considered as unique identifiers for discs.
  *
- * @param ifo dvdread IFO handle
+ * @param vmg_ifo dvdread IFO handle
  */
-const char *dvd_provider_id(const ifo_handle_t *ifo);
+const char *dvd_provider_id(const ifo_handle_t *vmg_ifo);
 
 /**
  * Get the DVD's VMG id
  * It's entirely possible, and common, that the string is blank.  If it's not
  * blank, it is probably 'DVDVIDEO-VMG'.
  *
- * @param ifo libdvdread IFO handle
+ * @param vmg_ifo libdvdread IFO handle
  */
-const char *dvd_vmg_id(const ifo_handle_t *ifo);
+const char *dvd_vmg_id(const ifo_handle_t *vmg_ifo);
 
 /**
  * Get the DVD side
@@ -126,10 +126,10 @@ const char *dvd_vmg_id(const ifo_handle_t *ifo);
  * I haven't ever checked this before, so I don't know what DVDs are authored
  * with.  I'm going to simply return 2 if it's set to that, and a 1 otherwise.
  *
- * @param ifo libdvdread IFO handle
+ * @param vmg_ifo libdvdread IFO handle
  * @return DVD side
  */
-uint8_t dvd_info_side(const ifo_handle_t *ifo);
+uint8_t dvd_info_side(const ifo_handle_t *vmg_ifo);
 
 /**
  * Get the DVD serial id from dvdnav

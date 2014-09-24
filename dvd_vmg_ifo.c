@@ -50,32 +50,32 @@ const char *dvd_title(const char *device_filename) {
 
 }
 
-uint16_t dvd_tracks(const ifo_handle_t *ifo) {
+uint16_t dvd_tracks(const ifo_handle_t *vmg_ifo) {
 
-	return ifo->tt_srpt->nr_of_srpts;
-
-}
-
-uint16_t dvd_video_title_sets(const ifo_handle_t *ifo) {
-
-	return ifo->vts_atrt->nr_of_vtss;
-}
-
-const char *dvd_provider_id(const ifo_handle_t *ifo) {
-
-	return strndup(ifo->vmgi_mat->provider_identifier, DVD_PROVIDER_ID);
+	return vmg_ifo->tt_srpt->nr_of_srpts;
 
 }
 
-const char *dvd_vmg_id(const ifo_handle_t *ifo) {
+uint16_t dvd_video_title_sets(const ifo_handle_t *vmg_ifo) {
 
-	return strndup(ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID);
+	return vmg_ifo->vts_atrt->nr_of_vtss;
+}
+
+const char *dvd_provider_id(const ifo_handle_t *vmg_ifo) {
+
+	return strndup(vmg_ifo->vmgi_mat->provider_identifier, DVD_PROVIDER_ID);
 
 }
 
-uint8_t dvd_info_side(const ifo_handle_t *ifo) {
+const char *dvd_vmg_id(const ifo_handle_t *vmg_ifo) {
 
-	if(ifo->vmgi_mat->disc_side == 2)
+	return strndup(vmg_ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID);
+
+}
+
+uint8_t dvd_info_side(const ifo_handle_t *vmg_ifo) {
+
+	if(vmg_ifo->vmgi_mat->disc_side == 2)
 		return 2;
 	else
 		return 1;
