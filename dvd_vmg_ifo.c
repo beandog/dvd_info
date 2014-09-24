@@ -104,7 +104,7 @@ void dvd_info_serial_id(dvdnav_t *dvdnav, char *p) {
 uint16_t dvd_longest_track(dvd_reader_t *dvdread_dvd) {
 
 	ifo_handle_t *vmg_ifo;
-	ifo_handle_t *track_ifo;
+	ifo_handle_t *vts_ifo;
 	uint16_t tracks;
 	uint16_t track;
 	uint16_t longest_track;
@@ -130,13 +130,13 @@ uint16_t dvd_longest_track(dvd_reader_t *dvdread_dvd) {
 	for(idx = 0; idx < tracks; idx++) {
 
 		track = idx + 1;
-		ifo_number = dvd_track_ifo_number(vmg_ifo, track);
-		track_ifo = ifoOpen(dvdread_dvd, ifo_number);
+		ifo_number = dvd_vts_ifo_number(vmg_ifo, track);
+		vts_ifo = ifoOpen(dvdread_dvd, ifo_number);
 
-		if(!track_ifo)
+		if(!vts_ifo)
 			continue;
 
-		ms = dvd_track_milliseconds(vmg_ifo, track_ifo, track);
+		ms = dvd_track_milliseconds(vmg_ifo, vts_ifo, track);
 
 		// The *first* track with the longest length will still be the
 		// response.
@@ -145,8 +145,8 @@ uint16_t dvd_longest_track(dvd_reader_t *dvdread_dvd) {
 			longest_track = track;
 		}
 
-		ifoClose(track_ifo);
-		track_ifo = NULL;
+		ifoClose(vts_ifo);
+		vts_ifo = NULL;
 
 	}
 
