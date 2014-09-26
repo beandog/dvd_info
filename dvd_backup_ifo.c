@@ -61,11 +61,9 @@ void dvd_drive_display_status(const char *device_filename) {
 int main(int argc, char **argv) {
 
 	int dvd_fd;
-	int drive_status;
 	uint16_t num_ifos = 1;
 	uint16_t ifo_number = 0;
 	bool is_hardware = false;
-	bool verbose = false;
 	const char *device_filename = DEFAULT_DVD_DEVICE;
 	dvd_reader_t *dvdread_dvd;
 	ifo_handle_t *ifo;
@@ -99,15 +97,6 @@ int main(int argc, char **argv) {
 	// Poll drive status if it is hardware
 	if(strncmp(device_filename, "/dev/", 5) == 0)
 		is_hardware = true;
-
-	if(is_hardware) {
-		drive_status = dvd_drive_get_status(device_filename);
-		// FIXME send to stderr
-		if(verbose) {
-			printf("drive status: ");
-			dvd_drive_display_status(device_filename);
-		}
-	}
 
 	if(is_hardware) {
 		if(dvd_drive_get_status(device_filename) != CDS_DISC_OK) {
