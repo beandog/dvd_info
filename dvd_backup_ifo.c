@@ -12,10 +12,51 @@
 #include <linux/limits.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
-#include "dvd_device.h"
-#include "dvd_drive.h"
 
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
+
+int dvd_drive_get_status(const char *);
+void dvd_drive_display_status(const char *);
+int main(int, char **);
+
+int dvd_drive_get_status(const char *device_filename) {
+
+	int dvd_fd;
+	int drive_status;
+
+	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
+	drive_status = ioctl(dvd_fd, CDROM_DRIVE_STATUS);
+	close(dvd_fd);
+
+	return drive_status;
+
+}
+
+void dvd_drive_display_status(const char *device_filename) {
+
+	const char *status;
+
+	switch(dvd_drive_get_status(device_filename)) {
+		case 1:
+			status = "no disc";
+			break;
+		case 2:
+			status = "tray open";
+			break;
+		case 3:
+			status = "drive not ready";
+			break;
+		case 4:
+			status = "drive ok";
+			break;
+		default:
+			status = "no info";
+			break;
+	}
+
+	printf("%s\n", status);
+
+}
 
 int main(int argc, char **argv) {
 
@@ -43,20 +84,22 @@ int main(int argc, char **argv) {
 		device_filename = argv[1];
 	}
 
-	if(!dvd_device_access(device_filename)) {
+	if(access(device_filename, F_OK) != 0) {
 		fprintf(stderr, "cannot access %s\n", device_filename);
 		return 1;
 	}
 
-	dvd_fd = dvd_device_open(device_filename);
+	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
 	if(dvd_fd < 0) {
 		fprintf(stderr, "error opening %s\n", device_filename);
 		return 1;
 	}
-	dvd_device_close(dvd_fd);
+	close(dvd_fd);
 
 	// Poll drive status if it is hardware
-	is_hardware = dvd_device_is_hardware(device_filename);
+	if(strncmp(device_filename, "/dev/", 5) == 0)
+		is_hardware = true;
+
 	if(is_hardware) {
 		drive_status = dvd_drive_get_status(device_filename);
 		// FIXME send to stderr
@@ -67,7 +110,7 @@ int main(int argc, char **argv) {
 	}
 
 	if(is_hardware) {
-		if(!dvd_drive_has_media(device_filename)) {
+		if(dvd_drive_get_status(device_filename) != CDS_DISC_OK) {
 			// FIXME send to stderr
 			printf("drive status: ");
 			dvd_drive_display_status(device_filename);
