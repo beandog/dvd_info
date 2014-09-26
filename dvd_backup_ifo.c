@@ -13,6 +13,41 @@
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 
+/**
+ * dvd_backup_ifo - creates a copy of a DVD's VMG and VTS .IFO and .BUP files
+ * which can be used for debugging by developers. Requires libdvdread.
+ *
+ * @author Steve Dibb <steve.dibb@gmail.com>
+ * @site http://dvds.beandog.org/
+ * @site https://github.com/beandog/dvd_info
+ *
+ * To build:
+ * $ cc -o dvd_backup_ifo dvd_backup_ifo.c -l dvdread
+ *
+ * Usage:
+ * $ dvd_backup_ifo [DVD path]
+ * "DVD path" can be a device filename, single file, or directory.
+ * Creates a "VIDEO_TS" directory in the current path.
+ *
+ * Examples:
+ * $ dvd_backup_ifo /dev/sr0
+ * $ dvd_backup_ifo BORN_WHEE.iso
+ * $ dvd_backup_ifo CAPTAIN_HACKIT/
+ *
+ * Story mode:
+ *
+ * The VMG and VTS IFOs store all the metadata about a DVD. From a development
+ * point-of-view, if a user is having a problem reading the DVD with userland
+ * tools, then they need a way to get a copy to upstream without providing the
+ * entire image.
+ *
+ * The .IFO and .BUP files are really small, and will probably end up
+ * totalling between 500kB and 2 MBs. These files can be tarballed / zipped
+ * up and sent off to upstream of a DVD application to debug why they are
+ * not being read. That's it! Super easy. :)
+ *
+ */
+
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
 
 int main(int, char **);
