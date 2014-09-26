@@ -189,14 +189,16 @@ int main(int argc, char **argv) {
 		ifo = ifoOpen(dvdread_dvd, ifo_number);
 
 		if(!ifo) {
-			fprintf(stderr, "dvd_info: opening IFO %i failed\n", ifo_number);
+			printf("* libdvdread ifoOpen() %i FAILED\n", ifo_number);
+			printf("* Skipping IFO\n");
 			continue;
 		}
 
 		dvdread_ifo_file = DVDOpenFile(dvdread_dvd, ifo_number, DVD_READ_INFO_FILE);
 
 		if(dvdread_ifo_file == 0) {
-			printf("* Could not open IFO %d\n", ifo_number);
+			printf("* libdvdread DVDOpenFile() %i FAILED\n", ifo_number);
+			printf("* Skipping IFO\n");
 			ifoClose(ifo);
 			ifo = NULL;
 			continue;
