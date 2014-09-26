@@ -37,6 +37,7 @@ int main(int argc, char **argv) {
 	char ifo_filename[PATH_MAX] = {'\0'};
 	char bup_filename[PATH_MAX] = {'\0'};
 	bool directory_exists = false;
+	int z = 1;
 
 	if (argc > 1) {
 		device_filename = argv[1];
@@ -130,7 +131,7 @@ int main(int argc, char **argv) {
 	snprintf(video_ts_filenames[0], 22, "VIDEO_TS/VIDEO_TS.IFO");
 	snprintf(video_ts_filenames[1], 22, "VIDEO_TS/VIDEO_TS.BUP");
 
-	for(int z = 1; z < 10; z++) {
+	for(z = 1; z < 10; z++) {
 		snprintf(video_ts_filenames[z + 1], 22, "VIDEO_TS/VTS_%02i_0.IFO", z);
 		snprintf(video_ts_filenames[z + 2], 22, "VIDEO_TS/VTS_%02i_0.BUP", z);
 	}
