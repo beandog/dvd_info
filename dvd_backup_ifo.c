@@ -18,6 +18,7 @@
  * which can be used for debugging by developers. Requires libdvdread.
  *
  * @author Steve Dibb <steve.dibb@gmail.com>
+ * @license GPLv2
  * @site http://dvds.beandog.org/
  * @site https://github.com/beandog/dvd_info
  *
