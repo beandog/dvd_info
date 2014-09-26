@@ -131,7 +131,6 @@ int main(int argc, char **argv) {
 	snprintf(video_ts_filenames[1], 22, "VIDEO_TS/VIDEO_TS.BUP");
 
 	for(int z = 1; z < 10; z++) {
-		printf("Index: %i\n", z);
 		snprintf(video_ts_filenames[z + 1], 22, "VIDEO_TS/VTS_%02i_0.IFO", z);
 		snprintf(video_ts_filenames[z + 2], 22, "VIDEO_TS/VTS_%02i_0.BUP", z);
 	}
