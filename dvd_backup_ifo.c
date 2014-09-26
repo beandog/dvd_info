@@ -15,52 +15,12 @@
 
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
 
-int dvd_drive_get_status(const char *);
-void dvd_drive_display_status(const char *);
 int main(int, char **);
-
-int dvd_drive_get_status(const char *device_filename) {
-
-	int dvd_fd;
-	int drive_status;
-
-	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
-	drive_status = ioctl(dvd_fd, CDROM_DRIVE_STATUS);
-	close(dvd_fd);
-
-	return drive_status;
-
-}
-
-void dvd_drive_display_status(const char *device_filename) {
-
-	const char *status;
-
-	switch(dvd_drive_get_status(device_filename)) {
-		case 1:
-			status = "no disc";
-			break;
-		case 2:
-			status = "tray open";
-			break;
-		case 3:
-			status = "drive not ready";
-			break;
-		case 4:
-			status = "drive ok";
-			break;
-		default:
-			status = "no info";
-			break;
-	}
-
-	printf("%s\n", status);
-
-}
 
 int main(int argc, char **argv) {
 
 	int dvd_fd;
+	int drive_status;
 	uint16_t num_ifos = 1;
 	uint16_t ifo_number = 0;
 	bool is_hardware = false;
@@ -92,6 +52,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "error opening %s\n", device_filename);
 		return 1;
 	}
+	drive_status = ioctl(dvd_fd, CDROM_DRIVE_STATUS);
 	close(dvd_fd);
 
 	// Poll drive status if it is hardware
@@ -99,10 +60,24 @@ int main(int argc, char **argv) {
 		is_hardware = true;
 
 	if(is_hardware) {
-		if(dvd_drive_get_status(device_filename) != CDS_DISC_OK) {
-			// FIXME send to stderr
-			printf("drive status: ");
-			dvd_drive_display_status(device_filename);
+
+		if(drive_status != CDS_DISC_OK) {
+
+			switch(drive_status) {
+				case 1:
+					fprintf(stderr, "drive status: no disc");
+					break;
+				case 2:
+					fprintf(stderr, "drive status: tray open");
+					break;
+				case 3:
+					fprintf(stderr, "drive status: drive not ready");
+					break;
+				default:
+					fprintf(stderr, "drive status: unable to poll");
+					break;
+			}
+
 			return 1;
 		}
 	}
