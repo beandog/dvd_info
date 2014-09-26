@@ -190,8 +190,7 @@ int main(int argc, char **argv) {
 
 		if(!ifo) {
 			fprintf(stderr, "dvd_info: opening IFO %i failed\n", ifo_number);
-			DVDClose(dvdread_dvd);
-			return 1;
+			continue;
 		}
 
 		dvdread_ifo_file = DVDOpenFile(dvdread_dvd, ifo_number, DVD_READ_INFO_FILE);
@@ -199,8 +198,8 @@ int main(int argc, char **argv) {
 		if(dvdread_ifo_file == 0) {
 			printf("* Could not open IFO %d\n", ifo_number);
 			ifoClose(ifo);
-			DVDClose(dvdread_dvd);
-			return 1;
+			ifo = NULL;
+			continue;
 		}
 
 		ifo_filesize = DVDFileSize(dvdread_ifo_file) * DVD_VIDEO_LB_LEN;
@@ -226,8 +225,8 @@ int main(int argc, char **argv) {
 		if(bytes_read != ifo_filesize) {
 			printf(" * Bytes read and IFO filesize do not match: %ld, %ld\n", bytes_read, ifo_filesize);
 			ifoClose(ifo);
-			DVDClose(dvdread_dvd);
-			return 1;
+			ifo = NULL;
+			continue;
 		}
 
 		// TODO
