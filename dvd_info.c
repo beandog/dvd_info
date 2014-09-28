@@ -410,13 +410,6 @@ int main(int argc, char **argv) {
 	strncpy(dvd_info.vmg_id, dvd_vmg_id(vmg_ifo), DVD_VMG_ID);
 	dvd_info.longest_track = dvd_longest_track(dvdread_dvd);
 
-	/*
-	longest_track_with_subtitles = dvd_info_longest_track_with_subtitles(dvdread_dvd);
-	longest_16x9_track = dvd_info_longest_16x9_track(dvdread_dvd);
-	longest_4x3_track = dvd_info_longest_4x3_track(dvdread_dvd);
-	longest_letterbox_track = dvd_info_longest_letterbox_track(dvdread_dvd);
-	longest_pan_scan_track = dvd_info_longest_pan_scan_track(dvdread_dvd);
-	*/
 	// libdvdread DVDDiscID()
 	// Convert hex values to a string
 	for(unsigned long x = 0; x < (DVD_DVDREAD_ID / 2); x++) {
