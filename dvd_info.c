@@ -355,25 +355,26 @@ int main(int argc, char **argv) {
 	// Exit if all the IFOs cannot be opened
 	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
 	bool valid_ifos[dvd_info.video_title_sets];
+	ifo_handle_t *vts_ifos[dvd_info.video_title_sets + 1];
+	vts_ifos[0] = NULL;
+
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
-		vts_ifo = ifoOpen(dvdread_dvd, vts);
+		vts_ifos[vts] = ifoOpen(dvdread_dvd, vts);
 
-		if(!vts_ifo) {
+		if(!vts_ifos[vts]) {
 			fprintf(stderr, "Opening VTS IFO %u failed!\n", vts);
 			valid_ifos[vts] = false;
 			has_invalid_ifos = true;
-			vts_ifo = NULL;
-		} else if(!vts_ifo->vtsi_mat) {
+			vts_ifos[vts] = NULL;
+		} else if(!vts_ifos[vts]->vtsi_mat) {
 			printf("Could not open VTSI_MAT for VTS IFO %u\n", vts);
 			valid_ifos[vts] = false;
 			has_invalid_ifos = true;
-			ifoClose(vts_ifo);
-			vts_ifo = NULL;
+			ifoClose(vts_ifos[vts]);
+			vts_ifos[vts] = NULL;
 		} else {
 			valid_ifos[vts] = true;
-			ifoClose(vts_ifo);
-			vts_ifo = NULL;
 		}
 
 	}
@@ -424,8 +425,14 @@ int main(int argc, char **argv) {
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
+		if(d_debug)
+			printf("[Track %u]\n", track_number);
+
 		// Open IFO
 		dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, track_number);
+
+		if(d_debug)
+			printf("* IFO: %u\n", dvd_track.vts);
 
 		// Skip track if parent IFO is invalid
 		if(valid_ifos[dvd_track.vts] == false) {
@@ -434,10 +441,9 @@ int main(int argc, char **argv) {
 			continue;
 		}
 
-		vts_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
+		vts_ifo = vts_ifos[dvd_track.vts];
 
 		dvd_track.track = track_number;
-		dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, dvd_track.track);
 		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
 		strncpy(dvd_track.length, dvd_track_length(vmg_ifo, vts_ifo, dvd_track.track), DVD_TRACK_LENGTH);
 		dvd_track.msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, dvd_track.track);
