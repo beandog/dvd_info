@@ -143,6 +143,10 @@ int main(int argc, char **argv) {
 	memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
 	dvd_cell.msecs = 0;
 
+	// Statistics
+	uint32_t longest_msecs;
+	longest_msecs = 0;
+
 	// JSON variables
 	json_t *json_dvd;
 	json_t *json_dvd_info;
@@ -409,7 +413,6 @@ int main(int argc, char **argv) {
 	strncpy(dvd_info.title, dvd_title(device_filename), DVD_TITLE);
 	strncpy(dvd_info.provider_id, dvd_provider_id(vmg_ifo), DVD_PROVIDER_ID);
 	strncpy(dvd_info.vmg_id, dvd_vmg_id(vmg_ifo), DVD_VMG_ID);
-	dvd_info.longest_track = dvd_longest_track(dvdread_dvd);
 
 	// libdvdread DVDDiscID()
 	// Convert hex values to a string
@@ -448,6 +451,11 @@ int main(int argc, char **argv) {
 		strncpy(dvd_track.length, dvd_track_length(vmg_ifo, vts_ifo, dvd_track.track), DVD_TRACK_LENGTH);
 		dvd_track.msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
+
+		if(dvd_track.msecs > longest_msecs) {
+			dvd_info.longest_track = dvd_track.track;
+			longest_msecs = dvd_track.msecs;
+		}
 
 		/** Video **/
 
