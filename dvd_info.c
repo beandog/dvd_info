@@ -526,7 +526,6 @@ int main(int argc, char **argv) {
 
 				strncpy(dvd_chapter.length, dvd_chapter_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter), DVD_CHAPTER_LENGTH);
 				dvd_chapter.msecs = dvd_chapter_milliseconds(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
-
 				dvd_chapter.startcell = dvd_chapter_startcell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 
 				dvd_track.dvd_chapters[c] = dvd_chapter;
