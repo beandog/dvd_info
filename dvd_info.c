@@ -364,6 +364,9 @@ int main(int argc, char **argv) {
 
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
+		if(d_debug)
+			fprintf(stderr, "* Opening IFO %u\n", vts);
+
 		vts_ifos[vts] = ifoOpen(dvdread_dvd, vts);
 
 		if(!vts_ifos[vts]) {
