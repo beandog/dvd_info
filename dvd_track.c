@@ -55,7 +55,11 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_numbe
 // FIXME check for invalid characters
 const char *dvd_vts_id(const ifo_handle_t *vts_ifo) {
 
-	for(unsigned long i = 0; i < strlen(vts_ifo->vtsi_mat->vts_identifier); i++) {
+	unsigned long i;
+
+	i = 0;
+
+	for(i = 0; i < strlen(vts_ifo->vtsi_mat->vts_identifier); i++) {
 		if(!isascii(vts_ifo->vtsi_mat->vts_identifier[i]))
 			return "";
 	}
@@ -285,8 +289,9 @@ const char *dvd_track_video_aspect_ratio(const ifo_handle_t *vts_ifo) {
 double dvd_track_fps(dvd_time_t *dvd_time) {
 
 	double frames_per_s[4] = {-1.0, 25.00, -1.0, 29.97};
+	double fps;
 
-	double fps = frames_per_s[(dvd_time->frame_u & 0xc0) >> 6];
+	fps = frames_per_s[(dvd_time->frame_u & 0xc0) >> 6];
 
 	return fps;
 
@@ -301,6 +306,7 @@ const char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 	pgc_t *pgc;
 	dvd_time_t *dvd_time;
 
+	fps = 0;
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
@@ -330,6 +336,14 @@ uint32_t dvd_track_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	dvd_time = NULL;
+	framerate = 0;
+	i = 0;
+
+	if(pgc->cell_playback == NULL) {
+		return 0;
+	}
+
 	dvd_time = &pgc->playback_time;
 	i = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
 	i += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
@@ -345,8 +359,11 @@ uint32_t dvd_track_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
 uint32_t dvd_time_milliseconds(dvd_time_t *dvd_time) {
 
 	uint32_t framerates[4] = {0, 2500, 0, 2997};
-	uint32_t framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
-	uint32_t i = 0;
+	uint32_t framerate;
+	uint32_t i;
+
+	framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
+	i = 0;
 
 	if(framerate > 0)
 		i += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
@@ -357,7 +374,9 @@ uint32_t dvd_time_milliseconds(dvd_time_t *dvd_time) {
 
 uint32_t dvd_time_seconds(dvd_time_t *dvd_time) {
 
-	uint32_t i = ((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f);
+	uint32_t i;
+
+	i = ((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f);
 
 	if(i > 59)
 		i -= 60;
@@ -368,7 +387,9 @@ uint32_t dvd_time_seconds(dvd_time_t *dvd_time) {
 
 uint32_t dvd_time_minutes(dvd_time_t *dvd_time) {
 
-	uint32_t i = ((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f);
+	uint32_t i;
+
+	i = ((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f);
 
 	if(i > 59)
 		i -= 60;
@@ -379,7 +400,9 @@ uint32_t dvd_time_minutes(dvd_time_t *dvd_time) {
 
 uint32_t dvd_time_hours(dvd_time_t *dvd_time) {
 
-	uint32_t i = ((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f);
+	uint32_t i;
+
+	i = ((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f);
 
 	if(i > 59)
 		i -= 60;
@@ -393,14 +416,19 @@ const char *dvd_track_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vt
 	uint8_t ttn;
 	pgcit_t *vts_pgcit;
 	pgc_t *pgc;
-	dvd_time_t *dvd_time;
+	char track_length[DVD_TRACK_LENGTH + 1] = {'\0'};
 
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
-	dvd_time = &pgc->playback_time;
 
-	return strndup(dvd_time_length(dvd_time), DVD_TRACK_LENGTH);
+	if(pgc->cell_playback == NULL) {
+		return "00:00:00.000";
+	}
+
+	strncpy(track_length, dvd_time_length(&pgc->playback_time), DVD_TRACK_LENGTH);
+
+	return strndup(track_length, DVD_TRACK_LENGTH);
 
 }
 
@@ -451,6 +479,7 @@ uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *vts_ifo) {
 	pgc_t *pgc;
 
 	num_active_audio_streams = 0;
+	idx = 0;
 	pgc = vts_ifo->vts_pgcit->pgci_srp[0].pgc;
 
 	for(idx = 0; idx < DVD_AUDIO_STREAM_LIMIT; idx++) {
@@ -488,6 +517,7 @@ uint8_t dvd_track_num_audio_lang_code_streams(const ifo_handle_t *vts_ifo, const
 
 	num_track_audio_streams = dvd_track_num_audio_streams(vts_ifo);
 	num_lang_streams = 0;
+	i = 0;
 
 	for(i = 0; i < num_track_audio_streams; i++) {
 
@@ -535,6 +565,7 @@ uint8_t dvd_track_active_subtitles(const ifo_handle_t *vts_ifo) {
 	pgc_t *pgc;
 
 	active_subtitles = 0;
+	idx = 0;
 	pgc = vts_ifo->vts_pgcit->pgci_srp[0].pgc;
 
 	for(idx = 0; idx < DVD_SUBTITLE_STREAM_LIMIT; idx++) {
@@ -572,6 +603,7 @@ uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *vts_ifo, co
 
 	streams = dvd_track_subtitles(vts_ifo);
 	matches = 0;
+	i = 0;
 
 	for(i = 0; i < streams; i++) {
 
@@ -606,6 +638,12 @@ uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	chapters = 0;
+
+	// If there's no cell playback, then override the number in the PGC and report as
+	// zero so that they are not accessed.
+	if(pgc->cell_playback == NULL)
+		return 0;
 
 	chapters = pgc->nr_of_programs;
 
@@ -626,6 +664,12 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	cells = 0;
+
+	// If there's no cell playback, then override the number in the PGC and report as
+	// zero so that they are not accessed.
+	if(pgc->cell_playback == NULL)
+		return 0;
 
 	cells = pgc->nr_of_cells;
 
@@ -664,9 +708,17 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
-	chapters = pgc->nr_of_programs;
+	chapters = 0;
 	chapter_idx = 0;
+	program_map_idx = 0;
 	cell_idx = 0;
+
+	// lidvdread sets the pointers to NULL if it can't read the PGC, so check for that :)
+	if(pgc->cell_playback == NULL || pgc->program_map == NULL) {
+		return "00:00:00.000";
+	}
+
+	chapters = pgc->nr_of_programs;
 
 	for(chapter_idx = 0; chapter_idx < pgc->nr_of_programs; chapter_idx++) {
 
@@ -685,7 +737,7 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 
 	}
 
-	return "";
+	return "00:00:00.000";
 
 }
 
@@ -708,9 +760,19 @@ uint32_t dvd_chapter_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
-	chapters = pgc->nr_of_programs;
+	dvd_time = NULL;
+	framerate = 0;
+	i = 0;
+	chapters = 0;
 	chapter_idx = 0;
+	program_map_idx = 0;
 	cell_idx = 0;
+
+	if(pgc->cell_playback == NULL || pgc->program_map == NULL) {
+		return 0;
+	}
+
+	chapters = pgc->nr_of_programs;
 
 	for(chapter_idx = 0; chapter_idx < pgc->nr_of_programs; chapter_idx++) {
 
@@ -742,6 +804,13 @@ uint32_t dvd_chapter_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_
 
 }
 
+// It's a *safe guess* that if the program_map is NULL or there is no starting cell,
+// that the starting cell is actually the same as the chapter number.  See DVD id 79,
+// track #12 for an example where this matches (NULL values)
+//
+// TODO some closer examination to check that cells and chapters match up properly
+// is probably in order.  Some scenarios to look for would be where there are more
+// chapters than cells, and the lengths of chapters don't exceed cells either.
 uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
 	uint8_t ttn;
@@ -752,13 +821,17 @@ uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	startcell = 1;
+
+	if(pgc->program_map == NULL)
+		return chapter_number;
 
 	startcell = pgc->program_map[chapter_number - 1];
 
 	if(startcell > 0)
 		return startcell;
 	else
-		return 1;
+		return chapter_number;
 
 }
 
@@ -775,6 +848,14 @@ uint32_t dvd_cell_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	dvd_time = NULL;
+	framerate = 0;
+	i = 0;
+
+	if(pgc->cell_playback == NULL) {
+		return 0;
+	}
+
 	dvd_time = &pgc->cell_playback[cell_number - 1].playback_time;
 	i = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
 	i += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
@@ -797,7 +878,11 @@ const char *dvd_cell_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts
 	vts_pgcit = vts_ifo->vts_pgcit;
 	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
-	return strndup(dvd_time_length(&pgc->cell_playback[cell_number - 1].playback_time), DVD_CELL_LENGTH);
+	if(pgc->cell_playback == NULL) {
+		return "00:00:00.000";
+	}
+
+ 	return strndup(dvd_time_length(&pgc->cell_playback[cell_number - 1].playback_time), DVD_CELL_LENGTH);
 
 }
 
@@ -806,8 +891,8 @@ const char *dvd_cell_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts
 const char *dvd_track_audio_lang_code(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
 
 	char lang_code[3] = {'\0'};
-	uint8_t lang_type;
 	audio_attr_t *audio_attr;
+	uint8_t lang_type;
 
 	audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
 	lang_type = audio_attr->lang_type;
@@ -826,9 +911,9 @@ const char *dvd_track_audio_lang_code(const ifo_handle_t *vts_ifo, const uint8_t
 // FIXME check for multi channel extension
 const char *dvd_track_audio_codec(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
 
-	uint8_t audio_codec;
 	const char *audio_codecs[7] = { "ac3", "", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
 	audio_attr_t *audio_attr;
+	uint8_t audio_codec;
 
 	audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
 	audio_codec = audio_attr->audio_format;
@@ -839,9 +924,9 @@ const char *dvd_track_audio_codec(const ifo_handle_t *vts_ifo, const uint8_t aud
 
 uint8_t dvd_track_audio_num_channels(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
 
+	audio_attr_t *audio_attr;
 	uint8_t uc_num_channels;
 	uint8_t num_channels;
-	audio_attr_t *audio_attr;
 
 	audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
 	uc_num_channels = audio_attr->channels;
@@ -856,10 +941,10 @@ uint8_t dvd_track_audio_num_channels(const ifo_handle_t *vts_ifo, const uint8_t 
 
 const char *dvd_track_audio_stream_id(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
 
-	uint8_t audio_id[7] = {0x80, 0, 0xC0, 0xC0, 0xA0, 0, 0x88};
+	audio_attr_t *audio_attr;
 	uint8_t audio_format;
 	uint8_t audio_stream_id = 0;
-	audio_attr_t *audio_attr;
+	uint8_t audio_id[7] = {0x80, 0, 0xC0, 0xC0, 0xA0, 0, 0x88};
 	char str[DVD_AUDIO_STREAM_ID + 1] = {'\0'};
 
 	audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
@@ -892,6 +977,7 @@ const char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint
 	}
 	snprintf(lang_code, DVD_SUBTITLE_LANG_CODE + 1, "%c%c", subp_attr->lang_code >> 8, subp_attr->lang_code & 0xff);
 
+	// FIXME check for UTF-8, UTF-16 characters
 	if(!isalpha(lang_code[0]) || !isalpha(lang_code[1]))
 		return "";
 
