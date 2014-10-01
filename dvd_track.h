@@ -326,6 +326,12 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
  * Get the audio language code for a track.  A two-character string that is a
  * short name for a language.
  *
+ * DVD specification says that there is an ISO-639 character code here:
+ * - http://stnsoft.com/DVD/ifo_vts.html
+ * - http://www.loc.gov/standards/iso639-2/php/code_list.php
+ * lsdvd uses 'und' (639-2) for undetermined if the lang_code and
+ * lang_extension are both 0.
+ *
  * Examples: en: English, fr: French, es: Spanish
  *
  * @param vts_ifo dvdread track IFO handler
