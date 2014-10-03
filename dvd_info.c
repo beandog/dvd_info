@@ -99,7 +99,9 @@ int main(int argc, char **argv) {
 	dvd_track.msecs = 0;
 	dvd_track.chapters = 1;
 	dvd_track.audio_tracks = 0;
+	dvd_track.active_audio = 0;
 	dvd_track.subtitles = 0;
+	dvd_track.active_subs = 0;
 	dvd_track.cells = 1;
 
 	// Video
@@ -472,7 +474,9 @@ int main(int argc, char **argv) {
 		dvd_video.df = dvd_track_permitted_df(vts_ifo);
 		dvd_video.angles = dvd_track_angles(vmg_ifo, dvd_track.track);
 		dvd_track.audio_tracks = dvd_track_num_audio_streams(vts_ifo);
+		dvd_track.active_audio = 0;
 		dvd_track.subtitles = dvd_track_subtitles(vts_ifo);
+		dvd_track.active_subs = 0;
 		dvd_track.cells = dvd_track_cells(vmg_ifo, vts_ifo, dvd_track.track);
 		strncpy(dvd_video.fps, dvd_track_str_fps(vmg_ifo, vts_ifo, dvd_track.track), DVD_VIDEO_FPS);
 
@@ -492,6 +496,8 @@ int main(int argc, char **argv) {
 
 				dvd_audio.track = c + 1;
 				dvd_audio.active = dvd_track_active_audio_stream(vmg_ifo, vts_ifo, dvd_track.track, dvd_audio.track);
+				if(dvd_audio.active)
+					dvd_track.active_audio++;
 				strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(vts_ifo, c), DVD_AUDIO_LANG_CODE);
 				strncpy(dvd_audio.codec, dvd_track_audio_codec(vts_ifo, c), DVD_AUDIO_CODEC);
 				dvd_audio.channels = dvd_track_audio_num_channels(vts_ifo, c);
@@ -571,7 +577,15 @@ int main(int argc, char **argv) {
 
 	}
 
-	/** lsdvd style output (default) **/
+	/**
+	 * lsdvd style output (default)
+	 *
+	 * Note that there are some differences between the JSON output and
+	 * the lsdvd one:
+	 *
+	 * - lsdvd output only displays *active* audio tracks, while the JSON
+	 *   shows all of them, but they are flagged as active or not.
+	 */
 
 	if(d_lsdvd == 1) {
 
@@ -589,7 +603,7 @@ int main(int argc, char **argv) {
 			printf("Length: %s ", dvd_track.length);
 			printf("Chapters: %02u, ", dvd_track.chapters);
 			printf("Cells: %02u, ", dvd_track.cells);
-			printf("Audio streams: %02u, ", dvd_track.audio_tracks);
+			printf("Audio streams: %02u, ", dvd_track.active_audio);
 			printf("Subpictures: %02u\n", dvd_track.subtitles);
 
 		}
