@@ -571,36 +571,50 @@ uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo) {
 
 }
 
-uint8_t dvd_track_active_subtitles(const ifo_handle_t *vts_ifo) {
+uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track) {
 
-	uint8_t active_subtitles;
+	uint8_t i;
 	uint8_t idx;
+	pgcit_t *vts_pgcit;
+	uint8_t ttn;
 	pgc_t *pgc;
 
-	active_subtitles = 0;
+	i = 0;
 	idx = 0;
-	pgc = vts_ifo->vts_pgcit->pgci_srp[0].pgc;
+	ttn = dvd_track_ttn(vmg_ifo, title_track);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
 	for(idx = 0; idx < DVD_SUBTITLE_STREAM_LIMIT; idx++) {
 
 		if(pgc->subp_control[idx] & 0x80000000)
-			active_subtitles++;
+			i++;
 
 	}
 
-	return active_subtitles;
+	return i;
 
 }
 
-uint8_t dvd_track_active_subtitle(const ifo_handle_t *vts_ifo, uint8_t idx) {
+uint8_t dvd_track_active_subtitle(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, uint8_t subtitle_track) {
 
-	if(idx > dvd_track_active_subtitles(vts_ifo))
+	uint8_t i;
+	pgcit_t *vts_pgcit;
+	uint16_t pgcn;
+	uint8_t ttn;
+	pgc_t *pgc;
+
+	i = dvd_track_active_subtitles(vmg_ifo, vts_ifo, title_track);
+
+	if(subtitle_track > DVD_SUBTITLE_STREAM_LIMIT || subtitle_track > i)
 		return 0;
 
-	pgc_t *pgc;
-	pgc = vts_ifo->vts_pgcit->pgci_srp[0].pgc;
+	ttn = dvd_track_ttn(vmg_ifo, title_track);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgcn = vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn;
+	pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
 
-	if(pgc->subp_control[idx] & 0x80000000)
+	if(pgc->subp_control[subtitle_track - 1] & 0x80000000)
 		return 1;
 
 	return 0;

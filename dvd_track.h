@@ -286,18 +286,23 @@ uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo);
  * When looking at which subtitles that can be accessed by software, such as
  * MPlayer or HandBrake, these are the amount that they will display.
  *
+ * @param vmg_ifo dvdread track IFO handler
  * @param vts_ifo dvdread track IFO handler
+ * @param title_track track number
  * @return number of active subtitles
  */
-uint8_t dvd_track_active_subtitles(const ifo_handle_t *vts_ifo);
+uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track);
 
 /**
  * Check if a subtitle stream is flagged as active or not.
  *
+ * @param vmg_ifo dvdread track IFO handler
  * @param vts_ifo dvdread track IFO handler
+ * @param title_track track number
+ * @param subtitle_track track number
  * @return boolean
  */
-uint8_t dvd_track_active_subtitle(const ifo_handle_t *vts_ifo, uint8_t idx);
+uint8_t dvd_track_active_subtitle(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, uint8_t subtitle_track);
 
 /**
  * Get the number of subtitle streams for a specific language

@@ -521,7 +521,9 @@ int main(int argc, char **argv) {
 				memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
 
 				dvd_subtitle.track = c + 1;
-				dvd_subtitle.active = dvd_track_active_subtitle(vts_ifo, c);
+				dvd_subtitle.active = dvd_track_active_subtitle(vmg_ifo, vts_ifo, dvd_track.track, dvd_subtitle.track);
+				if(dvd_subtitle.active)
+					dvd_track.active_subs++;
 				strncpy(dvd_subtitle.stream_id, dvd_track_subtitle_stream_id(c), DVD_SUBTITLE_STREAM_ID);
 				strncpy(dvd_subtitle.lang_code, dvd_track_subtitle_lang_code(vts_ifo, c), DVD_SUBTITLE_LANG_CODE);
 
@@ -604,7 +606,7 @@ int main(int argc, char **argv) {
 			printf("Chapters: %02u, ", dvd_track.chapters);
 			printf("Cells: %02u, ", dvd_track.cells);
 			printf("Audio streams: %02u, ", dvd_track.active_audio);
-			printf("Subpictures: %02u\n", dvd_track.subtitles);
+			printf("Subpictures: %02u\n", dvd_track.active_subs);
 
 		}
 
