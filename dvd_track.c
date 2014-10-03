@@ -472,36 +472,49 @@ uint8_t dvd_track_num_audio_streams(const ifo_handle_t *vts_ifo) {
 // See https://github.com/thierer/lsdvd/commit/2adcc7d8ab1d3ccaa8b2aa294ad15ba5f72533d4
 // See http://dvdnav.mplayerhq.hu/dvdinfo/pgc.html
 // Looks for whether a stream available flag is set for each audio stream
-uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *vts_ifo) {
+uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track) {
 
-	uint8_t num_active_audio_streams;
-	uint8_t idx;
+	pgcit_t *vts_pgcit;
+	uint16_t pgcn;
+	uint8_t ttn;
 	pgc_t *pgc;
+	uint8_t idx;
+	uint8_t i;
 
-	num_active_audio_streams = 0;
+	ttn = dvd_track_ttn(vmg_ifo, title_track);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgcn = vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn;
+	pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
 	idx = 0;
-	pgc = vts_ifo->vts_pgcit->pgci_srp[0].pgc;
+	i = 0;
 
 	for(idx = 0; idx < DVD_AUDIO_STREAM_LIMIT; idx++) {
 
 		if(pgc->audio_control[idx] & 0x8000)
-			num_active_audio_streams++;
+			i++;
 
 	}
 
-	return num_active_audio_streams;
+	return i;
 
 }
 
-uint8_t dvd_track_active_audio_stream(const ifo_handle_t *vts_ifo, uint8_t idx) {
+uint8_t dvd_track_active_audio_stream(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, const uint8_t audio_track) {
 
-	if(idx > dvd_track_num_active_audio_streams(vts_ifo))
+	if(audio_track > DVD_AUDIO_STREAM_LIMIT || audio_track > dvd_track_num_active_audio_streams(vmg_ifo, vts_ifo, title_track))
 		return 0;
 
+	pgcit_t *vts_pgcit;
+	uint16_t pgcn;
+	uint8_t ttn;
 	pgc_t *pgc;
-	pgc = vts_ifo->vts_pgcit->pgci_srp[0].pgc;
 
-	if(pgc->audio_control[idx] & 0x8000)
+	ttn = dvd_track_ttn(vmg_ifo, title_track);
+	vts_pgcit = vts_ifo->vts_pgcit;
+	pgcn = vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn;
+	pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
+
+	if(pgc->audio_control[audio_track - 1] & 0x8000)
 		return 1;
 
 	return 0;

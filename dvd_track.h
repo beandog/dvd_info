@@ -233,19 +233,24 @@ uint8_t dvd_track_num_audio_streams(const ifo_handle_t *vts_ifo);
  * one in the VTSI MAT, such as mplayer and HandBrake, which will skip over
  * the other ones completely.
  *
+ * @param vmg_ifo dvdread track IFO handler
  * @param vts_ifo dvdread track IFO handler
+ * @param title_track track number
  * @return number of PGC audio streams marked as active
  */
-uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *vts_ifo);
+uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track);
 
 /**
  * Look through the program chain to see if an audio track is flagged as
  * active or not.
  *
+ * @param vmg_ifo dvdread track IFO handler
  * @param vts_ifo dvdread track IFO handler
+ * @param title_track track number
+ * @param audio_track audio track
  * @return boolean
  */
-uint8_t dvd_track_active_audio_stream(const ifo_handle_t *vts_ifo, uint8_t idx);
+uint8_t dvd_track_active_audio_stream(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, const uint8_t audio_track);
 
 /**
  * Get the number of audio streams for a specific language

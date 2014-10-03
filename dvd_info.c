@@ -491,7 +491,7 @@ int main(int argc, char **argv) {
 				memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
 
 				dvd_audio.track = c + 1;
-				dvd_audio.active = dvd_track_active_audio_stream(vts_ifo, c);
+				dvd_audio.active = dvd_track_active_audio_stream(vmg_ifo, vts_ifo, dvd_track.track, dvd_audio.track);
 				strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(vts_ifo, c), DVD_AUDIO_LANG_CODE);
 				strncpy(dvd_audio.codec, dvd_track_audio_codec(vts_ifo, c), DVD_AUDIO_CODEC);
 				dvd_audio.channels = dvd_track_audio_num_channels(vts_ifo, c);
