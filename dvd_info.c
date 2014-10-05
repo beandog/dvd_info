@@ -409,7 +409,7 @@ int main(int argc, char **argv) {
 	}
 
 	// GRAB ALL THE THINGS
-	dvd_info.side = vmg_ifo->vmgi_mat->disc_side;
+	dvd_info.side = dvd_info_side(vmg_ifo);
 	strncpy(dvd_info.title, dvd_title(device_filename), DVD_TITLE);
 	strncpy(dvd_info.provider_id, dvd_provider_id(vmg_ifo), DVD_PROVIDER_ID);
 	strncpy(dvd_info.vmg_id, dvd_vmg_id(vmg_ifo), DVD_VMG_ID);
