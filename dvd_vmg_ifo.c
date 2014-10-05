@@ -49,7 +49,7 @@ const char *dvd_title(const char *device_filename) {
 
 bool ifo_is_vmg(const ifo_handle_t *ifo) {
 
-	if(ifo->vmgi_mat == NULL || ifo->tt_srpt == NULL || ifo->first_play_pgc == NULL)
+	if(ifo->vmgi_mat == NULL)
 		return false;
 
 	return true;
@@ -58,7 +58,7 @@ bool ifo_is_vmg(const ifo_handle_t *ifo) {
 
 uint16_t dvd_tracks(const ifo_handle_t *vmg_ifo) {
 
-	if(ifo_is_vmg(vmg_ifo))
+	if(ifo_is_vmg(vmg_ifo) && vmg_ifo->tt_srpt != NULL)
 		return vmg_ifo->tt_srpt->nr_of_srpts;
 	else
 		return 0;
@@ -67,7 +67,7 @@ uint16_t dvd_tracks(const ifo_handle_t *vmg_ifo) {
 
 uint16_t dvd_video_title_sets(const ifo_handle_t *vmg_ifo) {
 
-	if(ifo_is_vmg(vmg_ifo))
+	if(ifo_is_vmg(vmg_ifo) && vmg_ifo->vts_atrt != NULL)
 		return vmg_ifo->vts_atrt->nr_of_vtss;
 	else
 		return 0;
@@ -144,7 +144,7 @@ uint16_t dvd_longest_track(dvd_reader_t *dvdread_dvd) {
 	if(!vmg_ifo)
 		return 0;
 
-	if(!ifo_is_vmg(vmg_ifo))
+	if(!ifo_is_vmg(vmg_ifo) && vmg_ifo->tt_srpt != NULL)
 		return 0;
 
 	tracks = vmg_ifo->tt_srpt->nr_of_srpts;
