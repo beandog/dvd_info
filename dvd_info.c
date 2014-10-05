@@ -57,11 +57,11 @@ int main(int argc, char **argv) {
 	uint16_t track_number = 1;
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
-	uint8_t c;
+	uint8_t c = 0;
 
 	// Device hardware
-	int dvd_fd;
-	const char *device_filename;
+	int dvd_fd = 0;
+	const char *device_filename = NULL;
 	__useconds_t sleepy_time = 1000000;
 	uint8_t num_naps = 0;
 	uint8_t max_num_naps = 60;
@@ -145,8 +145,7 @@ int main(int argc, char **argv) {
 	dvd_cell.msecs = 0;
 
 	// Statistics
-	uint32_t longest_msecs;
-	longest_msecs = 0;
+	uint32_t longest_msecs = 0;
 
 	// JSON variables
 	json_t *json_dvd;
@@ -181,7 +180,7 @@ int main(int argc, char **argv) {
 	bool opt_track_number = false;
 	int arg_track_number = 0;
 	int long_index = 0;
-	int opt;
+	int opt = 0;
 	// Send 'invalid argument' to stderr
 	opterr= 1;
 	// Check for invalid input
