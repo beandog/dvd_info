@@ -394,14 +394,8 @@ int main(int argc, char **argv) {
 
 		vts = dvd_vts_ifo_number(vmg_ifo, track_number);
 
-		if(valid_ifos[vts] == false) {
-
-			fprintf(stderr, "Could not open IFO %u for track %u, exiting\n", vts, track_number);
-			ifoClose(vmg_ifo);
-			DVDClose(dvdread_dvd);
-			return 1;
-
-		}
+		if(valid_ifos[vts] == false)
+			fprintf(stderr, "dvd_info: the VTS IFO %u for title track %u is invalid, setting all values to zero.\n", vts, track_number);
 
 	}
 
