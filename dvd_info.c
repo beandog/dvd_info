@@ -93,6 +93,7 @@ int main(int argc, char **argv) {
 	// Track
 	struct dvd_track dvd_track;
 	dvd_track.track = 1;
+	dvd_track.valid = 1;
 	dvd_track.vts = 1;
 	dvd_track.ttn = 1;
 	memset(dvd_track.length, '\0', sizeof(dvd_track.length));
@@ -445,6 +446,8 @@ int main(int argc, char **argv) {
 		// Skip track if parent IFO is invalid
 		if(valid_ifos[dvd_track.vts] == false) {
 			fprintf(stderr, "IFO %u for track %u is invalid, skipping track\n", dvd_track.vts, track_number);
+			dvd_track.track = track_number;
+			dvd_track.valid = 0;
 			dvd_tracks[track_number - 1] = dvd_track;
 			continue;
 		}
@@ -452,6 +455,7 @@ int main(int argc, char **argv) {
 		vts_ifo = vts_ifos[dvd_track.vts];
 
 		dvd_track.track = track_number;
+		dvd_track.valid = 1;
 		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
 		strncpy(dvd_track.length, dvd_track_length(vmg_ifo, vts_ifo, dvd_track.track), DVD_TRACK_LENGTH);
 		dvd_track.msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, dvd_track.track);
@@ -597,9 +601,17 @@ int main(int argc, char **argv) {
 
 			dvd_track = dvd_tracks[track_number - 1];
 
-			// Skip track if parent IFO is invalid
-			if(valid_ifos[dvd_track.vts] == false)
+			// If the title track has invalid data, display empty values for all
+			// the expected output, and then skip to the next track.
+			if(valid_ifos[dvd_track.vts] == false) {
+				printf("Title: %02u, ", dvd_track.track);
+				printf("Length: 00:00:00.000 ");
+				printf("Chapters: 00, ");
+				printf("Cells: 00, ");
+				printf("Audio streams: 00, ");
+				printf("Subpictures: 00\n");
 				continue;
+			}
 
 			printf("Title: %02u, ", dvd_track.track);
 			printf("Length: %s ", dvd_track.length);
@@ -636,16 +648,21 @@ int main(int argc, char **argv) {
 
 			dvd_track = dvd_tracks[track_number - 1];
 
-			// Skip track if parent IFO is invalid
-			if(valid_ifos[dvd_track.vts] == false)
+			json_dvd_track = json_object();
+			json_object_set_new(json_dvd_track, "track", json_integer(dvd_track.track));
+
+			// If the title track is invalid, simply add the 'valid' flag here
+			// and here only, then skip to the next one.
+			if(valid_ifos[dvd_track.vts] == false) {
+				json_object_set_new(json_dvd_track, "valid", json_integer(dvd_track.valid));
+				json_array_append(json_dvd_tracks, json_dvd_track);
 				continue;
+			}
 
 			dvd_video = dvd_tracks[track_number - 1].dvd_video;
 
-			json_dvd_track = json_object();
 			json_dvd_video = json_object();
 
-			json_object_set_new(json_dvd_track, "track", json_integer(dvd_track.track));
 			json_object_set_new(json_dvd_track, "length", json_string(dvd_track.length));
 			json_object_set_new(json_dvd_track, "msecs", json_integer(dvd_track.msecs));
 			json_object_set_new(json_dvd_track, "vts", json_integer(dvd_track.vts));
@@ -813,14 +830,18 @@ int main(int argc, char **argv) {
 
 			dvd_track = dvd_tracks[track_number - 1];
 
-			// Skip track if parent IFO is invalid
-			if(valid_ifos[dvd_track.vts] == false)
+			printf("\n");
+			printf("[title_track:%u]\n", dvd_track.track);
+
+			// If the title track is invalid, simply add the 'valid' flag here
+			// and here only, then skip to the next one.
+			if(valid_ifos[dvd_track.vts] == false) {
+				printf("valid = false\n");
 				continue;
+			}
 
 			dvd_video = dvd_track.dvd_video;
 
-			printf("\n");
-			printf("[title_track:%u]\n", dvd_track.track);
 			printf("angles = %u\n", dvd_video.angles);
 			if(strlen(dvd_video.aspect_ratio))
 				printf("aspect_ratio = \"%s\"\n", dvd_video.aspect_ratio);

@@ -89,6 +89,7 @@ struct dvd_cell {
 
 struct dvd_track {
 	uint16_t track;
+	uint8_t valid;
 	uint16_t vts;
 	uint8_t ttn;
 	char length[DVD_TRACK_LENGTH + 1];
