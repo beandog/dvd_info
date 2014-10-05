@@ -373,12 +373,12 @@ int main(int argc, char **argv) {
 		vts_ifos[vts] = ifoOpen(dvdread_dvd, vts);
 
 		if(!vts_ifos[vts]) {
-			fprintf(stderr, "Opening VTS IFO %u failed!\n", vts);
+			fprintf(stderr, "dvd_info: opening VTS IFO %u failed; skipping IFO\n", vts);
 			valid_ifos[vts] = false;
 			has_invalid_ifos = true;
 			vts_ifos[vts] = NULL;
-		} else if(!vts_ifos[vts]->vtsi_mat) {
-			printf("Could not open VTSI_MAT for VTS IFO %u\n", vts);
+		} else if(!ifo_is_vts(vts_ifos[vts])) {
+			fprintf(stderr, "dvd_info: opening VTSI_MAT for VTS IFO %u failed; skipping IFO\n", vts);
 			valid_ifos[vts] = false;
 			has_invalid_ifos = true;
 			ifoClose(vts_ifos[vts]);
