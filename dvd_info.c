@@ -328,7 +328,7 @@ int main(int argc, char **argv) {
 
 	// Open VMG IFO -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
-	if(!vmg_ifo) {
+	if(!vmg_ifo || !ifo_is_vmg(vmg_ifo)) {
 		fprintf(stderr, "dvd_info: Opening VMG IFO failed\n");
 		DVDClose(dvdread_dvd);
 		return 1;
