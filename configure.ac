@@ -5,7 +5,7 @@ AC_PROG_CC_C99
 
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
 PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.2.13])
-PKG_CHECK_MODULES([JANSSON], [jansson >= 2.4])
+PKG_CHECK_MODULES([JANSSON], [jansson >= 2.3.1])
 
 AC_CONFIG_FILES([Makefile])
 
