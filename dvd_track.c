@@ -15,9 +15,6 @@ bool ifo_is_vts(const ifo_handle_t *ifo) {
 
 }
 
-// FIXME - *all* functions that accept vmg_ifo or vts_ifo as arguments need to
-// verify that it is the correct IFO.  Check that the track number exists as well.
-
 uint16_t dvd_vts_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
 
 	// TODO research
@@ -61,7 +58,6 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_numbe
 
 }
 
-// FIXME check for invalid characters
 const char *dvd_vts_id(const ifo_handle_t *vts_ifo) {
 
 	unsigned long i;
