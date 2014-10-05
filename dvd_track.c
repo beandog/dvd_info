@@ -724,11 +724,6 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
  *
  * This loops through *all* the chapters and gets the times, but only quits
  * once the specified one has been found.
- *
- * FIXME wrap my head around this some day.
- *
- * FIXME add a function similar to dvd_track_milliseconds() to get the number
- * for a chapter as well.
  */
 const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
@@ -749,7 +744,7 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 	program_map_idx = 0;
 	cell_idx = 0;
 
-	// lidvdread sets the pointers to NULL if it can't read the PGC, so check for that :)
+	// If the PGC pointers are NULL, then the IFO does not have all the info
 	if(pgc->cell_playback == NULL || pgc->program_map == NULL) {
 		return "00:00:00.000";
 	}
@@ -777,8 +772,6 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 
 }
 
-// FIXME I really need to wrap my head properly around the chapter / cell
-// relationship so I hopefully don't have to loop through so much data.
 uint32_t dvd_chapter_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
 	uint8_t ttn;
@@ -993,9 +986,7 @@ const char *dvd_track_audio_stream_id(const ifo_handle_t *vts_ifo, const uint8_t
 
 }
 
-// TODO this function could stand a lot of strict error checking to see what the subtitle status is, and offer different return codes
 // Have dvd_debug check for issues here.
-// FIXME use isalpha()
 // FIXME I want to have some kind of distinguishment in here, and for audio tracks
 // if it's an invalid language.  If it's missing one, set it to unknown (for example)
 // but if it's invalid, maybe guess that it's in English, or something?  Dunno.
@@ -1007,13 +998,11 @@ const char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint
 
 	subp_attr = &vts_ifo->vtsi_mat->vts_subp_attr[subtitle_track];
 
-	// Same check as ifo_print
 	if(subp_attr->type == 0 && subp_attr->lang_code == 0 && subp_attr->zero1 == 0 && subp_attr->zero2 == 0 && subp_attr->lang_extension == 0) {
 		return "";
 	}
 	snprintf(lang_code, DVD_SUBTITLE_LANG_CODE + 1, "%c%c", subp_attr->lang_code >> 8, subp_attr->lang_code & 0xff);
 
-	// FIXME check for UTF-8, UTF-16 characters
 	if(!isalpha(lang_code[0]) || !isalpha(lang_code[1]))
 		return "";
 
