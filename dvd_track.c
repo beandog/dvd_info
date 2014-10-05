@@ -6,6 +6,15 @@
 #include "dvd_info.h"
 #include "dvd_track.h"
 
+bool ifo_is_vts(const ifo_handle_t *ifo) {
+
+	if(ifo->vtsi_mat == NULL)
+		return false;
+	else
+		return true;
+
+}
+
 // FIXME - *all* functions that accept vmg_ifo or vts_ifo as arguments need to
 // verify that it is the correct IFO.  Check that the track number exists as well.
 
