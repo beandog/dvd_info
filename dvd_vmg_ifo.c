@@ -47,35 +47,60 @@ const char *dvd_title(const char *device_filename) {
 
 }
 
+bool ifo_is_vmg(const ifo_handle_t *ifo) {
+
+	if(ifo->vmgi_mat == NULL || ifo->tt_srpt == NULL || ifo->first_play_pgc == NULL)
+		return false;
+
+	return true;
+
+}
+
 uint16_t dvd_tracks(const ifo_handle_t *vmg_ifo) {
 
-	return vmg_ifo->tt_srpt->nr_of_srpts;
+	if(ifo_is_vmg(vmg_ifo))
+		return vmg_ifo->tt_srpt->nr_of_srpts;
+	else
+		return 0;
 
 }
 
 uint16_t dvd_video_title_sets(const ifo_handle_t *vmg_ifo) {
 
-	return vmg_ifo->vts_atrt->nr_of_vtss;
+	if(ifo_is_vmg(vmg_ifo))
+		return vmg_ifo->vts_atrt->nr_of_vtss;
+	else
+		return 0;
 }
 
 const char *dvd_provider_id(const ifo_handle_t *vmg_ifo) {
 
-	return strndup(vmg_ifo->vmgi_mat->provider_identifier, DVD_PROVIDER_ID);
+	if(ifo_is_vmg(vmg_ifo))
+		return strndup(vmg_ifo->vmgi_mat->provider_identifier, DVD_PROVIDER_ID);
+	else
+		return "";
 
 }
 
 const char *dvd_vmg_id(const ifo_handle_t *vmg_ifo) {
 
-	return strndup(vmg_ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID);
+	if(ifo_is_vmg(vmg_ifo))
+		return strndup(vmg_ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID);
+	else
+		return "";
 
 }
 
 uint8_t dvd_info_side(const ifo_handle_t *vmg_ifo) {
 
-	if(vmg_ifo->vmgi_mat->disc_side == 2)
-		return 2;
-	else
+	if(ifo_is_vmg(vmg_ifo)) {
+		if(vmg_ifo->vmgi_mat->disc_side == 2)
+			return 2;
+		else
+			return 1;
+	} else {
 		return 1;
+	}
 
 }
 
@@ -117,6 +142,9 @@ uint16_t dvd_longest_track(dvd_reader_t *dvdread_dvd) {
 	max_len = 0;
 
 	if(!vmg_ifo)
+		return 0;
+
+	if(!ifo_is_vmg(vmg_ifo))
 		return 0;
 
 	tracks = vmg_ifo->tt_srpt->nr_of_srpts;
