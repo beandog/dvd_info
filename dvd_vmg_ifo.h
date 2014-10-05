@@ -56,6 +56,16 @@ bool ifo_is_vmg(const ifo_handle_t *ifo);
 const char *dvd_title(const char *device_filename);
 
 /**
+ * Get a unique identifier of the DVD.
+ *
+ * Uses libdvdreads DVDDiscID() function to return an MD5 string of the first
+ * 10 IFOs on the DVD.
+ *
+ * @param dvdread_dvd dvdreader_t handle
+ */
+const char *dvd_dvdread_id(dvd_reader_t *dvdread_dvd);
+
+/**
  * Get the number of tracks on a DVD
  *
  * The word 'title' and 'track' are sometimes used interchangeably when talking

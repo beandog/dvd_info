@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <inttypes.h>
 #include <dvdread/ifo_read.h>
+#include "dvd_info.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
 
@@ -44,6 +45,24 @@ const char *dvd_title(const char *device_filename) {
 	}
 
 	return strndup(dvd_title, DVD_TITLE);
+
+}
+
+const char *dvd_dvdread_id(dvd_reader_t *dvdread_dvd) {
+
+	int dvdread_retval;
+	uint8_t dvdread_ifo_md5[16] = {0};
+	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
+	unsigned long x;
+
+	dvdread_retval = DVDDiscID(dvdread_dvd, dvdread_ifo_md5);
+	if(dvdread_retval == -1)
+		return "";
+
+	for(x = 0; x < (DVD_DVDREAD_ID / 2); x++)
+		sprintf(&dvdread_id[x * 2], "%02x", dvdread_ifo_md5[x]);
+
+	return strndup(dvdread_id, DVD_DVDREAD_ID);
 
 }
 

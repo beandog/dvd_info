@@ -31,6 +31,7 @@
 void print_usage(char *binary);
 
 struct dvd_info {
+	char dvdread_id[DVD_DVDREAD_ID + 1];
 	uint16_t video_title_sets;
 	uint8_t side;
 	char title[DVD_TITLE + 1];

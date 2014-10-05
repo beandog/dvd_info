@@ -71,12 +71,10 @@ int main(int argc, char **argv) {
 	dvd_reader_t *dvdread_dvd = NULL;
 	ifo_handle_t *vmg_ifo = NULL;
 	ifo_handle_t *vts_ifo = NULL;
-	uint8_t dvdread_ifo_md5[16] = {'\0'};
-	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
-	int dvdread_retval;
 
 	// DVD
 	struct dvd_info dvd_info;
+	memset(dvd_info.dvdread_id, '\0', sizeof(dvd_info.dvdread_id));
 	dvd_info.video_title_sets = 1;
 	dvd_info.side = 1;
 	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
@@ -399,26 +397,12 @@ int main(int argc, char **argv) {
 
 	}
 
-	// Exit if we cannot get libdvdread DiscID
-	dvdread_retval = DVDDiscID(dvdread_dvd, dvdread_ifo_md5);
-	if(dvdread_retval == -1) {
-		fprintf(stderr, "dvd_info: querying DVD id failed -- this is probably related to the library not being able to open an IFO; check the DVD for physical defects.\n");
-		ifoClose(vmg_ifo);
-		DVDClose(dvdread_dvd);
-		return 1;
-	}
-
 	// GRAB ALL THE THINGS
 	dvd_info.side = dvd_info_side(vmg_ifo);
 	strncpy(dvd_info.title, dvd_title(device_filename), DVD_TITLE);
 	strncpy(dvd_info.provider_id, dvd_provider_id(vmg_ifo), DVD_PROVIDER_ID);
 	strncpy(dvd_info.vmg_id, dvd_vmg_id(vmg_ifo), DVD_VMG_ID);
-
-	// libdvdread DVDDiscID()
-	// Convert hex values to a string
-	for(unsigned long x = 0; x < (DVD_DVDREAD_ID / 2); x++) {
-		sprintf(&dvdread_id[x * 2], "%02x", dvdread_ifo_md5[x]);
-	}
+	strncpy(dvd_info.dvdread_id, dvd_dvdread_id(dvdread_dvd), DVD_DVDREAD_ID);
 
 	/**
 	 * Track information
@@ -636,7 +620,7 @@ int main(int argc, char **argv) {
 		if(strlen(dvd_info.vmg_id))
 			json_object_set_new(json_dvd_info, "vmg id", json_string(dvd_info.vmg_id));
 		json_object_set_new(json_dvd_info, "video title sets", json_integer(dvd_info.video_title_sets));
-		json_object_set_new(json_dvd_info, "dvdread id", json_string(dvdread_id));
+		json_object_set_new(json_dvd_info, "dvdread id", json_string(dvd_info.dvdread_id));
 
 		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
@@ -807,7 +791,7 @@ int main(int argc, char **argv) {
 	if(d_ini == 1) {
 
 		printf("[dvd]\n");
-		printf("dvdread_id = \"%s\"\n", dvdread_id);
+		printf("dvdread_id = \"%s\"\n", dvd_info.dvdread_id);
 		printf("longest_track = %u\n", dvd_info.longest_track);
 		if(strlen(dvd_info.provider_id))
 			printf("provider_id = \"%s\"\n", dvd_info.provider_id);
