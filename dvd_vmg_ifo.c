@@ -19,11 +19,8 @@ const char *dvd_title(const char *device_filename) {
 		return "";
 	}
 
-	// The DVD title is actually on the disc, and doesn't need the dvdread
-	// or dvdnav library to access it.  I should prefer to use them, though
-	// to avoid situations where something freaks out for not decrypting
-	// the CSS first ... so, I guess a FIXME is in order -- or use decss
-	// first.
+	// The DVD title is on the volume, and doesn't need the dvdread or
+	// dvdnav library to access it.
 	if(fseek(filehandle, 32808, SEEK_SET) == -1) {
 		fclose(filehandle);
 		return "";
@@ -38,7 +35,7 @@ const char *dvd_title(const char *device_filename) {
 
 	fclose(filehandle);
 
-	// A nice way to trim the string. :)
+	// Right trim the string
 	y = strlen(dvd_title);
 	while(y-- > 2) {
 		if(dvd_title[y] == ' ') {
