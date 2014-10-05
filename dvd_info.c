@@ -272,14 +272,14 @@ int main(int argc, char **argv) {
 
 	// Check to see if device can be accessed
 	if(!dvd_device_access(device_filename)) {
-		fprintf(stderr, "cannot access %s\n", device_filename);
+		fprintf(stderr, "dvd_info: cannot access %s\n", device_filename);
 		return 1;
 	}
 
 	// Check to see if device can be opened
 	dvd_fd = dvd_device_open(device_filename);
 	if(dvd_fd < 0) {
-		fprintf(stderr, "error opening %s\n", device_filename);
+		fprintf(stderr, "dvd_info: error opening %s\n", device_filename);
 		return 1;
 	}
 	dvd_device_close(dvd_fd);
@@ -296,8 +296,7 @@ int main(int argc, char **argv) {
 			fprintf(stderr, "drive status: ");
 			dvd_drive_display_status(device_filename);
 
-			fprintf(stderr, "dvd_info: waiting for media\n");
-			fprintf(stderr, "dvd_info: will give up after one minute\n");
+			fprintf(stderr, "waiting for media, will give up after one minute\n");
 			while(!dvd_drive_has_media(device_filename) && (num_naps < max_num_naps)) {
 				usleep(sleepy_time);
 				num_naps = num_naps + 1;
@@ -308,7 +307,7 @@ int main(int argc, char **argv) {
 				// Tired of waiting, exiting out
 				if(num_naps == max_num_naps) {
 					fprintf(stderr, "\n");
-					fprintf(stderr, "dvd_info: tired of waiting for media, quitting\n");
+					fprintf(stderr, "tired of waiting for media, quitting\n");
 					return 1;
 				}
 
@@ -323,14 +322,14 @@ int main(int argc, char **argv) {
 	// Open DVD device
 	dvdread_dvd = DVDOpen(device_filename);
 	if(!dvdread_dvd) {
-		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
+		fprintf(stderr, "dvd_info: Opening DVD %s failed\n", device_filename);
 		return 1;
 	}
 
 	// Open VMG IFO -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	if(!vmg_ifo) {
-		fprintf(stderr, "Opening VMG IFO failed\n");
+		fprintf(stderr, "dvd_info: Opening VMG IFO failed\n");
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
@@ -340,8 +339,8 @@ int main(int argc, char **argv) {
 
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks || arg_track_number < 1)) {
-		fprintf(stderr, "Invalid track number %d\n", arg_track_number);
-		fprintf(stderr, "Valid track numbers: 1 to %u\n", dvd_info.tracks);
+		fprintf(stderr, "dvd_info: Invalid track number %d\n", arg_track_number);
+		fprintf(stderr, "dvd_info: Valid track numbers: 1 to %u\n", dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -422,7 +421,7 @@ int main(int argc, char **argv) {
 
 		// Skip track if parent IFO is invalid
 		if(valid_ifos[dvd_track.vts] == false) {
-			fprintf(stderr, "IFO %u for track %u is invalid, skipping track\n", dvd_track.vts, track_number);
+			fprintf(stderr, "dvd_info: IFO %u for track %u is invalid, skipping track\n", dvd_track.vts, track_number);
 			dvd_track.track = track_number;
 			dvd_track.valid = 0;
 			dvd_tracks[track_number - 1] = dvd_track;
