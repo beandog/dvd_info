@@ -129,7 +129,7 @@ uint8_t dvd_info_side(const ifo_handle_t *vmg_ifo) {
 void dvd_info_serial_id(dvdnav_t *dvdnav, char *p) {
 
 	const char *serial_id;
-	unsigned long n;
+	size_t n;
 
 	dvdnav_get_serial_string(dvdnav, &serial_id);
 

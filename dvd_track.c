@@ -60,7 +60,7 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_numbe
 
 const char *dvd_vts_id(const ifo_handle_t *vts_ifo) {
 
-	unsigned long i;
+	size_t i;
 
 	i = 0;
 
