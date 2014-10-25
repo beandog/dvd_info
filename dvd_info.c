@@ -62,7 +62,11 @@ void print_usage(char *binary) {
 
 int main(int argc, char **argv) {
 
+	// Program name
+	bool p_dvd_info = false;
 	char *program_name = basename(argv[0]);
+	if(strncmp("dvd_info", program_name, 8) == 0)
+		p_dvd_info = true;
 
 	// Display output
 	int d_json = 0;
@@ -599,7 +603,7 @@ int main(int argc, char **argv) {
 	 * - lsdvd output only displays *active* audio tracks, while the JSON
 	 *   shows all of them, but they are flagged as active or not.
 	 */
-	if(d_lsdvd == 1) {
+	if(p_dvd_info && d_lsdvd == 1) {
 
 		lsdvd_dvd_info(dvd_info);
 
