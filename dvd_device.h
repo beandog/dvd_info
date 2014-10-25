@@ -1,3 +1,6 @@
+#ifndef _DVD_DEVICE_H_
+#define _DVD_DEVICE_H_
+
 /**
  * @file dvd_device.h
  *
@@ -47,3 +50,6 @@ bool dvd_device_is_hardware(const char *device_filename);
  * @return bool
  */
 bool dvd_device_is_image(const char *device_filename);
+
+// _DVD_DEVICE_H_
+#endif

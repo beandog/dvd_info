@@ -1,3 +1,6 @@
+#ifndef _DVD_TRACK_H_
+#define _DVD_TRACK_H_
+
 /**
  * Functions used to get information about a DVD track
  */
@@ -427,3 +430,6 @@ const char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint
  * @return stream id
  */
 const char *dvd_track_subtitle_stream_id(const uint8_t subtitle_track);
+
+// _DVD_TRACK_H_
+#endif

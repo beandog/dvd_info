@@ -1,3 +1,6 @@
+#ifndef _DVD_VMG_IFO_H_
+#define _DVD_VMG_IFO_H_
+
 // FIXME cleanup duplicate defines
 #define DVD_TITLE 32
 #define DVD_PROVIDER_ID 32
@@ -166,3 +169,6 @@ uint8_t dvd_info_side(const ifo_handle_t *vmg_ifo);
  * @param p char[17] to copy the string to
  */
 // void dvd_info_serial_id(dvdnav_t *dvdnav, char *p);
+
+// _DVD_VMG_IFO_H_
+#endif

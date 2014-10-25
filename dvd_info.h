@@ -1,3 +1,6 @@
+#ifndef _DVD_INFO_H_
+#define _DVD_INFO_H_
+
 // Default DVD device
 #ifdef __linux__
 #define DEFAULT_DVD_DEVICE "/dev/sr0"
@@ -122,3 +125,6 @@ struct dvd_track {
 };
 
 int main(int argc, char **argv);
+
+// _DVD_INFO_H_
+#endif

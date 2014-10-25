@@ -1,3 +1,6 @@
+#ifndef _DVD_DRIVE_H_
+#define _DVD_DRIVE_H_
+
 /**
  * @file dvd_drive.h
  *
@@ -78,3 +81,6 @@ bool dvd_drive_is_ready(const char *device_filename);
  * @param device_filename DVD device filename (/dev/dvd, /dev/bluray, etc.)
  */
 void dvd_drive_display_status(const char *device_filename);
+
+// _DVD_DRIVE_H_
+#endif
