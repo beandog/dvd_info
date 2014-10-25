@@ -576,7 +576,6 @@ int main(int argc, char **argv) {
 			for(c = 0; c < dvd_track.cells; c++) {
 
 				memset(&dvd_cell, 0, sizeof(dvd_cell));
-				memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
 
 				dvd_cell.cell = c + 1;
 
