@@ -838,9 +838,10 @@ int main(int argc, char **argv) {
 			printf("\n");
 			printf("[title_track:%u]\n", dvd_track.track);
 
+			printf("valid = %s\n", dvd_track.valid ? "yes" : "no");
+
 			// If the title track is invalid, skip to the next one
 			if(dvd_track.valid == 0) {
-				printf("valid = no\n");
 				continue;
 			}
 
@@ -858,7 +859,6 @@ int main(int argc, char **argv) {
 				printf("fps = \"%s\"\n", dvd_video.fps);
 			printf("length = \"%s\"\n", dvd_track.length);
 			printf("ttn = %u\n", dvd_track.ttn);
-			printf("valid = yes\n");
 			printf("vts = %u\n", dvd_track.vts);
 
 			// FIXME display correct values
