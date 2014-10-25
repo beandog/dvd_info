@@ -1,3 +1,4 @@
+#ifdef __linux__
 #include <stdio.h>
 #include <stdbool.h>
 #include <sys/ioctl.h>
@@ -82,3 +83,4 @@ void dvd_drive_display_status(const char *device_filename) {
 	printf("%s\n", status);
 
 }
+#endif

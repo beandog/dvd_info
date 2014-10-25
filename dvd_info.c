@@ -7,7 +7,6 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include <inttypes.h>
-#include <linux/cdrom.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/dvd_udf.h>
 #include <dvdread/ifo_read.h>
@@ -15,9 +14,12 @@
 #include <jansson.h>
 #include "dvd_info.h"
 #include "dvd_device.h"
-#include "dvd_drive.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
+#ifdef __linux__
+#include <linux/cdrom.h>
+#include "dvd_drive.h"
+#endif
 
 void print_usage(char *binary) {
 
@@ -37,6 +39,8 @@ void print_usage(char *binary) {
 	printf("\n");
 	printf("Default output is similar in syntax to 'lsdvd' program, and is\n");
 	printf("not as verbose as INI or JSON format.\n");
+	printf("\n");
+	printf("If no DVD path is given, %s is used in its place.\n", DEFAULT_DVD_DEVICE);
 	printf("\n");
 	printf("See 'man dvd_info' for more details, or http://dvds.beandog.org/\n");
 
@@ -62,7 +66,7 @@ int main(int argc, char **argv) {
 	// Device hardware
 	int dvd_fd = 0;
 	const char *device_filename = NULL;
-	__useconds_t sleepy_time = 1000000;
+	useconds_t sleepy_time = 1000000;
 	uint8_t num_naps = 0;
 	uint8_t max_num_naps = 60;
 	bool is_hardware = false;
@@ -287,6 +291,8 @@ int main(int argc, char **argv) {
 	// Check if it is hardware or an image file
 	is_hardware = dvd_device_is_hardware(device_filename);
 
+#ifdef __linux__
+
 	// Poll drive status if it is hardware
 	if(is_hardware) {
 
@@ -316,6 +322,8 @@ int main(int argc, char **argv) {
 		}
 
 	}
+
+#endif
 
 	// begin libdvdread usage
 
