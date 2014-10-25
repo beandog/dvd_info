@@ -121,12 +121,12 @@ int main(int argc, char **argv) {
 	memset(dvd_track.length, '\0', sizeof(dvd_track.length));
 	snprintf(dvd_track.length, DVD_TRACK_LENGTH, "00:00:00.000");
 	dvd_track.msecs = 0;
-	dvd_track.chapters = 1;
+	dvd_track.chapters = 0;
 	dvd_track.audio_tracks = 0;
 	dvd_track.active_audio = 0;
 	dvd_track.subtitles = 0;
 	dvd_track.active_subs = 0;
-	dvd_track.cells = 1;
+	dvd_track.cells = 0;
 
 	// Video
 	struct dvd_video dvd_video;
