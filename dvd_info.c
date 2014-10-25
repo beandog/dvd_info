@@ -302,14 +302,14 @@ int main(int argc, char **argv) {
 
 	// Check to see if device can be accessed
 	if(!dvd_device_access(device_filename)) {
-		fprintf(stderr, "dvd_info: cannot access %s\n", device_filename);
+		fprintf(stderr, "%s: cannot access %s\n", program_name, device_filename);
 		return 1;
 	}
 
 	// Check to see if device can be opened
 	dvd_fd = dvd_device_open(device_filename);
 	if(dvd_fd < 0) {
-		fprintf(stderr, "dvd_info: error opening %s\n", device_filename);
+		fprintf(stderr, "%s: error opening %s\n", program_name, device_filename);
 		return 1;
 	}
 	dvd_device_close(dvd_fd);
@@ -356,14 +356,14 @@ int main(int argc, char **argv) {
 	// Open DVD device
 	dvdread_dvd = DVDOpen(device_filename);
 	if(!dvdread_dvd) {
-		fprintf(stderr, "dvd_info: Opening DVD %s failed\n", device_filename);
+		fprintf(stderr, "%s: Opening DVD %s failed\n", program_name, device_filename);
 		return 1;
 	}
 
 	// Open VMG IFO -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	if(!vmg_ifo || !ifo_is_vmg(vmg_ifo)) {
-		fprintf(stderr, "dvd_info: Opening VMG IFO failed\n");
+		fprintf(stderr, "%s: Opening VMG IFO failed\n", program_name);
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
@@ -373,8 +373,8 @@ int main(int argc, char **argv) {
 
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks || arg_track_number < 1)) {
-		fprintf(stderr, "dvd_info: Invalid track number %d\n", arg_track_number);
-		fprintf(stderr, "dvd_info: Valid track numbers: 1 to %u\n", dvd_info.tracks);
+		fprintf(stderr, "%s: Invalid track number %d\n", program_name, arg_track_number);
+		fprintf(stderr, "%s: Valid track numbers: 1 to %u\n", program_name, dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -403,12 +403,12 @@ int main(int argc, char **argv) {
 		vts_ifos[vts] = ifoOpen(dvdread_dvd, vts);
 
 		if(!vts_ifos[vts]) {
-			fprintf(stderr, "dvd_info: opening VTS IFO %u failed; skipping IFO\n", vts);
+			fprintf(stderr, "%s: opening VTS IFO %u failed; skipping IFO\n", program_name, vts);
 			valid_ifos[vts] = false;
 			has_invalid_ifos = true;
 			vts_ifos[vts] = NULL;
 		} else if(!ifo_is_vts(vts_ifos[vts])) {
-			fprintf(stderr, "dvd_info: opening VTSI_MAT for VTS IFO %u failed; skipping IFO\n", vts);
+			fprintf(stderr, "%s: opening VTSI_MAT for VTS IFO %u failed; skipping IFO\n", program_name, vts);
 			valid_ifos[vts] = false;
 			has_invalid_ifos = true;
 			ifoClose(vts_ifos[vts]);
@@ -425,7 +425,7 @@ int main(int argc, char **argv) {
 		vts = dvd_vts_ifo_number(vmg_ifo, track_number);
 
 		if(valid_ifos[vts] == false)
-			fprintf(stderr, "dvd_info: the VTS IFO %u for title track %u is invalid, setting all values to zero.\n", vts, track_number);
+			fprintf(stderr, "%s: the VTS IFO %u for title track %u is invalid, setting all values to zero.\n", program_name, vts, track_number);
 
 	}
 
@@ -455,7 +455,7 @@ int main(int argc, char **argv) {
 
 		// Skip track if parent IFO is invalid
 		if(valid_ifos[dvd_track.vts] == false) {
-			fprintf(stderr, "dvd_info: IFO %u for track %u is invalid, skipping track\n", dvd_track.vts, track_number);
+			fprintf(stderr, "%s: IFO %u for track %u is invalid, skipping track\n", program_name, dvd_track.vts, track_number);
 			dvd_track.track = track_number;
 			dvd_track.valid = 0;
 			dvd_tracks[track_number - 1] = dvd_track;
