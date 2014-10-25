@@ -118,8 +118,7 @@ int main(int argc, char **argv) {
 	dvd_track.valid = 1;
 	dvd_track.vts = 1;
 	dvd_track.ttn = 1;
-	memset(dvd_track.length, '\0', sizeof(dvd_track.length));
-	snprintf(dvd_track.length, DVD_TRACK_LENGTH, "00:00:00.000");
+	snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
 	dvd_track.msecs = 0;
 	dvd_track.chapters = 0;
 	dvd_track.audio_tracks = 0;
@@ -160,15 +159,14 @@ int main(int argc, char **argv) {
 	// Chapters
 	struct dvd_chapter dvd_chapter;
 	dvd_chapter.chapter = 0;
-	memset(dvd_chapter.length, '\0', sizeof(dvd_chapter.length));
-	snprintf(dvd_chapter.length, DVD_CHAPTER_LENGTH, "00:00:00.000");
+	snprintf(dvd_chapter.length, DVD_CHAPTER_LENGTH + 1, "00:00:00.000");
 	dvd_chapter.startcell = 1;
 
 	// Cells
 	struct dvd_cell dvd_cell;
 	dvd_cell.cell = 1;
 	memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
-	snprintf(dvd_cell.length, DVD_CELL_LENGTH, "00:00:00.000");
+	snprintf(dvd_cell.length, DVD_CELL_LENGTH + 1, "00:00:00.000");
 	dvd_cell.msecs = 0;
 
 	// Statistics
@@ -467,8 +465,7 @@ int main(int argc, char **argv) {
 			dvd_track.valid = 0;
 
 			dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
-			memset(dvd_track.length, '\0', sizeof(dvd_track.length));
-			snprintf(dvd_track.length, DVD_TRACK_LENGTH, "00:00:00.000");
+			snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
 			dvd_track.msecs = 0;
 			dvd_track.chapters = 0;
 			dvd_track.audio_tracks = 0;
