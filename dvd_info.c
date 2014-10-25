@@ -602,34 +602,13 @@ int main(int argc, char **argv) {
 	 * - lsdvd output only displays *active* audio tracks, while the JSON
 	 *   shows all of them, but they are flagged as active or not.
 	 */
-
 	if(d_lsdvd == 1) {
 
-		printf("Disc Title: %s\n", dvd_info.title);
+		lsdvd_dvd_info(dvd_info);
 
 		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
-
 			dvd_track = dvd_tracks[track_number - 1];
-
-			// If the title track has invalid data, display empty values for all
-			// the expected output, and then skip to the next track.
-			if(valid_ifos[dvd_track.vts] == false) {
-				printf("Title: %02u, ", dvd_track.track);
-				printf("Length: 00:00:00.000 ");
-				printf("Chapters: 00, ");
-				printf("Cells: 00, ");
-				printf("Audio streams: 00, ");
-				printf("Subpictures: 00\n");
-				continue;
-			}
-
-			printf("Title: %02u, ", dvd_track.track);
-			printf("Length: %s ", dvd_track.length);
-			printf("Chapters: %02u, ", dvd_track.chapters);
-			printf("Cells: %02u, ", dvd_track.cells);
-			printf("Audio streams: %02u, ", dvd_track.active_audio);
-			printf("Subpictures: %02u\n", dvd_track.active_subs);
-
+			lsdvd_title_track(dvd_track, valid_ifos[dvd_track.vts]);
 		}
 
 		if(d_all_tracks)
@@ -961,6 +940,38 @@ int main(int argc, char **argv) {
 
 	if(dvdread_dvd)
 		DVDClose(dvdread_dvd);
+
+	return 0;
+
+}
+
+int lsdvd_dvd_info(struct dvd_info dvd_info) {
+
+	printf("Disc Title: %s\n", dvd_info.title);
+
+	return 0;
+
+}
+
+int lsdvd_title_track(struct dvd_track dvd_track, bool valid) {
+
+	printf("Title: %02u, ", dvd_track.track);
+
+	// If the title track has invalid data, display empty values for everything
+	if(valid == false) {
+		printf("Length: 00:00:00.000 ");
+		printf("Chapters: 00, ");
+		printf("Cells: 00, ");
+		printf("Audio streams: 00, ");
+		printf("Subpictures: 00\n");
+		return 0;
+	}
+
+	printf("Length: %s ", dvd_track.length);
+	printf("Chapters: %02u, ", dvd_track.chapters);
+	printf("Cells: %02u, ", dvd_track.cells);
+	printf("Audio streams: %02u, ", dvd_track.active_audio);
+	printf("Subpictures: %02u\n", dvd_track.active_subs);
 
 	return 0;
 
