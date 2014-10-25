@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
 	dvd_track.valid = 1;
 	dvd_track.vts = 1;
 	dvd_track.ttn = 1;
-	memset(dvd_track.length, '\0', sizeof(dvd_track.length));
+	snprintf(dvd_track.length, DVD_TRACK_LENGTH, "00:00:00.000");
 	dvd_track.msecs = 0;
 	dvd_track.chapters = 1;
 	dvd_track.audio_tracks = 0;
