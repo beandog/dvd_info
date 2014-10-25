@@ -23,9 +23,14 @@
 #ifdef JSON_SUPPORT
 #include <jansson.h>
 #endif
+#ifndef VERSION
+#define VERSION "1.0"
+#endif
 
 void print_usage(char *binary) {
 
+	printf("%s %s - GPL Copyright (c) 2014 Steve Dibb <steve.dibb@gmail.com>\n", binary, VERSION);
+	printf("\n");
 	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
 	printf("\n");
 	printf("Options:\n");
