@@ -118,6 +118,7 @@ int main(int argc, char **argv) {
 	dvd_track.valid = 1;
 	dvd_track.vts = 1;
 	dvd_track.ttn = 1;
+	memset(dvd_track.length, '\0', sizeof(dvd_track.length));
 	snprintf(dvd_track.length, DVD_TRACK_LENGTH, "00:00:00.000");
 	dvd_track.msecs = 0;
 	dvd_track.chapters = 1;
@@ -159,12 +160,14 @@ int main(int argc, char **argv) {
 	// Chapters
 	struct dvd_chapter dvd_chapter;
 	dvd_chapter.chapter = 0;
+	memset(dvd_chapter.length, '\0', sizeof(dvd_chapter.length));
 	snprintf(dvd_chapter.length, DVD_CHAPTER_LENGTH, "00:00:00.000");
 	dvd_chapter.startcell = 1;
 
 	// Cells
 	struct dvd_cell dvd_cell;
 	dvd_cell.cell = 1;
+	memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
 	snprintf(dvd_cell.length, DVD_CELL_LENGTH, "00:00:00.000");
 	dvd_cell.msecs = 0;
 
@@ -471,6 +474,7 @@ int main(int argc, char **argv) {
 		dvd_track.track = track_number;
 		dvd_track.valid = 1;
 		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
+		memset(dvd_track.length, '\0', sizeof(dvd_track.length));
 		strncpy(dvd_track.length, dvd_track_length(vmg_ifo, vts_ifo, dvd_track.track), DVD_TRACK_LENGTH);
 		dvd_track.msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
@@ -561,6 +565,7 @@ int main(int argc, char **argv) {
 
 				dvd_chapter.chapter = c + 1;
 
+				memset(dvd_chapter.length, '\0', sizeof(dvd_chapter.length));
 				strncpy(dvd_chapter.length, dvd_chapter_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter), DVD_CHAPTER_LENGTH);
 				dvd_chapter.msecs = dvd_chapter_milliseconds(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 				dvd_chapter.startcell = dvd_chapter_startcell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
@@ -581,6 +586,7 @@ int main(int argc, char **argv) {
 
 				dvd_cell.cell = c + 1;
 
+				memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
 				strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell), DVD_CELL_LENGTH);
 				dvd_cell.msecs = dvd_cell_milliseconds(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 
