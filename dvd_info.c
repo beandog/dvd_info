@@ -12,7 +12,6 @@
 #include <dvdread/dvd_udf.h>
 #include <dvdread/ifo_read.h>
 #include <dvdread/ifo_print.h>
-#include <jansson.h>
 #include "dvd_info.h"
 #include "dvd_device.h"
 #include "dvd_vmg_ifo.h"
@@ -21,13 +20,18 @@
 #include <linux/cdrom.h>
 #include "dvd_drive.h"
 #endif
+#ifdef JSON_SUPPORT
+#include <jansson.h>
+#endif
 
 void print_usage(char *binary) {
 
 	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
 	printf("\n");
 	printf("Options:\n");
+#ifdef JSON_SUPPORT
 	printf("  -j, --json		Display output in JSON format\n");
+#endif
 	printf("  -k, --ini		Display output in INI format\n");
 	printf("  -t, --track [number]	Limit to one title track\n");
 	printf("\n");
@@ -39,7 +43,11 @@ void print_usage(char *binary) {
 	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
 	printf("\n");
 	printf("Default output is similar in syntax to 'lsdvd' program, and is\n");
-	printf("not as verbose as INI or JSON format.\n");
+#ifdef JSON_SUPPORT
+	printf("not as verbose as INI or JSON formats.\n");
+#else
+	printf("not as verbose as INI format.\n");
+#endif
 	printf("\n");
 	printf("If no DVD path is given, %s is used in its place.\n", DEFAULT_DVD_DEVICE);
 	printf("\n");
@@ -154,6 +162,7 @@ int main(int argc, char **argv) {
 	// Statistics
 	uint32_t longest_msecs = 0;
 
+#ifdef JSON_SUPPORT
 	// JSON variables
 	json_t *json_dvd;
 	json_t *json_dvd_info;
@@ -182,6 +191,7 @@ int main(int argc, char **argv) {
 	json_dvd_chapter = json_object();
 	json_dvd_cells = json_array();
 	json_dvd_cell = json_object();
+#endif
 
 	// getopt_long
 	bool opt_track_number = false;
@@ -196,11 +206,17 @@ int main(int argc, char **argv) {
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
 	const char *str_options;
+#ifdef JSON_SUPPORT
 	str_options = "hjkt:z";
+#else
+	str_options = "hkt:z";
+#endif
 
 	struct option long_options[] = {
 
+#ifdef JSON_SUPPORT
 		{ "json", no_argument, & d_json, 1 },
+#endif
 		{ "ini", no_argument, & d_ini, 1 },
 		{ "debug", no_argument, & d_debug, 1 },
 
@@ -222,12 +238,14 @@ int main(int argc, char **argv) {
 				print_usage(program_name);
 				return 0;
 
+#ifdef JSON_SUPPORT
 			case 'j':
 				d_json = 1;
 				d_lsdvd = 0;
 				d_ini = 0;
 				d_debug = 0;
 				break;
+#endif
 
 			case 'k':
 				d_json = 0;
@@ -614,7 +632,7 @@ int main(int argc, char **argv) {
 
 	}
 
-
+#ifdef JSON_SUPPORT
 	/** JSON display output **/
 
 	if(d_json == 1) {
@@ -794,6 +812,7 @@ int main(int argc, char **argv) {
 		printf("%s\n", json_dumps(json_dvd, JSON_INDENT(1) + JSON_PRESERVE_ORDER));
 
 	}
+#endif
 
 	// INI style format
 
