@@ -140,7 +140,7 @@ int lsdvd_dvd_info(struct dvd_info dvd_info);
  * @param dvd_track dvd_track struct from main program
  * @return int
  */
-int lsdvd_title_track(struct dvd_track dvd_track, bool valid);
+int lsdvd_title_track(struct dvd_track dvd_track);
 
 // _DVD_INFO_H_
 #endif

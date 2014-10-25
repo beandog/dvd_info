@@ -608,7 +608,7 @@ int main(int argc, char **argv) {
 
 		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 			dvd_track = dvd_tracks[track_number - 1];
-			lsdvd_title_track(dvd_track, valid_ifos[dvd_track.vts]);
+			lsdvd_title_track(dvd_track);
 		}
 
 		if(d_all_tracks)
@@ -953,12 +953,12 @@ int lsdvd_dvd_info(struct dvd_info dvd_info) {
 
 }
 
-int lsdvd_title_track(struct dvd_track dvd_track, bool valid) {
+int lsdvd_title_track(struct dvd_track dvd_track) {
 
 	printf("Title: %02u, ", dvd_track.track);
 
 	// If the title track has invalid data, display empty values for everything
-	if(valid == false) {
+	if(dvd_track.valid == 0) {
 		printf("Length: 00:00:00.000 ");
 		printf("Chapters: 00, ");
 		printf("Cells: 00, ");
