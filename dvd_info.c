@@ -623,11 +623,16 @@ int main(int argc, char **argv) {
 	 */
 	if(p_dvd_info && d_lsdvd == 1) {
 
-		lsdvd_dvd_info(dvd_info);
+		printf("Disc Title: %s\n", dvd_info.title);
 
 		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 			dvd_track = dvd_tracks[track_number - 1];
-			lsdvd_title_track(dvd_track);
+			printf("Title: %02u, ", dvd_track.track);
+			printf("Length: %s ", dvd_track.length);
+			printf("Chapters: %02u, ", dvd_track.chapters);
+			printf("Cells: %02u, ", dvd_track.cells);
+			printf("Audio streams: %02u, ", dvd_track.active_audio);
+			printf("Subpictures: %02u\n", dvd_track.active_subs);
 		}
 
 		if(d_all_tracks)
@@ -955,27 +960,6 @@ int main(int argc, char **argv) {
 
 	if(dvdread_dvd)
 		DVDClose(dvdread_dvd);
-
-	return 0;
-
-}
-
-int lsdvd_dvd_info(struct dvd_info dvd_info) {
-
-	printf("Disc Title: %s\n", dvd_info.title);
-
-	return 0;
-
-}
-
-int lsdvd_title_track(struct dvd_track dvd_track) {
-
-	printf("Title: %02u, ", dvd_track.track);
-	printf("Length: %s ", dvd_track.length);
-	printf("Chapters: %02u, ", dvd_track.chapters);
-	printf("Cells: %02u, ", dvd_track.cells);
-	printf("Audio streams: %02u, ", dvd_track.active_audio);
-	printf("Subpictures: %02u\n", dvd_track.active_subs);
 
 	return 0;
 
