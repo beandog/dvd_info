@@ -575,8 +575,6 @@ int main(int argc, char **argv) {
 
 			for(c = 0; c < dvd_track.cells; c++) {
 
-				memset(&dvd_cell, 0, sizeof(dvd_cell));
-
 				dvd_cell.cell = c + 1;
 
 				strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell), DVD_CELL_LENGTH);
