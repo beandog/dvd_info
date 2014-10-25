@@ -955,17 +955,6 @@ int lsdvd_dvd_info(struct dvd_info dvd_info) {
 int lsdvd_title_track(struct dvd_track dvd_track) {
 
 	printf("Title: %02u, ", dvd_track.track);
-
-	// If the title track has invalid data, display empty values for everything
-	if(dvd_track.valid == 0) {
-		printf("Length: 00:00:00.000 ");
-		printf("Chapters: 00, ");
-		printf("Cells: 00, ");
-		printf("Audio streams: 00, ");
-		printf("Subpictures: 00\n");
-		return 0;
-	}
-
 	printf("Length: %s ", dvd_track.length);
 	printf("Chapters: %02u, ", dvd_track.chapters);
 	printf("Cells: %02u, ", dvd_track.cells);
