@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include <inttypes.h>
+#include <libgen.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/dvd_udf.h>
 #include <dvdread/ifo_read.h>
@@ -47,6 +48,8 @@ void print_usage(char *binary) {
 }
 
 int main(int argc, char **argv) {
+
+	char *program_name = basename(argv[0]);
 
 	// Display output
 	int d_json = 0;
@@ -216,7 +219,7 @@ int main(int argc, char **argv) {
 		switch(opt) {
 
 			case 'h':
-				print_usage(argv[0]);
+				print_usage(program_name);
 				return 0;
 
 			case 'j':
