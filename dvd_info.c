@@ -656,10 +656,9 @@ int main(int argc, char **argv) {
 			json_dvd_track = json_object();
 			json_object_set_new(json_dvd_track, "track", json_integer(dvd_track.track));
 
-			// If the title track is invalid, simply add the 'valid' flag here
-			// and here only, then skip to the next one.
-			if(valid_ifos[dvd_track.vts] == false) {
-				json_object_set_new(json_dvd_track, "valid", json_integer(dvd_track.valid));
+			// If the title track is invalid, skip to the next one
+			json_object_set_new(json_dvd_track, "valid", json_integer(dvd_track.valid));
+			if(dvd_track.valid == 0) {
 				json_array_append(json_dvd_tracks, json_dvd_track);
 				continue;
 			}
