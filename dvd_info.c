@@ -858,6 +858,7 @@ int main(int argc, char **argv) {
 				printf("fps = \"%s\"\n", dvd_video.fps);
 			printf("length = \"%s\"\n", dvd_track.length);
 			printf("ttn = %u\n", dvd_track.ttn);
+			printf("valid = true\n");
 			printf("vts = %u\n", dvd_track.vts);
 
 			// FIXME display correct values
