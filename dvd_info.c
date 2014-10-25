@@ -638,7 +638,7 @@ int main(int argc, char **argv) {
 #ifdef JSON_SUPPORT
 	/** JSON display output **/
 
-	if(d_json == 1) {
+	if(p_dvd_info && d_json == 1) {
 
 		// DVD
 		json_object_set_new(json_dvd_info, "title", json_string(dvd_info.title));
@@ -818,7 +818,7 @@ int main(int argc, char **argv) {
 
 	// INI style format
 
-	if(d_ini == 1) {
+	if(p_dvd_info && d_ini == 1) {
 
 		printf("[dvd]\n");
 		printf("title = %s\n", dvd_info.title);
