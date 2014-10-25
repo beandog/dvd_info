@@ -155,13 +155,13 @@ int main(int argc, char **argv) {
 	// Chapters
 	struct dvd_chapter dvd_chapter;
 	dvd_chapter.chapter = 0;
-	memset(dvd_chapter.length, '\0', sizeof(dvd_chapter.length));
+	snprintf(dvd_chapter.length, DVD_CHAPTER_LENGTH, "00:00:00.000");
 	dvd_chapter.startcell = 1;
 
 	// Cells
 	struct dvd_cell dvd_cell;
 	dvd_cell.cell = 1;
-	memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
+	snprintf(dvd_cell.length, DVD_CELL_LENGTH, "00:00:00.000");
 	dvd_cell.msecs = 0;
 
 	// Statistics
