@@ -141,3 +141,65 @@ void dvd_info_serial_id(dvdnav_t *dvdnav, char *p) {
 
 }
 */
+
+uint16_t dvd_longest_track(dvd_reader_t *dvdread_dvd) {
+
+	ifo_handle_t *vmg_ifo;
+	ifo_handle_t *vts_ifo;
+	uint16_t tracks;
+	uint16_t track;
+	uint16_t longest_track;
+	uint16_t idx;
+	uint16_t ifo_number;
+	uint32_t ms;
+	uint32_t max_len;
+
+	vmg_ifo = ifoOpen(dvdread_dvd, 0);
+	track = 0;
+	longest_track = 0;
+	ms = 0;
+	max_len = 0;
+
+	if(!vmg_ifo)
+		return 0;
+
+	if(!ifo_is_vmg(vmg_ifo) && vmg_ifo->tt_srpt != NULL)
+		return 0;
+
+	tracks = vmg_ifo->tt_srpt->nr_of_srpts;
+
+	if(tracks < 1)
+		return 0;
+
+	for(idx = 0; idx < tracks; idx++) {
+
+		track = idx + 1;
+		ifo_number = dvd_vts_ifo_number(vmg_ifo, track);
+		vts_ifo = ifoOpen(dvdread_dvd, ifo_number);
+
+		if(!vts_ifo)
+			continue;
+
+		ms = dvd_track_milliseconds(vmg_ifo, vts_ifo, track);
+
+		// The *first* track with the longest length will still be the
+		// response.
+		if(ms > max_len) {
+			max_len = ms;
+			longest_track = track;
+		}
+
+		ifoClose(vts_ifo);
+		vts_ifo = NULL;
+
+	}
+
+	ifoClose(vmg_ifo);
+	vmg_ifo = NULL;
+
+	if(max_len == 0 || track == 0)
+		return 0;
+
+	return longest_track;
+
+}

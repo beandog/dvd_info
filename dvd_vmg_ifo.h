@@ -166,3 +166,24 @@ uint8_t dvd_info_side(const ifo_handle_t *vmg_ifo);
  * @param p char[17] to copy the string to
  */
 // void dvd_info_serial_id(dvdnav_t *dvdnav, char *p);
+
+/**
+ * Find the longest track
+ *
+ * This will loop through all the tracks and see which one is longest.  If
+ * there are two tracks of the same max length, set it to the *first* one.
+ *
+ * In that sense, this function should *not* be used with the intent to guess
+ * that the longest track is also the feature track.  However, generally
+ * speaking, DVDs are usually authored with the feature track coming in at
+ * one of the first ones.
+ *
+ * A proper feature track function is going to examine each track and find
+ * the one that is both the longest and has audio streams (as well as a few
+ * other checks).  IOW, this function returns exactly what it's asked for:
+ * the longest track number.
+ *
+ * @param dvdread_dvd libdvdread DVD handler
+ * @return track number
+ */
+uint16_t dvd_longest_track(dvd_reader_t *dvdread_dvd);
