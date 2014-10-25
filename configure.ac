@@ -1,25 +1,31 @@
 AC_INIT([dvd_info], [1.0], [steve.dibb@gmail.com], [https://github.com/beandog/dvd_info])
+
+dnl This is not a GNU package, so ignore required files / format
 AM_INIT_AUTOMAKE([foreign])
 
+dnl Check for C99 support
 AC_PROG_CC_C99
 
+dnl Use pkg-config to check for libdvdread, libdvdcss
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
 PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.2.13])
 
-AC_ARG_ENABLE([json], [  --enable-json	Enable JSON output format],
-	[case "${enableval}" in
-		yes)
-			json=true
-			PKG_CHECK_MODULES([JANSSON], [jansson >= 2.3.1])
-			;;
-		no)
-			json=false
-			;;
-		*)
-			AC_MSG_ERROR([bad value ${enableval} for --enable-json])
-			;;
-	esac],
-[json=false])
+dnl JSON output support is provided through jansson library
+dnl By default, enable the support, and use pkg-config to find the build
+dnl settings. If "--disable-json" is passed, then ignore it.
+AC_ARG_ENABLE(
+	[json],
+	[  --disable-json	Disable JSON output format],
+	[
+		json=false
+		AC_DEFINE([JSON_SUPPORT], 0)
+	],
+	[
+		json=true
+		PKG_CHECK_MODULES([JANSSON], [jansson >= 2.3.1])
+		AC_DEFINE([JSON_SUPPORT], 1)
+	]
+)
 AM_CONDITIONAL([JSON], [test x$json = xtrue])
 
 dnl The dvd_drive_status and dvd_eject programs rely on Linux kernel internals,
