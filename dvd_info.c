@@ -66,10 +66,10 @@ int main(int argc, char **argv) {
 	bool p_dvd_info = false;
 	bool p_dvd_xchap = false;
 	char *program_name = basename(argv[0]);
-	if(strncmp("dvd_info", program_name, 8) == 0)
-		p_dvd_info = true;
-	else if(strncmp("dvd_xchap", program_name, 8) == 0)
+	if(strncmp("dvd_xchap", program_name, 8) == 0)
 		p_dvd_xchap = true;
+	else
+		p_dvd_info = true;
 
 	// Display output
 	int d_json = 0;
