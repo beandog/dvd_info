@@ -5,7 +5,22 @@ AC_PROG_CC_C99
 
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
 PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.2.13])
-PKG_CHECK_MODULES([JANSSON], [jansson >= 2.3.1])
+
+AC_ARG_ENABLE([json], [  --enable-json	Enable JSON output format],
+	[case "${enableval}" in
+		yes)
+			json=true
+			PKG_CHECK_MODULES([JANSSON], [jansson >= 2.3.1])
+			;;
+		no)
+			json=false
+			;;
+		*)
+			AC_MSG_ERROR([bad value ${enableval} for --enable-json])
+			;;
+	esac],
+[json=false])
+AM_CONDITIONAL([JSON], [test x$json = xtrue])
 
 dnl The dvd_drive_status and dvd_eject programs rely on Linux kernel internals,
 dnl so they are ignored on other operating systems.
