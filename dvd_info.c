@@ -840,7 +840,7 @@ int main(int argc, char **argv) {
 
 			// If the title track is invalid, skip to the next one
 			if(dvd_track.valid == 0) {
-				printf("valid = false\n");
+				printf("valid = no\n");
 				continue;
 			}
 
@@ -858,7 +858,7 @@ int main(int argc, char **argv) {
 				printf("fps = \"%s\"\n", dvd_video.fps);
 			printf("length = \"%s\"\n", dvd_track.length);
 			printf("ttn = %u\n", dvd_track.ttn);
-			printf("valid = true\n");
+			printf("valid = yes\n");
 			printf("vts = %u\n", dvd_track.vts);
 
 			// FIXME display correct values
@@ -883,7 +883,7 @@ int main(int argc, char **argv) {
 
 				printf("\n");
 				printf("[audio_track:%u.%u]\n", dvd_track.track, dvd_audio.track);
-				printf("active = %s\n", dvd_audio.active == 0 ? "false" : "true");
+				printf("active = %s\n", dvd_audio.active == 0 ? "no" : "yes");
 				printf("channels = %u\n", dvd_audio.channels);
 				printf("codec = \"%s\"\n", dvd_audio.codec);
 				if(strlen(dvd_audio.lang_code))
@@ -900,7 +900,7 @@ int main(int argc, char **argv) {
 
 				printf("\n");
 				printf("[subtitle_track:%u.%u]\n", dvd_track.track, dvd_subtitle.track);
-				printf("active = %s\n", dvd_subtitle.active == 0 ? "false" : "true");
+				printf("active = %s\n", dvd_subtitle.active == 0 ? "no" : "yes");
 				if(strlen(dvd_subtitle.lang_code))
 					printf("lang_code = \"%s\"\n", dvd_subtitle.lang_code);
 				printf("stream_id = \"%s\"\n", dvd_subtitle.stream_id);
