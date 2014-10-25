@@ -460,11 +460,23 @@ int main(int argc, char **argv) {
 		if(d_debug)
 			printf("* IFO: %u\n", dvd_track.vts);
 
-		// Skip track if parent IFO is invalid
+		// Set track values to empty if it is invalid
 		if(valid_ifos[dvd_track.vts] == false) {
 			fprintf(stderr, "%s: IFO %u for track %u is invalid, skipping track\n", program_name, dvd_track.vts, track_number);
 			dvd_track.track = track_number;
 			dvd_track.valid = 0;
+
+			dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
+			memset(dvd_track.length, '\0', sizeof(dvd_track.length));
+			snprintf(dvd_track.length, DVD_TRACK_LENGTH, "00:00:00.000");
+			dvd_track.msecs = 0;
+			dvd_track.chapters = 0;
+			dvd_track.audio_tracks = 0;
+			dvd_track.active_audio = 0;
+			dvd_track.subtitles = 0;
+			dvd_track.active_subs = 0;
+			dvd_track.cells = 0;
+
 			dvd_tracks[track_number - 1] = dvd_track;
 			continue;
 		}
