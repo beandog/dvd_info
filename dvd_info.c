@@ -838,9 +838,8 @@ int main(int argc, char **argv) {
 			printf("\n");
 			printf("[title_track:%u]\n", dvd_track.track);
 
-			// If the title track is invalid, simply add the 'valid' flag here
-			// and here only, then skip to the next one.
-			if(valid_ifos[dvd_track.vts] == false) {
+			// If the title track is invalid, skip to the next one
+			if(dvd_track.valid == 0) {
 				printf("valid = false\n");
 				continue;
 			}
