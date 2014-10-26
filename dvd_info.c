@@ -77,6 +77,9 @@ int main(int argc, char **argv) {
 	int d_ini = 0;
 	int d_debug = 0;
 
+	// lsdvd display output
+	int d_lsdvd_chapters = 0;
+
 	// dvd_info
 	bool d_all_tracks = true;
 	uint16_t d_first_track = 1;
@@ -225,9 +228,9 @@ int main(int argc, char **argv) {
 	// I understood getopt better. :T
 	const char *str_options;
 #ifdef JSON_SUPPORT
-	str_options = "hjkt:z";
+	str_options = "chjkt:z";
 #else
-	str_options = "hkt:z";
+	str_options = "chkt:z";
 #endif
 
 	struct option long_options[] = {
@@ -255,6 +258,10 @@ int main(int argc, char **argv) {
 			case 'h':
 				print_usage(program_name);
 				return 0;
+
+			case 'c':
+				d_lsdvd_chapters = 1;
+				break;
 
 #ifdef JSON_SUPPORT
 			case 'j':
@@ -631,6 +638,7 @@ int main(int argc, char **argv) {
 		printf("Disc Title: %s\n", dvd_info.title);
 
 		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
+
 			dvd_track = dvd_tracks[track_number - 1];
 			printf("Title: %02u, ", dvd_track.track);
 			printf("Length: %s ", dvd_track.length);
@@ -638,7 +646,23 @@ int main(int argc, char **argv) {
 			printf("Cells: %02u, ", dvd_track.cells);
 			printf("Audio streams: %02u, ", dvd_track.active_audio);
 			printf("Subpictures: %02u\n", dvd_track.active_subs);
+
+			if(d_lsdvd_chapters && dvd_track.chapters) {
+
+				for(c = 0; c < dvd_track.chapters; c++) {
+
+					chapter_number = c + 1;
+
+					dvd_chapter = dvd_track.dvd_chapters[c];
+
+					printf("	Chapter: %02u, Length: %s, Start Cell: %02u\n", dvd_chapter.chapter, dvd_chapter.length, dvd_chapter.startcell);
+
+				}
+
+			}
+
 		}
+
 
 		if(d_all_tracks)
 			printf("Longest track: %02u\n", dvd_info.longest_track);
