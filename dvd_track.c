@@ -328,6 +328,23 @@ const char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 
 }
 
+uint32_t dvdtime2msec(dvd_time_t *dvd_time) {
+
+	double frames_per_s[4] = {-1.0, 25.00, -1.0, 29.97};
+        double fps = frames_per_s[(dvd_time->frame_u & 0xc0) >> 6];
+        uint32_t ms = 0;
+
+        ms  = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
+        ms += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
+        ms += (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f)) * 1000;
+
+        if(fps > 0)
+		ms += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 1000.0 / fps;
+
+        return ms;
+
+}
+
 uint32_t dvd_track_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
 	uint8_t ttn;
@@ -730,6 +747,7 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 	uint8_t chapter_idx;
 	int program_map_idx;
 	int cell_idx;
+	uint32_t msecs;
 	char chapter_length[DVD_CHAPTER_LENGTH + 1] = {'\0'};
 
 	ttn = dvd_track_ttn(vmg_ifo, track_number);
@@ -739,6 +757,7 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 	chapter_idx = 0;
 	program_map_idx = 0;
 	cell_idx = 0;
+	msecs = 0;
 
 	// If the PGC pointers are NULL, then the IFO does not have all the info
 	if(pgc->cell_playback == NULL || pgc->program_map == NULL) {
@@ -756,15 +775,14 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 
 		while(cell_idx < program_map_idx - 1) {
 			if(chapter_idx + 1 == chapter_number) {
-				strncpy(chapter_length, dvd_time_length(&pgc->cell_playback[cell_idx].playback_time), DVD_CHAPTER_LENGTH);
-				return strndup(chapter_length, DVD_CHAPTER_LENGTH);
+				msecs += dvdtime2msec(&pgc->cell_playback[cell_idx].playback_time);
 			}
 			cell_idx++;
 		}
 
 	}
 
-	return "00:00:00.000";
+	return strndup(chapter_ms_length(msecs), DVD_CHAPTER_LENGTH);
 
 }
 

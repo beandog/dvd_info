@@ -216,6 +216,9 @@ const char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 
 const char *dvd_track_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
+// Convert dvd time to total milliseconds
+uint32_t dvdtime2msec(dvd_time_t *dvd_time);
+
 uint32_t dvd_track_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
 uint32_t dvd_time_milliseconds(dvd_time_t *dvd_time);
