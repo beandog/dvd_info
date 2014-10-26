@@ -829,6 +829,31 @@ uint32_t dvd_chapter_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_
 
 }
 
+const char *chapter_ms_length(const uint32_t chapter_msecs) {
+
+	char chapter_length[DVD_CHAPTER_LENGTH + 1] = {'\0'};
+	uint32_t total_seconds = 0;
+	uint32_t hours = 0;
+	uint32_t minutes = 0;
+	uint32_t seconds = 0;
+	uint32_t msecs = 0;
+
+	total_seconds = chapter_msecs / 1000;
+	hours = total_seconds / (3600);
+	minutes = (total_seconds / 60) % 60;
+	if(minutes > 59)
+		minutes -= 59;
+	seconds = total_seconds % 60;
+	if(seconds > 59)
+		seconds -= 59;
+	msecs = chapter_msecs - (hours * 3600 * 1000) - (minutes * 60 * 1000) - (seconds * 1000);
+
+	snprintf(chapter_length, DVD_CHAPTER_LENGTH + 1, "%02u:%02u:%02u.%03u", hours, minutes, seconds, msecs);
+
+	return strndup(chapter_length, DVD_CHAPTER_LENGTH);
+
+}
+
 // It's a *safe guess* that if the program_map is NULL or there is no starting cell,
 // that the starting cell is actually the same as the chapter number.  See DVD id 79,
 // track #12 for an example where this matches (NULL values)
