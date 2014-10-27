@@ -79,6 +79,7 @@ int main(int argc, char **argv) {
 
 	// lsdvd display output
 	int d_lsdvd_chapters = 0;
+	int d_lsdvd_cells = 0;
 
 	// dvd_info
 	bool d_all_tracks = true;
@@ -228,9 +229,9 @@ int main(int argc, char **argv) {
 	// I understood getopt better. :T
 	const char *str_options;
 #ifdef JSON_SUPPORT
-	str_options = "chjkt:z";
+	str_options = "cdhjkt:z";
 #else
-	str_options = "chkt:z";
+	str_options = "cdhkt:z";
 #endif
 
 	struct option long_options[] = {
@@ -261,6 +262,10 @@ int main(int argc, char **argv) {
 
 			case 'c':
 				d_lsdvd_chapters = 1;
+				break;
+
+			case 'd':
+				d_lsdvd_cells = 1;
 				break;
 
 #ifdef JSON_SUPPORT
@@ -656,6 +661,17 @@ int main(int argc, char **argv) {
 					dvd_chapter = dvd_track.dvd_chapters[c];
 
 					printf("	Chapter: %02u, Length: %s, Start Cell: %02u\n", dvd_chapter.chapter, dvd_chapter.length, dvd_chapter.startcell);
+
+				}
+
+			}
+
+			if(d_lsdvd_cells && dvd_track.cells) {
+
+				for(c = 0; c < dvd_track.cells; c++) {
+
+					dvd_cell = dvd_track.dvd_cells[c];
+					printf("	Cell: %02u, Length: %s\n", dvd_cell.cell, dvd_cell.length);
 
 				}
 
