@@ -78,7 +78,7 @@ const char *milliseconds_length_format(const uint32_t milliseconds) {
 
 }
 
-uint32_t dvd_track_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+uint32_t dvd_track_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
 	uint8_t ttn;
 	pgcit_t *vts_pgcit;
@@ -110,7 +110,7 @@ uint32_t dvd_track_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
  * once the specified one has been found.
  * END OLD NOTES
  */
-uint32_t dvd_chapter_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
+uint32_t dvd_chapter_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
 	uint8_t ttn;
 	pgcit_t *vts_pgcit;
@@ -158,7 +158,7 @@ uint32_t dvd_chapter_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_
 
 }
 
-uint32_t dvd_cell_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
+uint32_t dvd_cell_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
 
 	uint8_t ttn;
 	pgcit_t *vts_pgcit;
@@ -183,7 +183,7 @@ const char *dvd_track_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vt
 
 	uint32_t msecs = 0;
 
-	msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, track_number);
+	msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track_number);
 
 	return strndup(milliseconds_length_format(msecs), DVD_TRACK_LENGTH);
 
@@ -193,7 +193,7 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 
 	uint32_t msecs;
 
-	msecs = dvd_chapter_milliseconds(vmg_ifo, vts_ifo, track_number, chapter_number);
+	msecs = dvd_chapter_msecs(vmg_ifo, vts_ifo, track_number, chapter_number);
 
 	return strndup(milliseconds_length_format(msecs), DVD_CHAPTER_LENGTH);
 
@@ -204,7 +204,7 @@ const char *dvd_cell_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts
 
 	uint32_t msecs;
 
-	msecs = dvd_cell_milliseconds(vmg_ifo, vts_ifo, track_number, cell_number);
+	msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, track_number, cell_number);
 
 	return strndup(milliseconds_length_format(msecs), DVD_CELL_LENGTH);
 

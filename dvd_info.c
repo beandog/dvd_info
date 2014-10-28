@@ -506,7 +506,7 @@ int main(int argc, char **argv) {
 		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
 		memset(dvd_track.length, '\0', sizeof(dvd_track.length));
 		strncpy(dvd_track.length, dvd_track_length(vmg_ifo, vts_ifo, dvd_track.track), DVD_TRACK_LENGTH);
-		dvd_track.msecs = dvd_track_milliseconds(vmg_ifo, vts_ifo, dvd_track.track);
+		dvd_track.msecs = dvd_track_msecs(vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
 
 		if(dvd_track.msecs > longest_msecs) {
@@ -516,16 +516,16 @@ int main(int argc, char **argv) {
 
 		/** Video **/
 
-		strncpy(dvd_video.codec, dvd_track_video_codec(vts_ifo), DVD_VIDEO_CODEC);
+		strncpy(dvd_video.codec, dvd_video_codec(vts_ifo), DVD_VIDEO_CODEC);
 		strncpy(dvd_video.format, dvd_track_video_format(vts_ifo), DVD_VIDEO_FORMAT);
-		dvd_video.width = dvd_track_video_width(vts_ifo);
-		dvd_video.height = dvd_track_video_height(vts_ifo);
-		strncpy(dvd_video.aspect_ratio, dvd_track_video_aspect_ratio(vts_ifo), DVD_VIDEO_ASPECT_RATIO);
-		dvd_video.letterbox = dvd_track_letterbox_video(vts_ifo);
-		dvd_video.pan_and_scan = dvd_track_pan_scan_video(vts_ifo);
-		dvd_video.df = dvd_track_permitted_df(vts_ifo);
-		dvd_video.angles = dvd_track_angles(vmg_ifo, dvd_track.track);
-		dvd_track.audio_tracks = dvd_track_num_audio_streams(vts_ifo);
+		dvd_video.width = dvd_video_width(vts_ifo);
+		dvd_video.height = dvd_video_height(vts_ifo);
+		strncpy(dvd_video.aspect_ratio, dvd_video_aspect_ratio(vts_ifo), DVD_VIDEO_ASPECT_RATIO);
+		dvd_video.letterbox = dvd_video_letterbox(vts_ifo);
+		dvd_video.pan_and_scan = dvd_video_pan_scan(vts_ifo);
+		dvd_video.df = dvd_video_df(vts_ifo);
+		dvd_video.angles = dvd_video_angles(vmg_ifo, dvd_track.track);
+		dvd_track.audio_tracks = dvd_track_audio_tracks(vts_ifo);
 		dvd_track.active_audio = 0;
 		dvd_track.subtitles = dvd_track_subtitles(vts_ifo);
 		dvd_track.active_subs = 0;
@@ -547,13 +547,13 @@ int main(int argc, char **argv) {
 				memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
 
 				dvd_audio.track = c + 1;
-				dvd_audio.active = dvd_track_active_audio_stream(vmg_ifo, vts_ifo, dvd_track.track, dvd_audio.track);
+				dvd_audio.active = dvd_audio_active(vmg_ifo, vts_ifo, dvd_track.track, dvd_audio.track);
 				if(dvd_audio.active)
 					dvd_track.active_audio++;
-				strncpy(dvd_audio.lang_code, dvd_track_audio_lang_code(vts_ifo, c), DVD_AUDIO_LANG_CODE);
-				strncpy(dvd_audio.codec, dvd_track_audio_codec(vts_ifo, c), DVD_AUDIO_CODEC);
-				dvd_audio.channels = dvd_track_audio_num_channels(vts_ifo, c);
-				strncpy(dvd_audio.stream_id, dvd_track_audio_stream_id(vts_ifo, c), DVD_AUDIO_STREAM_ID);
+				strncpy(dvd_audio.lang_code, dvd_audio_lang_code(vts_ifo, c), DVD_AUDIO_LANG_CODE);
+				strncpy(dvd_audio.codec, dvd_audio_codec(vts_ifo, c), DVD_AUDIO_CODEC);
+				dvd_audio.channels = dvd_audio_channels(vts_ifo, c);
+				strncpy(dvd_audio.stream_id, dvd_audio_stream_id(vts_ifo, c), DVD_AUDIO_STREAM_ID);
 
 				dvd_track.dvd_audio_tracks[c] = dvd_audio;
 
@@ -573,11 +573,11 @@ int main(int argc, char **argv) {
 				memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
 
 				dvd_subtitle.track = c + 1;
-				dvd_subtitle.active = dvd_track_active_subtitle(vmg_ifo, vts_ifo, dvd_track.track, dvd_subtitle.track);
+				dvd_subtitle.active = dvd_subtitle_active(vmg_ifo, vts_ifo, dvd_track.track, dvd_subtitle.track);
 				if(dvd_subtitle.active)
 					dvd_track.active_subs++;
-				strncpy(dvd_subtitle.stream_id, dvd_track_subtitle_stream_id(c), DVD_SUBTITLE_STREAM_ID);
-				strncpy(dvd_subtitle.lang_code, dvd_track_subtitle_lang_code(vts_ifo, c), DVD_SUBTITLE_LANG_CODE);
+				strncpy(dvd_subtitle.stream_id, dvd_subtitle_stream_id(c), DVD_SUBTITLE_STREAM_ID);
+				strncpy(dvd_subtitle.lang_code, dvd_subtitle_lang_code(vts_ifo, c), DVD_SUBTITLE_LANG_CODE);
 
 				dvd_track.dvd_subtitles[c] = dvd_subtitle;
 
@@ -597,7 +597,7 @@ int main(int argc, char **argv) {
 
 				memset(dvd_chapter.length, '\0', sizeof(dvd_chapter.length));
 				strncpy(dvd_chapter.length, dvd_chapter_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter), DVD_CHAPTER_LENGTH);
-				dvd_chapter.msecs = dvd_chapter_milliseconds(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
+				dvd_chapter.msecs = dvd_chapter_msecs(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 				dvd_chapter.startcell = dvd_chapter_startcell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 
 				dvd_track.dvd_chapters[c] = dvd_chapter;
@@ -618,7 +618,7 @@ int main(int argc, char **argv) {
 
 				memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
 				strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell), DVD_CELL_LENGTH);
-				dvd_cell.msecs = dvd_cell_milliseconds(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+				dvd_cell.msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 
 				dvd_track.dvd_cells[c] = dvd_cell;
 

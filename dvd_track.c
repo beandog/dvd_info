@@ -22,9 +22,7 @@ uint16_t dvd_vts_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_nu
 	// Should these be the same number
 	// vts_ttn = vmg_ifo->tt_srpt->title[title_track_idx].vts_ttn;
 
-	uint16_t ifo_number;
-
-	ifo_number = vmg_ifo->tt_srpt->title[track_number - 1].title_set_nr;
+	uint16_t ifo_number = vmg_ifo->tt_srpt->title[track_number - 1].title_set_nr;
 
 	if(ifo_number >= 0)
 		return ifo_number;
@@ -35,9 +33,7 @@ uint16_t dvd_vts_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_nu
 
 uint8_t dvd_track_ttn(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
 
-	uint8_t ttn;
-
-	ttn = vmg_ifo->tt_srpt->title[track_number - 1].vts_ttn;
+	uint8_t ttn = vmg_ifo->tt_srpt->title[track_number - 1].vts_ttn;
 
 	if(ttn > 0)
 		return ttn;
@@ -46,11 +42,9 @@ uint8_t dvd_track_ttn(const ifo_handle_t *vmg_ifo, const uint16_t track_number) 
 
 }
 
-uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
+uint8_t dvd_video_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
 
-	uint8_t angles;
-
-	angles = vmg_ifo->tt_srpt->title[track_number - 1].nr_of_angles;
+	uint8_t angles = vmg_ifo->tt_srpt->title[track_number - 1].nr_of_angles;
 
 	if(angles >= 0)
 		return angles;
@@ -61,9 +55,7 @@ uint8_t dvd_track_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_numbe
 
 const char *dvd_vts_id(const ifo_handle_t *vts_ifo) {
 
-	size_t i;
-
-	i = 0;
+	size_t i = 0;
 
 	for(i = 0; i < strlen(vts_ifo->vtsi_mat->vts_identifier); i++) {
 		if(!isascii(vts_ifo->vtsi_mat->vts_identifier[i]))
@@ -140,13 +132,10 @@ bool dvd_track_pal_video(const ifo_handle_t *vts_ifo) {
 
 }
 
-uint16_t dvd_track_video_height(const ifo_handle_t *vts_ifo) {
+uint16_t dvd_video_height(const ifo_handle_t *vts_ifo) {
 
-	int video_height;
-	uint8_t picture_size;
-
-	video_height = 0;
-	picture_size = vts_ifo->vtsi_mat->vts_video_attr.picture_size;
+	int video_height = 0;
+	uint8_t picture_size = vts_ifo->vtsi_mat->vts_video_attr.picture_size;
 
 	if(dvd_track_ntsc_video(vts_ifo))
 		video_height = 480;
@@ -163,15 +152,11 @@ uint16_t dvd_track_video_height(const ifo_handle_t *vts_ifo) {
 
 }
 
-uint16_t dvd_track_video_width(const ifo_handle_t *vts_ifo) {
+uint16_t dvd_video_width(const ifo_handle_t *vts_ifo) {
 
-	int video_width;
-	uint16_t video_height;
-	uint8_t picture_size;
-
-	video_width = 0;
-	video_height = dvd_track_video_height(vts_ifo);
-	picture_size = vts_ifo->vtsi_mat->vts_video_attr.picture_size;
+	uint16_t video_width = 0;
+	uint16_t video_height = dvd_video_height(vts_ifo);
+	uint8_t picture_size = vts_ifo->vtsi_mat->vts_video_attr.picture_size;
 
 	if(video_height == 0)
 		return 0;
@@ -189,7 +174,7 @@ uint16_t dvd_track_video_width(const ifo_handle_t *vts_ifo) {
 		video_width = 720;
 	}
 
-	return (uint16_t)video_width;
+	return video_width;
 
 }
 
@@ -220,11 +205,9 @@ bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *vts_ifo) {
 
 }
 
-uint8_t dvd_track_permitted_df(const ifo_handle_t *vts_ifo) {
+uint8_t dvd_video_df(const ifo_handle_t *vts_ifo) {
 
-	uint8_t permitted_df;
-
-	permitted_df = vts_ifo->vtsi_mat->vts_video_attr.permitted_df;
+	uint8_t permitted_df = vts_ifo->vtsi_mat->vts_video_attr.permitted_df;
 
 	if(permitted_df >= 0)
 		return permitted_df;
@@ -233,11 +216,9 @@ uint8_t dvd_track_permitted_df(const ifo_handle_t *vts_ifo) {
 
 }
 
-bool dvd_track_letterbox_video(const ifo_handle_t *vts_ifo) {
+bool dvd_video_letterbox(const ifo_handle_t *vts_ifo) {
 
-	uint8_t permitted_df;
-
-	permitted_df = vts_ifo->vtsi_mat->vts_video_attr.permitted_df;
+	uint8_t permitted_df = vts_ifo->vtsi_mat->vts_video_attr.permitted_df;
 
 	if(permitted_df == 0 || permitted_df == 2)
 		return true;
@@ -246,11 +227,9 @@ bool dvd_track_letterbox_video(const ifo_handle_t *vts_ifo) {
 
 }
 
-bool dvd_track_pan_scan_video(const ifo_handle_t *vts_ifo) {
+bool dvd_video_pan_scan(const ifo_handle_t *vts_ifo) {
 
-	uint8_t permitted_df;
-
-	permitted_df = vts_ifo->vtsi_mat->vts_video_attr.permitted_df;
+	uint8_t permitted_df = vts_ifo->vtsi_mat->vts_video_attr.permitted_df;
 
 	if(permitted_df == 0 || permitted_df == 1)
 		return true;
@@ -259,7 +238,7 @@ bool dvd_track_pan_scan_video(const ifo_handle_t *vts_ifo) {
 
 }
 
-const char *dvd_track_video_codec(const ifo_handle_t *vts_ifo) {
+const char *dvd_video_codec(const ifo_handle_t *vts_ifo) {
 
 	if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
 		return "MPEG1";
@@ -281,7 +260,7 @@ const char *dvd_track_video_format(const ifo_handle_t *vts_ifo) {
 
 }
 
-const char *dvd_track_video_aspect_ratio(const ifo_handle_t *vts_ifo) {
+const char *dvd_video_aspect_ratio(const ifo_handle_t *vts_ifo) {
 
 	if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
 		return "4:3";
@@ -295,9 +274,7 @@ const char *dvd_track_video_aspect_ratio(const ifo_handle_t *vts_ifo) {
 double dvd_track_fps(dvd_time_t *dvd_time) {
 
 	double frames_per_s[4] = {-1.0, 25.00, -1.0, 29.97};
-	double fps;
-
-	fps = frames_per_s[(dvd_time->frame_u & 0xc0) >> 6];
+	double fps = frames_per_s[(dvd_time->frame_u & 0xc0) >> 6];
 
 	return fps;
 
@@ -306,19 +283,10 @@ double dvd_track_fps(dvd_time_t *dvd_time) {
 const char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
 	char str[DVD_VIDEO_FPS + 1] = {'\0'};
-	double fps;
-	uint8_t ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
-	dvd_time_t *dvd_time;
-
-	fps = 0;
-	ttn = dvd_track_ttn(vmg_ifo, track_number);
-	vts_pgcit = vts_ifo->vts_pgcit;
-	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
-	dvd_time = &pgc->playback_time;
-
-	fps = dvd_track_fps(dvd_time);
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	double fps = dvd_track_fps(&pgc->playback_time);
 
 	if(fps > 0) {
 		snprintf(str, DVD_VIDEO_FPS + 1, "%02.02f", fps);
@@ -331,11 +299,9 @@ const char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 
 /** Audio **/
 
-uint8_t dvd_track_num_audio_streams(const ifo_handle_t *vts_ifo) {
+uint8_t dvd_track_audio_tracks(const ifo_handle_t *vts_ifo) {
 
-	uint8_t audio_streams;
-
-	audio_streams = vts_ifo->vtsi_mat->nr_of_vts_audio_streams;
+	uint8_t audio_streams = vts_ifo->vtsi_mat->nr_of_vts_audio_streams;
 
 	if(audio_streams >= 0)
 		return audio_streams;
@@ -350,21 +316,14 @@ uint8_t dvd_track_num_audio_streams(const ifo_handle_t *vts_ifo) {
 // See https://github.com/thierer/lsdvd/commit/2adcc7d8ab1d3ccaa8b2aa294ad15ba5f72533d4
 // See http://dvdnav.mplayerhq.hu/dvdinfo/pgc.html
 // Looks for whether a stream available flag is set for each audio stream
-uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track) {
+uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track) {
 
-	pgcit_t *vts_pgcit;
-	uint16_t pgcn;
-	uint8_t ttn;
-	pgc_t *pgc;
-	uint8_t idx;
-	uint8_t i;
-
-	ttn = dvd_track_ttn(vmg_ifo, title_track);
-	vts_pgcit = vts_ifo->vts_pgcit;
-	pgcn = vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn;
-	pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
-	idx = 0;
-	i = 0;
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
+	uint16_t pgcn = vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn;
+	pgc_t *pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
+	uint8_t idx = 0;
+	uint8_t i = 0;
 
 	for(idx = 0; idx < DVD_AUDIO_STREAM_LIMIT; idx++) {
 
@@ -377,20 +336,15 @@ uint8_t dvd_track_num_active_audio_streams(const ifo_handle_t *vmg_ifo, const if
 
 }
 
-uint8_t dvd_track_active_audio_stream(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, const uint8_t audio_track) {
+uint8_t dvd_audio_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, const uint8_t audio_track) {
 
-	if(audio_track > DVD_AUDIO_STREAM_LIMIT || audio_track > dvd_track_num_active_audio_streams(vmg_ifo, vts_ifo, title_track))
+	if(audio_track > DVD_AUDIO_STREAM_LIMIT || audio_track > dvd_audio_active_tracks(vmg_ifo, vts_ifo, title_track))
 		return 0;
 
-	pgcit_t *vts_pgcit;
-	uint16_t pgcn;
-	uint8_t ttn;
-	pgc_t *pgc;
-
-	ttn = dvd_track_ttn(vmg_ifo, title_track);
-	vts_pgcit = vts_ifo->vts_pgcit;
-	pgcn = vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn;
-	pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
+	uint16_t pgcn = vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn;
+	pgc_t *pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
 
 	if(pgc->audio_control[audio_track - 1] & 0x8000)
 		return 1;
@@ -401,18 +355,14 @@ uint8_t dvd_track_active_audio_stream(const ifo_handle_t *vmg_ifo, const ifo_han
 
 uint8_t dvd_track_num_audio_lang_code_streams(const ifo_handle_t *vts_ifo, const char *p) {
 
-	uint8_t num_track_audio_streams;
-	uint8_t num_lang_streams;
+	uint8_t num_track_audio_streams = dvd_track_audio_tracks(vts_ifo);
+	uint8_t num_lang_streams = 0;
 	char lang_code[DVD_AUDIO_LANG_CODE + 1] = {'\0'};
-	uint8_t i;
-
-	num_track_audio_streams = dvd_track_num_audio_streams(vts_ifo);
-	num_lang_streams = 0;
-	i = 0;
+	uint8_t i = 0;
 
 	for(i = 0; i < num_track_audio_streams; i++) {
 
-		strncpy(lang_code, dvd_track_audio_lang_code(vts_ifo, i), DVD_AUDIO_LANG_CODE);
+		strncpy(lang_code, dvd_audio_lang_code(vts_ifo, i), DVD_AUDIO_LANG_CODE);
 
 		if(strncmp(lang_code, p, DVD_AUDIO_LANG_CODE) == 0) {
 			num_lang_streams++;
@@ -438,9 +388,7 @@ bool dvd_track_has_audio_lang_code(const ifo_handle_t *vts_ifo, const char *lang
 
 uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo) {
 
-	uint8_t subtitles;
-
-	subtitles = vts_ifo->vtsi_mat->nr_of_vts_subp_streams;
+	uint8_t subtitles = vts_ifo->vtsi_mat->nr_of_vts_subp_streams;
 
 	if(subtitles >= 0)
 		return subtitles;
@@ -451,17 +399,11 @@ uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo) {
 
 uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track) {
 
-	uint8_t i;
-	uint8_t idx;
-	pgcit_t *vts_pgcit;
-	uint8_t ttn;
-	pgc_t *pgc;
-
-	i = 0;
-	idx = 0;
-	ttn = dvd_track_ttn(vmg_ifo, title_track);
-	vts_pgcit = vts_ifo->vts_pgcit;
-	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	uint8_t i = 0;
+	uint8_t idx = 0;
 
 	for(idx = 0; idx < DVD_SUBTITLE_STREAM_LIMIT; idx++) {
 
@@ -474,23 +416,17 @@ uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle
 
 }
 
-uint8_t dvd_track_active_subtitle(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, uint8_t subtitle_track) {
+uint8_t dvd_subtitle_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, uint8_t subtitle_track) {
 
-	uint8_t i;
-	pgcit_t *vts_pgcit;
-	uint16_t pgcn;
-	uint8_t ttn;
-	pgc_t *pgc;
-
-	i = dvd_track_active_subtitles(vmg_ifo, vts_ifo, title_track);
+	uint8_t i = dvd_track_active_subtitles(vmg_ifo, vts_ifo, title_track);
 
 	if(subtitle_track > DVD_SUBTITLE_STREAM_LIMIT || subtitle_track > i)
 		return 0;
 
-	ttn = dvd_track_ttn(vmg_ifo, title_track);
-	vts_pgcit = vts_ifo->vts_pgcit;
-	pgcn = vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn;
-	pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	uint16_t pgcn = vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn;
+	pgc_t *pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
 
 	if(pgc->subp_control[subtitle_track - 1] & 0x80000000)
 		return 1;
@@ -501,18 +437,18 @@ uint8_t dvd_track_active_subtitle(const ifo_handle_t *vmg_ifo, const ifo_handle_
 
 uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *vts_ifo, const char *lang_code) {
 
-	uint8_t streams;
-	uint8_t matches;
-	uint8_t i;
-	char str[DVD_SUBTITLE_LANG_CODE + 1] = {'\0'};
+	uint8_t streams = dvd_track_subtitles(vts_ifo);
 
-	streams = dvd_track_subtitles(vts_ifo);
-	matches = 0;
-	i = 0;
+	if(streams == 0)
+		return 0;
+
+	uint8_t matches = 0;
+	uint8_t i = 0;
+	char str[DVD_SUBTITLE_LANG_CODE + 1] = {'\0'};
 
 	for(i = 0; i < streams; i++) {
 
-		strncpy(str, dvd_track_subtitle_lang_code(vts_ifo, i), DVD_SUBTITLE_LANG_CODE);
+		strncpy(str, dvd_subtitle_lang_code(vts_ifo, i), DVD_SUBTITLE_LANG_CODE);
 
 		if(strncmp(str, lang_code, DVD_SUBTITLE_LANG_CODE) == 0) {
 			matches++;
@@ -535,22 +471,16 @@ bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *vts_ifo, const char *l
 
 uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
-	uint8_t ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
-	uint8_t chapters;
-
-	ttn = dvd_track_ttn(vmg_ifo, track_number);
-	vts_pgcit = vts_ifo->vts_pgcit;
-	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
-	chapters = 0;
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
 	// If there's no cell playback, then override the number in the PGC and report as
 	// zero so that they are not accessed.
 	if(pgc->cell_playback == NULL)
 		return 0;
 
-	chapters = pgc->nr_of_programs;
+	uint8_t chapters = pgc->nr_of_programs;
 
 	if(chapters > 0)
 		return chapters;
@@ -561,22 +491,16 @@ uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 
 uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
-	uint8_t ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
-	uint8_t cells;
-
-	ttn = dvd_track_ttn(vmg_ifo, track_number);
-	vts_pgcit = vts_ifo->vts_pgcit;
-	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
-	cells = 0;
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
 	// If there's no cell playback, then override the number in the PGC and report as
 	// zero so that they are not accessed.
 	if(pgc->cell_playback == NULL)
 		return 0;
 
-	cells = pgc->nr_of_cells;
+	uint8_t cells = pgc->nr_of_cells;
 
 	if(cells >= 0)
 		return cells;
@@ -594,20 +518,14 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
 // chapters than cells, and the lengths of chapters don't exceed cells either.
 uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
-	uint8_t ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
-	uint8_t startcell;
-
-	ttn = dvd_track_ttn(vmg_ifo, track_number);
-	vts_pgcit = vts_ifo->vts_pgcit;
-	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
-	startcell = 1;
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
 	if(pgc->program_map == NULL)
 		return chapter_number;
 
-	startcell = pgc->program_map[chapter_number - 1];
+	uint8_t startcell = pgc->program_map[chapter_number - 1];
 
 	if(startcell > 0)
 		return startcell;
@@ -618,19 +536,18 @@ uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 
 // Note: Remember that the language code is set in the IFO
 // See dvdread/ifo_print.c for same functionality (error checking)
-const char *dvd_track_audio_lang_code(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
+const char *dvd_audio_lang_code(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
 
-	char lang_code[3] = {'\0'};
-	audio_attr_t *audio_attr;
-	uint8_t lang_type;
-
-	audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
-	lang_type = audio_attr->lang_type;
+	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
+	uint8_t lang_type = audio_attr->lang_type;
 
 	if(lang_type != 1)
 		return "";
 
+	char lang_code[3] = {'\0'};
+
 	snprintf(lang_code, DVD_AUDIO_LANG_CODE + 1, "%c%c", audio_attr->lang_code >> 8, audio_attr->lang_code & 0xff);
+
 	return strndup(lang_code, DVD_AUDIO_LANG_CODE);
 
 }
@@ -639,28 +556,20 @@ const char *dvd_track_audio_lang_code(const ifo_handle_t *vts_ifo, const uint8_t
 // same for lpcm; also a bug if it reports #5, and defaults to bug report if
 // any above 6 (or under 0)
 // FIXME check for multi channel extension
-const char *dvd_track_audio_codec(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
+const char *dvd_audio_codec(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
 
 	const char *audio_codecs[7] = { "ac3", "", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
-	audio_attr_t *audio_attr;
-	uint8_t audio_codec;
-
-	audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
-	audio_codec = audio_attr->audio_format;
+	audio_attr_t *audio_attr =  &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
+	uint8_t audio_codec = audio_attr->audio_format;
 
 	return strndup(audio_codecs[audio_codec], DVD_AUDIO_CODEC);
 
 }
 
-uint8_t dvd_track_audio_num_channels(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
+uint8_t dvd_audio_channels(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
 
-	audio_attr_t *audio_attr;
-	uint8_t uc_num_channels;
-	uint8_t num_channels;
-
-	audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
-	uc_num_channels = audio_attr->channels;
-	num_channels = uc_num_channels + 1;
+	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
+	uint8_t num_channels = audio_attr->channels + 1;
 
 	if(num_channels >= 0)
 		return num_channels;
@@ -669,17 +578,13 @@ uint8_t dvd_track_audio_num_channels(const ifo_handle_t *vts_ifo, const uint8_t 
 
 }
 
-const char *dvd_track_audio_stream_id(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
+const char *dvd_audio_stream_id(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
 
-	audio_attr_t *audio_attr;
-	uint8_t audio_format;
-	uint8_t audio_stream_id = 0;
+	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
+	uint8_t audio_format = audio_attr->audio_format;
 	uint8_t audio_id[7] = {0x80, 0, 0xC0, 0xC0, 0xA0, 0, 0x88};
+	uint8_t audio_stream_id = audio_id[audio_format] + audio_stream;
 	char str[DVD_AUDIO_STREAM_ID + 1] = {'\0'};
-
-	audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
-	audio_format = audio_attr->audio_format;
-	audio_stream_id = audio_id[audio_format] + audio_stream;
 
 	snprintf(str, DVD_AUDIO_STREAM_ID + 1, "0x%x", audio_stream_id);
 
@@ -692,10 +597,10 @@ const char *dvd_track_audio_stream_id(const ifo_handle_t *vts_ifo, const uint8_t
 // if it's an invalid language.  If it's missing one, set it to unknown (for example)
 // but if it's invalid, maybe guess that it's in English, or something?  Dunno.
 // Having a best-guess approach might not be bad, maybe even look at region codes
-const char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint8_t subtitle_track) {
+const char *dvd_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint8_t subtitle_track) {
 
 	char lang_code[3] = {'\0'};
-	subp_attr_t *subp_attr;
+	subp_attr_t *subp_attr = NULL;
 
 	subp_attr = &vts_ifo->vtsi_mat->vts_subp_attr[subtitle_track];
 
@@ -711,7 +616,7 @@ const char *dvd_track_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint
 
 }
 
-const char *dvd_track_subtitle_stream_id(const uint8_t subtitle_track) {
+const char *dvd_subtitle_stream_id(const uint8_t subtitle_track) {
 
 	char str[DVD_SUBTITLE_STREAM_ID + 1] = {'\0'};
 

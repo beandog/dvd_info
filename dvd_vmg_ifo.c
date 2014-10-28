@@ -11,8 +11,8 @@ const char *dvd_title(const char *device_filename) {
 
 	char dvd_title[DVD_TITLE + 1] = {'\0'};
 	FILE *filehandle = 0;
-	size_t x;
-	size_t y;
+	size_t x = 0;
+	size_t y = 0;
 
 	// If we can't even open the device, exit quietly
 	filehandle = fopen(device_filename, "r");
@@ -50,10 +50,10 @@ const char *dvd_title(const char *device_filename) {
 
 const char *dvd_dvdread_id(dvd_reader_t *dvdread_dvd) {
 
-	int dvdread_retval;
+	int dvdread_retval = 0;
 	uint8_t dvdread_ifo_md5[16] = {0};
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
-	unsigned long x;
+	unsigned long x = 0;
 
 	dvdread_retval = DVDDiscID(dvdread_dvd, dvdread_ifo_md5);
 	if(dvdread_retval == -1)
