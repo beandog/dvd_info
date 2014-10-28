@@ -3,6 +3,8 @@ AC_INIT([dvd_info], [1.0], [steve.dibb@gmail.com], [https://github.com/beandog/d
 dnl This is not a GNU package, so ignore required files / format
 AM_INIT_AUTOMAKE([foreign])
 
+AC_PROG_LN_S
+
 dnl Check for C99 support
 AC_PROG_CC_C99
 

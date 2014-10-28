@@ -18,3 +18,6 @@ dvd_eject_CFLAGS = $(DVDCSS_CFLAGS)
 dvd_eject_LDADD = $(DVDCSS_LIBS)
 
 dvd_drive_status_SOURCES = dvd_drive_status.c
+
+install-exec-hook:
+	$(LN_S) -f -r $(DESTDIR)$(bindir)/dvd_info $(DESTDIR)$(bindir)/dvd_xchap
