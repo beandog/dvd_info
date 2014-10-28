@@ -30,7 +30,7 @@
 
 void print_usage(char *binary) {
 
-	printf("%s %s - GPL Copyright (c) 2014 Steve Dibb <steve.dibb@gmail.com>\n", binary, VERSION);
+	printf("%s %s - http://dvds.beandog.org/\n", binary, VERSION);
 	printf("\n");
 	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
 	printf("\n");
