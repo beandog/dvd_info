@@ -16,6 +16,7 @@
 #include "dvd_device.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
+#include "dvd_time.h"
 #ifdef __linux__
 #include <linux/cdrom.h>
 #include "dvd_drive.h"
@@ -1028,7 +1029,7 @@ int main(int argc, char **argv) {
 				dvd_chapter = dvd_track.dvd_chapters[c];
 
 				chapter_msecs += dvd_chapter.msecs;
-				strncpy(chapter_start, chapter_ms_length(chapter_msecs), DVD_CHAPTER_LENGTH);
+				strncpy(chapter_start, milliseconds_length_format(chapter_msecs), DVD_CHAPTER_LENGTH);
 
 				printf("CHAPTER%02u=%s\n", chapter_number, chapter_start);
 				printf("CHAPTER%02uNAME=Chapter %02u\n", chapter_number, chapter_number);

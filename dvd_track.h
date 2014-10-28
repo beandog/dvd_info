@@ -214,23 +214,6 @@ double dvd_track_fps(dvd_time_t *dvd_time);
 
 const char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
-const char *dvd_track_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
-
-// Convert dvd time to total milliseconds
-uint32_t dvdtime2msec(dvd_time_t *dvd_time);
-
-uint32_t dvd_track_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
-
-uint32_t dvd_time_milliseconds(dvd_time_t *dvd_time);
-
-uint32_t dvd_time_seconds(dvd_time_t *dvd_time);
-
-uint32_t dvd_time_minutes(dvd_time_t *dvd_time);
-
-uint32_t dvd_time_hours(dvd_time_t *dvd_time);
-
-const char *dvd_time_length(dvd_time_t *dvd_time);
-
 /** Audio Streams **/
 
 /**
@@ -345,11 +328,6 @@ uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 
 uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
-/**
- * Get a string of the length of a chapter in a track.  Format hh:mm:ss.ms
- *
- */
-const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t chapter_number);
 
 /**
  * Get the audio language code for a track.  A two-character string that is a
@@ -369,15 +347,7 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
  */
 const char *dvd_track_audio_lang_code(const ifo_handle_t *vts_ifo, const uint8_t audio_stream);
 
-uint32_t dvd_chapter_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number);
-
-const char *chapter_ms_length(const uint32_t chapter_msecs);
-
 uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number);
-
-uint32_t dvd_cell_milliseconds(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number);
-
-const char *dvd_cell_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number);
 
 /**
  * Get the codec for an audio track.
