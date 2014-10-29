@@ -21,15 +21,9 @@
  */
 uint32_t dvd_time_to_milliseconds(dvd_time_t *dvd_time) {
 
-	uint32_t framerates[4] = {0, 2500, 0, 2997};
-	uint32_t framerate = 0;
-	uint32_t hours = 0;
-	uint32_t minutes = 0;
-	uint32_t seconds = 0;
 	uint32_t msecs = 0;
-	uint32_t total = 0;
-
-	framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
+	uint32_t framerates[4] = {0, 2500, 0, 2997};
+	uint32_t framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
 
 	/*
 	msecs = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
@@ -38,18 +32,16 @@ uint32_t dvd_time_to_milliseconds(dvd_time_t *dvd_time) {
 	if(framerate > 0)
 		msecs += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
 	*/
-	hours = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f));
-	total = (hours * 3600000);
 
-	minutes = (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f));
-	total += (minutes * 60000);
-
-	seconds = (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f));
-	total += (seconds * 1000);
-
+	uint32_t hours = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f));
+	uint32_t minutes = (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f));
+	uint32_t seconds = (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f));
 	if(framerate > 0)
 		msecs = ((((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000) / framerate;
 
+	uint32_t total = (hours * 3600000);
+	total += (minutes * 60000);
+	total += (seconds * 1000);
 	total += msecs;
 
 	return total;
@@ -64,21 +56,16 @@ uint32_t dvd_time_to_milliseconds(dvd_time_t *dvd_time) {
 const char *milliseconds_length_format(const uint32_t milliseconds) {
 
 	char chapter_length[12 + 1] = {'\0'};
-	uint32_t total_seconds = 0;
-	uint32_t hours = 0;
-	uint32_t minutes = 0;
-	uint32_t seconds = 0;
-	uint32_t msecs = 0;
 
-	total_seconds = milliseconds / 1000;
-	hours = total_seconds / (3600);
-	minutes = (total_seconds / 60) % 60;
+	uint32_t total_seconds = milliseconds / 1000;
+	uint32_t hours = total_seconds / (3600);
+	uint32_t minutes = (total_seconds / 60) % 60;
 	if(minutes > 59)
 		minutes -= 59;
-	seconds = total_seconds % 60;
+	uint32_t seconds = total_seconds % 60;
 	if(seconds > 59)
 		seconds -= 59;
-	msecs = milliseconds - (hours * 3600 * 1000) - (minutes * 60 * 1000) - (seconds * 1000);
+	uint32_t msecs = milliseconds - (hours * 3600 * 1000) - (minutes * 60 * 1000) - (seconds * 1000);
 
 	snprintf(chapter_length, 12 + 1, "%02u:%02u:%02u.%03u", hours, minutes, seconds, msecs);
 
@@ -91,19 +78,14 @@ const char *milliseconds_length_format(const uint32_t milliseconds) {
  */
 uint32_t dvd_track_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
-	uint8_t ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
-	uint32_t msecs;
-
-	ttn = dvd_track_ttn(vmg_ifo, track_number);
-	vts_pgcit = vts_ifo->vts_pgcit;
-	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
 	if(pgc->cell_playback == NULL)
 		return 0;
 
-	msecs = dvd_time_to_milliseconds(&pgc->playback_time);
+	uint32_t msecs = dvd_time_to_milliseconds(&pgc->playback_time);
 
 	return msecs;
 
@@ -125,33 +107,23 @@ uint32_t dvd_track_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_if
  */
 uint32_t dvd_chapter_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
-	uint8_t ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
-	uint32_t msecs;
-	uint8_t chapters;
-	uint8_t chapter_idx;
-	uint8_t program_map_idx;
-	uint8_t cell_idx;
-
-	ttn = dvd_track_ttn(vmg_ifo, track_number);
-	vts_pgcit = vts_ifo->vts_pgcit;
-	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
-	msecs = 0;
-	chapters = 0;
-	chapter_idx = 0;
-	program_map_idx = 0;
-	cell_idx = 0;
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
 	if(pgc->cell_playback == NULL || pgc->program_map == NULL)
 		return 0;
 
-	chapters = pgc->nr_of_programs;
+	uint8_t chapters = pgc->nr_of_programs;
+	uint8_t chapter_idx = 0;
+	uint8_t program_map_idx = 0;
+	uint8_t cell_idx = 0;
+	uint32_t msecs = 0;
 
 	// FIXME it'd be better, and more helpful as a reference, to simply get the
 	// cells that are in a chapter, and then add up the lengths of those cells.
 	// So, something similar to chapter_startcell, chapter_stopcell as well.
-	for(chapter_idx = 0; chapter_idx < pgc->nr_of_programs; chapter_idx++) {
+	for(chapter_idx = 0; chapter_idx < chapters; chapter_idx++) {
 
 		program_map_idx = pgc->program_map[chapter_idx + 1];
 
@@ -176,20 +148,14 @@ uint32_t dvd_chapter_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
  */
 uint32_t dvd_cell_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
 
-	uint8_t ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
-	uint32_t msecs;
-
-	ttn = dvd_track_ttn(vmg_ifo, track_number);
-	vts_pgcit = vts_ifo->vts_pgcit;
-	pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
-	msecs = 0;
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
 	if(pgc->cell_playback == NULL)
 		return 0;
 
-	msecs = dvd_time_to_milliseconds(&pgc->cell_playback[cell_number - 1].playback_time);
+	uint32_t msecs = dvd_time_to_milliseconds(&pgc->cell_playback[cell_number - 1].playback_time);
 
 	return msecs;
 
@@ -200,9 +166,7 @@ uint32_t dvd_cell_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
  */
 const char *dvd_track_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
-	uint32_t msecs = 0;
-
-	msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track_number);
+	uint32_t msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track_number);
 
 	return strndup(milliseconds_length_format(msecs), DVD_TRACK_LENGTH);
 
@@ -213,9 +177,7 @@ const char *dvd_track_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vt
  */
 const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
-	uint32_t msecs;
-
-	msecs = dvd_chapter_msecs(vmg_ifo, vts_ifo, track_number, chapter_number);
+	uint32_t msecs = dvd_chapter_msecs(vmg_ifo, vts_ifo, track_number, chapter_number);
 
 	return strndup(milliseconds_length_format(msecs), DVD_CHAPTER_LENGTH);
 
@@ -226,9 +188,7 @@ const char *dvd_chapter_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
  */
 const char *dvd_cell_length(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
 
-	uint32_t msecs;
-
-	msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, track_number, cell_number);
+	uint32_t msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, track_number, cell_number);
 
 	return strndup(milliseconds_length_format(msecs), DVD_CELL_LENGTH);
 
