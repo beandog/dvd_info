@@ -8,21 +8,49 @@
 
 /**
  * Convert any value of dvd_time to milliseconds
- * For another reference implementation, see ifo_print_time() from libdvdread
  *
- * This function is confusing, and the code is floating around everywhere that
- * DVD playback is done in Linux to get the playback time.  I don't udnerstand
- * it because of the bit shifting, but it does work.
+ * In other DVD applications, 29.97 FPS is used in place of 30.  I've changed
+ * mine for a couple of reasons.
  *
- * The function is broken down a little bit more in  order to help me make it
- * easier to see what's going on.
+ * Originally, the title track length was calculated by looking at the PGC for
+ * the track itself.  With that approach, the total length for the track did
+ * not match the sum of the total length of all the individual cells.  The
+ * offset was small, in the range of -5 to +5 *milliseconds* and it did not
+ * occur all the time.  To fix the title track length, I changed it to use the
+ * total from all the cells.  That by itself changed the track lengths to msec
+ * offsets that looked a little strange from their original parts.  Fex, 500
+ * would change to 501, 900 to 898, etc.  Since it's far more likely that the
+ * correct value was a whole integer (.500 seconds happens all the time), then
+ * it needed to be changed.
+ *
+ * According to http://stnsoft.com/DVD/pgc.html it looks like the FPS values are
+ * integers, either 25 or 30.  So this uses 3000 instead of 2997 for that reason.
+ * as well.  With these two changes only does minor changes, and they are always
+ * something like 734 to 733, 667 to 666, 834 to 833, and so on.
+ *
+ * Either way, it's probably safe to say that calculating the exact length of a
+ * cell or track is hard, and that this is the best approxmiation that
+ * preserves what the original track length is estimated to be from the PGC. So
+ * this method is used as a preference, even though I don't necessarily want to
+ * recommend relying on either approach for complete accuracy.
+ *
+ * Making these changes though is going to differ in displaying the track
+ * length from other DVD applications -- again, in milliseconds only -- but I
+ * justify this approach in the sense that using this way, the cell, chapter
+ * and title track lengths all match up.
+ *
+ * Regarding the bit-shifting in the function, I've broken down the
+ * calculations to separate individual time metrics to make it a bit easier to
+ * read, though I admittedly don't know enough about bit shifting to know what
+ * it's doing or why it doesn't just do simple calculation.  It's worth seeing
+ * ifo_print_time() from libdvdread as a comparative reference as well.
  *
  * @param dvd_time dvd_time
  */
 uint32_t dvd_time_to_milliseconds(dvd_time_t *dvd_time) {
 
 	uint32_t msecs = 0;
-	uint32_t framerates[4] = {0, 2500, 0, 2997};
+	uint32_t framerates[4] = {0, 2500, 0, 3000};
 	uint32_t framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
 
 	/*
