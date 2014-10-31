@@ -17,6 +17,7 @@
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
 #include "dvd_time.h"
+#include "dvd_debug.h"
 #ifdef __linux__
 #include <linux/cdrom.h>
 #include "dvd_drive.h"
@@ -66,9 +67,12 @@ int main(int argc, char **argv) {
 	// Program name
 	bool p_dvd_info = false;
 	bool p_dvd_xchap = false;
+	bool p_dvd_debug = false;
 	char *program_name = basename(argv[0]);
 	if(strncmp("dvd_xchap", program_name, 8) == 0)
 		p_dvd_xchap = true;
+	else if(strncmp("dvd_debug", program_name, 9) == 0)
+		p_dvd_debug = true;
 	else
 		p_dvd_info = true;
 
@@ -392,6 +396,12 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "%s: Opening VMG IFO failed\n", program_name);
 		DVDClose(dvdread_dvd);
 		return 1;
+	}
+
+	// Run dvd_debug
+	if(p_dvd_debug) {
+		dvd_debug(dvdread_dvd);
+		return 0;
 	}
 
 	// Get the total number of title tracks on the DVD
