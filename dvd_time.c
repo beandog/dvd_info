@@ -75,17 +75,24 @@ const char *milliseconds_length_format(const uint32_t milliseconds) {
 
 /**
  * Get the number of milliseconds for a title track
+ *
+ * There are cases where the time for the track and the total of the cells do
+ * not match up, generally in a range of -5 to 5 *milliseconds*.  Instead of
+ * looking at the PGC for the title track, instead use the cell as the base
+ * reference and get the total from those.
  */
 uint32_t dvd_track_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
-	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
-	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
-	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	uint8_t chapters = dvd_track_chapters(vmg_ifo, vts_ifo, track_number);
 
-	if(pgc->cell_playback == NULL)
+	if(chapters == 0)
 		return 0;
 
-	uint32_t msecs = dvd_time_to_milliseconds(&pgc->playback_time);
+	uint32_t msecs = 0;
+	uint8_t chapter;
+
+	for(chapter = 1; chapter <= chapters; chapter++)
+		msecs += dvd_chapter_msecs(vmg_ifo, vts_ifo, track_number, chapter);
 
 	return msecs;
 
