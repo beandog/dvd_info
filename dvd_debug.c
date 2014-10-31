@@ -1,224 +1,22 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
 #include <stdbool.h>
-#include <getopt.h>
-#include <inttypes.h>
-#include <linux/cdrom.h>
+#include <assert.h>
 #include <dvdread/dvd_reader.h>
-#include <dvdread/dvd_udf.h>
 #include <dvdread/ifo_read.h>
-#include <dvdread/ifo_print.h>
-#include <dvdnav/dvdnav.h>
-#include "dvd_debug_ifo.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
+#include "dvd_time.h"
+#include "dvd_debug.h"
 
-#define DEFAULT_DVD_DEVICE "/dev/dvd"
 
-struct dvd_info {
-	uint16_t video_title_sets;
-	uint8_t side;
-	char title[33];
-	char provider_id[33];
-	char vmg_id[13];
-	uint16_t tracks;
-	uint16_t longest_track;
-};
 
-struct dvd_track {
-	int number;
-	int title_idx;
-	uint8_t vts;
-	char length[13];
-	uint8_t chapters;
-	uint8_t audio_tracks;
-	uint8_t subtitles;
-	uint8_t cells;
-};
+int dvd_debug(dvd_reader_t *dvdread_dvd) {
 
-struct dvd_video {
-	char codec[6];
-	char format[5];
-	char aspect_ratio[5];
-	uint16_t width;
-	uint16_t height;
-	bool letterbox;
-	bool pan_and_scan;
-};
-
-struct dvd_audio {
-	int track;
-	int stream;
-	char lang_code[3];
-	char codec[5];
-	int channels;
-};
-
-struct dvd_subtitle {
-	int track;
-	int stream;
-	char lang_code[3];
-};
-
-void d_test(const char *str) {
-
-	printf("%s: ", str);
-
-}
-
-void d_str(const char *str) {
-
-	printf("%s\n", str);
-
-}
-
-void d_pass() {
-
-	printf("pass\n");
-
-}
-
-void d_fail() {
-
-	printf("fail\n");
-
-}
-
-int main(int argc, char **argv) {
-
-	// dvd_debug
-	uint16_t track_number = 0;
-	uint16_t vts = 1;
-	int retval;
-	ssize_t dvd_filesize;
-	unsigned char *buffer = NULL;
-	ifo_handle_t *debug_ifo = NULL;
-	ssize_t bytes_read;
-
-	// Device hardware
-	int dvd_fd;
-	const char *device_filename = DEFAULT_DVD_DEVICE;
-	bool is_hardware = false;
-	bool is_image = false;
-
-	// libdvdread
-	dvd_reader_t *dvdread_dvd;
+	int bugs = 0;
+	int anomalies = 0;
 	ifo_handle_t *vmg_ifo = NULL;
 	ifo_handle_t *vts_ifo = NULL;
-	unsigned char dvdread_ifo_md5[16] = {'\0'};
-	char dvdread_id[33] = {'\0'};
-	uint8_t vts_ttn;
-	pgc_t *pgc;
-	pgcit_t *vts_pgcit;
-
-	// DVD
-	struct dvd_info dvd_info;
-	dvd_info.video_title_sets = 1;
-	dvd_info.side = 1;
-	memset(dvd_info.title, '\0', 33);
-	memset(dvd_info.provider_id, '\0', 33);
-	memset(dvd_info.vmg_id, '\0', 13);
-	dvd_info.tracks = 1;
-	dvd_info.longest_track = 1;
-
-	// Track
-	struct dvd_track dvd_track;
-	dvd_track.number = 1;
-	dvd_track.title_idx = 0;
-	dvd_track.vts = 1;
-	memset(dvd_track.length, '\0', 13);
-	dvd_track.chapters = 1;
-	dvd_track.audio_tracks = 0;
-	dvd_track.subtitles = 0;
-	dvd_track.cells = 1;
-
-	// Video
-	struct dvd_video dvd_video;
-	memset(dvd_video.codec, '\0', 6);
-	memset(dvd_video.format, '\0', 5);
-	memset(dvd_video.aspect_ratio, '\0', 5);
-	dvd_video.width = 0;
-	dvd_video.height = 0;
-	dvd_video.letterbox = false;
-	dvd_video.pan_and_scan = false;
-
-	// Audio
-	struct dvd_audio dvd_audio;
-	uint8_t stream;
-	dvd_audio.track = 1;
-	dvd_audio.stream = 0;
-	memset(dvd_audio.lang_code, '\0', 3);
-	memset(dvd_audio.codec, '\0', 5);
-	dvd_audio.channels = 0;
-
-	// Subtitles
-	struct dvd_subtitle dvd_subtitle;
-	dvd_subtitle.track = 1;
-	dvd_subtitle.stream = 0;
-	memset(dvd_subtitle.lang_code, '\0', 3);
-
-	// Chapters
-	uint8_t chapter_number;
-	char chapter_length[14] = {'\0'};
-
-	bool has_bugs = false;
-	uint8_t bugs = 0;
-	uint8_t anomalies = 0;
-
-	d_str("[DVD Debug]");
-
-	// If '-i /dev/device' is not passed, then set it to the string
-	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
-	// of '/dev/dvd'.
-	if (argv[optind]) {
-		device_filename = argv[optind];
-	}
-
-	d_test("device filename");
-	d_str(device_filename);
-
-	d_test("access device");
-
-	// Check to see if device can be accessed
-	if(access(device_filename, F_OK) == 0)
-		d_pass();
-	else {
-		d_fail();
-		return 0;
-	}
-
-	// Check to see if device can be opened
-	d_test("open device");
-	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
-	if(dvd_fd == 0) {
-		d_pass();
-	} else {
-		d_fail();
-	}
-
-	// Check to see if device can be closed
-	if(dvd_fd == 0) {
-		d_test("close device");
-		if(close(dvd_fd) == 0)
-			d_pass();
-		else {
-			d_fail();
-		}
-	}
-
-	// Open DVD device with libdvdread
-	d_test("DVDOpen()");
-	dvdread_dvd = DVDOpen(device_filename);
-	if(dvdread_dvd) {
-		d_pass();
-	} else {
-		d_fail();
-		return 1;
-	}
+	uint16_t vts = 1;
 
 	// TODO: Add checks for IFO filesizes and content, and report if they
 	// match or not.
@@ -260,16 +58,10 @@ int main(int argc, char **argv) {
 
 	// Open IFO zero -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
-	// FIXME do a proper exit
-	if(!vmg_ifo) {
-		printf("* Opening IFO zero failed\n");
-		DVDClose(dvdread_dvd);
-		return 1;
-	}
 
 	// Total # of IFOs
-	dvd_info.video_title_sets = vmg_ifo->vts_atrt->nr_of_vtss;
-	bool valid_ifos[dvd_info.video_title_sets];
+	int video_title_sets = vmg_ifo->vts_atrt->nr_of_vtss;
+	bool valid_ifos[video_title_sets];
 
 	// Access the VMGIT (Video Manager Information Management Table)
 	vmgi_mat_t *vmgi_mat;
@@ -303,18 +95,21 @@ int main(int argc, char **argv) {
 		printf("* VMG FAIL: Menu video codec is invalid: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.mpeg_version);
 		bugs++;
 	}
+
 	// VMG Video: NTSC / PAL
 	// Valid values: 0, 1
 	if(vmg_ifo->vmgi_mat->vmgm_video_attr.video_format > 1) {
 		printf("* VMG FAIL: Invalid video format: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.video_format);
 		bugs++;
 	}
+
 	// VMG Video: Aspect Ratio
 	// Valid values: 0 or 3 (4:3 and 16:9, respectively)
 	if((vmg_ifo->vmgi_mat->vmgm_video_attr.display_aspect_ratio != 0) && (vmg_ifo->vmgi_mat->vmgm_video_attr.display_aspect_ratio != 3)) {
 		printf("* VMG FAIL: Invalid aspect ratio: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.display_aspect_ratio);
 		bugs++;
 	}
+
 	// VMG Video: Letterbox / Pan and Scan
 	// **README** I don't understand what these values are very well.
 	// The dvdinfo page ( http://stnsoft.com/DVD/ifo.html#vidatt ) looks like
@@ -331,6 +126,7 @@ int main(int argc, char **argv) {
 		printf("* VMGI FAIL: Invalid display format: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.permitted_df);
 		bugs++;
 	}
+
 	// VMG Video: Invalid NTSC CC lines
 	// An NTSC video can have lines set for field 1 and field 2.  Check
 	// here if they are set while video is not NTSC
@@ -342,18 +138,21 @@ int main(int argc, char **argv) {
 		printf("* VMG FAIL: Line 21 CC 2 is set on non-NTSC video\n");
 		bugs++;
 	}
+
 	// VMG Video: Invalid video resolution check
 	// Valid values: 0, 1, 2, 3
 	if(vmg_ifo->vmgi_mat->vmgm_video_attr.picture_size > 3) {
 		printf("* VMG FAIL: Invalid video format: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.picture_size);
 		bugs++;
 	}
+
 	// VMG Video: Invalid letterbox check
 	// Valid values: 0, 1
 	if(vmg_ifo->vmgi_mat->vmgm_video_attr.letterboxed > 1) {
 		printf(" VMG FAIL: Invalid letterbox value: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.letterboxed);
 		bugs++;
 	}
+
 	// VMG Video: Invalid film type check
 	// Valid values: 0, 1
 	if(vmg_ifo->vmgi_mat->vmgm_video_attr.film_mode > 1) {
@@ -367,6 +166,7 @@ int main(int argc, char **argv) {
 		printf("* VMG FAIL: Invalid number of audio streams: %i\n", vmg_ifo->vmgi_mat->nr_of_vmgm_audio_streams);
 		bugs++;
 	}
+
 	// VMG Audio: check for valid audio format
 	// Valid values: 0, 2, 3, 4, 6
 	if(vmg_ifo->vmgi_mat->vmgm_audio_attr.audio_format == 1 ||
@@ -375,17 +175,20 @@ int main(int argc, char **argv) {
 		printf("* VMG FAIL: Invalid audio format number: %i\n", vmg_ifo->vmgi_mat->vmgm_audio_attr.audio_format);
 		bugs++;
 	}
+
 	// VMG Audio: check for valid quantization
 	// Valid values: 0, 1, 2, 3
 	if(vmg_ifo->vmgi_mat->vmgm_audio_attr.quantization > 3) {
 		printf("* VMG FAIL: Invalid audio quantization: %i\n", vmg_ifo->vmgi_mat->vmgm_audio_attr.quantization);
 		bugs++;
 	}
+
 	// VMG Audio: check for valid sample frequency
 	// Valid values: 0, 1
 	if(vmg_ifo->vmgi_mat->vmgm_audio_attr.sample_frequency > 1) {
 		printf("* VMG FAIL: Invalid audio sample frequency: %i\n", vmg_ifo->vmgi_mat->vmgm_audio_attr.audio_format);
 	}
+
 	// VMG Audio: check for valid channels
 	// Valid values: 0 through 6 (I've only seen 0, 1 and 5 so far)
 	// Actual number of channels is 1 + this value (0 = mono, 1 = stereo)
@@ -405,8 +208,6 @@ int main(int argc, char **argv) {
 	// Check for invalid IFOs
 	for(vts = 1; vts < vmg_ifo->vts_atrt->nr_of_vtss + 1; vts++) {
 
-		printf("[IFO %u]\n", vts);
-
 		vts_ifo = ifoOpen(dvdread_dvd, vts);
 
 		if(vts_ifo) {
@@ -415,11 +216,105 @@ int main(int argc, char **argv) {
 			vts_ifo = NULL;
 		} else {
 			valid_ifos[vts] = false;
-			printf("ifoOpen(%u) FAILED\n", vts);
+			printf("* IFO %u is invalid (possibly garbage)\n", vts);
 			vts_ifo = NULL;
 		}
 
 	}
+
+	// Check for invalid IFOs
+	uint16_t title_tracks = dvd_tracks(vmg_ifo);
+	uint16_t title_track = 1;
+	uint32_t title_track_msecs = 0;
+	uint8_t ttn;
+	pgcit_t *vts_pgcit;
+	pgc_t *pgc;
+	dvd_time_t *track_time;
+
+	uint8_t chapters = 1;
+	uint8_t chapter = 1;
+	uint32_t chapters_msecs = 0;
+	uint32_t chapter_msecs = 0;
+
+	uint8_t cells = 0;
+	uint8_t cell = 0;
+	uint32_t cells_msecs = 0;
+	uint32_t cell_msecs = 0;
+
+	bool length_mismatch = false;
+
+	for(title_track = 1; title_track <= title_tracks; title_track++) {
+
+		length_mismatch = false;
+
+		vts = dvd_vts_ifo_number(vmg_ifo, title_track);
+
+		if(!valid_ifos[vts])
+			continue;
+
+		vts_ifo = ifoOpen(dvdread_dvd, vts);
+		vts_pgcit = vts_ifo->vts_pgcit;
+		ttn = dvd_track_ttn(vmg_ifo, title_track);
+		pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+		track_time = &pgc->playback_time;
+
+		/*
+		printf("dvd_time:	%02x:%02x:%02x.%02x	%u\n", track_time->hour, track_time->minute, track_time->second, track_time->frame_u & 0x3f, track_time->frame_u & 0xc0);
+		printf("dvd_info:	%s\n", dvd_track_length(vmg_ifo, vts_ifo, title_track));
+		*/
+
+		title_track_msecs = dvd_track_msecs(vmg_ifo, vts_ifo, title_track);
+
+		chapters = dvd_track_chapters(vmg_ifo, vts_ifo, title_track);
+
+		chapters_msecs = 0;
+
+		for(chapter = 1; chapter <= chapters; chapter++) {
+
+			chapter_msecs = dvd_chapter_msecs(vmg_ifo, vts_ifo, title_track, chapter);
+			chapters_msecs += chapter_msecs;
+
+		}
+
+		if(title_track_msecs != chapters_msecs)
+			length_mismatch = true;
+
+		cells = dvd_track_cells(vmg_ifo, vts_ifo, title_track);
+
+		cells_msecs = 0;
+
+		for(cell = 1; cell <= cells; cell++) {
+
+			cell_msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, title_track, cell);
+			cells_msecs += cell_msecs;
+
+		}
+
+		if(title_track_msecs != cells_msecs)
+			length_mismatch = true;
+
+		if(length_mismatch) {
+
+			printf("[Title Track %u Length Mismatch]\n", title_track);
+			printf("* Title track:	%u\n", title_track_msecs);
+
+			printf("* Chapters:	%u", chapters_msecs);
+			if(title_track_msecs != chapters_msecs)
+				printf("	%i offset\n", title_track_msecs - chapters_msecs);
+			else
+				printf("\n");
+
+			printf("* Cells:	%u", cells_msecs);
+			if(title_track_msecs != cells_msecs)
+				printf("	%i offset\n", title_track_msecs - cells_msecs);
+			else
+				printf("\n");
+
+
+		}
+
+	}
+
 
 	// Title IFO todo list:
 	// * Verify last sector of title set
