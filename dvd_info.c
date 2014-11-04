@@ -36,6 +36,7 @@ void print_usage(char *binary) {
 	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
 	printf("\n");
 	printf("Options:\n");
+	printf("  -l, --lsdvd		Display output in lsdvd format (default)\n");
 #ifdef JSON_SUPPORT
 	printf("  -j, --json		Display output in JSON format\n");
 #endif
@@ -237,13 +238,14 @@ int main(int argc, char **argv) {
 	// I understood getopt better. :T
 	const char *str_options;
 #ifdef JSON_SUPPORT
-	str_options = "cdhjkt:z";
+	str_options = "cdhjklt:z";
 #else
-	str_options = "cdhkt:z";
+	str_options = "cdhklt:z";
 #endif
 
 	struct option long_options[] = {
 
+		{ "lsdvd", no_argument, & d_lsdvd, 1 },
 #ifdef JSON_SUPPORT
 		{ "json", no_argument, & d_json, 1 },
 #endif
@@ -289,6 +291,13 @@ int main(int argc, char **argv) {
 				d_json = 0;
 				d_lsdvd = 0;
 				d_ini = 1;
+				d_debug = 0;
+				break;
+
+			case 'l':
+				d_json = 0;
+				d_lsdvd = 1;
+				d_ini = 0;
 				d_debug = 0;
 				break;
 
