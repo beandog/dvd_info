@@ -20,12 +20,11 @@ AC_ARG_ENABLE(
 	[  --disable-json	Disable JSON output format],
 	[
 		json=false
-		AC_DEFINE([JSON_SUPPORT], 0)
 	],
 	[
 		json=true
 		PKG_CHECK_MODULES([JANSSON], [jansson >= 2.3.1])
-		AC_DEFINE([JSON_SUPPORT], 1)
+		AC_DEFINE([DVD_JSON])
 	]
 )
 AM_CONDITIONAL([JSON], [test x$json = xtrue])

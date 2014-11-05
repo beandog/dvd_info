@@ -22,7 +22,7 @@
 #include <linux/cdrom.h>
 #include "dvd_drive.h"
 #endif
-#ifdef JSON_SUPPORT
+#ifdef DVD_JSON
 #include <jansson.h>
 #endif
 #ifndef VERSION
@@ -37,7 +37,7 @@ void print_usage(char *binary) {
 	printf("\n");
 	printf("Options:\n");
 	printf("  -l, --lsdvd		Display output in lsdvd format (default)\n");
-#ifdef JSON_SUPPORT
+#ifdef DVD_JSON
 	printf("  -j, --json		Display output in JSON format\n");
 #endif
 	printf("  -k, --ini		Display output in INI format\n");
@@ -51,7 +51,7 @@ void print_usage(char *binary) {
 	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
 	printf("\n");
 	printf("Default output is similar in syntax to 'lsdvd' program, and is\n");
-#ifdef JSON_SUPPORT
+#ifdef DVD_JSON
 	printf("not as verbose as INI or JSON formats.\n");
 #else
 	printf("not as verbose as INI format.\n");
@@ -193,7 +193,7 @@ int main(int argc, char **argv) {
 	// Statistics
 	uint32_t longest_msecs = 0;
 
-#ifdef JSON_SUPPORT
+#ifdef DVD_JSON
 	// JSON variables
 	json_t *json_dvd;
 	json_t *json_dvd_info;
@@ -237,7 +237,7 @@ int main(int argc, char **argv) {
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
 	const char *str_options;
-#ifdef JSON_SUPPORT
+#ifdef DVD_JSON
 	str_options = "cdhjklt:z";
 #else
 	str_options = "cdhklt:z";
@@ -246,7 +246,7 @@ int main(int argc, char **argv) {
 	struct option long_options[] = {
 
 		{ "lsdvd", no_argument, & d_lsdvd, 1 },
-#ifdef JSON_SUPPORT
+#ifdef DVD_JSON
 		{ "json", no_argument, & d_json, 1 },
 #endif
 		{ "ini", no_argument, & d_ini, 1 },
@@ -278,7 +278,7 @@ int main(int argc, char **argv) {
 				d_lsdvd_cells = 1;
 				break;
 
-#ifdef JSON_SUPPORT
+#ifdef DVD_JSON
 			case 'j':
 				d_json = 1;
 				d_lsdvd = 0;
@@ -720,7 +720,7 @@ int main(int argc, char **argv) {
 
 	}
 
-#ifdef JSON_SUPPORT
+#ifdef DVD_JSON
 	/** JSON display output **/
 
 	if(p_dvd_info && d_json == 1) {
