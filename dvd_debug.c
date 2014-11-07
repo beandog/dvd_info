@@ -2,11 +2,7 @@
 
 int dvd_debug(dvd_reader_t *dvdread_dvd) {
 
-	int bugs = 0;
-	int anomalies = 0;
 	ifo_handle_t *vmg_ifo = NULL;
-	ifo_handle_t *vts_ifo = NULL;
-	uint16_t vts = 1;
 
 	// TODO: Add checks for IFO filesizes and content, and report if they
 	// match or not.
@@ -49,6 +45,33 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	// Open IFO zero -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
+	if(!vmg_ifo || !ifo_is_vmg(vmg_ifo)) {
+		fprintf(stderr, "dvd_debug: Opening VMG IFO failed\n");
+		return 1;
+	}
+
+	ifo_handle_t *vts_ifo = NULL;
+	uint16_t vts = 1;
+	uint16_t title_tracks = dvd_tracks(vmg_ifo);
+	uint16_t title_track = 1;
+	uint32_t title_track_msecs = 0;
+	uint8_t ttn = 1;
+	pgcit_t *vts_pgcit = NULL;
+	pgc_t *pgc = NULL;
+	dvd_time_t *track_time = NULL;
+
+	uint8_t chapters = 1;
+	uint8_t chapter = 1;
+	uint32_t chapters_msecs = 0;
+	uint32_t chapter_msecs = 0;
+
+	uint8_t cells = 0;
+	uint8_t cell = 0;
+	uint32_t cells_msecs = 0;
+	uint32_t cell_msecs = 0;
+
+	bool length_mismatch = false;
+
 	// Total # of IFOs
 	int video_title_sets = vmg_ifo->vts_atrt->nr_of_vtss;
 	bool valid_ifos[video_title_sets];
@@ -67,7 +90,6 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	// Check for invalid disc side
 	if(vmg_ifo->vmgi_mat->disc_side > 2) {
 		printf("* VMG FAIL: Invalid disc side: %i\n", vmg_ifo->vmgi_mat->disc_side);
-		bugs++;
 	}
 
 	// VMG: # menu audio streams
@@ -75,7 +97,6 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	// Valid values: 0, 1
 	if(vmg_ifo->vmgi_mat->nr_of_vmgm_audio_streams > 1) {
 		printf("* VMG FAIL: Invalid num. of audio streams: %i\n", vmg_ifo->vmgi_mat->nr_of_vmgm_audio_streams);
-		bugs++;
 	}
 
 	// VMG: Video attributes of menu VOBs
@@ -83,21 +104,18 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	// Valid values: 0, 1
 	if(vmg_ifo->vmgi_mat->vmgm_video_attr.mpeg_version > 1) {
 		printf("* VMG FAIL: Menu video codec is invalid: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.mpeg_version);
-		bugs++;
 	}
 
 	// VMG Video: NTSC / PAL
 	// Valid values: 0, 1
 	if(vmg_ifo->vmgi_mat->vmgm_video_attr.video_format > 1) {
 		printf("* VMG FAIL: Invalid video format: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.video_format);
-		bugs++;
 	}
 
 	// VMG Video: Aspect Ratio
 	// Valid values: 0 or 3 (4:3 and 16:9, respectively)
 	if((vmg_ifo->vmgi_mat->vmgm_video_attr.display_aspect_ratio != 0) && (vmg_ifo->vmgi_mat->vmgm_video_attr.display_aspect_ratio != 3)) {
 		printf("* VMG FAIL: Invalid aspect ratio: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.display_aspect_ratio);
-		bugs++;
 	}
 
 	// VMG Video: Letterbox / Pan and Scan
@@ -114,7 +132,6 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	// Valid values (from libdvdread): 0, 1, 2, 3
 	if(vmg_ifo->vmgi_mat->vmgm_video_attr.permitted_df > 3) {
 		printf("* VMGI FAIL: Invalid display format: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.permitted_df);
-		bugs++;
 	}
 
 	// VMG Video: Invalid NTSC CC lines
@@ -122,39 +139,33 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	// here if they are set while video is not NTSC
 	if((vmg_ifo->vmgi_mat->vmgm_video_attr.video_format != 0) && (vmg_ifo->vmgi_mat->vmgm_video_attr.line21_cc_1 != 0)) {
 		printf("* VMG FAIL: Line 21 CC 1 is set on non-NTSC video\n");
-		bugs++;
 	}
 	if((vmg_ifo->vmgi_mat->vmgm_video_attr.video_format != 0) && (vmg_ifo->vmgi_mat->vmgm_video_attr.line21_cc_2 != 0)) {
 		printf("* VMG FAIL: Line 21 CC 2 is set on non-NTSC video\n");
-		bugs++;
 	}
 
 	// VMG Video: Invalid video resolution check
 	// Valid values: 0, 1, 2, 3
 	if(vmg_ifo->vmgi_mat->vmgm_video_attr.picture_size > 3) {
 		printf("* VMG FAIL: Invalid video format: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.picture_size);
-		bugs++;
 	}
 
 	// VMG Video: Invalid letterbox check
 	// Valid values: 0, 1
 	if(vmg_ifo->vmgi_mat->vmgm_video_attr.letterboxed > 1) {
 		printf(" VMG FAIL: Invalid letterbox value: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.letterboxed);
-		bugs++;
 	}
 
 	// VMG Video: Invalid film type check
 	// Valid values: 0, 1
 	if(vmg_ifo->vmgi_mat->vmgm_video_attr.film_mode > 1) {
 		printf("* VMG FAIL: Invalid film mode: %i\n", vmg_ifo->vmgi_mat->vmgm_video_attr.film_mode);
-		bugs++;
 	}
 
 	// VMG Audio: check number of audio streams
 	// Valid values: 0, 1
 	if(vmg_ifo->vmgi_mat->nr_of_vmgm_audio_streams > 1) {
 		printf("* VMG FAIL: Invalid number of audio streams: %i\n", vmg_ifo->vmgi_mat->nr_of_vmgm_audio_streams);
-		bugs++;
 	}
 
 	// VMG Audio: check for valid audio format
@@ -163,14 +174,12 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 		vmg_ifo->vmgi_mat->vmgm_audio_attr.audio_format == 5 ||
 		vmg_ifo->vmgi_mat->vmgm_audio_attr.audio_format > 6) {
 		printf("* VMG FAIL: Invalid audio format number: %i\n", vmg_ifo->vmgi_mat->vmgm_audio_attr.audio_format);
-		bugs++;
 	}
 
 	// VMG Audio: check for valid quantization
 	// Valid values: 0, 1, 2, 3
 	if(vmg_ifo->vmgi_mat->vmgm_audio_attr.quantization > 3) {
 		printf("* VMG FAIL: Invalid audio quantization: %i\n", vmg_ifo->vmgi_mat->vmgm_audio_attr.quantization);
-		bugs++;
 	}
 
 	// VMG Audio: check for valid sample frequency
@@ -184,14 +193,12 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	// Actual number of channels is 1 + this value (0 = mono, 1 = stereo)
 	if(vmg_ifo->vmgi_mat->vmgm_audio_attr.channels > 5) {
 		printf("* VMG ANOMALY: num audio channels for menu VOB is: %i\n", vmg_ifo->vmgi_mat->vmgm_audio_attr.channels);
-		anomalies++;
 	}
 
 	// VMGM Subtitles: check for number of subp streams
 	// Valid values: 0 (I think)
 	if(vmg_ifo->vmgi_mat->vmgm_subp_attr.code_mode > 0) {
 		printf("* VMG UNKNOWN: subpicture code mode is not zero: %i\n", vmg_ifo->vmgi_mat->vmgm_subp_attr.code_mode);
-		anomalies++;
 	}
 
 
@@ -213,25 +220,6 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	}
 
 	// Check for invalid IFOs
-	uint16_t title_tracks = dvd_tracks(vmg_ifo);
-	uint16_t title_track = 1;
-	uint32_t title_track_msecs = 0;
-	uint8_t ttn;
-	pgcit_t *vts_pgcit;
-	pgc_t *pgc;
-	dvd_time_t *track_time;
-
-	uint8_t chapters = 1;
-	uint8_t chapter = 1;
-	uint32_t chapters_msecs = 0;
-	uint32_t chapter_msecs = 0;
-
-	uint8_t cells = 0;
-	uint8_t cell = 0;
-	uint32_t cells_msecs = 0;
-	uint32_t cell_msecs = 0;
-
-	bool length_mismatch = false;
 
 	for(title_track = 1; title_track <= title_tracks; title_track++) {
 
@@ -300,11 +288,12 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 			else
 				printf("\n");
 
-
 		}
 
-	}
+		ifoClose(vts_ifo);
+		vts_ifo = NULL;
 
+	}
 
 	// Title IFO todo list:
 	// * Verify last sector of title set
@@ -320,23 +309,19 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 
 	if(vts_ifo->vtsi_mat->vts_category > 1) {
 		printf("* VTS FAIL: Invalid VTS category: %i\n", vts_ifo->vtsi_mat->vts_category);
-		bugs++;
 	}
 	// Title IFO Menu Video: check for invalid codec
 	if(vts_ifo->vtsi_mat->vtsm_video_attr.mpeg_version > 1) {
 		printf("* VTS Menu FAIL: Invalid video codec: %i\n", vts_ifo->vtsi_mat->vtsm_video_attr.mpeg_version);
-		bugs++;
 	}
 	// Title IFO Menu Video: Standard format (NTSC, PAL)
 	if(vts_ifo->vtsi_mat->vtsm_video_attr.video_format > 1) {
 		printf("* VTS Menu FAIL: Invalid video format: %i\n", vts_ifo->vtsi_mat->vtsm_video_attr.video_format);
-		bugs++;
 	}
 	// Title IFO Menu Video: Aspect Ratio
 	// Valid values: 0 or 3 (4:3 and 16:9, respectively)
 	if((vts_ifo->vtsi_mat->vtsm_video_attr.display_aspect_ratio != 0) && (vts_ifo->vtsi_mat->vtsm_video_attr.display_aspect_ratio != 3)) {
 		printf("* VTS Menu FAIL: Invalid aspect ratio: %i\n", vts_ifo->vtsi_mat->vtsm_video_attr.display_aspect_ratio);
-		bugs++;
 	}
 	// Title IFO Menu Video: Letterbox / Pan and Scan
 	*/
@@ -361,7 +346,6 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	/*
 	if(display_track && ((track_number > num_title_tracks) || (track_number > num_title_sets))) {
 		printf("* WARNING: Track number %i is possibly invalid, calculating max number of tracks %i exist\n", track_number, max_tracks);
-		bugs++;
 	}
 	*/
 
@@ -378,7 +362,6 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 		if(!vts_ifo) {
 			printf("Track %2d: opening IFO %d failed!\n", track_number, ifo_number);
 			vts_ifo = NULL;
-			bugs++;
 			break;
 		}
 
@@ -406,22 +389,6 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	}
 	*/
 
-	// Cleanup
-
-	if(dvdread_dvd)
-		DVDClose(dvdread_dvd);
-
-	int e = 0;
-
-	if(bugs)
-		e = 1;
-
-	if(anomalies)
-		e = 2;
-
-	if(bugs && anomalies)
-		e = 3;
-
-	return e;
+	return 0;
 
 }

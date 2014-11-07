@@ -70,6 +70,7 @@ int main(int argc, char **argv) {
 		p_dvd_debug = true;
 	else
 		p_dvd_info = true;
+	int retval = 0;
 
 	// Display output
 	int d_json = 0;
@@ -358,8 +359,9 @@ int main(int argc, char **argv) {
 
 	// Run dvd_debug
 	if(p_dvd_debug) {
-		dvd_debug(dvdread_dvd);
-		return 0;
+		retval = dvd_debug(dvdread_dvd);
+		DVDClose(dvdread_dvd);
+		return retval;
 	}
 
 	// Get the total number of title tracks on the DVD
