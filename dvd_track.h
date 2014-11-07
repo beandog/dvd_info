@@ -10,17 +10,6 @@ uint8_t dvd_track_ttn(const ifo_handle_t *vmg_ifo, const uint16_t track_number);
 const char *dvd_vts_id(const ifo_handle_t *vts_ifo);
 
 
-/** Subtitles **/
-
-uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo);
-
-uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track);
-
-uint8_t dvd_subtitle_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, uint8_t subtitle_track);
-
-uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *vts_ifo, const char *lang_code);
-
-bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *vts_ifo, const char *lang_code);
 
 uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
