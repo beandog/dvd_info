@@ -39,7 +39,6 @@ void print_usage(char *binary) {
 	printf("Options:\n");
 	printf("  -l, --lsdvd		Display output in lsdvd format (default)\n");
 	printf("  -j, --json		Display output in JSON format\n");
-	printf("  -k, --ini		Display output in INI format\n");
 	printf("  -t, --track [number]	Limit to one title track\n");
 	printf("\n");
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
@@ -50,7 +49,7 @@ void print_usage(char *binary) {
 	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
 	printf("\n");
 	printf("Default output is similar in syntax to 'lsdvd' program, and is\n");
-	printf("not as verbose as INI or JSON formats.\n");
+	printf("not as verbose as JSON's format.\n");
 	printf("\n");
 	printf("If no DVD path is given, %s is used in its place.\n", DEFAULT_DVD_DEVICE);
 	printf("\n");
@@ -78,7 +77,6 @@ int main(int argc, char **argv) {
 	// Display output
 	int d_json = 0;
 	int d_lsdvd = 1;
-	int d_ini = 0;
 	int d_debug = 0;
 
 	// lsdvd display output
@@ -207,7 +205,6 @@ int main(int argc, char **argv) {
 
 		{ "lsdvd", no_argument, & d_lsdvd, 1 },
 		{ "json", no_argument, & d_json, 1 },
-		{ "ini", no_argument, & d_ini, 1 },
 		{ "debug", no_argument, & d_debug, 1 },
 
 		// Entries with both a name and a value, will take either the
@@ -239,21 +236,18 @@ int main(int argc, char **argv) {
 			case 'j':
 				d_json = 1;
 				d_lsdvd = 0;
-				d_ini = 0;
 				d_debug = 0;
 				break;
 
 			case 'k':
 				d_json = 0;
 				d_lsdvd = 0;
-				d_ini = 1;
 				d_debug = 0;
 				break;
 
 			case 'l':
 				d_json = 0;
 				d_lsdvd = 1;
-				d_ini = 0;
 				d_debug = 0;
 				break;
 
@@ -265,7 +259,6 @@ int main(int argc, char **argv) {
 			case 'z':
 				d_json = 0;
 				d_lsdvd = 0;
-				d_ini = 0;
 				d_debug = 1;
 				break;
 
@@ -279,10 +272,6 @@ int main(int argc, char **argv) {
 		}
 
 	}
-
-	// Handle --json argument
-	if(d_json || d_ini || d_debug)
-		d_lsdvd = 0;
 
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
@@ -680,135 +669,6 @@ int main(int argc, char **argv) {
 
 	if(p_dvd_info && d_json == 1)
 		dvd_json(dvd_info, dvd_tracks, track_number, d_first_track, d_last_track);
-
-	// INI style format
-
-	if(p_dvd_info && d_ini == 1) {
-
-		printf("[dvd]\n");
-		printf("title = %s\n", dvd_info.title);
-		printf("side = %u\n", dvd_info.side);
-		printf("tracks = %u\n", dvd_info.tracks);
-		printf("longest track = %u\n", dvd_info.longest_track);
-		if(strlen(dvd_info.provider_id))
-			printf("provider id = %s\n", dvd_info.provider_id);
-		if(strlen(dvd_info.vmg_id))
-			printf("vmg id = %s\n", dvd_info.vmg_id);
-		printf("video title sets = %u\n", dvd_info.video_title_sets);
-		printf("dvdread id = %s\n", dvd_info.dvdread_id);
-
-		// Title tracks
-
-		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
-
-			dvd_track = dvd_tracks[track_number - 1];
-
-			printf("\n");
-			printf("[track %u]\n", dvd_track.track);
-			printf("track = %u\n", dvd_track.track);
-			printf("valid = %s\n", dvd_track.valid ? "yes" : "no");
-
-			// If the title track is invalid, skip to the next one
-			if(dvd_track.valid == 0) {
-				continue;
-			}
-
-
-			printf("length = %s\n", dvd_track.length);
-			printf("msecs = %u\n", dvd_track.msecs);
-			printf("vts = %u\n", dvd_track.vts);
-			printf("ttn = %u\n", dvd_track.ttn);
-
-			dvd_video = dvd_track.dvd_video;
-
-			if(strlen(dvd_video.codec))
-				printf("codec = %s\n", dvd_video.codec);
-			if(strlen(dvd_video.format))
-				printf("format = %s\n", dvd_video.format);
-			if(strlen(dvd_video.aspect_ratio))
-				printf("aspect ratio = %s\n", dvd_video.aspect_ratio);
-			printf("width = %u\n", dvd_video.width);
-			printf("height = %u\n", dvd_video.height);
-			printf("angles = %u\n", dvd_video.angles);
-			if(strlen(dvd_video.fps))
-				printf("fps = %s\n", dvd_video.fps);
-			printf("audio tracks = %u\n", dvd_track.audio_tracks);
-			printf("subtitles = %u\n", dvd_track.subtitles);
-			printf("chapters = %u\n", dvd_track.chapters);
-
-			// Audio tracks
-
-			for(c = 0; c < dvd_track.audio_tracks; c++) {
-
-				dvd_audio = dvd_track.dvd_audio_tracks[c];
-
-				printf("\n");
-				printf("[track %u audio track %u]\n", dvd_track.track, dvd_audio.track);
-				printf("active = %s\n", dvd_audio.active == 0 ? "no" : "yes");
-				printf("channels = %u\n", dvd_audio.channels);
-				printf("codec = %s\n", dvd_audio.codec);
-				if(strlen(dvd_audio.lang_code))
-					printf("lang code = %s\n", dvd_audio.lang_code);
-				printf("stream id = %s\n", dvd_audio.stream_id);
-
-			}
-
-			// Subtitles
-
-			for(c = 0; c < dvd_track.subtitles; c++) {
-
-				dvd_subtitle = dvd_track.dvd_subtitles[c];
-
-				printf("\n");
-				printf("[track %u subtitle track %u]\n", dvd_track.track, dvd_subtitle.track);
-				printf("track = %u\n", dvd_subtitle.track);
-				printf("active = %s\n", dvd_subtitle.active == 0 ? "no" : "yes");
-				if(strlen(dvd_subtitle.lang_code))
-					printf("lang code = %s\n", dvd_subtitle.lang_code);
-				printf("stream id = %s\n", dvd_subtitle.stream_id);
-
-			}
-
-			// Chapters
-
-			if(dvd_track.chapters) {
-
-				for(c = 0; c < dvd_track.chapters; c++) {
-
-					dvd_chapter = dvd_track.dvd_chapters[c];
-
-					printf("\n");
-					printf("[track %u chapter %u]\n", dvd_track.track, dvd_chapter.chapter);
-					printf("chapter = %u\n", dvd_chapter.chapter);
-					printf("length = %s\n", dvd_chapter.length);
-					printf("msecs = %u\n", dvd_chapter.msecs);
-					printf("startcell = %u\n", dvd_chapter.startcell);
-
-				}
-
-			}
-
-			// Cells
-
-			if(dvd_track.cells) {
-
-				for(c = 0; c < dvd_track.cells; c++) {
-
-					dvd_cell = dvd_track.dvd_cells[c];
-
-					printf("\n");
-					printf("[track %u cell %u]\n", dvd_track.track, dvd_cell.cell);
-					printf("cell = %u\n", dvd_cell.cell);
-					printf("length = %s\n", dvd_cell.length);
-					printf("msecs = %u\n", dvd_cell.msecs);
-
-				}
-
-			}
-
-		}
-
-	}
 
 	// dvd_xchap
 	if(p_dvd_xchap) {
