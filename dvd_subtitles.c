@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
 #include <dvdread/ifo_read.h>
 #include "dvd_info.h"
 #include "dvd_track.h"
@@ -124,5 +125,55 @@ bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *vts_ifo, const char *l
 		return true;
 	else
 		return false;
+
+}
+
+// Have dvd_debug check for issues here.
+// FIXME I want to have some kind of distinguishment in here, and for audio tracks
+// if it's an invalid language.  If it's missing one, set it to unknown (for example)
+// but if it's invalid, maybe guess that it's in English, or something?  Dunno.
+// Having a best-guess approach might not be bad, maybe even look at region codes
+/**
+ * Get the lang code of a subtitle track for a title track
+ *
+ * @param vts_ifo dvdread track IFO handler
+ * @param subtitle_track subtitle track number
+ * @retval lang code
+ */
+const char *dvd_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint8_t subtitle_track) {
+
+	char lang_code[3] = {'\0'};
+	subp_attr_t *subp_attr = NULL;
+
+	subp_attr = &vts_ifo->vtsi_mat->vts_subp_attr[subtitle_track];
+
+	if(subp_attr->type == 0 && subp_attr->lang_code == 0 && subp_attr->zero1 == 0 && subp_attr->zero2 == 0 && subp_attr->lang_extension == 0) {
+		return "";
+	}
+	snprintf(lang_code, DVD_SUBTITLE_LANG_CODE + 1, "%c%c", subp_attr->lang_code >> 8, subp_attr->lang_code & 0xff);
+
+	if(!isalpha(lang_code[0]) || !isalpha(lang_code[1]))
+		return "";
+
+	return strndup(lang_code, DVD_SUBTITLE_LANG_CODE);
+
+}
+
+/**
+ * Get the stream ID for a subtitle, an index that starts at 0x20
+ *
+ * This is only here for lsdvd output compatability.  The function just adds
+ * the index to 0x20.
+ *
+ * @param subtitle_track subtitle track number
+ * @return stream id
+ */
+const char *dvd_subtitle_stream_id(const uint8_t subtitle_track) {
+
+	char str[DVD_SUBTITLE_STREAM_ID + 1] = {'\0'};
+
+	snprintf(str, DVD_SUBTITLE_STREAM_ID + 1, "0x%x", 0x20 + subtitle_track);
+
+	return strndup(str, DVD_SUBTITLE_STREAM_ID);
 
 }
