@@ -336,12 +336,16 @@ uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
 
 }
 
+/**
+ * I originally thought that all active tracks would be ordered before the
+ * inactive ones, but that is not the case at all.  Because of that, check
+ * the limit against all possible audio tracks, instead of just the amount that
+ * are flagged as active.
+ */
 uint8_t dvd_audio_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, const uint8_t audio_track) {
 
 	uint8_t audio_tracks = dvd_track_audio_tracks(vts_ifo);
 
-	// There are rare cases where the first audio track is inactive, and a following one
-	// is not.  See DVD id 1945d1eafb72ad6a8a4c7ad521396efb, title track 12.
 	if(audio_track > DVD_AUDIO_STREAM_LIMIT || audio_track > audio_tracks)
 		return 0;
 
@@ -422,9 +426,9 @@ uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle
 
 uint8_t dvd_subtitle_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, uint8_t subtitle_track) {
 
-	uint8_t i = dvd_track_active_subtitles(vmg_ifo, vts_ifo, title_track);
+	uint8_t subtitles = dvd_track_subtitles(vts_ifo);
 
-	if(subtitle_track > DVD_SUBTITLE_STREAM_LIMIT || subtitle_track > i)
+	if(subtitle_track > DVD_SUBTITLE_STREAM_LIMIT || subtitle_track > subtitles)
 		return 0;
 
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
