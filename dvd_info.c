@@ -17,6 +17,7 @@
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
 #include "dvd_video.h"
+#include "dvd_audio.h"
 #include "dvd_time.h"
 #include "dvd_debug.h"
 #ifdef __linux__
