@@ -4,7 +4,7 @@ if DVD_DRIVE_TOOLS
 bin_PROGRAMS += dvd_eject dvd_drive_status
 endif
 
-dvd_info_SOURCES = dvd_info.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c dvd_video.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_debug.c
+dvd_info_SOURCES = dvd_info.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c dvd_video.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_json.c dvd_debug.c
 dvd_info_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_info_LDADD = $(DVDREAD_LIBS)
 
