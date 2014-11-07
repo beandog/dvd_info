@@ -12,23 +12,6 @@ dnl Use pkg-config to check for libdvdread, libdvdcss
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
 PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.2.13])
 
-dnl JSON output support is provided through jansson library
-dnl By default, enable the support, and use pkg-config to find the build
-dnl settings. If "--disable-json" is passed, then ignore it.
-AC_ARG_ENABLE(
-	[json],
-	[  --disable-json	Disable JSON output format],
-	[
-		json=false
-	],
-	[
-		json=true
-		PKG_CHECK_MODULES([JANSSON], [jansson >= 2.3.1])
-		AC_DEFINE([DVD_JSON])
-	]
-)
-AM_CONDITIONAL([JSON], [test x$json = xtrue])
-
 dnl The dvd_drive_status and dvd_eject programs rely on Linux kernel internals,
 dnl so they are ignored on other operating systems.
 AC_CANONICAL_HOST
