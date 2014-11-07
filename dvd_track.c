@@ -134,7 +134,7 @@ bool dvd_track_pal_video(const ifo_handle_t *vts_ifo) {
 
 uint16_t dvd_video_height(const ifo_handle_t *vts_ifo) {
 
-	int video_height = 0;
+	uint16_t video_height = 0;
 	uint8_t picture_size = vts_ifo->vtsi_mat->vts_video_attr.picture_size;
 
 	if(dvd_track_ntsc_video(vts_ifo))
@@ -148,7 +148,7 @@ uint16_t dvd_video_height(const ifo_handle_t *vts_ifo) {
 			video_height = 0;
 	}
 
-	return (uint16_t)video_height;
+	return video_height;
 
 }
 
