@@ -271,6 +271,7 @@ const char *dvd_video_aspect_ratio(const ifo_handle_t *vts_ifo) {
 
 }
 
+// FIXME needs documentation
 double dvd_track_fps(dvd_time_t *dvd_time) {
 
 	double frames_per_s[4] = {-1.0, 25.00, -1.0, 29.97};
@@ -310,12 +311,10 @@ uint8_t dvd_track_audio_tracks(const ifo_handle_t *vts_ifo) {
 
 }
 
-// Used by dvd_debug
-// Looks at the program control chain instead of the VTS for number of audio streams
-// This should eliminate showing ghost audio streams that don't actually exist
-// See https://github.com/thierer/lsdvd/commit/2adcc7d8ab1d3ccaa8b2aa294ad15ba5f72533d4
-// See http://dvdnav.mplayerhq.hu/dvdinfo/pgc.html
-// Looks for whether a stream available flag is set for each audio stream
+/**
+ * Multiple audio and subtitle tracks can be assigned to a title track, but not
+ * all of them are valid, so they are flagged here using active as the name.
+ */
 uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track) {
 
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
@@ -323,16 +322,16 @@ uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
 	uint16_t pgcn = vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn;
 	pgc_t *pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
 	uint8_t idx = 0;
-	uint8_t i = 0;
+	uint8_t audio_tracks = 0;
 
 	for(idx = 0; idx < DVD_AUDIO_STREAM_LIMIT; idx++) {
 
 		if(pgc->audio_control[idx] & 0x8000)
-			i++;
+			audio_tracks++;
 
 	}
 
-	return i;
+	return audio_tracks;
 
 }
 
@@ -410,17 +409,17 @@ uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
 	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
-	uint8_t i = 0;
 	uint8_t idx = 0;
+	uint8_t active_subtitles = 0;
 
 	for(idx = 0; idx < DVD_SUBTITLE_STREAM_LIMIT; idx++) {
 
 		if(pgc->subp_control[idx] & 0x80000000)
-			i++;
+			active_subtitles++;
 
 	}
 
-	return i;
+	return active_subtitles;
 
 }
 
@@ -458,9 +457,8 @@ uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *vts_ifo, co
 
 		strncpy(str, dvd_subtitle_lang_code(vts_ifo, i), DVD_SUBTITLE_LANG_CODE);
 
-		if(strncmp(str, lang_code, DVD_SUBTITLE_LANG_CODE) == 0) {
+		if(strncmp(str, lang_code, DVD_SUBTITLE_LANG_CODE) == 0)
 			matches++;
-		}
 
 	}
 
@@ -577,10 +575,10 @@ const char *dvd_audio_codec(const ifo_handle_t *vts_ifo, const uint8_t audio_str
 uint8_t dvd_audio_channels(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
 
 	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
-	uint8_t num_channels = audio_attr->channels + 1;
+	uint8_t channels = audio_attr->channels + 1;
 
-	if(num_channels >= 0)
-		return num_channels;
+	if(channels >= 0)
+		return channels;
 	else
 		return 0;
 
