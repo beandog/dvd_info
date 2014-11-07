@@ -338,7 +338,11 @@ uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
 
 uint8_t dvd_audio_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, const uint8_t audio_track) {
 
-	if(audio_track > DVD_AUDIO_STREAM_LIMIT || audio_track > dvd_audio_active_tracks(vmg_ifo, vts_ifo, title_track))
+	uint8_t audio_tracks = dvd_track_audio_tracks(vts_ifo);
+
+	// There are rare cases where the first audio track is inactive, and a following one
+	// is not.  See DVD id 1945d1eafb72ad6a8a4c7ad521396efb, title track 12.
+	if(audio_track > DVD_AUDIO_STREAM_LIMIT || audio_track > audio_tracks)
 		return 0;
 
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
