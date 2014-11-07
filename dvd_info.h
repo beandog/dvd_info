@@ -1,8 +1,22 @@
 #ifndef _DVD_INFO_H_
 #define _DVD_INFO_H_
 
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+#include <inttypes.h>
+#include <ctype.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <dvdread/dvd_reader.h>
+#include <dvdread/dvd_udf.h>
+#include <dvdread/ifo_read.h>
+#include <dvdread/ifo_print.h>
+
 // Default DVD device
 #ifdef __linux__
+#include <linux/cdrom.h>
 #define DEFAULT_DVD_DEVICE "/dev/sr0"
 #elif __FreeBSD__ || __DragonFly__
 #define DEFAULT_DVD_DEVICE "/dev/acd0"
@@ -126,5 +140,4 @@ struct dvd_track {
 
 int main(int argc, char **argv);
 
-// _DVD_INFO_H_
 #endif

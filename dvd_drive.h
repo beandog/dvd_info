@@ -1,6 +1,8 @@
 #ifndef _DVD_DRIVE_H_
 #define _DVD_DRIVE_H_
 
+#include "dvd_device.h"
+
 int dvd_drive_get_status(const char *device_filename);
 
 bool dvd_drive_has_media(const char *device_filename);

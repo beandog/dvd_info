@@ -1,12 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <ctype.h>
-#include <dvdread/ifo_read.h>
-#include "dvd_info.h"
 #include "dvd_track.h"
-#include "dvd_video.h"
-#include "dvd_time.h"
 
 /**
  * Functions used to get information about a DVD track

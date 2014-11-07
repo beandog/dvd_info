@@ -1,11 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <inttypes.h>
-#include <dvdread/ifo_read.h>
-#include "dvd_info.h"
 #include "dvd_vmg_ifo.h"
-#include "dvd_track.h"
 
 const char *dvd_title(const char *device_filename) {
 

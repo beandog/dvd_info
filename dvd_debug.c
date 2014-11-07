@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <stdbool.h>
-#include <assert.h>
-#include <dvdread/dvd_reader.h>
-#include <dvdread/ifo_read.h>
-#include "dvd_vmg_ifo.h"
-#include "dvd_track.h"
-#include "dvd_time.h"
 #include "dvd_debug.h"
-
-
 
 int dvd_debug(dvd_reader_t *dvdread_dvd) {
 

@@ -1,6 +1,8 @@
 #ifndef _DVD_TRACK_H_
 #define _DVD_TRACK_H_
 
+#include "dvd_info.h"
+
 bool ifo_is_vts(const ifo_handle_t *ifo);
 
 uint16_t dvd_vts_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_number);

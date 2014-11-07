@@ -1,6 +1,9 @@
 #ifndef _DVD_SUBTITLES_H_
 #define _DVD_SUBTITLES_H_
 
+#include "dvd_info.h"
+#include "dvd_track.h"
+
 uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo);
 
 uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track);

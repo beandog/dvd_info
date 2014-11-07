@@ -1,10 +1,8 @@
 #ifndef _DVD_VMG_IFO_H_
 #define _DVD_VMG_IFO_H_
 
-// FIXME cleanup duplicate defines
-#define DVD_TITLE 32
-#define DVD_PROVIDER_ID 32
-#define DVD_VMG_ID 12
+#include "dvd_info.h"
+#include "dvd_track.h"
 
 /**
  * Functions used to get basic DVD data:

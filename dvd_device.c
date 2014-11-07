@@ -1,7 +1,3 @@
-#include <string.h>
-#include <stdbool.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include "dvd_device.h"
 
 /**

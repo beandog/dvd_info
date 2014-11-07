@@ -1,9 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <dvdread/ifo_read.h>
-#include "dvd_info.h"
-#include "dvd_track.h"
 #include "dvd_video.h"
 
 uint8_t dvd_video_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {

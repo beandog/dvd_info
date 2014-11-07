@@ -1,6 +1,8 @@
 #ifndef _DVD_AUDIO_H_
 #define _DVD_AUDIO_H_
 
+#include "dvd_track.h"
+
 uint8_t dvd_track_audio_tracks(const ifo_handle_t *vts_ifo);
 
 uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track);

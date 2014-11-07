@@ -1,9 +1,5 @@
 #ifdef __linux__
-#include <stdio.h>
-#include <stdbool.h>
-#include <sys/ioctl.h>
-#include <linux/cdrom.h>
-#include "dvd_device.h"
+
 #include "dvd_drive.h"
 
 /**

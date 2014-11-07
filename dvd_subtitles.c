@@ -1,10 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <ctype.h>
-#include <dvdread/ifo_read.h>
-#include "dvd_info.h"
-#include "dvd_track.h"
 #include "dvd_subtitles.h"
 
 /** Subtitles **/

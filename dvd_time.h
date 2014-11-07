@@ -1,6 +1,9 @@
 #ifndef _DVD_TIME_H_
 #define _DVD_TIME_H_
 
+#include "dvd_info.h"
+#include "dvd_track.h"
+
 uint32_t dvd_time_to_milliseconds(dvd_time_t *dvd_time);
 
 const char *milliseconds_length_format(const uint32_t milliseconds);

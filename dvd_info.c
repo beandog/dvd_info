@@ -8,10 +8,6 @@
 #include <getopt.h>
 #include <inttypes.h>
 #include <libgen.h>
-#include <dvdread/dvd_reader.h>
-#include <dvdread/dvd_udf.h>
-#include <dvdread/ifo_read.h>
-#include <dvdread/ifo_print.h>
 #include "dvd_info.h"
 #include "dvd_device.h"
 #include "dvd_vmg_ifo.h"
