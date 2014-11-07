@@ -147,41 +147,6 @@ uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 
 }
 
-/**
- * Get the audio language code for a track.  A two-character string that is a
- * short name for a language.
- *
- * Note: Remember that the language code is set in the IFO
- * See dvdread/ifo_print.c for same functionality (error checking)
- *
- * DVD specification says that there is an ISO-639 character code here:
- * - http://stnsoft.com/DVD/ifo_vts.html
- * - http://www.loc.gov/standards/iso639-2/php/code_list.php
- * lsdvd uses 'und' (639-2) for undetermined if the lang_code and
- * lang_extension are both 0.
- *
- * Examples: en: English, fr: French, es: Spanish
- *
- * @param vts_ifo dvdread track IFO handler
- * @param audio_stream audio track number
- * @return language code
- */
-const char *dvd_audio_lang_code(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
-
-	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
-	uint8_t lang_type = audio_attr->lang_type;
-
-	if(lang_type != 1)
-		return "";
-
-	char lang_code[3] = {'\0'};
-
-	snprintf(lang_code, DVD_AUDIO_LANG_CODE + 1, "%c%c", audio_attr->lang_code >> 8, audio_attr->lang_code & 0xff);
-
-	return strndup(lang_code, DVD_AUDIO_LANG_CODE);
-
-}
-
 // Have dvd_debug check for issues here.
 // FIXME I want to have some kind of distinguishment in here, and for audio tracks
 // if it's an invalid language.  If it's missing one, set it to unknown (for example)
