@@ -267,6 +267,7 @@ int main(int argc, char **argv) {
 
 	}
 
+	// Catch --json argument
 	if(d_json)
 		d_lsdvd = 0;
 
