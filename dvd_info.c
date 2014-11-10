@@ -61,13 +61,16 @@ int main(int argc, char **argv) {
 	bool p_dvd_xchap = false;
 	bool p_dvd_debug = false;
 	bool p_dvd_id = false;
+	bool p_dvd_title = false;
 	char *program_name = basename(argv[0]);
 	if(strncmp("dvd_xchap", program_name, 8) == 0)
 		p_dvd_xchap = true;
-	else if(strncmp("dvd_id", program_name, 9) == 0)
+	else if(strncmp("dvd_id", program_name, 6) == 0)
 		p_dvd_id = true;
 	else if(strncmp("dvd_debug", program_name, 9) == 0)
 		p_dvd_debug = true;
+	else if(strncmp("dvd_title", program_name, 9) == 0)
+		p_dvd_title = true;
 	else
 		p_dvd_info = true;
 	int retval = 0;
@@ -349,6 +352,13 @@ int main(int argc, char **argv) {
 	// dvd_id program
 	if(p_dvd_id) {
 		printf("%s\n", dvd_dvdread_id(dvdread_dvd));
+		DVDClose(dvdread_dvd);
+		return 0;
+	}
+
+	// dvd_title program
+	if(p_dvd_title) {
+		printf("%s\n", dvd_title(device_filename));
 		DVDClose(dvdread_dvd);
 		return 0;
 	}
