@@ -3,14 +3,7 @@
 /**
  * Clone of dvdxchap from ogmtools, but with bug fixes! :)
  */
-void dvd_xchap(struct dvd_track dvd_tracks[], uint16_t track_number) {
-
-	struct dvd_track dvd_track;
-	struct dvd_chapter dvd_chapter;
-	uint32_t chapter_msecs = 0;
-	uint8_t chapter_number = 1;
-	char chapter_start[DVD_CHAPTER_LENGTH + 1] = {'\0'};
-	uint8_t c = 0;
+void dvd_xchap(struct dvd_track dvd_track) {
 
 	// dvd_xchap format starts with a single chapter that begins
 	// at zero milliseconds. Next, the only chapters that are displayed
@@ -22,9 +15,13 @@ void dvd_xchap(struct dvd_track dvd_tracks[], uint16_t track_number) {
 	printf("CHAPTER01=00:00:00.000\n");
 	printf("CHAPTER01NAME=Chapter 01\n");
 
-	dvd_track = dvd_tracks[track_number - 1];
+	if(dvd_track.valid && dvd_track.chapters > 1) {
 
-	if(dvd_track.valid == 0 && dvd_track.chapters > 1) {
+		struct dvd_chapter dvd_chapter;
+		uint32_t chapter_msecs = 0;
+		uint8_t chapter_number = 1;
+		char chapter_start[DVD_CHAPTER_LENGTH + 1] = {'\0'};
+		uint8_t c = 0;
 
 		for(c = 0; c < dvd_track.chapters - 1; c++) {
 

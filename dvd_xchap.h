@@ -6,6 +6,6 @@
 #include "dvd_vmg_ifo.h"
 #include "dvd_time.h"
 
-void dvd_xchap(struct dvd_track dvd_tracks[], uint16_t track_number);
+void dvd_xchap(struct dvd_track);
 
 #endif
