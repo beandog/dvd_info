@@ -665,10 +665,10 @@ int main(int argc, char **argv) {
 	if(p_dvd_info && d_json == 1)
 		dvd_json(dvd_info, dvd_tracks, track_number, d_first_track, d_last_track);
 
-	// dvd_xchap
+	/** Display DVD chapters **/
 	track_number = (opt_track_number ? d_first_track : dvd_info.longest_track);
 	if(p_dvd_xchap)
-		dvd_xchap(dvd_tracks, track_number);
+		dvd_xchap(dvd_tracks[track_number - 1]);
 
 	// Cleanup
 
