@@ -182,7 +182,9 @@ uint8_t dvd_audio_channels(const ifo_handle_t *vts_ifo, const uint8_t audio_trac
 /**
  * Get the stream ID for an audio track
  *
- * Examples: 128, 129, 130
+ * AC3 = 0x80 to 0x87
+ * DTS = 0x88 to 0x8f
+ * LPCM = 0xa0 to 0xa7
  *
  * @param vts_ifo dvdread track IFO handler
  * @param audio_track audio track number
