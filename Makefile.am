@@ -17,3 +17,4 @@ dvd_drive_status_SOURCES = dvd_drive_status.c
 install-exec-hook:
 	$(LN_S) -f $(DESTDIR)$(bindir)/dvd_info $(DESTDIR)$(bindir)/dvd_xchap
 	$(LN_S) -f $(DESTDIR)$(bindir)/dvd_info $(DESTDIR)$(bindir)/dvd_id
+	$(LN_S) -f $(DESTDIR)$(bindir)/dvd_info $(DESTDIR)$(bindir)/dvd_title
