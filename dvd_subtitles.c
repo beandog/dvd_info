@@ -158,6 +158,8 @@ const char *dvd_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint8_t su
  * This is only here for lsdvd output compatability.  The function just adds
  * the index to 0x20.
  *
+ * Possible ranges: 0x20 to 0x3f
+ *
  * @param subtitle_track subtitle track number
  * @return stream id
  */
