@@ -450,7 +450,6 @@ int main(int argc, char **argv) {
 	strncpy(dvd_info.provider_id, dvd_provider_id(vmg_ifo), DVD_PROVIDER_ID);
 	strncpy(dvd_info.vmg_id, dvd_vmg_id(vmg_ifo), DVD_VMG_ID);
 	strncpy(dvd_info.dvdread_id, dvd_dvdread_id(dvdread_dvd), DVD_DVDREAD_ID);
-	return 0;
 
 	/**
 	 * Track information
