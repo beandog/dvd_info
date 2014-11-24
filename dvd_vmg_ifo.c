@@ -48,6 +48,7 @@ const char *dvd_dvdread_id(dvd_reader_t *dvdread_dvd) {
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
 	unsigned long x = 0;
 
+	// DVDDiscID will open the VMG IFO
 	dvdread_retval = DVDDiscID(dvdread_dvd, dvdread_ifo_md5);
 	if(dvdread_retval == -1)
 		return "";
