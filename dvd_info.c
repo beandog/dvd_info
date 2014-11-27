@@ -81,8 +81,10 @@ int main(int argc, char **argv) {
 	int d_debug = 0;
 
 	// lsdvd display output
+	int d_lsdvd_angles = 0;
 	int d_lsdvd_chapters = 0;
 	int d_lsdvd_cells = 0;
+	int d_lsdvd_video = 0;
 
 	// dvd_info
 	bool d_all_tracks = true;
@@ -180,6 +182,9 @@ int main(int argc, char **argv) {
 	snprintf(dvd_cell.length, DVD_CELL_LENGTH + 1, "00:00:00.000");
 	dvd_cell.msecs = 0;
 
+	// Display formats
+	const char *display_formats[4] = { "Pan and Scan or Letterbox", "Pan and Scan", "Letterbox", "Unset" };
+
 	// Statistics
 	uint32_t longest_msecs = 0;
 
@@ -196,7 +201,7 @@ int main(int argc, char **argv) {
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
 	const char *str_options;
-	str_options = "cdhjklt:z";
+	str_options = "cdhjknlt:vz";
 
 	struct option long_options[] = {
 
@@ -248,9 +253,17 @@ int main(int argc, char **argv) {
 				d_debug = 0;
 				break;
 
+			case 'n':
+				d_lsdvd_angles = 1;
+				break;
+
 			case 't':
 				opt_track_number = true;
 				arg_track_number = atoi(optarg);
+				break;
+
+			case 'v':
+				d_lsdvd_video = 1;
 				break;
 
 			case 'z':
@@ -655,6 +668,16 @@ int main(int argc, char **argv) {
 
 			}
 
+			// Display video information
+			if(d_lsdvd_video)
+				printf("	VTS: %02u, TTN: %02u, FPS: %s, Format: %s, Aspect ratio: %s, Width: %u, Height: %u, DF: %s\n", dvd_track.vts, dvd_track.ttn, dvd_video.fps, dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, display_formats[dvd_video.df]);
+
+
+			// Display video angles
+			if(d_lsdvd_angles)
+				printf("	Number of Angles: %u\n", dvd_video.angles);
+
+			// Display track cells
 			if(d_lsdvd_cells && dvd_track.cells) {
 
 				for(c = 0; c < dvd_track.cells; c++) {
