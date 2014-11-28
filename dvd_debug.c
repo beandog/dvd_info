@@ -85,6 +85,7 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	printf("* VMGI MAT Title Sets (# IFOs): %d\n", vmgi_mat->vmg_nr_of_title_sets);
 	printf("* IFO 0 Title Sets (# IFOS): %d\n", vmg_ifo->vmgi_mat->vmg_nr_of_title_sets);
 	printf("* IFO 0 Title Tracks (aka tracks): %d\n", vmg_ifo->tt_srpt->nr_of_srpts);
+	printf("* Specification version: %01x.%01x\n", vmg_ifo->vmgi_mat->specification_version >> 4, vmg_ifo->vmgi_mat->specification_version & 0xf);
 
 	// VMG: Disc Side (1, 2)
 	// Check for invalid disc side
