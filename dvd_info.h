@@ -34,6 +34,7 @@
 #define DVD_TITLE 32
 #define DVD_PROVIDER_ID 32
 #define DVD_VMG_ID 12
+#define DVD_SPECIFICATION_VERSION 3
 #define DVD_DVDREAD_ID 32
 
 #define DVD_VTS_ID 12

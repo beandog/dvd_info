@@ -155,6 +155,16 @@ const char *dvd_vmg_id(const ifo_handle_t *vmg_ifo);
 uint8_t dvd_info_side(const ifo_handle_t *vmg_ifo);
 
 /**
+ * Get the DVD specifiation version
+ *
+ * Example: 1.0
+ *
+ * @param vmg_ifo libdvdread IFO handle
+ * @return DVD speficiation
+ */
+const char *dvd_specification_version(const ifo_handle_t *vmg_ifo);
+
+/**
  * Get the DVD serial id from dvdnav
  *
  * These strings are set by the DVD authoring software.  They are not unique.

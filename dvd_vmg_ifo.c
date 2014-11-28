@@ -117,6 +117,17 @@ uint8_t dvd_info_side(const ifo_handle_t *vmg_ifo) {
 
 }
 
+const char *dvd_specification_version(const ifo_handle_t *vmg_ifo) {
+
+	if(ifo_is_vmg(vmg_ifo)) {
+		char str[DVD_SPECIFICATION_VERSION + 1] = {'\0'};
+		snprintf(str, DVD_SPECIFICATION_VERSION + 1, "%01x.%01x", vmg_ifo->vtsi_mat->specification_version >> 4, vmg_ifo->vtsi_mat->specification_version & 0xf);
+		return strndup(str, DVD_SPECIFICATION_VERSION + 1);
+	} else
+		return "";
+
+}
+
 // Requires libdvdnav
 // TODO add functionality to libdvdread, as well as alternate title
 /*
