@@ -1,10 +1,22 @@
 #include "dvd_time.h"
 
 /**
- * Convert any value of dvd_time to milliseconds
+ * Convert any value of dvd_time to milliseconds -- uses the same code set as
+ * lsdvd for compatability.
  *
- * In other DVD applications, 29.97 FPS is used in place of 30.  I've changed
- * mine for a couple of reasons.
+ * Regarding the bit-shifting in the function, I've broken down the
+ * calculations to separate individual time metrics to make it a bit easier to
+ * read, though I admittedly don't know enough about bit shifting to know what
+ * it's doing or why it doesn't just do simple calculation.  It's worth seeing
+ * ifo_print_time() from libdvdread as a comparative reference as well.
+ *
+ * Old notes:
+ *
+ * Though it is not implemented here, I have a theory that msecs should be a
+ * floating value to a decimal point of 2, and that the framerate should be
+ * a whole integer (30) instead of a floating point decimal (29.97).  The
+ * rest of these notes explain that approach, thoough it is not used.  They
+ * are kept here for historical purposes for my own benefit.
  *
  * Originally, the title track length was calculated by looking at the PGC for
  * the track itself.  With that approach, the total length for the track did
@@ -33,31 +45,22 @@
  * justify this approach in the sense that using this way, the cell, chapter
  * and title track lengths all match up.
  *
- * Regarding the bit-shifting in the function, I've broken down the
- * calculations to separate individual time metrics to make it a bit easier to
- * read, though I admittedly don't know enough about bit shifting to know what
- * it's doing or why it doesn't just do simple calculation.  It's worth seeing
- * ifo_print_time() from libdvdread as a comparative reference as well.
- *
  * @param dvd_time dvd_time
  */
 uint32_t dvd_time_to_milliseconds(dvd_time_t *dvd_time) {
 
-	uint32_t msecs = 0;
-	uint32_t framerates[4] = {0, 2500, 0, 3000};
-	uint32_t framerate = framerates[(dvd_time->frame_u & 0xc0) >> 6];
+	int i = (dvd_time->frame_u & 0xc0) >> 6;
 
-	/*
-	msecs = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
-	msecs += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
-	msecs += (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f)) * 1000;
-	if(framerate > 0)
-		msecs += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000 / framerate;
-	*/
+	if(i < 0 || i > 3)
+		return 0;
+
+	uint32_t framerates[4] = {0, 2500, 0, 2997};
+	uint32_t framerate = framerates[i];
 
 	uint32_t hours = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f));
 	uint32_t minutes = (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f));
 	uint32_t seconds = (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f));
+	uint32_t msecs = 0;
 	if(framerate > 0)
 		msecs = ((((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 100000) / framerate;
 
@@ -67,6 +70,22 @@ uint32_t dvd_time_to_milliseconds(dvd_time_t *dvd_time) {
 	total += msecs;
 
 	return total;
+
+	// For reference, here is how lsdvd's dvdtime2msec function works
+	/*
+	double framerates[4] = {-1.0, 25.00, -1.0, 29.97};
+	int i = (dvd_time->frame_u & 0xc0) >> 6;
+	double framerate = framerates[i];
+	uint32_t msecs = 0;
+
+	msecs = (((dvd_time->hour & 0xf0) >> 3) * 5 + (dvd_time->hour & 0x0f)) * 3600000;
+	msecs += (((dvd_time->minute & 0xf0) >> 3) * 5 + (dvd_time->minute & 0x0f)) * 60000;
+	msecs += (((dvd_time->second & 0xf0) >> 3) * 5 + (dvd_time->second & 0x0f)) * 1000;
+	if(framerate > 0)
+		msecs += (((dvd_time->frame_u & 0x30) >> 3) * 5 + (dvd_time->frame_u & 0x0f)) * 1000.0 / framerate;
+
+	return msecs;
+	*/
 
 }
 
@@ -96,25 +115,19 @@ const char *milliseconds_length_format(const uint32_t milliseconds) {
 }
 
 /**
- * Get the number of milliseconds for a title track
+ * Get the number of milliseconds for a title track using the program chain.
  *
- * There are cases where the time for the track and the total of the cells do
- * not match up, generally in a range of -5 to 5 *milliseconds*.  Instead of
- * looking at the PGC for the title track, instead use the cell as the base
- * reference and get the total from those.
  */
 uint32_t dvd_track_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
-	uint8_t chapters = dvd_track_chapters(vmg_ifo, vts_ifo, track_number);
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
-	if(chapters == 0)
+	if(pgc->cell_playback == NULL)
 		return 0;
 
-	uint32_t msecs = 0;
-	uint8_t chapter;
-
-	for(chapter = 1; chapter <= chapters; chapter++)
-		msecs += dvd_chapter_msecs(vmg_ifo, vts_ifo, track_number, chapter);
+	uint32_t msecs = dvd_time_to_milliseconds(&pgc->playback_time);
 
 	return msecs;
 
@@ -185,6 +198,39 @@ uint32_t dvd_cell_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
 		return 0;
 
 	uint32_t msecs = dvd_time_to_milliseconds(&pgc->cell_playback[cell_number - 1].playback_time);
+
+	return msecs;
+
+}
+
+/**
+ * Get the number of milliseconds for a title track by totalling the value of
+ * all chapter length.
+ *
+ * This function is to be used for debugging or development.  The total msecs
+ * of a title track should obviously be the same total of the length of all
+ * the chapters (and cells) that add up, but this is not the case.  It is
+ * often off by a few milliseconds (-5 to +5), but in some rare cases it can
+ * be a total of minutes.
+ *
+ * The original dvd_track_msecs() function looks at the program chain for the
+ * total, and that method is used across the board for pretty much every DVD
+ * application that uses libdvdread.  So, this is part of dvd_info only, and
+ * is used to flag anomalies using the dvd_debug program.
+ *
+ */
+uint32_t dvd_track_total_chapter_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+
+	uint8_t chapters = dvd_track_chapters(vmg_ifo, vts_ifo, track_number);
+
+	if(chapters == 0)
+		return 0;
+
+	uint32_t msecs = 0;
+	uint8_t chapter;
+
+	for(chapter = 1; chapter <= chapters; chapter++)
+		msecs += dvd_chapter_msecs(vmg_ifo, vts_ifo, track_number, chapter);
 
 	return msecs;
 
