@@ -82,7 +82,7 @@ uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 
 	// If there's no cell playback, then override the number in the PGC and report as
 	// zero so that they are not accessed.
-	if(pgc->cell_playback == NULL)
+	if(pgc == NULL || pgc->cell_playback == NULL)
 		return 0;
 
 	uint8_t chapters = pgc->nr_of_programs;
@@ -102,7 +102,7 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
 
 	// If there's no cell playback, then override the number in the PGC and report as
 	// zero so that they are not accessed.
-	if(pgc->cell_playback == NULL)
+	if(pgc == NULL || pgc->cell_playback == NULL)
 		return 0;
 
 	uint8_t cells = pgc->nr_of_cells;
@@ -127,7 +127,7 @@ uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
 	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
-	if(pgc->program_map == NULL)
+	if(pgc == NULL || pgc->program_map == NULL)
 		return chapter_number;
 
 	uint8_t startcell = pgc->program_map[chapter_number - 1];
