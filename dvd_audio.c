@@ -44,6 +44,9 @@ uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
 	uint8_t idx = 0;
 	uint8_t audio_tracks = 0;
 
+	if(!pgc)
+		return 0;
+
 	for(idx = 0; idx < DVD_AUDIO_STREAM_LIMIT; idx++) {
 
 		if(pgc->audio_control[idx] & 0x8000)
@@ -79,6 +82,9 @@ uint8_t dvd_audio_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_if
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
 	uint16_t pgcn = vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn;
 	pgc_t *pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
+
+	if(!pgc)
+		return 0;
 
 	if(pgc->audio_control[audio_track - 1] & 0x8000)
 		return 1;

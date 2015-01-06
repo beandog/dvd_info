@@ -363,6 +363,10 @@ const char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
 	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+
+	if(!pgc)
+		return "";
+
 	double fps = dvd_track_fps(&pgc->playback_time);
 
 	if(fps > 0) {
