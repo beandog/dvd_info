@@ -76,6 +76,9 @@ const char *dvd_vts_id(const ifo_handle_t *vts_ifo) {
 
 uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
+	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
+		return 0;
+
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
 	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
@@ -95,6 +98,9 @@ uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 }
 
 uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+
+	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
+		return 0;
 
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
@@ -122,6 +128,9 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
 // is probably in order.  Some scenarios to look for would be where there are more
 // chapters than cells, and the lengths of chapters don't exceed cells either.
 uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
+
+	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
+		return 0;
 
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;

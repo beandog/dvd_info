@@ -10,6 +10,9 @@
  */
 uint8_t dvd_track_audio_tracks(const ifo_handle_t *vts_ifo) {
 
+	if(vts_ifo->vtsi_mat == NULL)
+		return 0;
+
 	uint8_t audio_streams = vts_ifo->vtsi_mat->nr_of_vts_audio_streams;
 
 	if(audio_streams >= 0)
@@ -36,6 +39,9 @@ uint8_t dvd_track_audio_tracks(const ifo_handle_t *vts_ifo) {
  * @return number of PGC audio streams marked as active
  */
 uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track) {
+
+	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
+		return 0;
 
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
@@ -76,6 +82,9 @@ uint8_t dvd_audio_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_if
 	uint8_t audio_tracks = dvd_track_audio_tracks(vts_ifo);
 
 	if(audio_track > DVD_AUDIO_STREAM_LIMIT || audio_track > audio_tracks)
+		return 0;
+
+	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
 		return 0;
 
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
@@ -151,6 +160,9 @@ bool dvd_track_has_audio_lang_code(const ifo_handle_t *vts_ifo, const char *lang
  */
 const char *dvd_audio_codec(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
 
+	if(vts_ifo->vtsi_mat == NULL)
+		return "";
+
 	const char *audio_codecs[7] = { "ac3", "", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
 	audio_attr_t *audio_attr =  &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
 	uint8_t audio_codec = audio_attr->audio_format;
@@ -175,6 +187,9 @@ const char *dvd_audio_codec(const ifo_handle_t *vts_ifo, const uint8_t audio_str
  */
 uint8_t dvd_audio_channels(const ifo_handle_t *vts_ifo, const uint8_t audio_track) {
 
+	if(vts_ifo->vtsi_mat == NULL)
+		return 0;
+
 	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_track];
 	uint8_t channels = audio_attr->channels + 1;
 
@@ -197,6 +212,9 @@ uint8_t dvd_audio_channels(const ifo_handle_t *vts_ifo, const uint8_t audio_trac
  * @return audio stream id
  */
 const char *dvd_audio_stream_id(const ifo_handle_t *vts_ifo, const uint8_t audio_track) {
+
+	if(vts_ifo->vtsi_mat == NULL)
+		return "";
 
 	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_track];
 	uint8_t audio_format = audio_attr->audio_format;
@@ -230,6 +248,9 @@ const char *dvd_audio_stream_id(const ifo_handle_t *vts_ifo, const uint8_t audio
  * @return language code
  */
 const char *dvd_audio_lang_code(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
+
+	if(vts_ifo->vtsi_mat == NULL)
+		return "";
 
 	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
 	uint8_t lang_type = audio_attr->lang_type;

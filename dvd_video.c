@@ -2,6 +2,9 @@
 
 uint8_t dvd_video_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
 
+	if(vmg_ifo->tt_srpt == NULL)
+		return 0;
+
 	uint8_t angles = vmg_ifo->tt_srpt->title[track_number - 1].nr_of_angles;
 
 	if(angles >= 0)
@@ -26,7 +29,9 @@ uint8_t dvd_video_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_numbe
  */
 uint8_t dvd_track_mpeg_version(const ifo_handle_t *vts_ifo) {
 
-	if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
+	if(vts_ifo->vtsi_mat == NULL)
+		return 0;
+	else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
 		return 1;
 	else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
 		return 2;
@@ -78,7 +83,9 @@ bool dvd_track_mpeg2(const ifo_handle_t *vts_ifo) {
  */
 bool dvd_track_ntsc_video(const ifo_handle_t *vts_ifo) {
 
-	if(vts_ifo->vtsi_mat->vts_video_attr.video_format == 0)
+	if(vts_ifo->vtsi_mat == NULL)
+		return false;
+	else if(vts_ifo->vtsi_mat->vts_video_attr.video_format == 0)
 		return true;
 	else
 		return false;
@@ -93,7 +100,9 @@ bool dvd_track_ntsc_video(const ifo_handle_t *vts_ifo) {
  */
 bool dvd_track_pal_video(const ifo_handle_t *vts_ifo) {
 
-	if(vts_ifo->vtsi_mat->vts_video_attr.video_format == 1)
+	if(vts_ifo->vtsi_mat == NULL)
+		return false;
+	else if(vts_ifo->vtsi_mat->vts_video_attr.video_format == 1)
 		return true;
 	else
 		return false;
@@ -107,6 +116,9 @@ bool dvd_track_pal_video(const ifo_handle_t *vts_ifo) {
  * @return video height, or 0 for unknown
  */
 uint16_t dvd_video_height(const ifo_handle_t *vts_ifo) {
+
+	if(vts_ifo->vtsi_mat == NULL)
+		return 0;
 
 	uint16_t video_height = 0;
 	uint8_t picture_size = vts_ifo->vtsi_mat->vts_video_attr.picture_size;
@@ -133,6 +145,9 @@ uint16_t dvd_video_height(const ifo_handle_t *vts_ifo) {
  * @return video width, or 0 for unknown
  */
 uint16_t dvd_video_width(const ifo_handle_t *vts_ifo) {
+
+	if(vts_ifo->vtsi_mat == NULL)
+		return 0;
 
 	uint16_t video_width = 0;
 	uint16_t video_height = dvd_video_height(vts_ifo);
@@ -166,7 +181,9 @@ uint16_t dvd_video_width(const ifo_handle_t *vts_ifo) {
  */
 bool dvd_track_valid_aspect_ratio(const ifo_handle_t *vts_ifo) {
 
-	if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0 || vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
+	if(vts_ifo->vtsi_mat == NULL)
+		return false;
+	else if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0 || vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
 		return true;
 	else
 		return false;
@@ -181,7 +198,9 @@ bool dvd_track_valid_aspect_ratio(const ifo_handle_t *vts_ifo) {
  */
 bool dvd_track_aspect_ratio_4x3(const ifo_handle_t *vts_ifo) {
 
-	if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
+	if(vts_ifo->vtsi_mat == NULL)
+		return false;
+	else if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
 		return true;
 	else
 		return false;
@@ -196,7 +215,9 @@ bool dvd_track_aspect_ratio_4x3(const ifo_handle_t *vts_ifo) {
  */
 bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *vts_ifo) {
 
-	if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
+	if(vts_ifo->vtsi_mat == NULL)
+		return false;
+	else if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
 		return true;
 	else
 		return false;
@@ -216,6 +237,9 @@ bool dvd_track_aspect_ratio_16x9(const ifo_handle_t *vts_ifo) {
  * @return uint8_t
  */
 uint8_t dvd_video_df(const ifo_handle_t *vts_ifo) {
+
+	if(vts_ifo->vtsi_mat == NULL)
+		return 3;
 
 	uint8_t permitted_df = vts_ifo->vtsi_mat->vts_video_attr.permitted_df;
 
@@ -258,6 +282,9 @@ uint8_t dvd_video_df(const ifo_handle_t *vts_ifo) {
  */
 bool dvd_video_letterbox(const ifo_handle_t *vts_ifo) {
 
+	if(vts_ifo->vtsi_mat == NULL)
+		return false;
+
 	uint8_t permitted_df = vts_ifo->vtsi_mat->vts_video_attr.permitted_df;
 
 	if(permitted_df == 0 || permitted_df == 2)
@@ -287,6 +314,9 @@ bool dvd_video_letterbox(const ifo_handle_t *vts_ifo) {
  */
 bool dvd_video_pan_scan(const ifo_handle_t *vts_ifo) {
 
+	if(vts_ifo->vtsi_mat == NULL)
+		return false;
+
 	uint8_t permitted_df = vts_ifo->vtsi_mat->vts_video_attr.permitted_df;
 
 	if(permitted_df == 0 || permitted_df == 1)
@@ -304,7 +334,9 @@ bool dvd_video_pan_scan(const ifo_handle_t *vts_ifo) {
  */
 const char *dvd_video_codec(const ifo_handle_t *vts_ifo) {
 
-	if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
+	if(vts_ifo->vtsi_mat == NULL)
+		return "";
+	else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
 		return "MPEG1";
 	else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
 		return "MPEG2";
@@ -321,7 +353,9 @@ const char *dvd_video_codec(const ifo_handle_t *vts_ifo) {
  */
 const char *dvd_track_video_format(const ifo_handle_t *vts_ifo) {
 
-	if(vts_ifo->vtsi_mat->vts_video_attr.video_format == 0)
+	if(vts_ifo->vtsi_mat == NULL)
+		return "";
+	else if(vts_ifo->vtsi_mat->vts_video_attr.video_format == 0)
 		return "NTSC";
 	else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
 		return  "PAL";
@@ -338,7 +372,9 @@ const char *dvd_track_video_format(const ifo_handle_t *vts_ifo) {
  */
 const char *dvd_video_aspect_ratio(const ifo_handle_t *vts_ifo) {
 
-	if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
+	if(vts_ifo->vtsi_mat == NULL)
+		return "";
+	else if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
 		return "4:3";
 	else if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
 		return "16:9";
@@ -358,6 +394,9 @@ double dvd_track_fps(dvd_time_t *dvd_time) {
 }
 
 const char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+
+	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
+		return "";
 
 	char str[DVD_VIDEO_FPS + 1] = {'\0'};
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);

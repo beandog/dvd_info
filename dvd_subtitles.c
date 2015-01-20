@@ -10,6 +10,9 @@
  */
 uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo) {
 
+	if(vts_ifo->vtsi_mat == NULL)
+		return 0;
+
 	uint8_t subtitles = vts_ifo->vtsi_mat->nr_of_vts_subp_streams;
 
 	if(subtitles >= 0)
@@ -28,6 +31,9 @@ uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo) {
  * @return number of active subtitles
  */
 uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track) {
+
+	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
+		return 0;
 
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
@@ -59,6 +65,9 @@ uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle
  * @return boolean
  */
 uint8_t dvd_subtitle_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, uint8_t subtitle_track) {
+
+	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
+		return 0;
 
 	uint8_t subtitles = dvd_track_subtitles(vts_ifo);
 

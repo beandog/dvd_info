@@ -120,6 +120,9 @@ const char *milliseconds_length_format(const uint32_t milliseconds) {
  */
 uint32_t dvd_track_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
+	if(vts_ifo->vts_pgcit == NULL)
+		return 0;
+
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
 	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
@@ -148,6 +151,9 @@ uint32_t dvd_track_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_if
  * Get the number of milliseconds of a chapter
  */
 uint32_t dvd_chapter_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
+
+	if(vts_ifo->vts_pgcit == NULL)
+		return 0;
 
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
@@ -189,6 +195,9 @@ uint32_t dvd_chapter_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
  * Get the number of milliseconds of a cell
  */
 uint32_t dvd_cell_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
+
+	if(vts_ifo->vts_pgcit == NULL)
+		return 0;
 
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
