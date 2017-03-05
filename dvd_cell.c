@@ -18,10 +18,10 @@ uint32_t dvd_cell_first_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 	if(pgc == NULL || pgc->program_map == NULL)
 		return 0;
 	
-	uint8_t first_sector = 0;
-	first_sector = pgc->cell_playback[cell_number].first_sector;
+	uint32_t sector = 0;
+	sector = pgc->cell_playback[cell_number - 1].first_sector;
 
-	return first_sector;
+	return sector;
 
 }
 
@@ -37,9 +37,9 @@ uint32_t dvd_cell_last_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 	if(pgc == NULL || pgc->program_map == NULL)
 		return 0;
 	
-	uint8_t last_sector = 0;
-	last_sector = pgc->cell_playback[cell_number].last_sector;
+	uint32_t sector = 0;
+	sector = pgc->cell_playback[cell_number].last_sector;
 
-	return last_sector;
+	return sector;
 
 }
