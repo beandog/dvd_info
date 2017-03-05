@@ -275,6 +275,8 @@ int main(int argc, char **argv) {
 
 			// ignore unknown arguments
 			case '?':
+				print_usage(program_name);
+				return 1;
 			// let getopt_long set the variable
 			case 0:
 			default:
