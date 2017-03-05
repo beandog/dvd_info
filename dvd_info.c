@@ -12,6 +12,7 @@
 #include "dvd_device.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
+#include "dvd_cell.h"
 #include "dvd_video.h"
 #include "dvd_audio.h"
 #include "dvd_subtitles.h"
@@ -182,6 +183,8 @@ int main(int argc, char **argv) {
 	memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
 	snprintf(dvd_cell.length, DVD_CELL_LENGTH + 1, "00:00:00.000");
 	dvd_cell.msecs = 0;
+	dvd_cell.first_sector = 0;
+	dvd_cell.last_sector = 0;
 
 	// Display formats
 	const char *display_formats[4] = { "Pan and Scan or Letterbox", "Pan and Scan", "Letterbox", "Unset" };
@@ -630,6 +633,8 @@ int main(int argc, char **argv) {
 				memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
 				strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell), DVD_CELL_LENGTH);
 				dvd_cell.msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+				dvd_cell.first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+				dvd_cell.last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 
 				dvd_track.dvd_cells[c] = dvd_cell;
 
@@ -693,7 +698,7 @@ int main(int argc, char **argv) {
 				for(c = 0; c < dvd_track.cells; c++) {
 
 					dvd_cell = dvd_track.dvd_cells[c];
-					printf("	Cell: %02u, Length: %s\n", dvd_cell.cell, dvd_cell.length);
+					printf("	Cell: %02u, Length: %s First sector: %04d Last sector: %04d\n", dvd_cell.cell, dvd_cell.length, dvd_cell.first_sector, dvd_cell.last_sector);
 
 				}
 

@@ -117,6 +117,8 @@ struct dvd_cell {
 	uint8_t cell;
 	char length[DVD_CELL_LENGTH + 1];
 	uint32_t msecs;
+	uint32_t first_sector;
+	uint32_t last_sector;
 };
 
 struct dvd_track {
