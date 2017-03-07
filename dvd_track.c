@@ -147,3 +147,45 @@ uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 		return chapter_number;
 
 }
+
+uint32_t dvd_track_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+
+	uint8_t cells;
+	cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
+
+	uint8_t cell;
+	uint32_t cell_blocks;
+	uint32_t track_blocks;
+	track_blocks = 0;
+	for(cell = 1; cell < cells + 1; cell++) {
+
+		cell_blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, track_number, cell);
+
+		track_blocks += cell_blocks;
+
+	}
+
+	return track_blocks;
+
+}
+
+ssize_t dvd_track_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+
+	uint8_t cells;
+	cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
+
+	uint8_t cell;
+	ssize_t cell_filesize;
+	ssize_t track_filesize;
+	track_filesize = 0;
+	for(cell = 1; cell < cells + 1; cell++) {
+
+		cell_filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, track_number, cell);
+
+		track_filesize += cell_filesize;
+
+	}
+
+	return track_filesize;
+
+}
