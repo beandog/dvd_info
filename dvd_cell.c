@@ -43,3 +43,22 @@ uint32_t dvd_cell_last_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 	return sector;
 
 }
+
+uint32_t dvd_cell_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number) {
+
+	uint32_t first_sector = 0;
+	first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, cell_number);
+
+	uint32_t last_sector = 0;
+	last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, cell_number);
+
+	uint32_t blocks = 0;
+	blocks = last_sector - first_sector;
+
+	// Include the last cell
+	if(last_sector >= first_sector)
+		blocks++;
+
+	return blocks;
+
+}
