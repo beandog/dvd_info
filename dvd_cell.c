@@ -62,3 +62,15 @@ uint32_t dvd_cell_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_if
 	return blocks;
 
 }
+
+ssize_t dvd_cell_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number) {
+
+	uint32_t blocks;
+	blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, track_number, cell_number);
+
+	ssize_t filesize = 0;
+	filesize = blocks * DVD_VIDEO_LB_LEN;
+
+	return filesize;
+
+}
