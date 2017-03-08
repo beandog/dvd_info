@@ -148,14 +148,14 @@ uint8_t dvd_chapter_startcell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 
 }
 
-uint32_t dvd_track_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+ssize_t dvd_track_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
 	uint8_t cells;
 	cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 
 	uint8_t cell;
-	uint32_t cell_blocks;
-	uint32_t track_blocks;
+	ssize_t cell_blocks;
+	ssize_t track_blocks;
 	track_blocks = 0;
 	for(cell = 1; cell < cells + 1; cell++) {
 

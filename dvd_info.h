@@ -119,7 +119,7 @@ struct dvd_cell {
 	uint32_t msecs;
 	uint32_t first_sector;
 	uint32_t last_sector;
-	uint32_t blocks;
+	ssize_t blocks;
 	ssize_t filesize;
 };
 
@@ -141,7 +141,7 @@ struct dvd_track {
 	uint8_t active_subs;
 	struct dvd_chapter *dvd_chapters;
 	struct dvd_cell *dvd_cells;
-	uint32_t blocks;
+	ssize_t blocks;
 	ssize_t filesize;
 };
 
