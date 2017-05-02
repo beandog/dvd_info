@@ -75,6 +75,16 @@ struct dvd_info {
 struct dvd_vts {
 	uint16_t vts;
 	char id[DVD_VTS_ID + 1];
+	ssize_t blocks;
+	ssize_t filesize;
+	int vobs;
+};
+
+struct dvd_vob {
+	uint16_t vts;
+	uint16_t vob;
+	ssize_t blocks;
+	ssize_t filesize;
 };
 
 struct dvd_video {
