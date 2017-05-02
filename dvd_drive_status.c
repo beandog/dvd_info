@@ -6,8 +6,8 @@
 #include <fcntl.h>
 #include <linux/cdrom.h>
 
-#define DEFAULT_DVD_DEVICE "/dev/dvd"
-#define PRIMARY_FALLBACK_DEVICE "/dev/sr0"
+#define DEFAULT_DVD_DEVICE "/dev/sr0"
+#define PRIMARY_FALLBACK_DEVICE "/dev/dvd"
 #define SECONDARY_FALLBACK_DEVICE "/dev/cdrom"
 
 /**
