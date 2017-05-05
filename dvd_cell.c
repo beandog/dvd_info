@@ -56,7 +56,7 @@ ssize_t dvd_cell_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
 	blocks = last_sector - first_sector;
 
 	// Include the last cell
-	if(last_sector >= first_sector)
+	if(last_sector == first_sector)
 		blocks++;
 
 	return blocks;
