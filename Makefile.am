@@ -8,8 +8,8 @@ dvd_info_SOURCES = dvd_info.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c
 dvd_info_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_info_LDADD = $(DVDREAD_LIBS)
 
-dvd_copy_SOURCES = dvd_copy.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c
-dvd_copy_CFLAGS = $(DVDREAD_CFLAGS) -Weverything -Werror -Wno-padded -Wno-reserved-id-macro -Wno-documentation -Wno-documentation-unknown-command -Wno-disabled-macro-expansion -Wno-missing-braces -Wno-unreachable-code
+dvd_copy_SOURCES = dvd_copy.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c dvd_audio.c dvd_subtitles.c dvd_time.c
+dvd_copy_CFLAGS = $(DVDREAD_CFLAGS) -Weverything -Wno-padded -Wno-reserved-id-macro -Wno-documentation -Wno-documentation-unknown-command -Wno-disabled-macro-expansion -Wno-missing-braces -Wno-unreachable-code
 dvd_copy_LDADD = $(DVDREAD_LIBS)
 
 dvd_eject_SOURCES = dvd_eject.c
