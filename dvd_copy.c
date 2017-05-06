@@ -340,16 +340,7 @@ int main(int argc, char **argv) {
 		vts_ifo = vts_ifos[vts];
 		dvd_track_info(&dvd_tracks[ix], track, vmg_ifo, vts_ifo);
 
-		printf("Track: %02u, Length: %s Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u\n", track, dvd_tracks[ix].length, dvd_tracks[ix].chapters, dvd_tracks[ix].cells, dvd_tracks[ix].audio_tracks, dvd_tracks[ix].subtitles);
-
-	}
-
-	/**
-	 * Display track information
-	 */
-	for(ix = 0, track = 1; ix < dvd_info.tracks; ix++, track++) {
- 
-		printf("Track: %02u, Length: %s Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u\n", track, dvd_tracks[ix].length, dvd_tracks[ix].chapters, dvd_tracks[ix].cells, dvd_tracks[ix].audio_tracks, dvd_tracks[ix].subtitles);
+		// printf("Track: %02u, Length: %s Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u\n", track, dvd_tracks[ix].length, dvd_tracks[ix].chapters, dvd_tracks[ix].cells, dvd_tracks[ix].audio_tracks, dvd_tracks[ix].subtitles);
 
 	}
 
@@ -359,21 +350,20 @@ int main(int argc, char **argv) {
 	dvd_file_t *dvdread_vts_file = NULL;
 
 	int track_fd = 0;
-	char track_filename[25] = {'\0'};
+	char track_filename[18] = {'\0'};
 
 	int cell_fd = 0;
-	char cell_filename[33] = {'\0'};
+	char cell_filename[26] = {'\0'};
 
 	/**
 	 * Copy selected tracks
 	 */
 
-	// for(dvd_track.track = 1; dvd_track.track < dvd_info.tracks + 1; dvd_track.track++) {
 	for(track = d_first_track, ix = d_first_track - 1; track < d_last_track + 1; track++, ix++) {
 
 		// Populate the track
 		vts = dvd_vts_ifo_number(vmg_ifo, track);
-		vts_ifo = vts_ifos[dvd_tracks[ix].vts];
+		vts_ifo = vts_ifos[vts];
 
 		// Open the VTS VOB
 		dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
@@ -381,7 +371,7 @@ int main(int argc, char **argv) {
 		printf("Track: %02u, Length: %s Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu\n", dvd_tracks[ix].track, dvd_tracks[ix].length, dvd_tracks[ix].chapters, dvd_tracks[ix].cells, dvd_tracks[ix].audio_tracks, dvd_tracks[ix].subtitles, dvd_tracks[ix].filesize);
 
 		if(copy_tracks) {
-			snprintf(track_filename, 24, "track_%02i_chap_%02i_%02i.mpg", track, 1, dvd_tracks[ix].chapters);
+			snprintf(track_filename, 17, "dvd_track_%02i.mpg", track);
 			track_fd = open(track_filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
 			if(track_fd == -1) {
 				printf("Couldn't create file %s\n", track_filename);
@@ -416,7 +406,7 @@ int main(int argc, char **argv) {
 			offset = (int)dvd_cell.first_sector;
 
 			if(copy_cells) {
-				snprintf(cell_filename, 33, "track_%02i_chap_%02i_%02i_cell_%02i.mpg", dvd_tracks[ix].track, 1, dvd_tracks[ix].chapters, dvd_cell.cell);
+				snprintf(cell_filename, 26, "dvd_track_%02i_cell_%02i.mpg", dvd_tracks[ix].track, dvd_cell.cell);
 				cell_fd = open(cell_filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
 			}
 
