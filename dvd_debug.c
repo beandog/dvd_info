@@ -61,6 +61,7 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	dvd_time_t *track_time = NULL;
 
 	uint8_t chapters = 1;
+	uint16_t nr_of_ptts = 1;
 	uint8_t chapter = 1;
 	uint32_t chapters_msecs = 0;
 	uint32_t chapter_msecs = 0;
@@ -71,6 +72,7 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	uint32_t cell_msecs = 0;
 
 	bool length_mismatch = false;
+	bool chapters_mismatch = false;
 
 	// Total # of IFOs
 	int video_title_sets = vmg_ifo->vts_atrt->nr_of_vtss;
@@ -222,9 +224,12 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 
 	// Check for invalid IFOs
 
+	title_info_t *title_info = NULL;
+	
 	for(title_track = 1; title_track <= title_tracks; title_track++) {
 
 		length_mismatch = false;
+		chapters_mismatch = false;
 
 		vts = dvd_vts_ifo_number(vmg_ifo, title_track);
 
@@ -235,6 +240,7 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 		vts_pgcit = vts_ifo->vts_pgcit;
 		ttn = dvd_track_ttn(vmg_ifo, title_track);
 		pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+
 		track_time = &pgc->playback_time;
 
 		/*
@@ -245,6 +251,10 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 		title_track_msecs = dvd_track_msecs(vmg_ifo, vts_ifo, title_track);
 
 		chapters = dvd_track_chapters(vmg_ifo, vts_ifo, title_track);
+		nr_of_ptts = vmg_ifo->tt_srpt->title[title_track - 1].nr_of_ptts;
+
+		if(nr_of_ptts != chapters)
+			chapters_mismatch = true;
 
 		chapters_msecs = 0;
 
@@ -288,6 +298,14 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 				printf("	%i offset\n", title_track_msecs - cells_msecs);
 			else
 				printf("\n");
+
+		}
+
+		if(chapters_mismatch) {
+
+			printf("[Title Track %u Num. Chapters Mismatch]\n", title_track);
+			printf("* VTS IFO PGC:	%u\n", chapters);
+			printf("* VMG IFO PTTS:	%lu\n", nr_of_ptts);
 
 		}
 
