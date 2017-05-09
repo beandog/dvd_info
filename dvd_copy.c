@@ -216,7 +216,7 @@ int main(int argc, char **argv) {
 	ifo_handle_t *vmg_ifo = NULL;
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
-	if(!vmg_ifo) {
+	if(vmg_ifo == NULL) {
 		printf("* Could not open IFO zero\n");
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -262,7 +262,7 @@ int main(int argc, char **argv) {
 	ifo_handle_t *vts_ifo = NULL;
 
 	vts_ifo = ifoOpen(dvdread_dvd, vts);
-	if(!vts_ifo) {
+	if(vts_ifo == NULL) {
 		printf("* Could not open VTS_IFO for track %u\n", 1);
 		return 1;
 	}
@@ -368,7 +368,7 @@ int main(int argc, char **argv) {
 		// Open the VTS VOB
 		dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
-		printf("Track: %02u, Length: %s Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu\n", dvd_tracks[ix].track, dvd_tracks[ix].length, dvd_tracks[ix].chapters, dvd_tracks[ix].cells, dvd_tracks[ix].audio_tracks, dvd_tracks[ix].subtitles, dvd_tracks[ix].filesize);
+		printf("Track: %02u, Length: %s Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_tracks[ix].track, dvd_tracks[ix].length, dvd_tracks[ix].chapters, dvd_tracks[ix].cells, dvd_tracks[ix].audio_tracks, dvd_tracks[ix].subtitles, dvd_tracks[ix].filesize, dvd_tracks[ix].blocks);
 
 		if(copy_tracks) {
 			snprintf(track_filename, 17, "dvd_track_%02i.mpg", track);
@@ -384,14 +384,14 @@ int main(int argc, char **argv) {
 		for(c = 0, cell = 1; c < dvd_tracks[ix].cells; c++, cell++) {
 
 			dvd_cell.cell = cell;
-			dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-			dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-			dvd_cell.first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-			dvd_cell.last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-			strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell), DVD_CELL_LENGTH);
+			dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_tracks[ix].track, dvd_cell.cell);
+			dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_tracks[ix].track, dvd_cell.cell);
+			dvd_cell.first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, dvd_tracks[ix].track, dvd_cell.cell);
+			dvd_cell.last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, dvd_tracks[ix].track, dvd_cell.cell);
+			strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_tracks[ix].track, dvd_cell.cell), DVD_CELL_LENGTH);
 			cell_sectors = dvd_cell.last_sector - dvd_cell.first_sector;
 
-			printf("        Cell: %02u, Filesize: %lu\n", dvd_cell.cell, dvd_cell.filesize);
+			printf("        Cell: %02u, Filesize: %lu, Blocks: %lu, Sectors: %i to %i\n", dvd_cell.cell, dvd_cell.filesize, dvd_cell.blocks, dvd_cell.first_sector, dvd_cell.last_sector);
 
 			cell_blocks_written = 0;
 
