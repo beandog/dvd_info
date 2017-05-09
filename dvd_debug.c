@@ -45,7 +45,7 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	// Open IFO zero -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
-	if(!vmg_ifo || !ifo_is_vmg(vmg_ifo)) {
+	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo)) {
 		fprintf(stderr, "dvd_debug: Opening VMG IFO failed\n");
 		return 1;
 	}
@@ -210,13 +210,12 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 
 		vts_ifo = ifoOpen(dvdread_dvd, vts);
 
-		if(vts_ifo) {
-			valid_ifos[vts] = true;
-			ifoClose(vts_ifo);
-			vts_ifo = NULL;
-		} else {
+		if(vts_ifo == NULL) {
 			valid_ifos[vts] = false;
 			printf("* IFO %u is invalid (possibly garbage)\n", vts);
+		} else {
+			valid_ifos[vts] = true;
+			ifoClose(vts_ifo);
 			vts_ifo = NULL;
 		}
 
@@ -378,7 +377,7 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 		printf("[Track %i]\n", track_number);
 
 		vts_ifo = ifoOpen(dvdread_dvd, ifo_number);
-		if(!vts_ifo) {
+		if(vts_ifo == NULL) {
 			printf("Track %2d: opening IFO %d failed!\n", track_number, ifo_number);
 			vts_ifo = NULL;
 			break;

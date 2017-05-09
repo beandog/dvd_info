@@ -249,7 +249,7 @@ int main(int argc, char **argv) {
 
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
-	if(!vmg_ifo) {
+	if(vmg_ifo == NULL) {
 		printf("* Could not open IFO zero\n");
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -290,7 +290,7 @@ int main(int argc, char **argv) {
 		ifo = ifoOpen(dvdread_dvd, ifo_number);
 
 		// TODO work around broken IFOs by copying contents directly to filesystem
-		if(!ifo) {
+		if(ifo == NULL) {
 			printf("* libdvdread ifoOpen() %i FAILED\n", ifo_number);
 			printf("* Skipping IFO\n");
 			continue;
@@ -496,7 +496,7 @@ int main(int argc, char **argv) {
 	dvd_track.vts = 1;
 	// printf("* Opening VTS IFO %u\n", dvd_track.vts);
 	vts_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
-	if(!vts_ifo) {
+	if(vts_ifo == NULL) {
 		printf("* Could not open VTS_IFO for track %u\n", dvd_track.track);
 		return 1;
 	}
