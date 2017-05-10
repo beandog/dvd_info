@@ -371,7 +371,7 @@ int main(int argc, char **argv) {
 		printf("Track: %02u, Length: %s Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_tracks[ix].track, dvd_tracks[ix].length, dvd_tracks[ix].chapters, dvd_tracks[ix].cells, dvd_tracks[ix].audio_tracks, dvd_tracks[ix].subtitles, dvd_tracks[ix].filesize, dvd_tracks[ix].blocks);
 
 		if(copy_tracks) {
-			snprintf(track_filename, 17, "dvd_track_%02i.mpg", track);
+			snprintf(track_filename, 17, "dvd_track_%02i.vob", track);
 			track_fd = open(track_filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
 			if(track_fd == -1) {
 				printf("Couldn't create file %s\n", track_filename);
@@ -406,7 +406,7 @@ int main(int argc, char **argv) {
 			offset = (int)dvd_cell.first_sector;
 
 			if(copy_cells) {
-				snprintf(cell_filename, 26, "dvd_track_%02i_cell_%02i.mpg", dvd_tracks[ix].track, dvd_cell.cell);
+				snprintf(cell_filename, 26, "dvd_track_%02i_cell_%02i.vob", dvd_tracks[ix].track, dvd_cell.cell);
 				cell_fd = open(cell_filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
 			}
 
