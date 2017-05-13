@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -117,11 +118,16 @@ int main(int argc, char **argv) {
 	int long_index = 0;
 	int opt = 0;
 	opterr = 1;
+	bool opt_first_chapter = false;
+	bool opt_last_chapter = false;
+	uint8_t arg_first_chapter = 0;
+	uint8_t arg_last_chapter = 0;
 	const char *str_options;
-	str_options = "ht:";
+	str_options = "c:d:ht:";
 
 	struct option long_options[] = {
 
+		{ "chapters", required_argument, 0, 'c' },
 		{ "track", required_argument, 0, 't' },
 		{ 0, 0, 0, 0 }
 
@@ -130,6 +136,38 @@ int main(int argc, char **argv) {
 	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
 
 		switch(opt) {
+
+			case 'c':
+				opt_first_chapter = true;
+				if(strlen(optarg) > 2)
+					arg_first_chapter = 1;
+				if(!isdigit(optarg[0]))
+					arg_first_chapter = 1;
+				if(strlen(optarg) == 2 && !isdigit(optarg[1]))
+					arg_first_chapter = 1;
+				if(optarg[0] < '1')
+					arg_first_chapter = 1;
+				if(strlen(optarg) == 1)
+					arg_first_chapter = (uint8_t)(optarg[0]) - 48;
+				if(strlen(optarg) == 2)
+					arg_first_chapter = (((uint8_t)(optarg[0]) - 48) * 10) + ((uint8_t)(optarg[1]) - 48);
+				break;
+
+			case 'd':
+				opt_last_chapter = true;
+				if(strlen(optarg) > 2)
+					arg_last_chapter = 0;
+				if(!isdigit(optarg[0]))
+					arg_last_chapter = 0;
+				if(strlen(optarg) == 2 && !isdigit(optarg[1]))
+					arg_last_chapter = 0;
+				if(optarg[0] < '1')
+					arg_last_chapter = 0;
+				if(strlen(optarg) == 1)
+					arg_last_chapter = (uint8_t)(optarg[0]) - 48;
+				if(strlen(optarg) == 2)
+					arg_last_chapter = (((uint8_t)(optarg[0]) - 48) * 10) + ((uint8_t)(optarg[1]) - 48);
+				break;
 
 			case 'h':
 				print_usage("dvd_copy");
@@ -155,11 +193,25 @@ int main(int argc, char **argv) {
 
 	}
 
+	if(arg_first_chapter == 0 && arg_last_chapter == 0) {
+		arg_first_chapter = 1;
+		arg_last_chapter = 99;
+	}
+
+	if(arg_last_chapter < arg_first_chapter)
+		arg_last_chapter = arg_first_chapter;
+
+	if(arg_first_chapter == 0)
+		arg_first_chapter = 1;
+
+	if(arg_last_chapter == 0)
+		arg_last_chapter = arg_first_chapter;
+
 	const char *device_filename = DEFAULT_DVD_DEVICE;
 
 	if (argv[optind])
 		device_filename = argv[optind];
-	
+
 	if(access(device_filename, F_OK) != 0) {
 		fprintf(stderr, "cannot access %s\n", device_filename);
 		return 1;
@@ -307,6 +359,7 @@ int main(int argc, char **argv) {
 		d_all_tracks = true;
 	}
 
+
 	/**
 	 * Integers for numbers of blocks read, copied, counters
 	 */
@@ -343,6 +396,25 @@ int main(int argc, char **argv) {
 		// printf("Track: %02u, Length: %s Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u\n", track, dvd_tracks[ix].length, dvd_tracks[ix].chapters, dvd_tracks[ix].cells, dvd_tracks[ix].audio_tracks, dvd_tracks[ix].subtitles);
 
 	}
+
+	// Check chapter number boundaries
+	uint8_t first_chapter = arg_first_chapter;
+	uint8_t last_chapter = arg_last_chapter;
+	
+	if(opt_track_number && (arg_first_chapter || arg_last_chapter)) {
+
+		if(arg_first_chapter > dvd_tracks[track_number - 1].chapters) {
+			first_chapter = dvd_tracks[track_number - 1].chapters;
+			printf("* First chapter number %u out of bounds, setting to %u\n", arg_first_chapter, first_chapter);
+		}
+
+		if(arg_last_chapter > dvd_tracks[track_number - 1].chapters) {
+			last_chapter = dvd_tracks[track_number - 1].chapters;
+			printf("* Last chapter number %u out of bounds, setting to %u\n", arg_last_chapter, dvd_tracks[track_number - 1].chapters);
+		}
+	}
+
+	return 0;
 
 	/**
 	 * File descriptors and filenames
