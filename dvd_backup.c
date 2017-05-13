@@ -19,6 +19,7 @@
 #include "dvd_vts.h"
 #include "dvd_vob.h"
 #include "dvd_track.h"
+#include "dvd_chapter.h"
 #include "dvd_cell.h"
 #include "dvd_video.h"
 #include "dvd_audio.h"
