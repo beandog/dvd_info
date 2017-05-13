@@ -64,8 +64,6 @@ uint8_t dvd_chapter_last_cell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 
 		uint8_t next_chapter_first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, track_number, chapter_number + 1);
 
-		printf("* next_chapter_first cell: %u\n", next_chapter_first_cell);
-
 		last_cell = next_chapter_first_cell - 1;
 
 	}
