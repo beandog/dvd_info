@@ -1,4 +1,5 @@
 #include "dvd_track.h"
+#include "dvd_chapter.h"
 
 // It's a *safe guess* that if the program_map is NULL or there is no starting cell,
 // that the starting cell is actually the same as the chapter number.  See DVD id 79,
