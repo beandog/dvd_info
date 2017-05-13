@@ -157,6 +157,7 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 				printf("     \"length\": \"%s\",\n", dvd_chapter.length);
 				printf("     \"msecs\": %u,\n", dvd_chapter.msecs);
 				printf("     \"first cell\": %u\n", dvd_chapter.first_cell);
+				printf("     \"last cell\": %u\n", dvd_chapter.last_cell);
 				printf("    }");
 
 				if(c + 1 < dvd_track.chapters)

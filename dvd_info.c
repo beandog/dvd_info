@@ -177,6 +177,7 @@ int main(int argc, char **argv) {
 	dvd_chapter.chapter = 0;
 	snprintf(dvd_chapter.length, DVD_CHAPTER_LENGTH + 1, "00:00:00.000");
 	dvd_chapter.first_cell = 1;
+	dvd_chapter.last_cell = 1;
 
 	// Cells
 	struct dvd_cell dvd_cell;
@@ -614,6 +615,7 @@ int main(int argc, char **argv) {
 				strncpy(dvd_chapter.length, dvd_chapter_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter), DVD_CHAPTER_LENGTH);
 				dvd_chapter.msecs = dvd_chapter_msecs(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 				dvd_chapter.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
+				dvd_chapter.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 
 				dvd_track.dvd_chapters[c] = dvd_chapter;
 

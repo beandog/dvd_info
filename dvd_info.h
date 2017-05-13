@@ -121,6 +121,7 @@ struct dvd_chapter {
 	char length[DVD_CHAPTER_LENGTH + 1];
 	uint32_t msecs;
 	uint8_t first_cell;
+	uint8_t last_cell;
 };
 
 struct dvd_cell {
