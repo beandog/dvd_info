@@ -170,7 +170,7 @@ uint32_t dvd_chapter_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 
 	// FIXME it'd be better, and more helpful as a reference, to simply get the
 	// cells that are in a chapter, and then add up the lengths of those cells.
-	// So, something similar to chapter_startcell, chapter_stopcell as well.
+	// So, something similar to chapter_first_cell, chapter_stopcell as well.
 	for(chapter_idx = 0; chapter_idx < chapters; chapter_idx++) {
 
 		program_map_idx = pgc->program_map[chapter_idx + 1];

@@ -464,7 +464,7 @@ int main(int argc, char **argv) {
 	struct dvd_chapter dvd_chapter;
 	dvd_chapter.chapter = 0;
 	snprintf(dvd_chapter.length, DVD_CHAPTER_LENGTH + 1, "00:00:00.000");
-	dvd_chapter.startcell = 1;
+	dvd_chapter.first_cell = 1;
 
 	// Cells
 	struct dvd_cell dvd_cell;

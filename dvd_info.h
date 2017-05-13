@@ -120,7 +120,7 @@ struct dvd_chapter {
 	uint8_t chapter;
 	char length[DVD_CHAPTER_LENGTH + 1];
 	uint32_t msecs;
-	uint8_t startcell;
+	uint8_t first_cell;
 };
 
 struct dvd_cell {
