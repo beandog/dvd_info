@@ -414,8 +414,6 @@ int main(int argc, char **argv) {
 	if(opt_last_chapter && (arg_last_chapter > dvd_tracks[track_number - 1].chapters))
 		last_chapter = dvd_tracks[track_number - 1].chapters;
 
-	printf("* chapters: %u to %u\n", first_chapter, last_chapter);
-
 	/**
 	 * File descriptors and filenames
 	 */
