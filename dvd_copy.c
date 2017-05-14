@@ -194,20 +194,6 @@ int main(int argc, char **argv) {
 
 	}
 
-	if(arg_first_chapter == 0 && arg_last_chapter == 0) {
-		arg_first_chapter = 1;
-		arg_last_chapter = 99;
-	}
-
-	if(arg_last_chapter < arg_first_chapter)
-		arg_last_chapter = arg_first_chapter;
-
-	if(arg_first_chapter == 0)
-		arg_first_chapter = 1;
-
-	if(arg_last_chapter == 0)
-		arg_last_chapter = arg_first_chapter;
-
 	const char *device_filename = DEFAULT_DVD_DEVICE;
 
 	if (argv[optind])
@@ -398,24 +384,37 @@ int main(int argc, char **argv) {
 
 	}
 
-	// Check chapter number boundaries
-	uint8_t first_chapter = arg_first_chapter;
-	uint8_t last_chapter = arg_last_chapter;
-	
-	if(opt_track_number && (arg_first_chapter || arg_last_chapter)) {
-
-		if(arg_first_chapter > dvd_tracks[track_number - 1].chapters) {
-			first_chapter = dvd_tracks[track_number - 1].chapters;
-			printf("* First chapter number %u out of bounds, setting to %u\n", arg_first_chapter, first_chapter);
-		}
-
-		if(arg_last_chapter > dvd_tracks[track_number - 1].chapters) {
-			last_chapter = dvd_tracks[track_number - 1].chapters;
-			printf("* Last chapter number %u out of bounds, setting to %u\n", arg_last_chapter, dvd_tracks[track_number - 1].chapters);
-		}
+	// Check chapter number options, arguments, and boundaries
+	if(arg_first_chapter == 0 && arg_last_chapter == 0) {
+		arg_first_chapter = 1;
+		arg_last_chapter = 99;
 	}
 
-	return 0;
+	if(arg_last_chapter < arg_first_chapter)
+		arg_last_chapter = arg_first_chapter;
+
+	if(arg_first_chapter == 0)
+		arg_first_chapter = 1;
+
+	if(arg_last_chapter == 0)
+		arg_last_chapter = arg_first_chapter;
+
+	uint8_t first_chapter = 1;
+	uint8_t last_chapter = dvd_tracks[track_number - 1].chapters;
+
+	if(opt_first_chapter)
+		first_chapter = arg_first_chapter;
+	
+	if(opt_last_chapter)
+		last_chapter = arg_last_chapter;
+	
+	if(opt_first_chapter && (arg_first_chapter > dvd_tracks[track_number - 1].chapters))
+		first_chapter = dvd_tracks[track_number - 1].chapters;
+
+	if(opt_last_chapter && (arg_last_chapter > dvd_tracks[track_number - 1].chapters))
+		last_chapter = dvd_tracks[track_number - 1].chapters;
+
+	printf("* chapters: %u to %u\n", first_chapter, last_chapter);
 
 	/**
 	 * File descriptors and filenames
