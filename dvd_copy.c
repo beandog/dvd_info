@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <ctype.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <dirent.h>
