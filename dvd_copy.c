@@ -43,7 +43,7 @@ void print_usage(char *binary) {
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
 	printf("Examples:\n");
-	printf("  dvd_info /dev/dvd	# Read a DVD drive directly\n");
+	printf("  dvd_info " DEFAULT_DVD_DEVICE "	# Read a DVD drive directly\n");
 	printf("  dvd_info movie.iso	# Read an image file\n");
 	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
 	printf("\n");
@@ -174,8 +174,18 @@ int main(int argc, char **argv) {
 				return 0;
 
 			case 't':
+				if(strlen(optarg) == 1) {
+					if(optarg[0] < '1' || optarg[0] > '9')
+						printf("Invalid track range: %s, must be between 1 and 99\n", optarg);
+					else
+						arg_track_number = (uint8_t)(optarg[0]) - 48;
+				} else if(strlen(optarg) == 2) {
+					if((optarg[0] < '1' || optarg[0] > '9') || (optarg[0] < '0' || optarg[0] > '9'))
+						printf("Invalid track range: %s, must be between 1 and 99\n", optarg);
+					else
+						arg_track_number = ((uint8_t)(optarg[0] - 48) * 10) + ((uint8_t)(optarg[1] - 48));
+				}
 				opt_track_number = true;
-				arg_track_number = atoi(optarg);
 				copy_tracks = true;
 				break;
 
@@ -226,16 +236,16 @@ int main(int argc, char **argv) {
 
 			switch(drive_status) {
 				case 1:
-					fprintf(stderr, "drive status: no disc");
+					fprintf(stderr, "DVD drive %s has no disc\n", device_filename);
 					break;
 				case 2:
-					fprintf(stderr, "drive status: tray open");
+					fprintf(stderr, "DVD drive %s reports tray as open\n", device_filename);
 					break;
 				case 3:
-					fprintf(stderr, "drive status: drive not ready");
+					fprintf(stderr, "DVD drive %s reports as not ready\n", device_filename);
 					break;
 				default:
-					fprintf(stderr, "drive status: unable to poll");
+					fprintf(stderr, "Cannot poll DVD drive %s\n", device_filename);
 					break;
 			}
 
