@@ -440,7 +440,7 @@ int main(int argc, char **argv) {
 
 		vts_ifos[vts] = ifoOpen(dvdread_dvd, vts);
 
-		if(!vts_ifos[vts]) {
+		if(vts_ifos[vts] == NULL) {
 			if(d_debug)
 				fprintf(stderr, "[DEBUG] %s: opening VTS IFO %u failed; skipping IFO\n", program_name, vts);
 			valid_ifos[vts] = false;
