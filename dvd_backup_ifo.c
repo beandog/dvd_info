@@ -210,7 +210,7 @@ int main(int argc, char **argv) {
 
 		// Allocate enough memory for the buffer, *now that we know the filesize*
 		// printf("* Allocating buffer\n");
-		buffer = (uint8_t *)malloc((unsigned long)ifo_filesize * sizeof(uint8_t));
+		buffer = (uint8_t *)calloc(1, (unsigned long)ifo_filesize * sizeof(uint8_t));
 
 		if(buffer == NULL) {
 			printf("* Could not allocate memory for buffer\n");
