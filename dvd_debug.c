@@ -75,7 +75,7 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 	bool chapters_mismatch = false;
 
 	// Total # of IFOs
-	bool valid_ifos[DVD_MAX_VTS_IFOS];
+	bool valid_ifos[DVD_MAX_VTS_IFOS] = { false };
 
 	// Access the VMGIT (Video Manager Information Management Table)
 	vmgi_mat_t *vmgi_mat;
