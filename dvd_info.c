@@ -36,7 +36,6 @@ void print_usage(char *binary) {
 	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
 	printf("\n");
 	printf("Options:\n");
-	printf("  -l, --lsdvd		Display output in lsdvd format (default)\n");
 	printf("  -j, --json		Display output in JSON format\n");
 	printf("  -t, --track [number]	Limit to one title track\n");
 	printf("\n");
@@ -47,7 +46,7 @@ void print_usage(char *binary) {
 	printf("  -s, --subtitles	subtitles\n");
 	printf("  -d, --cells		cells\n");
 	printf("\n");
-	printf("Display tracks with features:\n");
+	printf("Display tracks with features (default output only):\n");
 	printf("  --ntsc		Video format is NTSC\n");
 	printf("  --pal			Video format is PAL\n");
 	printf("\n");
@@ -90,7 +89,6 @@ int main(int argc, char **argv) {
 
 	// Display output
 	int d_json = 0;
-	int d_lsdvd = 1;
 	int d_debug = 0;
 
 	// lsdvd display output
@@ -220,11 +218,10 @@ int main(int argc, char **argv) {
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
 	const char *str_options;
-	str_options = "acdhjklst:vxz";
+	str_options = "acdhjst:vxz";
 
 	struct option long_options[] = {
 
-		{ "lsdvd", no_argument, & d_lsdvd, 1 },
 		{ "json", no_argument, & d_json, 1 },
 		{ "debug", no_argument, & d_debug, 1 },
 		{ "audio", no_argument, & d_lsdvd_audio, 1 },
@@ -270,19 +267,6 @@ int main(int argc, char **argv) {
 
 			case 'j':
 				d_json = 1;
-				d_lsdvd = 0;
-				d_debug = 0;
-				break;
-
-			case 'k':
-				d_json = 0;
-				d_lsdvd = 0;
-				d_debug = 0;
-				break;
-
-			case 'l':
-				d_json = 0;
-				d_lsdvd = 1;
 				d_debug = 0;
 				break;
 
@@ -309,7 +293,6 @@ int main(int argc, char **argv) {
 
 			case 'z':
 				d_json = 0;
-				d_lsdvd = 0;
 				d_debug = 1;
 				break;
 
@@ -327,8 +310,9 @@ int main(int argc, char **argv) {
 	}
 
 	// Catch --json argument
+	uint8_t d_dvd_info = 1;
 	if(d_json)
-		d_lsdvd = 0;
+		d_dvd_info = 0;
 
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
@@ -677,7 +661,7 @@ int main(int argc, char **argv) {
 	 * - lsdvd output only displays *active* audio tracks, while the JSON
 	 *   shows all of them, but they are flagged as active or not.
 	 */
-	if(p_dvd_info && d_lsdvd == 1) {
+	if(p_dvd_info && d_dvd_info == 1) {
 
 		printf("Disc Title: %s\n", dvd_info.title);
 
