@@ -227,11 +227,8 @@ int main(int argc, char **argv) {
 
 #ifdef __linux__
 
-	// Check if it is hardware or an image file
-	bool is_hardware = dvd_device_is_hardware(device_filename);
-
 	// Poll drive status if it is hardware
-	if(is_hardware) {
+	if(dvd_device_is_hardware(device_filename)) {
 
 		// Wait for the drive to become ready
 		if(!dvd_drive_has_media(device_filename)) {
