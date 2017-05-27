@@ -37,10 +37,7 @@ uint16_t dvd_vts_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_nu
 
 	uint16_t ifo_number = vmg_ifo->tt_srpt->title[track_number - 1].title_set_nr;
 
-	if(ifo_number >= 0)
-		return ifo_number;
-	else
-		return 1;
+	return ifo_number;
 
 }
 
@@ -48,10 +45,7 @@ uint8_t dvd_track_ttn(const ifo_handle_t *vmg_ifo, const uint16_t track_number) 
 
 	uint8_t ttn = vmg_ifo->tt_srpt->title[track_number - 1].vts_ttn;
 
-	if(ttn > 0)
-		return ttn;
-	else
-		return 1;
+	return ttn;
 
 }
 
@@ -90,10 +84,7 @@ uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 
 	uint8_t chapters = pgc->nr_of_programs;
 
-	if(chapters > 0)
-		return chapters;
-	else
-		return 0;
+	return chapters;
 
 }
 
@@ -113,10 +104,7 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
 
 	uint8_t cells = pgc->nr_of_cells;
 
-	if(cells >= 0)
-		return cells;
-	else
-		return 0;
+	return cells;
 
 }
 

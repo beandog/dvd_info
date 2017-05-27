@@ -15,10 +15,7 @@ uint8_t dvd_track_audio_tracks(const ifo_handle_t *vts_ifo) {
 
 	uint8_t audio_streams = vts_ifo->vtsi_mat->nr_of_vts_audio_streams;
 
-	if(audio_streams >= 0)
-		return audio_streams;
-	else
-		return 0;
+	return audio_streams;
 
 }
 
@@ -193,10 +190,7 @@ uint8_t dvd_audio_channels(const ifo_handle_t *vts_ifo, const uint8_t audio_trac
 	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_track];
 	uint8_t channels = audio_attr->channels + 1;
 
-	if(channels >= 0)
-		return channels;
-	else
-		return 0;
+	return channels;
 
 }
 
