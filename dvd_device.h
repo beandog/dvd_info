@@ -3,12 +3,6 @@
 
 #include "dvd_info.h"
 
-/**
- * @file dvd_device.h
- *
- * @brief functions to access a DVD device or file (DVD-ROM, .ISO, .UDF)
- */
-
 bool dvd_device_access(const char *device_filename);
 
 int dvd_device_open(const char *device_filename);

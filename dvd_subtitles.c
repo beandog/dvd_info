@@ -5,8 +5,6 @@
 /**
  * Get the number of subtitle streams for a track
  *
- * @param vts_ifo dvdread track IFO handler
- * @return number of subtitles
  */
 uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo) {
 
@@ -25,10 +23,6 @@ uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo) {
 /**
  * Get the number of subtitle streams marked as active.
  *
- * @param vmg_ifo dvdread track IFO handler
- * @param vts_ifo dvdread track IFO handler
- * @param title_track track number
- * @return number of active subtitles
  */
 uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track) {
 
@@ -144,9 +138,6 @@ bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *vts_ifo, const char *l
 /**
  * Get the lang code of a subtitle track for a title track
  *
- * @param vts_ifo dvdread track IFO handler
- * @param subtitle_track subtitle track number
- * @retval lang code
  */
 const char *dvd_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint8_t subtitle_track) {
 

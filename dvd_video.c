@@ -22,10 +22,6 @@ uint8_t dvd_video_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_numbe
  * 2 = Reserved, do not use
  * 3 = Reserved, do not use
  *
- * @param vts_ifo dvdread track IFO handler
- * @retval 0 unknown
- * @retval 1 MPEG-1
- * @retval 2 MPEG-2
  */
 uint8_t dvd_track_mpeg_version(const ifo_handle_t *vts_ifo) {
 
@@ -141,8 +137,6 @@ uint16_t dvd_video_height(const ifo_handle_t *vts_ifo) {
 /**
  * Get the video width
  *
- * @param vts_ifo dvdread track IFO handler
- * @return video width, or 0 for unknown
  */
 uint16_t dvd_video_width(const ifo_handle_t *vts_ifo) {
 
