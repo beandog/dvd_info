@@ -47,6 +47,10 @@ void print_usage(char *binary) {
 	printf("  -s, --subtitles	subtitles\n");
 	printf("  -d, --cells		cells\n");
 	printf("\n");
+	printf("Display tracks with features:\n");
+	printf("  --ntsc		Video format is NTSC\n");
+	printf("  --pal			Video format is PAL\n");
+	printf("\n");
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
 	printf("Examples:\n");
@@ -96,6 +100,10 @@ int main(int argc, char **argv) {
 	int d_lsdvd_subtitles = 0;
 	int d_lsdvd_cells = 0;
 	int d_lsdvd_all = 0;
+
+	// dvd_query
+	int d_ntsc = 0;
+	int d_pal = 0;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -225,6 +233,10 @@ int main(int argc, char **argv) {
 		{ "subtitles", no_argument, & d_lsdvd_subtitles, 1 },
 		{ "cells", no_argument, & d_lsdvd_cells, 1 },
 		{ "all", no_argument, & d_lsdvd_all, 1 },
+
+		// dvd_query
+		{ "ntsc", no_argument, & d_ntsc, 1 },
+		{ "pal", no_argument, & d_pal, 1 },
 
 		// Entries with both a name and a value, will take either the
 		// long option or the short one.  Fex, '--device' or '-i'
@@ -671,6 +683,13 @@ int main(int argc, char **argv) {
 
 		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
+			// dvd_query - limit to video format
+			if(d_ntsc && strncmp(dvd_video.format, "NTSC", 4) != 0)
+				continue;
+			if(d_pal && strncmp(dvd_video.format, "PAL", 3) != 0)
+				continue;
+
+			// Display track information
 			dvd_track = dvd_tracks[track_number - 1];
 			printf("Track: %02u ", dvd_track.track);
 			printf("Length: %s ", dvd_track.length);
