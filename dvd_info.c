@@ -452,7 +452,7 @@ int main(int argc, char **argv) {
 
 	// Exit if all the IFOs cannot be opened
 	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
-	bool valid_ifos[DVD_MAX_VTS_IFOS];
+	bool valid_ifos[DVD_MAX_VTS_IFOS] = { false };
 	ifo_handle_t *vts_ifos[DVD_MAX_VTS_IFOS];
 	vts_ifos[0] = NULL;
 
