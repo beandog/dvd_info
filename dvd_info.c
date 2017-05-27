@@ -54,6 +54,9 @@ void print_usage(char *binary) {
 	printf("Track with audio features:\n");
 	printf("  --has-audio		Audio tracks present\n");
 	printf("\n");
+	printf("Track with subtitle features:\n");
+	printf("  --has-subtitles	Subtitle tracks present\n");
+	printf("\n");
 	printf("Audio tracks with codec:\n");
 	printf("  --ac3-codec		Audio track is Dolby Digital\n");
 	printf("  --dts-codec		Audio track is DTS\n");
@@ -120,6 +123,7 @@ int main(int argc, char **argv) {
 	int d_has_audio = 0;
 	int d_ac3_codec = 0;
 	int d_dts_codec = 0;
+	int d_has_subtitles = 0;
 	int d_skip_empty = 0;
 
 	// dvd_info
@@ -257,6 +261,7 @@ int main(int argc, char **argv) {
 		{ "has-audio", no_argument, & d_has_audio, 1 },
 		{ "ac3-codec", no_argument, & d_ac3_codec, 1 },
 		{ "dts-codec", no_argument, & d_dts_codec, 1 },
+		{ "has-subtitles", no_argument, & d_has_subtitles, 1 },
 		{ "skip-empty", no_argument, & d_skip_empty, 1 },
 
 		// Entries with both a name and a value, will take either the
@@ -699,6 +704,10 @@ int main(int argc, char **argv) {
 
 			// dvd_query - limit to active audio tracks
 			if(d_has_audio && !dvd_track.audio_tracks)
+				continue;
+
+			// dvd_query - limit to active subtitle tracks
+			if(d_has_subtitles && !dvd_track.active_subs)
 				continue;
 
 			// dvd_query - skip "empty" tracks, have less than one second of length
