@@ -76,7 +76,7 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 
 	// Total # of IFOs
 	int video_title_sets = vmg_ifo->vts_atrt->nr_of_vtss;
-	bool valid_ifos[video_title_sets];
+	bool valid_ifos[DVD_MAX_VTS_IFOS];
 
 	// Access the VMGIT (Video Manager Information Management Table)
 	vmgi_mat_t *vmgi_mat;
