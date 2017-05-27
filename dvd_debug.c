@@ -302,7 +302,7 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 
 			printf("[Title Track %u Num. Chapters Mismatch]\n", title_track);
 			printf("* VTS IFO PGC:	%u\n", chapters);
-			printf("* VMG IFO PTTS:	%lu\n", nr_of_ptts);
+			printf("* VMG IFO PTTS:	%u\n", nr_of_ptts);
 
 		}
 
