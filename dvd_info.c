@@ -45,9 +45,11 @@ void print_usage(char *binary) {
 	printf("  -s, --subtitles	subtitles\n");
 	printf("  -d, --cells		cells\n");
 	printf("\n");
-	printf("Display tracks with features (default output only):\n");
+	printf("Track with video features:\n");
 	printf("  --ntsc		Video format is NTSC\n");
 	printf("  --pal			Video format is PAL\n");
+	printf("  --aspect-16x9		Video aspect ratio is 16:9\n");
+	printf("  --aspect-4x3	 	Video aspect ratio is 4:3\n");
 	printf("\n");
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
@@ -103,6 +105,8 @@ int main(int argc, char **argv) {
 	// dvd_query
 	int d_ntsc = 0;
 	int d_pal = 0;
+	int d_aspect_16x9 = 0;
+	int d_aspect_4x3 = 0;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -234,10 +238,14 @@ int main(int argc, char **argv) {
 		// dvd_query
 		{ "ntsc", no_argument, & d_ntsc, 1 },
 		{ "pal", no_argument, & d_pal, 1 },
+		{ "aspect-16x9", no_argument, & d_aspect_16x9, 1 },
+		{ "aspect-4x3", no_argument, & d_aspect_4x3, 1 },
 
 		// Entries with both a name and a value, will take either the
 		// long option or the short one.  Fex, '--device' or '-i'
 		{ "track", required_argument, 0, 't' },
+
+
 		{ 0, 0, 0, 0 }
 
 	};
@@ -656,14 +664,22 @@ int main(int argc, char **argv) {
 
 		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
+			dvd_track = dvd_tracks[track_number - 1];
+			dvd_video = dvd_tracks[track_number - 1].dvd_video;
+
 			// dvd_query - limit to video format
 			if(d_ntsc && strncmp(dvd_video.format, "NTSC", 4) != 0)
 				continue;
 			if(d_pal && strncmp(dvd_video.format, "PAL", 3) != 0)
 				continue;
 
+			// dvd_query - limit to aspect ratio
+			if(d_aspect_16x9 && strncmp(dvd_video.aspect_ratio, "16:9", 4) != 0)
+				continue;
+			if(d_aspect_4x3 && strncmp(dvd_video.aspect_ratio, "4:3", 3) != 0)
+				continue;
+
 			// Display track information
-			dvd_track = dvd_tracks[track_number - 1];
 			printf("Track: %02u ", dvd_track.track);
 			printf("Length: %s ", dvd_track.length);
 			printf("Chapters: %02u ", dvd_track.chapters);
