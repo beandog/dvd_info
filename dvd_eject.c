@@ -16,9 +16,6 @@
 /**
  * dvd_eject.c
  *
- * @author Steve Dibb <steve.dibb@gmail.com>
- * @site http://dvds.beandog.org/
- *
  * Opens / closes a disc tray, and decrypts the CSS on the drive to avoid
  * any spatial anomalies (and hardware devices whining to the kernel about
  * reading sectors without authentication).  Requires libdvdcss as a
