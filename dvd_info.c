@@ -58,6 +58,9 @@ void print_usage(char *binary) {
 	printf("  --ac3-codec		Audio track is Dolby Digital\n");
 	printf("  --dts-codec		Audio track is DTS\n");
 	printf("\n");
+	printf("Track with misc. options:\n");
+	printf("  --skip-empty		Skip empty tracks\n");
+	printf("\n");
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
 	printf("Examples:\n");
@@ -117,6 +120,7 @@ int main(int argc, char **argv) {
 	int d_has_audio = 0;
 	int d_ac3_codec = 0;
 	int d_dts_codec = 0;
+	int d_skip_empty = 0;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -253,6 +257,7 @@ int main(int argc, char **argv) {
 		{ "has-audio", no_argument, & d_has_audio, 1 },
 		{ "ac3-codec", no_argument, & d_ac3_codec, 1 },
 		{ "dts-codec", no_argument, & d_dts_codec, 1 },
+		{ "skip-empty", no_argument, & d_skip_empty, 1 },
 
 		// Entries with both a name and a value, will take either the
 		// long option or the short one.  Fex, '--device' or '-i'
@@ -694,6 +699,10 @@ int main(int argc, char **argv) {
 
 			// dvd_query - limit to active audio tracks
 			if(d_has_audio && !dvd_track.audio_tracks)
+				continue;
+
+			// dvd_query - skip "empty" tracks, have less than one second of length
+			if(d_skip_empty && dvd_track.msecs < 1000)
 				continue;
 
 			// Display track information
