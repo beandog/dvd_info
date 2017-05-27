@@ -689,7 +689,7 @@ int main(int argc, char **argv) {
 
 			// Display video information
 			if(d_video) {
-				printf("	Video format: %s Aspect ratio: %s Width: %u Height: %u Display format: %s FPS: %s Angles: %u\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, display_formats[dvd_video.df], dvd_video.fps, dvd_video.angles);
+				printf("	Video format: %s Aspect ratio: %s Width: %u Height: %u FPS: %s Display format: %s\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, dvd_video.fps, display_formats[dvd_video.df]);
 			}
 
 			// Display audio tracks
