@@ -54,7 +54,7 @@ const char *dvd_dvdread_id(dvd_reader_t *dvdread_dvd) {
 		return "";
 
 	for(x = 0; x < (DVD_DVDREAD_ID / 2); x++)
-		snprintf(&dvdread_id[x * 2], DVD_DVDREAD_ID, "%02x", dvdread_ifo_md5[x]);
+		snprintf(&dvdread_id[x * 2], DVD_DVDREAD_ID + 1, "%02x", dvdread_ifo_md5[x]);
 
 	return strndup(dvdread_id, DVD_DVDREAD_ID);
 
