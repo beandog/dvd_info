@@ -51,6 +51,13 @@ void print_usage(char *binary) {
 	printf("  --aspect-16x9		Video aspect ratio is 16:9\n");
 	printf("  --aspect-4x3	 	Video aspect ratio is 4:3\n");
 	printf("\n");
+	printf("Track with audio features:\n");
+	printf("  --has-audio		Audio tracks present\n");
+	printf("\n");
+	printf("Audio tracks with codec:\n");
+	printf("  --ac3-codec		Audio track is Dolby Digital\n");
+	printf("  --dts-codec		Audio track is DTS\n");
+	printf("\n");
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
 	printf("Examples:\n");
@@ -107,6 +114,9 @@ int main(int argc, char **argv) {
 	int d_pal = 0;
 	int d_aspect_16x9 = 0;
 	int d_aspect_4x3 = 0;
+	int d_has_audio = 0;
+	int d_ac3_codec = 0;
+	int d_dts_codec = 0;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -240,6 +250,9 @@ int main(int argc, char **argv) {
 		{ "pal", no_argument, & d_pal, 1 },
 		{ "aspect-16x9", no_argument, & d_aspect_16x9, 1 },
 		{ "aspect-4x3", no_argument, & d_aspect_4x3, 1 },
+		{ "has-audio", no_argument, & d_has_audio, 1 },
+		{ "ac3-codec", no_argument, & d_ac3_codec, 1 },
+		{ "dts-codec", no_argument, & d_dts_codec, 1 },
 
 		// Entries with both a name and a value, will take either the
 		// long option or the short one.  Fex, '--device' or '-i'
@@ -679,6 +692,10 @@ int main(int argc, char **argv) {
 			if(d_aspect_4x3 && strncmp(dvd_video.aspect_ratio, "4:3", 3) != 0)
 				continue;
 
+			// dvd_query - limit to active audio tracks
+			if(d_has_audio && !dvd_track.audio_tracks)
+				continue;
+
 			// Display track information
 			printf("Track: %02u ", dvd_track.track);
 			printf("Length: %s ", dvd_track.length);
@@ -698,7 +715,8 @@ int main(int argc, char **argv) {
 				for(c = 0; c < dvd_track.audio_tracks; c++) {
 
 					dvd_audio = dvd_track.dvd_audio_tracks[c];
-					printf("        Audio: %02u Language: %s Codec: %s Channels: %u Stream id: %s Active: %s\n", dvd_audio.track, (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"), dvd_audio.codec, dvd_audio.channels, dvd_audio.stream_id, (dvd_audio.active ? "yes" : "no"));
+					if((!d_ac3_codec && !d_dts_codec) || ((d_ac3_codec && strncmp(dvd_audio.codec, "ac3", 3) == 0) && dvd_audio.active) || ((d_dts_codec && strncmp(dvd_audio.codec, "dts", 3) == 0) && dvd_audio.active))
+						printf("        Audio: %02u Language: %s Codec: %s Channels: %u Stream id: %s Active: %s\n", dvd_audio.track, (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"), dvd_audio.codec, dvd_audio.channels, dvd_audio.stream_id, (dvd_audio.active ? "yes" : "no"));
 
 				}
 
