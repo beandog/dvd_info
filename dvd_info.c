@@ -40,6 +40,13 @@ void print_usage(char *binary) {
 	printf("  -j, --json		Display output in JSON format\n");
 	printf("  -t, --track [number]	Limit to one title track\n");
 	printf("\n");
+	printf("Extra information:\n");
+	printf("  -a, --audio		audio streams\n");
+	printf("  -v, --video		video\n");
+	printf("  -c, --chapters	chapters\n");
+	printf("  -s, --subtitles	subtitles\n");
+	printf("  -d, --cells		cells\n");
+	printf("\n");
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
 	printf("Examples:\n");
@@ -83,10 +90,12 @@ int main(int argc, char **argv) {
 	int d_debug = 0;
 
 	// lsdvd display output
-	int d_lsdvd_angles = 0;
-	int d_lsdvd_chapters = 0;
-	int d_lsdvd_cells = 0;
+	int d_lsdvd_audio = 0;
 	int d_lsdvd_video = 0;
+	int d_lsdvd_chapters = 0;
+	int d_lsdvd_subtitles = 0;
+	int d_lsdvd_cells = 0;
+	int d_lsdvd_all = 0;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -97,7 +106,6 @@ int main(int argc, char **argv) {
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
 	uint8_t c = 0;
-	uint8_t chapter_number = 1;
 
 	// Device hardware
 	int dvd_fd = 0;
@@ -204,13 +212,19 @@ int main(int argc, char **argv) {
 	// I could probably come up with a better variable name. I probably would if
 	// I understood getopt better. :T
 	const char *str_options;
-	str_options = "cdhjknlt:vz";
+	str_options = "acdhjklst:vxz";
 
 	struct option long_options[] = {
 
 		{ "lsdvd", no_argument, & d_lsdvd, 1 },
 		{ "json", no_argument, & d_json, 1 },
 		{ "debug", no_argument, & d_debug, 1 },
+		{ "audio", no_argument, & d_lsdvd_audio, 1 },
+		{ "video", no_argument, & d_lsdvd_video, 1 },
+		{ "chapters", no_argument, & d_lsdvd_chapters, 1 },
+		{ "subtitles", no_argument, & d_lsdvd_subtitles, 1 },
+		{ "cells", no_argument, & d_lsdvd_cells, 1 },
+		{ "all", no_argument, & d_lsdvd_all, 1 },
 
 		// Entries with both a name and a value, will take either the
 		// long option or the short one.  Fex, '--device' or '-i'
@@ -229,6 +243,10 @@ int main(int argc, char **argv) {
 			case 'h':
 				print_usage(program_name);
 				return 0;
+
+			case 'a':
+				d_lsdvd_audio = 1;
+				break;
 
 			case 'c':
 				d_lsdvd_chapters = 1;
@@ -256,8 +274,8 @@ int main(int argc, char **argv) {
 				d_debug = 0;
 				break;
 
-			case 'n':
-				d_lsdvd_angles = 1;
+			case 's':
+				d_lsdvd_subtitles = 1;
 				break;
 
 			case 't':
@@ -267,6 +285,14 @@ int main(int argc, char **argv) {
 
 			case 'v':
 				d_lsdvd_video = 1;
+				break;
+
+			case 'x':
+				d_lsdvd_audio = 1;
+				d_lsdvd_video = 1;
+				d_lsdvd_chapters = 1;
+				d_lsdvd_subtitles = 1;
+				d_lsdvd_cells = 1;
 				break;
 
 			case 'z':
@@ -646,35 +672,43 @@ int main(int argc, char **argv) {
 		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
 			dvd_track = dvd_tracks[track_number - 1];
-			printf("Title: %02u, ", dvd_track.track);
+			printf("Track: %02u ", dvd_track.track);
 			printf("Length: %s ", dvd_track.length);
-			printf("Chapters: %02u, ", dvd_track.chapters);
-			printf("Cells: %02u, ", dvd_track.cells);
-			printf("Audio streams: %02u, ", dvd_track.active_audio);
+			printf("Chapters: %02u ", dvd_track.chapters);
+			printf("Cells: %02u ", dvd_track.cells);
+			printf("Audio streams: %02u ", dvd_track.active_audio);
 			printf("Subpictures: %02u\n", dvd_track.active_subs);
 
-			if(d_lsdvd_chapters && dvd_track.chapters) {
+			// Display video information
+			if(d_lsdvd_video) {
+				printf("	Video format: %s Aspect ratio: %s Width: %u Height: %u Display format: %s FPS: %s Angles: %u\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, display_formats[dvd_video.df], dvd_video.fps, dvd_video.angles);
+			}
 
-				for(c = 0; c < dvd_track.chapters; c++) {
+			// Display audio tracks
+			if(d_lsdvd_audio && dvd_track.audio_tracks) {
 
-					chapter_number = c + 1;
+				for(c = 0; c < dvd_track.audio_tracks; c++) {
 
-					dvd_chapter = dvd_track.dvd_chapters[c];
-
-					printf("	Chapter: %02u, Length: %s, Start Cell: %02u\n", dvd_chapter.chapter, dvd_chapter.length, dvd_chapter.first_cell);
+					dvd_audio = dvd_track.dvd_audio_tracks[c];
+					printf("        Audio: %02u Language: %s Codec: %s Channels: %u Stream id: %s Active: %s\n", dvd_audio.track, (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"), dvd_audio.codec, dvd_audio.channels, dvd_audio.stream_id, (dvd_audio.active ? "yes" : "no"));
 
 				}
 
 			}
 
-			// Display video information
-			if(d_lsdvd_video)
-				printf("	VTS: %02u, TTN: %02u, FPS: %s, Format: %s, Aspect ratio: %s, Width: %u, Height: %u, DF: %s\n", dvd_track.vts, dvd_track.ttn, dvd_video.fps, dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, display_formats[dvd_video.df]);
+
+			// Display chapters
+			if(d_lsdvd_chapters && dvd_track.chapters) {
+
+				for(c = 0; c < dvd_track.chapters; c++) {
+
+					dvd_chapter = dvd_track.dvd_chapters[c];
+					printf("        Chapter: %02u Length: %s\n", dvd_chapter.chapter, dvd_chapter.length);
 
 
-			// Display video angles
-			if(d_lsdvd_angles)
-				printf("	Number of Angles: %u\n", dvd_video.angles);
+				}
+
+			}
 
 			// Display track cells
 			if(d_lsdvd_cells && dvd_track.cells) {
@@ -682,7 +716,7 @@ int main(int argc, char **argv) {
 				for(c = 0; c < dvd_track.cells; c++) {
 
 					dvd_cell = dvd_track.dvd_cells[c];
-					printf("	Cell: %02u, Length: %s First sector: %012u Last sector: %012u\n", dvd_cell.cell, dvd_cell.length, dvd_cell.first_sector, dvd_cell.last_sector);
+					printf("	Cell: %02u Length: %s\n", dvd_cell.cell, dvd_cell.length);
 
 				}
 
