@@ -223,8 +223,6 @@ int dvd_debug(dvd_reader_t *dvdread_dvd) {
 
 	// Check for invalid IFOs
 
-	title_info_t *title_info = NULL;
-	
 	for(title_track = 1; title_track <= title_tracks; title_track++) {
 
 		length_mismatch = false;
