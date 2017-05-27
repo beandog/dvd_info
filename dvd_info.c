@@ -92,12 +92,12 @@ int main(int argc, char **argv) {
 	int d_debug = 0;
 
 	// lsdvd display output
-	int d_lsdvd_audio = 0;
-	int d_lsdvd_video = 0;
-	int d_lsdvd_chapters = 0;
-	int d_lsdvd_subtitles = 0;
-	int d_lsdvd_cells = 0;
-	int d_lsdvd_all = 0;
+	int d_audio = 0;
+	int d_video = 0;
+	int d_chapters = 0;
+	int d_subtitles = 0;
+	int d_cells = 0;
+	int d_all = 0;
 
 	// dvd_query
 	int d_ntsc = 0;
@@ -224,12 +224,12 @@ int main(int argc, char **argv) {
 
 		{ "json", no_argument, & d_json, 1 },
 		{ "debug", no_argument, & d_debug, 1 },
-		{ "audio", no_argument, & d_lsdvd_audio, 1 },
-		{ "video", no_argument, & d_lsdvd_video, 1 },
-		{ "chapters", no_argument, & d_lsdvd_chapters, 1 },
-		{ "subtitles", no_argument, & d_lsdvd_subtitles, 1 },
-		{ "cells", no_argument, & d_lsdvd_cells, 1 },
-		{ "all", no_argument, & d_lsdvd_all, 1 },
+		{ "audio", no_argument, & d_audio, 1 },
+		{ "video", no_argument, & d_video, 1 },
+		{ "chapters", no_argument, & d_chapters, 1 },
+		{ "subtitles", no_argument, & d_subtitles, 1 },
+		{ "cells", no_argument, & d_cells, 1 },
+		{ "all", no_argument, & d_all, 1 },
 
 		// dvd_query
 		{ "ntsc", no_argument, & d_ntsc, 1 },
@@ -254,15 +254,15 @@ int main(int argc, char **argv) {
 				return 0;
 
 			case 'a':
-				d_lsdvd_audio = 1;
+				d_audio = 1;
 				break;
 
 			case 'c':
-				d_lsdvd_chapters = 1;
+				d_chapters = 1;
 				break;
 
 			case 'd':
-				d_lsdvd_cells = 1;
+				d_cells = 1;
 				break;
 
 			case 'j':
@@ -271,7 +271,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 's':
-				d_lsdvd_subtitles = 1;
+				d_subtitles = 1;
 				break;
 
 			case 't':
@@ -280,15 +280,15 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'v':
-				d_lsdvd_video = 1;
+				d_video = 1;
 				break;
 
 			case 'x':
-				d_lsdvd_audio = 1;
-				d_lsdvd_video = 1;
-				d_lsdvd_chapters = 1;
-				d_lsdvd_subtitles = 1;
-				d_lsdvd_cells = 1;
+				d_audio = 1;
+				d_video = 1;
+				d_chapters = 1;
+				d_subtitles = 1;
+				d_cells = 1;
 				break;
 
 			case 'z':
@@ -683,12 +683,12 @@ int main(int argc, char **argv) {
 			printf("Subpictures: %02u\n", dvd_track.active_subs);
 
 			// Display video information
-			if(d_lsdvd_video) {
+			if(d_video) {
 				printf("	Video format: %s Aspect ratio: %s Width: %u Height: %u Display format: %s FPS: %s Angles: %u\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, display_formats[dvd_video.df], dvd_video.fps, dvd_video.angles);
 			}
 
 			// Display audio tracks
-			if(d_lsdvd_audio && dvd_track.audio_tracks) {
+			if(d_audio && dvd_track.audio_tracks) {
 
 				for(c = 0; c < dvd_track.audio_tracks; c++) {
 
@@ -701,7 +701,7 @@ int main(int argc, char **argv) {
 
 
 			// Display chapters
-			if(d_lsdvd_chapters && dvd_track.chapters) {
+			if(d_chapters && dvd_track.chapters) {
 
 				for(c = 0; c < dvd_track.chapters; c++) {
 
@@ -714,7 +714,7 @@ int main(int argc, char **argv) {
 			}
 
 			// Display track cells
-			if(d_lsdvd_cells && dvd_track.cells) {
+			if(d_cells && dvd_track.cells) {
 
 				for(c = 0; c < dvd_track.cells; c++) {
 
