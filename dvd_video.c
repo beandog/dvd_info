@@ -7,10 +7,7 @@ uint8_t dvd_video_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_numbe
 
 	uint8_t angles = vmg_ifo->tt_srpt->title[track_number - 1].nr_of_angles;
 
-	if(angles >= 0)
-		return angles;
-	else
-		return 0;
+	return angles;
 
 }
 
@@ -237,10 +234,7 @@ uint8_t dvd_video_df(const ifo_handle_t *vts_ifo) {
 
 	uint8_t permitted_df = vts_ifo->vtsi_mat->vts_video_attr.permitted_df;
 
-	if(permitted_df >= 0)
-		return permitted_df;
-	else
-		return 0;
+	return permitted_df;
 
 }
 
