@@ -1,5 +1,5 @@
-#ifndef _DVD_XCHAP_H_
-#define _DVD_XCHAP_H_
+#ifndef DVD_INFO_XCHAP_H
+#define DVD_INFO_XCHAP_H
 
 #include "dvd_info.h"
 #include "dvd_track.h"

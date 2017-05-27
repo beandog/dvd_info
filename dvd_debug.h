@@ -1,5 +1,5 @@
-#ifndef _DVD_DEBUG_H_
-#define _DVD_DEBUG_H_
+#ifndef DVD_INFO_DEBUG_H
+#define DVD_INFO_DEBUG_H
 
 #include "dvd_info.h"
 #include "dvd_vmg_ifo.h"

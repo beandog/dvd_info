@@ -1,5 +1,5 @@
-#ifndef _DVD_VMG_IFO_H_
-#define _DVD_VMG_IFO_H_
+#ifndef DVD_INFO_VMG_IFO_H
+#define DVD_INFO_VMG_IFO_H
 
 #include "dvd_info.h"
 #include "dvd_track.h"
@@ -178,5 +178,4 @@ const char *dvd_specification_version(const ifo_handle_t *vmg_ifo);
  */
 // void dvd_info_serial_id(dvdnav_t *dvdnav, char *p);
 
-// _DVD_VMG_IFO_H_
 #endif

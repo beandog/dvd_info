@@ -1,5 +1,5 @@
-#ifndef _DVD_CHAPTER_H_
-#define _DVD_CHAPTER_H_
+#ifndef DVD_INFO_CHAPTER_H
+#define DVD_INFO_CHAPTER_H
 
 #include "dvd_info.h"
 #include "dvd_cell.h"

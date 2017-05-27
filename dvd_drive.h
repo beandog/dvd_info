@@ -1,5 +1,5 @@
-#ifndef _DVD_DRIVE_H_
-#define _DVD_DRIVE_H_
+#ifndef DVD_INFO_DRIVE_H
+#define DVD_INFO_DRIVE_H
 
 #include "dvd_device.h"
 

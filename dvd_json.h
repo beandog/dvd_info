@@ -1,5 +1,5 @@
-#ifndef _DVD_JSON_H_
-#define _DVD_JSON_H_
+#ifndef DVD_INFO_JSON_H
+#define DVD_INFO_JSON_H
 
 #include "dvd_info.h"
 

@@ -1,5 +1,5 @@
-#ifndef _DVD_CELL_H_
-#define _DVD_CELL_H_
+#ifndef DVD_INFO_CELL_H
+#define DVD_INFO_CELL_H
 
 #include "dvd_info.h"
 

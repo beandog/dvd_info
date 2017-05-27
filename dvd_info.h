@@ -1,5 +1,5 @@
-#ifndef _DVD_INFO_H_
-#define _DVD_INFO_H_
+#ifndef DVD_INFO_H
+#define DVD_INFO_H
 
 #include <stdio.h>
 #include <stdbool.h>

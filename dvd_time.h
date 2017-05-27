@@ -1,5 +1,5 @@
-#ifndef _DVD_TIME_H_
-#define _DVD_TIME_H_
+#ifndef DVD_INFO_TIME_H
+#define DVD_INFO_TIME_H
 
 #include "dvd_info.h"
 #include "dvd_track.h"

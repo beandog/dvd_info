@@ -1,5 +1,5 @@
-#ifndef _DVD_VIDEO_H_
-#define _DVD_VIDEO_H_
+#ifndef DVD_INFO_VIDEO_H
+#define DVD_INFO_VIDEO_H
 
 #include "dvd_info.h"
 #include "dvd_track.h"
