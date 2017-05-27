@@ -9,8 +9,10 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include <inttypes.h>
+#ifdef __linux__
 #include <linux/cdrom.h>
-#include <linux/limits.h>
+#include "dvd_drive.h"
+#endif
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 #include "dvd_info.h"
@@ -213,45 +215,37 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	// Check to see if device can be opened
 	int dvd_fd = 0;
-	int drive_status;
-
-	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
+	dvd_fd = dvd_device_open(device_filename);
 	if(dvd_fd < 0) {
-		fprintf(stderr, "error opening %s\n", device_filename);
+		fprintf(stderr, "dvd_copy: error opening %s\n", device_filename);
 		return 1;
 	}
-	drive_status = ioctl(dvd_fd, CDROM_DRIVE_STATUS);
-	close(dvd_fd);
+	dvd_device_close(dvd_fd);
+
+
+#ifdef __linux__
+
+	// Check if it is hardware or an image file
+	bool is_hardware = dvd_device_is_hardware(device_filename);
 
 	// Poll drive status if it is hardware
-	bool is_hardware = false;
-
-	if(strncmp(device_filename, "/dev/", 5) == 0)
-		is_hardware = true;
-
 	if(is_hardware) {
 
-		if(drive_status != CDS_DISC_OK) {
+		// Wait for the drive to become ready
+		if(!dvd_drive_has_media(device_filename)) {
 
-			switch(drive_status) {
-				case 1:
-					fprintf(stderr, "DVD drive %s has no disc\n", device_filename);
-					break;
-				case 2:
-					fprintf(stderr, "DVD drive %s reports tray as open\n", device_filename);
-					break;
-				case 3:
-					fprintf(stderr, "DVD drive %s reports as not ready\n", device_filename);
-					break;
-				default:
-					fprintf(stderr, "Cannot poll DVD drive %s\n", device_filename);
-					break;
-			}
+			fprintf(stderr, "drive status: ");
+			dvd_drive_display_status(device_filename);
 
 			return 1;
+
 		}
+
 	}
+
+#endif
 
 	dvd_reader_t *dvdread_dvd = NULL;
 	dvdread_dvd = DVDOpen(device_filename);
