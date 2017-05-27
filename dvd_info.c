@@ -102,9 +102,6 @@ int main(int argc, char **argv) {
 	// Device hardware
 	int dvd_fd = 0;
 	const char *device_filename = NULL;
-	useconds_t sleepy_time = 1000000;
-	uint8_t num_naps = 0;
-	uint8_t max_num_naps = 60;
 	bool is_hardware = false;
 
 	// libdvdread
@@ -337,29 +334,13 @@ int main(int argc, char **argv) {
 			fprintf(stderr, "drive status: ");
 			dvd_drive_display_status(device_filename);
 
-			fprintf(stderr, "waiting for media, will give up after one minute\n");
-			while(!dvd_drive_has_media(device_filename) && (num_naps < max_num_naps)) {
-				usleep(sleepy_time);
-				num_naps = num_naps + 1;
-
-				// This is slightly annoying, even for me.
-				fprintf(stderr, "%i ", num_naps);
-
-				// Tired of waiting, exiting out
-				if(num_naps == max_num_naps) {
-					fprintf(stderr, "\n");
-					fprintf(stderr, "tired of waiting for media, quitting\n");
-					return 1;
-				}
-
-			}
+			return 1;
 
 		}
 
 	}
 
 #endif
-
 
 	// begin libdvdread usage
 
