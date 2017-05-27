@@ -123,8 +123,6 @@ uint16_t dvd_video_height(const ifo_handle_t *vts_ifo) {
 
 	if(picture_size == 3 && video_height > 0) {
 		video_height = video_height / 2;
-		if(video_height < 0)
-			video_height = 0;
 	}
 
 	return video_height;
