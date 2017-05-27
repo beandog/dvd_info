@@ -11,7 +11,7 @@
 #include <dvdcss/dvdcss.h>
 // #include <dvdread/dvd_reader.h>
 
-#define DEFAULT_DVD_DEVICE "/dev/dvd"
+#define DEFAULT_DVD_DEVICE "/dev/sr0"
 
 /**
  * dvd_eject.c
