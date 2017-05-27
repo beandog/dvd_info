@@ -13,10 +13,7 @@ uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo) {
 
 	uint8_t subtitles = vts_ifo->vtsi_mat->nr_of_vts_subp_streams;
 
-	if(subtitles >= 0)
-		return subtitles;
-	else
-		return 0;
+	return subtitles;
 
 }
 
