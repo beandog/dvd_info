@@ -3,7 +3,7 @@ dvd_info
 
 Very small set of C programs for querying DVDs on Linux
 
-* dvd_info - a clone of lsdvd
+* dvd_info - display information about a DVD (similar to lsdvd), with advanced querying options
 * dvd_json - dvd_info output in JSON format
 * dvd_drive_status - display DVD drive status: opened, closed, waiting, no disc, has disc
 * dvd_eject - eject or close a DVD tray with special options
