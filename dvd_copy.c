@@ -295,7 +295,7 @@ int main(int argc, char **argv) {
 	struct dvd_track dvd_track;
 	memset(&dvd_track, 0, sizeof(dvd_track));
 
-	struct dvd_track dvd_tracks[dvd_info.tracks];
+	struct dvd_track dvd_tracks[DVD_MAX_TRACKS];
 	memset(&dvd_tracks, 0, sizeof(dvd_track) * dvd_info.tracks);
 
 	// Cells
@@ -318,7 +318,7 @@ int main(int argc, char **argv) {
 	vts_ifo = NULL;
 
 	// Create an array of all the IFOs
-	ifo_handle_t *vts_ifos[dvd_info.video_title_sets + 1];
+	ifo_handle_t *vts_ifos[DVD_MAX_VTS_IFOS];
 	vts_ifos[0] = NULL;
 
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
