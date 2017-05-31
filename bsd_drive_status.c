@@ -21,6 +21,7 @@
  * 1 - ran with errors
  * 2 - drive is closed with no disc OR drive is open
  * 3 - drive is closed with a disc
+ * 4 - drive is loading
  *
  * To compile:
  * gcc -o dvd_drive_status bsd_drive_status.c -lutil -ldvdread -L/usr/local/lib -I/usr/local/include
@@ -67,13 +68,23 @@ int main(int argc, char **argv) {
 	fd_block_device = open(DVD_INFO_DEFAULT_DVD_BLOCK_DEVICE, O_RDONLY);
 	if(fd_block_device < 0) {
 
-		if(fd_block_device == -1 && errno == 5) {
+		if(errno == 5) {
 			printf("drive is closed with no disc OR drive is open\n");
 			close(fd_raw_device);
 			return 2;
+		} else if(errno == ENXIO) {
+		// I haven't been able to duplicate these other states reliably, but they do happen :T
+			printf("drive closed with no disc\n");
+			close(fd_raw_device);
+			return 2;
+		} else if(errno == EIO) {
+			printf("drive is loading\n");
+			close(fd_raw_device);
+			return 4;
+		} else {
+			printf("something unexpected happnd ... send a bug report! returned errno: %i\n", errno);
+			return errno;
 		}
-
-		return 1;
 
 	} else if(fd_block_device && errno == 0) {
 
