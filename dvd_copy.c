@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
 	 * Parse options
 	 */
 
-	bool copy_tracks = false;
+	bool copy_tracks = true;
 	bool copy_cells = false;
 	bool opt_track_number = false;
 	int arg_track_number = 0;
