@@ -21,7 +21,6 @@
  * 1 - ran with errors
  * 2 - drive is closed with no disc OR drive is open
  * 3 - drive is closed with a disc
- * 4 - drive is loading
  *
  * To compile:
  * gcc -o dvd_drive_status bsd_drive_status.c -lutil -ldvdread -L/usr/local/lib -I/usr/local/include
@@ -79,8 +78,6 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// Open the raw block device before the filesystem, to avoid
-	// throwing a SCSI error to the syslog
 	int fd_raw_device;
 
 	fd_raw_device = open(raw_device, O_RDONLY);
@@ -95,55 +92,29 @@ int main(int argc, char **argv) {
 	fd_block_device = open(block_device, O_RDONLY);
 
 	if(fd_block_device < 0) {
-
-<<<<<<< HEAD
 		if(errno == EIO) {
-			printf("%s: EIO drive is closed with no disc OR drive is open\n", raw_device);
-			close(fd_raw_device);
-			return 2;
-		} else if(errno == ENXIO) {
-		// I haven't been able to duplicate this one
-			printf("%s: ENXIO drive closed with no disc\n", raw_device);
-			close(fd_raw_device);
-			return 2;
-		// Or this one
-		} else if(errno == ENOMEDIUM) {
-			printf("%s: ENOMEDIUM no medium found\n", raw_device);
-			close(fd_raw_device);
-			return 2;
-		} else {
-			printf("%s: something unexpected happnd ... send a bug report! returned errno: %i\n", raw_device, errno);
-			return 1;
-=======
-		if(errno == 5) {
 			printf("drive is closed with no disc OR drive is open\n");
 			close(fd_raw_device);
 			return 2;
-		} else if(errno == ENXIO) {
-		// I haven't been able to duplicate these other states reliably, but they do happen :T
+		// I've somehow thrown this error a few times, but don't know how :| 
+		} else if(errno == ENXIO || errno == ENOMEDIUM) {
 			printf("drive closed with no disc\n");
 			close(fd_raw_device);
 			return 2;
-		} else if(errno == EIO) {
-			printf("drive is loading\n");
-			close(fd_raw_device);
-			return 4;
 		} else {
-			printf("something unexpected happnd ... send a bug report! returned errno: %i\n", errno);
-			return errno;
->>>>>>> 202ca4fbf196307cf9943ff6ab451ebddb25a676
-		}
-
-	} else if(fd_block_device && errno == 0) {
-
-		if(DVDOpen(block_device)) {
-
-			printf("%s: drive closed with disc\n", raw_device);
 			close(fd_raw_device);
-			close(fd_block_device);
-			return 3;
-
+			printf("something unexpected happnd ... send a bug report! returned errno: %i\n", errno);
+			return 1;
 		}
+
+	}
+
+	if(DVDOpen(block_device)) {
+
+		printf("drive closed with disc\n");
+		close(fd_raw_device);
+		close(fd_block_device);
+		return 3;
 
 	}
 
