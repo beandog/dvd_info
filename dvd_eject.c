@@ -76,7 +76,6 @@
 int drive_status(const int cdrom);
 bool has_media(const int cdrom);
 bool is_open(const int cdrom);
-bool is_closed(const int cdrom);
 bool is_ready(const int cdrom);
 int open_tray(const int cdrom);
 int close_tray(const int cdrom);
@@ -356,17 +355,6 @@ bool has_media(const int cdrom) {
 bool is_open(const int cdrom) {
 
 	if(drive_status(cdrom) == CDS_TRAY_OPEN)
-		return true;
-	else
-		return false;
-
-}
-
-bool is_closed(const int cdrom) {
-
-	int status = drive_status(cdrom);
-
-	if(status == CDS_NO_DISC || status == CDS_DISC_OK)
 		return true;
 	else
 		return false;
