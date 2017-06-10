@@ -6,11 +6,11 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/cdio.h>
-#ifdef __NetBSD__
 #include <sys/ioctl.h>
-#endif
 
-#ifdef __NetBSD__
+#ifdef __FreeBSD__
+#define DEFAULT_DVD_DEVICE "/dev/cd0"
+#elif __NetBSD__
 #define DEFAULT_DVD_DEVICE "/dev/rcd0d"
 #elif __OpenBSD__
 #define DEFAULT_DVD_DEVICE "/dev/rcd0c"
@@ -61,7 +61,10 @@ int main(int argc, char **argv) {
 
 	int retval = 0;
         if(eject_device) {
-#ifdef __NetBSD__
+
+#ifdef __FreeBSD__
+		retval = ioctl(cdrom, CDIOCEJECT);
+#elif __NetBSD__
 	int arg = 0;
 		retval = ioctl(cdrom, DIOCEJECT, &arg);
 #else
