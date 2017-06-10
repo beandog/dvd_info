@@ -6,18 +6,19 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
-#include <util.h>
 #include <dvdread/dvd_reader.h>
-
-#ifdef __OpenBSD__
-#define DVD_INFO_DEFAULT_DVD_RAW_DEVICE "/dev/rcd0c"
-#endif
 
 /**
  * bsd_drive_status.c
-
  * Get the status of a DVD drive tray
- *
+ */
+
+
+#ifdef __OpenBSD__
+#include <util.h>
+#define DVD_INFO_DEFAULT_DVD_RAW_DEVICE "/dev/rcd0c"
+
+/*
  *   ___                   ____ ____  ____  
  *  / _ \ _ __   ___ _ __ | __ ) ___||  _ \
  * | | | | '_ \ / _ \ '_ \|  _ \___ \| | | |
@@ -26,7 +27,7 @@
  *       |_|                                
  *  
  * To compile:
- * gcc -o dvd_drive_status bsd_drive_status.c -lutil -ldvdread -L/usr/local/lib -I/usr/local/include
+ * gcc -o dvd_drive_status bsd_drive_status.c -I/usr/local/include -L/usr/local/lib -ldvdread -lutil
  *
  * Exit codes:
  * 0 - ran succesfully
@@ -44,9 +45,11 @@
  *    ASC/ASCQ: Medium Not Present
  */
 
-#ifdef __NetBSD__
-#define DVD_INFO_DEFAULT_DVD_RAW_DEVICE "/dev/rcd0d"
 #endif
+
+#ifdef __NetBSD__
+#include <util.h>
+#define DVD_INFO_DEFAULT_DVD_RAW_DEVICE "/dev/rcd0d"
 
 /*
  *  _   _      _   ____ ____  ____  
@@ -60,6 +63,25 @@
  * gcc -o dvd_drive_status bsd_drive_status.c -I/usr/pkg/include -Wl,-R/usr/pkg/lib -L/usr/pkg/lib -ldvdread -lutil
  *
  */
+
+#endif
+
+#ifdef __FreeBSD__
+#define DVD_INFO_DEFAULT_DVD_RAW_DEVICE "/dev/cd0"
+
+/*
+ *  _____              ____ ____  ____  
+ * |  ___| __ ___  ___| __ ) ___||  _ \
+ * | |_ | '__/ _ \/ _ \  _ \___ \| | | |
+ * |  _|| | |  __/  __/ |_) |__) | |_| |
+ * |_|  |_|  \___|\___|____/____/|____/ 
+ *
+ *
+ * To compile:
+ * gcc -o dvd_drive_status bsd_drive_status.c -I/usr/local/include -L/usr/local/lib -ldvdread
+ */
+  
+#endif
 
 int main(int argc, char **argv) {
 
