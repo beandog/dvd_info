@@ -61,8 +61,6 @@
 
 #define DVD_CELL_LENGTH 12
 
-void print_usage(char *binary);
-
 struct dvd_info {
 	char dvdread_id[DVD_DVDREAD_ID + 1];
 	uint16_t video_title_sets;
@@ -159,5 +157,7 @@ struct dvd_track {
 };
 
 int main(int argc, char **argv);
+
+void print_usage(char *binary);
 
 #endif
