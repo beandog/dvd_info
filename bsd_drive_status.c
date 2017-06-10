@@ -9,21 +9,30 @@
 #include <util.h>
 #include <dvdread/dvd_reader.h>
 
+#ifdef __OpenBSD__
 #define DVD_INFO_DEFAULT_DVD_RAW_DEVICE "/dev/rcd0c"
+#endif
 
 /**
  * bsd_drive_status.c
+
+ * Get the status of a DVD drive tray
  *
- * Get the status of a DVD drive tray (OpenBSD port)
+ *   ___                   ____ ____  ____  
+ *  / _ \ _ __   ___ _ __ | __ ) ___||  _ \
+ * | | | | '_ \ / _ \ '_ \|  _ \___ \| | | |
+ * | |_| | |_) |  __/ | | | |_) |__) | |_| |
+ *  \___/| .__/ \___|_| |_|____/____/|____/ 
+ *       |_|                                
  *  
+ * To compile:
+ * gcc -o dvd_drive_status bsd_drive_status.c -lutil -ldvdread -L/usr/local/lib -I/usr/local/include
+ *
  * Exit codes:
  * 0 - ran succesfully
  * 1 - ran with errors
  * 2 - drive is closed with no disc OR drive is open
  * 3 - drive is closed with a disc
- *
- * To compile:
- * gcc -o dvd_drive_status bsd_drive_status.c -lutil -ldvdread -L/usr/local/lib -I/usr/local/include
  *
  * OpenBSD's kernel doesn't seem to have a 'polling' status for the drive,
  * because it doesn't allow opening the raw device while it's in that state.
@@ -33,6 +42,22 @@
  * cd0(atapiscsi0:0:0): Check Condition (error 0x70) on opcode 0x0
  *   SENSE KEY: Not Ready
  *    ASC/ASCQ: Medium Not Present
+ */
+
+#ifdef __NetBSD__
+#define DVD_INFO_DEFAULT_DVD_RAW_DEVICE "/dev/rcd0d"
+#endif
+
+/*
+ *  _   _      _   ____ ____  ____  
+ * | \ | | ___| |_| __ ) ___||  _ \
+ * |  \| |/ _ \ __|  _ \___ \| | | |
+ * | |\  |  __/ |_| |_) |__) | |_| |
+ * |_| \_|\___|\__|____/____/|____/ 
+ *                                
+ * 
+ * To compile:
+ * gcc -o dvd_drive_status bsd_drive_status.c -I/usr/pkg/include -Wl,-R/usr/pkg/lib -L/usr/pkg/lib -ldvdread -lutil
  *
  */
 
@@ -97,10 +122,12 @@ int main(int argc, char **argv) {
 			close(fd_raw_device);
 			return 2;
 		// I've somehow thrown this error a few times, but don't know how :| 
+		/*
 		} else if(errno == ENXIO || errno == ENOMEDIUM) {
 			printf("drive closed with no disc\n");
 			close(fd_raw_device);
 			return 2;
+		*/
 		} else {
 			close(fd_raw_device);
 			printf("something unexpected happnd ... send a bug report! returned errno: %i\n", errno);
