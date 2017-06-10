@@ -29,56 +29,8 @@
 #define VERSION "1.0"
 #endif
 
-void print_usage(char *binary) {
+void print_usage(char *binary);
 
-	printf("%s %s - display information about a DVD\n", binary, VERSION);
-	printf("\n");
-	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
-	printf("\n");
-	printf("Options:\n");
-	printf("  -t, --track [number]	Limit to one title track\n");
-	printf("\n");
-	printf("Extra information:\n");
-	printf("  -a, --audio		audio streams\n");
-	printf("  -v, --video		video\n");
-	printf("  -c, --chapters	chapters\n");
-	printf("  -s, --subtitles	subtitles\n");
-	printf("  -d, --cells		cells\n");
-	printf("\n");
-	printf("Track with video features:\n");
-	printf("  --ntsc		Video format is NTSC\n");
-	printf("  --pal			Video format is PAL\n");
-	printf("  --aspect-16x9		Video aspect ratio is 16:9\n");
-	printf("  --aspect-4x3	 	Video aspect ratio is 4:3\n");
-	printf("\n");
-	printf("Track with audio features:\n");
-	printf("  --has-audio		Audio tracks present\n");
-	printf("\n");
-	printf("Track with subtitle features:\n");
-	printf("  --has-subtitles	Subtitle tracks present\n");
-	printf("\n");
-	printf("Audio tracks with codec:\n");
-	printf("  --ac3-codec		Audio track is Dolby Digital\n");
-	printf("  --dts-codec		Audio track is DTS\n");
-	printf("\n");
-	printf("Track with misc. options:\n");
-	printf("  --skip-empty		Skip empty tracks\n");
-	printf("\n");
-	printf("DVD path can be a directory, a device filename, or a local file.\n");
-	printf("\n");
-	printf("Examples:\n");
-	printf("  dvd_info /dev/dvd	# Read a DVD drive directly\n");
-	printf("  dvd_info movie.iso	# Read an image file\n");
-	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
-	printf("\n");
-	printf("Default output is similar in syntax to 'lsdvd' program, and is\n");
-	printf("not as verbose as JSON's format.\n");
-	printf("\n");
-	printf("If no DVD path is given, %s is used in its place.\n", DEFAULT_DVD_DEVICE);
-	printf("\n");
-	printf("See 'man dvd_info' for more details, or http://dvds.beandog.org/\n");
-
-}
 
 int main(int argc, char **argv) {
 
@@ -792,5 +744,56 @@ int main(int argc, char **argv) {
 		DVDClose(dvdread_dvd);
 
 	return 0;
+
+}
+
+void print_usage(char *binary) {
+
+	printf("%s %s - display information about a DVD\n", binary, VERSION);
+	printf("\n");
+	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
+	printf("\n");
+	printf("Options:\n");
+	printf("  -t, --track [number]	Limit to one title track\n");
+	printf("\n");
+	printf("Extra information:\n");
+	printf("  -a, --audio		audio streams\n");
+	printf("  -v, --video		video\n");
+	printf("  -c, --chapters	chapters\n");
+	printf("  -s, --subtitles	subtitles\n");
+	printf("  -d, --cells		cells\n");
+	printf("\n");
+	printf("Track with video features:\n");
+	printf("  --ntsc		Video format is NTSC\n");
+	printf("  --pal			Video format is PAL\n");
+	printf("  --aspect-16x9		Video aspect ratio is 16:9\n");
+	printf("  --aspect-4x3	 	Video aspect ratio is 4:3\n");
+	printf("\n");
+	printf("Track with audio features:\n");
+	printf("  --has-audio		Audio tracks present\n");
+	printf("\n");
+	printf("Track with subtitle features:\n");
+	printf("  --has-subtitles	Subtitle tracks present\n");
+	printf("\n");
+	printf("Audio tracks with codec:\n");
+	printf("  --ac3-codec		Audio track is Dolby Digital\n");
+	printf("  --dts-codec		Audio track is DTS\n");
+	printf("\n");
+	printf("Track with misc. options:\n");
+	printf("  --skip-empty		Skip empty tracks\n");
+	printf("\n");
+	printf("DVD path can be a directory, a device filename, or a local file.\n");
+	printf("\n");
+	printf("Examples:\n");
+	printf("  dvd_info /dev/dvd	# Read a DVD drive directly\n");
+	printf("  dvd_info movie.iso	# Read an image file\n");
+	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
+	printf("\n");
+	printf("Default output is similar in syntax to 'lsdvd' program, and is\n");
+	printf("not as verbose as JSON's format.\n");
+	printf("\n");
+	printf("If no DVD path is given, %s is used in its place.\n", DEFAULT_DVD_DEVICE);
+	printf("\n");
+	printf("See 'man dvd_info' for more details, or http://dvds.beandog.org/\n");
 
 }
