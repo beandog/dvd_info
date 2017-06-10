@@ -8,12 +8,14 @@
 #include <sys/cdio.h>
 #include <sys/ioctl.h>
 
-#ifdef __FreeBSD__
+#if defined (__FreeBSD__)
 #define DEFAULT_DVD_DEVICE "/dev/cd0"
-#elif __NetBSD__
+#elif defined (__NetBSD__)
 #define DEFAULT_DVD_DEVICE "/dev/rcd0d"
-#elif __OpenBSD__
+#elif defined (__OpenBSD__)
 #define DEFAULT_DVD_DEVICE "/dev/rcd0c"
+#else
+#define DEFAULT_DVD_DEVICE "/dev/dvd"
 #endif
 
 void print_usage(void);
@@ -61,14 +63,13 @@ int main(int argc, char **argv) {
 
 	int retval = 0;
         if(eject_device) {
-
-#ifdef __FreeBSD__
+#if defined (__FreeBSD__) || defined (__OpenBSD__)
 		retval = ioctl(cdrom, CDIOCEJECT);
-#elif __NetBSD__
-	int arg = 0;
+#if defined (__NetBSD__)
+		int arg = 0;
 		retval = ioctl(cdrom, DIOCEJECT, &arg);
 #else
-		retval = ioctl(cdrom, DIOCEJECT);
+		retval = ioctl(cdrom, CDIOCEJECT);
 #endif
 	} else {
 		retval = ioctl(cdrom, CDIOCCLOSE);
