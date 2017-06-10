@@ -356,7 +356,7 @@ int main(int argc, char **argv) {
 	ssize_t cell_blocks_written = 0;
 	ssize_t track_blocks_written = 0;
 	ssize_t bytes_written = 0;
-	uint32_t cell_sectors;
+	uint32_t cell_sectors = 0;
 
 	unsigned char *dvd_read_buffer = NULL;
 	dvd_read_buffer = (unsigned char *)calloc(1, (uint64_t)DVD_COPY_BYTES_LIMIT * sizeof(unsigned char));
