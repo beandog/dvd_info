@@ -17,13 +17,17 @@ dnl so they are ignored on other operating systems.
 AC_CANONICAL_HOST
 case "$host_os" in
   linux*)
-    dvd_drive_tools=yes
+    linux_drive_tools=yes
+    ;;
+  netbsd*)
+    bsd_drive_tools=yes
     ;;
   *)
     dvd_drive_tools=no
     ;;
 esac
-AM_CONDITIONAL([DVD_DRIVE_TOOLS], [test x$dvd_drive_tools = xyes])
+AM_CONDITIONAL([LINUX_DRIVE_TOOLS], [test x$linux_drive_tools = xyes])
+AM_CONDITIONAL([BSD_DRIVE_TOOLS], [test x$bsd_drive_tools = xyes])
 
 AC_CONFIG_FILES([Makefile])
 
