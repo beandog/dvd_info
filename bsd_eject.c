@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
         if(eject_device) {
 #if defined (__FreeBSD__) || defined (__OpenBSD__)
 		retval = ioctl(cdrom, CDIOCEJECT);
-#if defined (__NetBSD__)
+#elif defined (__NetBSD__)
 		int arg = 0;
 		retval = ioctl(cdrom, DIOCEJECT, &arg);
 #else
