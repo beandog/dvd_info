@@ -68,6 +68,7 @@ int main(int argc, char **argv) {
 	int d_all = 0;
 
 	// dvd_query
+	bool dvd_query = false;
 	int d_ntsc = 0;
 	int d_pal = 0;
 	int d_aspect_16x9 = 0;
@@ -219,7 +220,6 @@ int main(int argc, char **argv) {
 		// long option or the short one.  Fex, '--device' or '-i'
 		{ "track", required_argument, 0, 't' },
 
-
 		{ 0, 0, 0, 0 }
 
 	};
@@ -296,6 +296,10 @@ int main(int argc, char **argv) {
 	// Exit after all invalid input warnings have been sent
 	if(valid_args == false)
 		return 1;
+	
+	// Toggle if a custom query is run
+	if(d_ntsc || d_pal || d_aspect_16x9 || d_aspect_4x3 || d_has_audio || d_ac3_codec || d_dts_codec || d_has_subtitles)
+		dvd_query = true;
 
 	/** Begin dvd_info :) */
 
@@ -631,7 +635,8 @@ int main(int argc, char **argv) {
 	 */
 	if(p_dvd_info) {
 
-		printf("Disc Title: %s\n", dvd_info.title);
+		if(!dvd_query)
+			printf("Disc Title: %s\n", dvd_info.title);
 
 		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
@@ -717,7 +722,7 @@ int main(int argc, char **argv) {
 		}
 
 
-		if(d_all_tracks)
+		if(d_all_tracks && !dvd_query)
 			printf("Longest track: %02u\n", dvd_info.longest_track);
 
 	}
@@ -763,24 +768,18 @@ void print_usage(char *binary) {
 	printf("  -s, --subtitles	subtitles\n");
 	printf("  -d, --cells		cells\n");
 	printf("\n");
-	printf("Track with video features:\n");
+	printf("Limit displayed tracks based on specific features:\n");
 	printf("  --ntsc		Video format is NTSC\n");
 	printf("  --pal			Video format is PAL\n");
 	printf("  --aspect-16x9		Video aspect ratio is 16:9\n");
 	printf("  --aspect-4x3	 	Video aspect ratio is 4:3\n");
-	printf("\n");
-	printf("Track with audio features:\n");
 	printf("  --has-audio		Audio tracks present\n");
-	printf("\n");
-	printf("Track with subtitle features:\n");
-	printf("  --has-subtitles	Subtitle tracks present\n");
-	printf("\n");
-	printf("Audio tracks with codec:\n");
-	printf("  --ac3-codec		Audio track is Dolby Digital\n");
-	printf("  --dts-codec		Audio track is DTS\n");
-	printf("\n");
-	printf("Track with misc. options:\n");
-	printf("  --skip-empty		Skip empty tracks\n");
+	// printf("  --has-audio-lang [en]	Audio language track\n");
+	printf("  --has-subtitles  	Subtitle tracks present\n");
+	// printf("  --has-subs-lang [en]	Subtitle language track\n");
+	printf("  --ac3-codec		Dolby Digital audio tracks\n");
+	printf("  --dts-codec		DTS audio tracks\n");
+	printf("  --show-empty		Include \"empty\" tracks hidden by default with any query\n");
 	printf("\n");
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
@@ -790,7 +789,7 @@ void print_usage(char *binary) {
 	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
 	printf("\n");
 	printf("Default output is similar in syntax to 'lsdvd' program, and is\n");
-	printf("not as verbose as JSON's format.\n");
+	printf("not as verbose as JSON's format (see dvd_json).\n");
 	printf("\n");
 	printf("If no DVD path is given, %s is used in its place.\n", DEFAULT_DVD_DEVICE);
 	printf("\n");
