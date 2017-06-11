@@ -19,7 +19,11 @@
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
 #endif
 
-#include "dvd_info.h"
+#include <fcntl.h>
+#include <stdbool.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
 
 bool dvd_device_access(const char *device_filename);
 

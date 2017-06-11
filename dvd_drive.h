@@ -1,6 +1,7 @@
 #ifndef DVD_INFO_DRIVE_H
 #define DVD_INFO_DRIVE_H
 
+#include <stdio.h>
 #include "dvd_device.h"
 
 int dvd_drive_get_status(const char *device_filename);
