@@ -38,18 +38,12 @@ int main(int argc, char **argv) {
 	bool p_dvd_info = false;
 	bool p_dvd_xchap = false;
 	bool p_dvd_debug = false;
-	bool p_dvd_id = false;
-	bool p_dvd_title = false;
 	bool p_dvd_json = false;
 	char *program_name = basename(argv[0]);
 	if(strncmp("dvd_xchap", program_name, 8) == 0)
 		p_dvd_xchap = true;
-	else if(strncmp("dvd_id", program_name, 6) == 0)
-		p_dvd_id = true;
 	else if(strncmp("dvd_debug", program_name, 9) == 0)
 		p_dvd_debug = true;
-	else if(strncmp("dvd_title", program_name, 9) == 0)
-		p_dvd_title = true;
 	else
 		p_dvd_info = true;
 	int retval = 0;
@@ -352,20 +346,6 @@ int main(int argc, char **argv) {
 	if(strlen(dvdread_id) == 0) {
 		fprintf(stderr, "%s: Opening DVD %s failed\n", program_name, device_filename);
 		return 1;
-	}
-
-	// dvd_id program
-	if(p_dvd_id) {
-		printf("%s\n", dvdread_id);
-		DVDClose(dvdread_dvd);
-		return 0;
-	}
-
-	// dvd_title program
-	if(p_dvd_title) {
-		printf("%s\n", dvd_title(device_filename));
-		DVDClose(dvdread_dvd);
-		return 0;
 	}
 
 	// Open VMG IFO -- where all the cool stuff is
