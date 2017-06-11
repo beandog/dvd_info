@@ -11,6 +11,7 @@
 #include "dvd_info.h"
 #include "dvd_device.h"
 #include "dvd_vmg_ifo.h"
+#include "dvd_vts.h"
 #include "dvd_track.h"
 #include "dvd_chapter.h"
 #include "dvd_cell.h"
@@ -19,6 +20,7 @@
 #include "dvd_subtitles.h"
 #include "dvd_time.h"
 #include "dvd_json.h"
+#include "dvd_vob.h"
 #include "dvd_xchap.h"
 #include "dvd_debug.h"
 #ifdef __linux__

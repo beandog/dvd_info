@@ -4,6 +4,13 @@
 #include "dvd_info.h"
 #include "dvd_track.h"
 
+struct dvd_subtitle {
+	uint8_t track;
+	uint8_t active;
+	char stream_id[DVD_SUBTITLE_STREAM_ID + 1];
+	char lang_code[DVD_SUBTITLE_LANG_CODE + 1];
+};
+
 uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo);
 
 uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track);

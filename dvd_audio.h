@@ -3,6 +3,15 @@
 
 #include "dvd_track.h"
 
+struct dvd_audio {
+	uint8_t track;
+	uint8_t active;
+	char stream_id[DVD_AUDIO_STREAM_ID + 1];
+	char lang_code[DVD_AUDIO_LANG_CODE + 1];
+	char codec[DVD_AUDIO_CODEC + 1];
+	uint8_t channels;
+};
+
 uint8_t dvd_track_audio_tracks(const ifo_handle_t *vts_ifo);
 
 uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track);
