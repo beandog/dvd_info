@@ -13,21 +13,6 @@
 #include <dvdread/dvd_udf.h>
 #include <dvdread/ifo_read.h>
 
-// Default DVD device
-#ifdef __linux__
-#include <linux/cdrom.h>
-#define DEFAULT_DVD_DEVICE "/dev/sr0"
-#elif __FreeBSD__ || __DragonFly__
-#define DEFAULT_DVD_DEVICE "/dev/acd0"
-#elif __NetBSD__
-#define DEFAULT_DVD_DEVICE "/dev/cd0d"
-#elif __OpenBSD__
-#define DEFAULT_DVD_DEVICE "/dev/cd0c"
-#elif __APPLE__ && __MACH__
-#define DEFAULT_DVD_DEVICE "/dev/disk1"
-#else
-#define DEFAULT_DVD_DEVICE "/dev/dvd"
-#endif
 
 // String lengths for DVD metadata
 #define DVD_TITLE 32
