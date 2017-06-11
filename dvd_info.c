@@ -50,8 +50,6 @@ int main(int argc, char **argv) {
 		p_dvd_debug = true;
 	else if(strncmp("dvd_title", program_name, 9) == 0)
 		p_dvd_title = true;
-	else if(strncmp("dvd_json", program_name, 8) == 0)
-		p_dvd_json = true;
 	else
 		p_dvd_info = true;
 	int retval = 0;
@@ -190,7 +188,7 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	// Send 'invalid argument' to stderr
 	opterr = 1;
-	const char p_short_opts[] = "acdhst:vxz";
+	const char p_short_opts[] = "acdhjst:vxz";
 
 	struct option p_long_opts[] = {
 
@@ -201,6 +199,7 @@ int main(int argc, char **argv) {
 		{ "subtitles", no_argument, NULL, 's' },
 		{ "cells", no_argument, NULL, 'd' },
 		{ "all", no_argument, NULL, 'x' },
+		{ "json", no_argument, NULL, 'j' },
 		{ "track", required_argument, NULL, 't' },
 
 		// dvd_query
@@ -241,6 +240,11 @@ int main(int argc, char **argv) {
 
 			case 'd':
 				d_cells = 1;
+				break;
+
+			case 'j':
+				p_dvd_json = true;
+				p_dvd_info = false;
 				break;
 
 			case 's':

@@ -35,7 +35,6 @@ install-exec-hook:
 	$(LN_S) -f $(DESTDIR)$(bindir)/dvd_info $(DESTDIR)$(bindir)/dvd_xchap
 	$(LN_S) -f $(DESTDIR)$(bindir)/dvd_info $(DESTDIR)$(bindir)/dvd_id
 	$(LN_S) -f $(DESTDIR)$(bindir)/dvd_info $(DESTDIR)$(bindir)/dvd_title
-	$(LN_S) -f $(DESTDIR)$(bindir)/dvd_info $(DESTDIR)$(bindir)/dvd_json
 
 uninstall:
 	-rm $(DESTDIR)$(bindir)/dvd_info
@@ -43,7 +42,6 @@ uninstall:
 	-rm $(DESTDIR)$(bindir)/dvd_xchap
 	-rm $(DESTDIR)$(bindir)/dvd_id
 	-rm $(DESTDIR)$(bindir)/dvd_title
-	-rm $(DESTDIR)$(bindir)/dvd_json
 if LINUX_DRIVE_TOOLS
 	-rm $(DESTDIR)$(bindir)/dvd_eject
 	-rm $(DESTDIR)$(bindir)/dvd_drive_status
