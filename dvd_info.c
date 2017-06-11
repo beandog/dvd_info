@@ -667,6 +667,10 @@ int main(int argc, char **argv) {
 			if(d_skip_empty && dvd_track.msecs < 1000)
 				continue;
 
+			// dvd_query - skip "empty" tracks, no audio or subtitle tracks
+			if(d_skip_empty && !dvd_track.audio_tracks && !dvd_track.active_subs)
+				continue;
+
 			// Display track information
 			printf("Track: %02u ", dvd_track.track);
 			printf("Length: %s ", dvd_track.length);
