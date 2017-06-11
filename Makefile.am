@@ -1,4 +1,4 @@
-bin_PROGRAMS = dvd_info dvd_copy
+bin_PROGRAMS = dvd_info dvd_copy dvd_id dvd_title
 man_MANS = dvd_info.1
 
 if LINUX_DRIVE_TOOLS
@@ -17,6 +17,14 @@ dvd_copy_SOURCES = dvd_copy.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c
 dvd_copy_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_copy_LDADD = $(DVDREAD_LIBS)
 
+dvd_title_SOURCES = dvd_title.c dvd_drive.c dvd_vmg_ifo.c dvd_device.c
+dvd_title_CFLAGS = $(DVDREAD_CFLAGS)
+dvd_title_LDADD = $(DVDREAD_LIBS)
+
+dvd_id_SOURCES = dvd_id.c dvd_drive.c dvd_vmg_ifo.c dvd_device.c
+dvd_id_CFLAGS = $(DVDREAD_CFLAGS)
+dvd_id_LDADD = $(DVDREAD_LIBS)
+
 if LINUX_DRIVE_TOOLS
 dvd_eject_SOURCES = dvd_eject.c
 dvd_eject_CFLAGS = $(DVDCSS_CFLAGS)
@@ -33,15 +41,11 @@ endif
 
 install-exec-hook:
 	$(LN_S) -f $(DESTDIR)$(bindir)/dvd_info $(DESTDIR)$(bindir)/dvd_xchap
-	$(LN_S) -f $(DESTDIR)$(bindir)/dvd_info $(DESTDIR)$(bindir)/dvd_id
-	$(LN_S) -f $(DESTDIR)$(bindir)/dvd_info $(DESTDIR)$(bindir)/dvd_title
 
 uninstall:
 	-rm $(DESTDIR)$(bindir)/dvd_info
 	-rm $(DESTDIR)$(bindir)/dvd_copy
 	-rm $(DESTDIR)$(bindir)/dvd_xchap
-	-rm $(DESTDIR)$(bindir)/dvd_id
-	-rm $(DESTDIR)$(bindir)/dvd_title
 if LINUX_DRIVE_TOOLS
 	-rm $(DESTDIR)$(bindir)/dvd_eject
 	-rm $(DESTDIR)$(bindir)/dvd_drive_status
