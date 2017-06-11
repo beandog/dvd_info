@@ -203,7 +203,7 @@ int main(int argc, char **argv) {
 		{ "chapters", no_argument, & d_chapters, 1 },
 		{ "subtitles", no_argument, & d_subtitles, 1 },
 		{ "cells", no_argument, & d_cells, 1 },
-		{ "all", no_argument, & d_all, 1 },
+		{ "all", no_argument, NULL, 'x' },
 
 		// dvd_query
 		{ "ntsc", no_argument, & d_ntsc, 1 },
@@ -775,6 +775,7 @@ void print_usage(char *binary) {
 	printf("  -c, --chapters	chapters\n");
 	printf("  -s, --subtitles	subtitles\n");
 	printf("  -d, --cells		cells\n");
+	printf("  -x, --all		display all\n");
 	printf("\n");
 	// Will be part of a future release (dvd_query)
 	/*
