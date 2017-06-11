@@ -10,14 +10,13 @@ dnl Use pkg-config to check for libdvdread, libdvdcss
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
 PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.2.13])
 
-dnl The dvd_drive_status and dvd_eject programs rely on Linux kernel internals,
-dnl so they are ignored on other operating systems.
+dnl The DVD drive tools are OS-specific
 AC_CANONICAL_HOST
 case "$host_os" in
   linux*)
     linux_drive_tools=yes
     ;;
-  netbsd*)
+  netbsd* | openbsd* | freebsd*)
     bsd_drive_tools=yes
     ;;
   *)
