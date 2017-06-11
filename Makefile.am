@@ -1,4 +1,5 @@
 bin_PROGRAMS = dvd_info dvd_copy
+man_MANS = dvd_info.1
 
 if LINUX_DRIVE_TOOLS
 bin_PROGRAMS += dvd_eject dvd_drive_status
