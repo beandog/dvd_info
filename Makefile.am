@@ -46,16 +46,3 @@ dvd_drive_status_SOURCES = bsd_drive_status.c
 dvd_drive_status_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_drive_status_LDADD = $(DVDREAD_LIBS)
 endif
-
-uninstall:
-	-rm $(DESTDIR)$(bindir)/dvd_info
-	-rm $(DESTDIR)$(bindir)/dvd_copy
-	-rm $(DESTDIR)$(bindir)/dvd_xchap
-if LINUX_DRIVE_TOOLS
-	-rm $(DESTDIR)$(bindir)/dvd_eject
-	-rm $(DESTDIR)$(bindir)/dvd_drive_status
-endif
-if BSD_DRIVE_TOOLS
-	-rm $(DESTDIR)$(bindir)/dvd_eject
-	-rm $(DESTDIR)$(bindir)/dvd_drive_status
-endif
