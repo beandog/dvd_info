@@ -36,73 +36,10 @@
 // 2048 * 512 = 1 MB
 #define DVD_COPY_BYTES_LIMIT ( DVD_COPY_BLOCK_LIMIT * DVD_VIDEO_LB_LEN )
 
-void print_usage(char *binary) {
-
-	printf("%s - Copy a DVD track\n", binary);
-	printf("\n");
-	printf("Usage: %s [-t track] [dvd path]\n", binary);
-	printf("\n");
-	printf("DVD path can be a directory, a device filename, or a local file.\n");
-	printf("\n");
-	printf("Examples:\n");
-	printf("  dvd_info " DEFAULT_DVD_DEVICE "	# Read a DVD drive directly\n");
-	printf("  dvd_info movie.iso	# Read an image file\n");
-	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
-	printf("\n");
-	printf("If no DVD path is given, %s is used in its place.\n", DEFAULT_DVD_DEVICE);
-
-}
-
 int main(int, char **);
-
 ssize_t dvd_copy_blocks(const int fd, unsigned char *buffer, dvd_file_t *dvdread_vts_file, const int offset, const ssize_t num_blocks);
-
-ssize_t dvd_copy_blocks(const int fd, unsigned char *buffer, dvd_file_t *dvdread_vts_file, const int offset, const ssize_t num_blocks) {
-
-	// unsigned char *buffer = NULL;
-	ssize_t num_copied = 0;
-	ssize_t blocks = 0;
-
-	buffer = (unsigned char *)calloc(1, (uint64_t)DVD_COPY_BYTES_LIMIT * sizeof(unsigned char));
-	if(buffer == NULL)
-		return -2;
-
-	blocks = DVDReadBlocks(dvdread_vts_file, offset, (uint64_t)num_blocks, buffer);
-
-	if(!blocks)
-		return -1;
-
-	if(blocks != num_blocks)
-		return 0;
-	
-	num_copied = write(fd, buffer, (uint64_t)(blocks * DVD_VIDEO_LB_LEN));
-
-	printf("wrote %lu num blocks offset: %i amount: %lu\n", num_copied, offset, num_blocks);
-
-	return num_copied;
-
-}
-
 void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo);
-
-void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo) {
-
-	dvd_track->track = track_number;
-	dvd_track->valid = 1;
-	dvd_track->vts = dvd_vts_ifo_number(vmg_ifo, track_number);
-	dvd_track->ttn = dvd_track_ttn(vmg_ifo, track_number);
-	strncpy(dvd_track->length, dvd_track_length(vmg_ifo, vts_ifo, track_number), DVD_TRACK_LENGTH);
-	dvd_track->msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track_number);
-	dvd_track->chapters = dvd_track_chapters(vmg_ifo, vts_ifo, track_number);
-	dvd_track->audio_tracks = dvd_track_audio_tracks(vts_ifo);
-	dvd_track->subtitles = dvd_track_subtitles(vts_ifo);
-	dvd_track->active_audio = dvd_audio_active_tracks(vmg_ifo, vts_ifo, track_number);
-	dvd_track->active_subs = dvd_track_active_subtitles(vmg_ifo, vts_ifo, track_number);
-	dvd_track->cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
-	dvd_track->blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
-	dvd_track->filesize = dvd_track_filesize(vmg_ifo, vts_ifo, track_number);
-
-}
+void print_usage(char *binary);
 
 int main(int argc, char **argv) {
 
@@ -557,5 +494,67 @@ int main(int argc, char **argv) {
 		DVDClose(dvdread_dvd);
 	
 	return 0;
+
+}
+
+ssize_t dvd_copy_blocks(const int fd, unsigned char *buffer, dvd_file_t *dvdread_vts_file, const int offset, const ssize_t num_blocks) {
+
+	// unsigned char *buffer = NULL;
+	ssize_t num_copied = 0;
+	ssize_t blocks = 0;
+
+	buffer = (unsigned char *)calloc(1, (uint64_t)DVD_COPY_BYTES_LIMIT * sizeof(unsigned char));
+	if(buffer == NULL)
+		return -2;
+
+	blocks = DVDReadBlocks(dvdread_vts_file, offset, (uint64_t)num_blocks, buffer);
+
+	if(!blocks)
+		return -1;
+
+	if(blocks != num_blocks)
+		return 0;
+	
+	num_copied = write(fd, buffer, (uint64_t)(blocks * DVD_VIDEO_LB_LEN));
+
+	printf("wrote %lu num blocks offset: %i amount: %lu\n", num_copied, offset, num_blocks);
+
+	return num_copied;
+
+}
+
+void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo) {
+
+	dvd_track->track = track_number;
+	dvd_track->valid = 1;
+	dvd_track->vts = dvd_vts_ifo_number(vmg_ifo, track_number);
+	dvd_track->ttn = dvd_track_ttn(vmg_ifo, track_number);
+	strncpy(dvd_track->length, dvd_track_length(vmg_ifo, vts_ifo, track_number), DVD_TRACK_LENGTH);
+	dvd_track->msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track_number);
+	dvd_track->chapters = dvd_track_chapters(vmg_ifo, vts_ifo, track_number);
+	dvd_track->audio_tracks = dvd_track_audio_tracks(vts_ifo);
+	dvd_track->subtitles = dvd_track_subtitles(vts_ifo);
+	dvd_track->active_audio = dvd_audio_active_tracks(vmg_ifo, vts_ifo, track_number);
+	dvd_track->active_subs = dvd_track_active_subtitles(vmg_ifo, vts_ifo, track_number);
+	dvd_track->cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
+	dvd_track->blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
+	dvd_track->filesize = dvd_track_filesize(vmg_ifo, vts_ifo, track_number);
+
+}
+
+void print_usage(char *binary) {
+
+	printf("%s - Copy a DVD track\n", binary);
+	printf("\n");
+	printf("Usage: %s [-t track] [dvd path]\n", binary);
+	printf("\n");
+	printf("DVD path can be a directory, a device filename, or a local file.\n");
+	printf("\n");
+	printf("Examples:\n");
+	printf("  dvd_info " DEFAULT_DVD_DEVICE "	# Read a DVD drive directly\n");
+	printf("  dvd_info movie.iso	# Read an image file\n");
+	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
+	printf("\n");
+	printf("If no DVD path is given, %s is used in its place.\n", DEFAULT_DVD_DEVICE);
 
 }
