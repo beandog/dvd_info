@@ -68,6 +68,7 @@ int main(int argc, char **argv) {
 	int d_all = 0;
 
 	// dvd_query
+	/*
 	bool dvd_query = false;
 	int d_ntsc = 0;
 	int d_pal = 0;
@@ -78,6 +79,7 @@ int main(int argc, char **argv) {
 	int d_dts_codec = 0;
 	int d_has_subtitles = 0;
 	int d_skip_empty = 0;
+	*/
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -181,51 +183,45 @@ int main(int argc, char **argv) {
 	uint32_t longest_msecs = 0;
 
 	// getopt_long
+	bool valid_args = true;
 	bool opt_track_number = false;
 	int arg_track_number = 0;
-	int long_index = 0;
+	int ix = 0;
 	int opt = 0;
 	// Send 'invalid argument' to stderr
-	opterr= 1;
-	// Check for invalid input
-	bool valid_args = true;
-	// Not enabled by an argument, set internally
-	// I could probably come up with a better variable name. I probably would if
-	// I understood getopt better. :T
-	const char *str_options;
-	str_options = "acdhst:vxz";
+	opterr = 1;
+	const char p_short_opts[] = "acdhst:vxz";
 
-	struct option long_options[] = {
+	struct option p_long_opts[] = {
 
-		{ "debug", no_argument, & d_debug, 1 },
-		{ "audio", no_argument, & d_audio, 1 },
-		{ "video", no_argument, & d_video, 1 },
-		{ "chapters", no_argument, & d_chapters, 1 },
-		{ "subtitles", no_argument, & d_subtitles, 1 },
-		{ "cells", no_argument, & d_cells, 1 },
+		{ "debug", no_argument, NULL, 'z' },
+		{ "audio", no_argument, NULL, 'a' },
+		{ "video", no_argument, NULL, 'v' },
+		{ "chapters", no_argument, NULL, 'c' },
+		{ "subtitles", no_argument, NULL, 's' },
+		{ "cells", no_argument, NULL, 'd' },
 		{ "all", no_argument, NULL, 'x' },
+		{ "track", required_argument, NULL, 't' },
 
 		// dvd_query
-		{ "ntsc", no_argument, & d_ntsc, 1 },
-		{ "pal", no_argument, & d_pal, 1 },
-		{ "aspect-16x9", no_argument, & d_aspect_16x9, 1 },
-		{ "aspect-4x3", no_argument, & d_aspect_4x3, 1 },
-		{ "has-audio", no_argument, & d_has_audio, 1 },
-		{ "ac3-codec", no_argument, & d_ac3_codec, 1 },
-		{ "dts-codec", no_argument, & d_dts_codec, 1 },
-		{ "has-subtitles", no_argument, & d_has_subtitles, 1 },
-		{ "skip-empty", no_argument, & d_skip_empty, 1 },
-
-		// Entries with both a name and a value, will take either the
-		// long option or the short one.  Fex, '--device' or '-i'
-		{ "track", required_argument, 0, 't' },
+		/*
+		{ "ntsc", no_argument, &d_ntsc, 1 },
+		{ "pal", no_argument, &d_pal, 1 },
+		{ "aspect-16x9", no_argument, &d_aspect_16x9, 1 },
+		{ "aspect-4x3", no_argument, &d_aspect_4x3, 1 },
+		{ "has-audio", no_argument, &d_has_audio, 1 },
+		{ "ac3-codec", no_argument, &d_ac3_codec, 1 },
+		{ "dts-codec", no_argument, &d_dts_codec, 1 },
+		{ "has-subtitles", no_argument, &d_has_subtitles, 1 },
+		{ "skip-empty", no_argument, &d_skip_empty, 1 },
+		*/
 
 		{ 0, 0, 0, 0 }
 
 	};
 
 	// parse options
-	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, p_short_opts, p_long_opts, &ix)) != -1) {
 
 		// It's worth noting that if there are unknown options passed,
 		// I just ignore them, and continue printing requested data.
@@ -296,12 +292,15 @@ int main(int argc, char **argv) {
 	// Exit after all invalid input warnings have been sent
 	if(valid_args == false)
 		return 1;
-	
-	// Toggle if a custom query is run
-	if(d_ntsc || d_pal || d_aspect_16x9 || d_aspect_4x3 || d_has_audio || d_ac3_codec || d_dts_codec || d_has_subtitles)
-		dvd_query = true;
 
 	/** Begin dvd_info :) */
+	
+	// Toggle if a custom query is run
+	/*
+	if(d_ntsc || d_pal || d_aspect_16x9 || d_aspect_4x3 || d_has_audio || d_ac3_codec || d_dts_codec || d_has_subtitles)
+		dvd_query = true;
+	dvd_query = false;
+	*/
 
 	// Check to see if device can be accessed
 	if(!dvd_device_access(device_filename)) {
@@ -635,14 +634,14 @@ int main(int argc, char **argv) {
 	 */
 	if(p_dvd_info) {
 
-		if(!dvd_query)
-			printf("Disc Title: %s\n", dvd_info.title);
+		printf("Disc Title: %s\n", dvd_info.title);
 
 		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
 			dvd_track = dvd_tracks[track_number - 1];
 			dvd_video = dvd_tracks[track_number - 1].dvd_video;
 
+			/*
 			if(dvd_query) {
 
 				// dvd_query - limit to video format
@@ -674,6 +673,7 @@ int main(int argc, char **argv) {
 					continue;
 
 			}
+			*/
 
 			// Display track information
 			printf("Track: %02u ", dvd_track.track);
@@ -694,8 +694,7 @@ int main(int argc, char **argv) {
 				for(c = 0; c < dvd_track.audio_tracks; c++) {
 
 					dvd_audio = dvd_track.dvd_audio_tracks[c];
-					if((!d_ac3_codec && !d_dts_codec) || ((d_ac3_codec && strncmp(dvd_audio.codec, "ac3", 3) == 0) && dvd_audio.active) || ((d_dts_codec && strncmp(dvd_audio.codec, "dts", 3) == 0) && dvd_audio.active))
-						printf("        Audio: %02u Language: %s Codec: %s Channels: %u Stream id: %s Active: %s\n", dvd_audio.track, (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"), dvd_audio.codec, dvd_audio.channels, dvd_audio.stream_id, (dvd_audio.active ? "yes" : "no"));
+					printf("        Audio: %02u Language: %s Codec: %s Channels: %u Stream id: %s Active: %s\n", dvd_audio.track, (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"), dvd_audio.codec, dvd_audio.channels, dvd_audio.stream_id, (dvd_audio.active ? "yes" : "no"));
 
 				}
 
@@ -730,7 +729,7 @@ int main(int argc, char **argv) {
 		}
 
 
-		if(d_all_tracks && !dvd_query)
+		if(d_all_tracks)
 			printf("Longest track: %02u\n", dvd_info.longest_track);
 
 	}
