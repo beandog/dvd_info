@@ -179,7 +179,7 @@ int main(int argc, char **argv) {
 	// getopt_long
 	bool valid_args = true;
 	bool opt_track_number = false;
-	int arg_track_number = 0;
+	unsigned int arg_track_number = 0;
 	int ix = 0;
 	int opt = 0;
 	// Send 'invalid argument' to stderr
@@ -249,7 +249,7 @@ int main(int argc, char **argv) {
 
 			case 't':
 				opt_track_number = true;
-				arg_track_number = atoi(optarg);
+				arg_track_number = (unsigned int)strtoumax(optarg, NULL, 0);
 				break;
 
 			case 'v':
@@ -371,8 +371,7 @@ int main(int argc, char **argv) {
 
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks || arg_track_number < 1)) {
-		fprintf(stderr, "%s: Invalid track number %d\n", program_name, arg_track_number);
-		fprintf(stderr, "%s: Valid track numbers: 1 to %u\n", program_name, dvd_info.tracks);
+		fprintf(stderr, "[%s] valid track numbers: 1 to %u\n", program_name, dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
