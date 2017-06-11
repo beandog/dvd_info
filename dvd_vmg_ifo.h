@@ -1,8 +1,15 @@
 #ifndef DVD_INFO_VMG_IFO_H
 #define DVD_INFO_VMG_IFO_H
 
-#include "dvd_info.h"
-#include "dvd_track.h"
+#include <unistd.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdbool.h>
+#include <dvdread/dvd_reader.h>
+#include <dvdread/ifo_read.h>
+#include "dvd_specs.h"
 
 /**
  * Functions used to get basic DVD data:
