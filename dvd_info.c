@@ -774,12 +774,10 @@ void print_usage(char *binary) {
 	printf("  --aspect-16x9		Video aspect ratio is 16:9\n");
 	printf("  --aspect-4x3	 	Video aspect ratio is 4:3\n");
 	printf("  --has-audio		Audio tracks present\n");
-	// printf("  --has-audio-lang [en]	Audio language track\n");
 	printf("  --has-subtitles  	Subtitle tracks present\n");
-	// printf("  --has-subs-lang [en]	Subtitle language track\n");
 	printf("  --ac3-codec		Dolby Digital audio tracks\n");
 	printf("  --dts-codec		DTS audio tracks\n");
-	printf("  --show-empty		Include \"empty\" tracks hidden by default with any query\n");
+	printf("  --skip-empty		Hide empty tracks\n");
 	printf("\n");
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
