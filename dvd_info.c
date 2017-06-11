@@ -772,6 +772,8 @@ void print_usage(char *binary) {
 	printf("  -s, --subtitles	subtitles\n");
 	printf("  -d, --cells		cells\n");
 	printf("\n");
+	// Will be part of a future release (dvd_query)
+	/*
 	printf("Limit displayed tracks based on specific features:\n");
 	printf("  --ntsc		Video format is NTSC\n");
 	printf("  --pal			Video format is PAL\n");
@@ -783,6 +785,7 @@ void print_usage(char *binary) {
 	printf("  --dts-codec		DTS audio tracks\n");
 	printf("  --skip-empty		Hide empty tracks\n");
 	printf("\n");
+	*/
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
 	printf("Examples:\n");
