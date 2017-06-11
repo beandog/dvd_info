@@ -12,7 +12,6 @@
 #include <dvdread/dvd_reader.h>
 #include <dvdread/dvd_udf.h>
 #include <dvdread/ifo_read.h>
-#include <dvdread/ifo_print.h>
 
 // Default DVD device
 #ifdef __linux__
