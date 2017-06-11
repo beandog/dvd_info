@@ -63,7 +63,6 @@ int main(int argc, char **argv) {
 	int d_chapters = 0;
 	int d_subtitles = 0;
 	int d_cells = 0;
-	int d_all = 0;
 
 	// dvd_query
 	/*
