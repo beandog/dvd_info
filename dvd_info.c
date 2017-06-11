@@ -22,7 +22,6 @@
 #include "dvd_time.h"
 #include "dvd_json.h"
 #include "dvd_vob.h"
-#include "dvd_xchap.h"
 #include "dvd_debug.h"
 #ifdef __linux__
 #include <linux/cdrom.h>
@@ -39,13 +38,10 @@ int main(int argc, char **argv) {
 
 	// Program name
 	bool p_dvd_info = false;
-	bool p_dvd_xchap = false;
 	bool p_dvd_debug = false;
 	bool p_dvd_json = false;
 	char *program_name = basename(argv[0]);
-	if(strncmp("dvd_xchap", program_name, 8) == 0)
-		p_dvd_xchap = true;
-	else if(strncmp("dvd_debug", program_name, 9) == 0)
+	if(strncmp("dvd_debug", program_name, 9) == 0)
 		p_dvd_debug = true;
 	else
 		p_dvd_info = true;
@@ -723,11 +719,6 @@ int main(int argc, char **argv) {
 
 	if(p_dvd_json)
 		dvd_json(dvd_info, dvd_tracks, track_number, d_first_track, d_last_track);
-
-	/** Display DVD chapters **/
-	track_number = (opt_track_number ? d_first_track : dvd_info.longest_track);
-	if(p_dvd_xchap)
-		dvd_xchap(dvd_tracks[track_number - 1]);
 
 	// Cleanup
 
