@@ -1,17 +1,8 @@
 #ifndef DVD_INFO_H
 #define DVD_INFO_H
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-#include <inttypes.h>
-#include <ctype.h>
-#include <fcntl.h>
+#include <stdint.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
-#include <dvdread/dvd_reader.h>
-#include <dvdread/dvd_udf.h>
-#include <dvdread/ifo_read.h>
 #include "dvd_specs.h"
 
 struct dvd_info {
@@ -24,9 +15,5 @@ struct dvd_info {
 	uint16_t tracks;
 	uint16_t longest_track;
 };
-
-int main(int argc, char **argv);
-
-void print_usage(char *binary);
 
 #endif

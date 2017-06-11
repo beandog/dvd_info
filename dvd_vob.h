@@ -1,7 +1,8 @@
 #ifndef DVD_INFO_VOB_H
 #define DVD_INFO_VOB_H
 
-#include "dvd_info.h"
+#include <stdint.h>
+#include <dvdread/dvd_reader.h>
 
 struct dvd_vob {
 	uint16_t vts;

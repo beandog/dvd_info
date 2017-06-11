@@ -1,7 +1,6 @@
 #ifndef DVD_INFO_SUBTITLES_H
 #define DVD_INFO_SUBTITLES_H
 
-#include "dvd_info.h"
 #include "dvd_track.h"
 
 struct dvd_subtitle {

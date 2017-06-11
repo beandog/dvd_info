@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
-#include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
 #include <dvdread/dvd_reader.h>

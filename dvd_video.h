@@ -1,9 +1,7 @@
 #ifndef DVD_INFO_VIDEO_H
 #define DVD_INFO_VIDEO_H
 
-#include "dvd_info.h"
 #include "dvd_track.h"
-
 
 uint8_t dvd_video_angles(const ifo_handle_t *vmg_ifo, const uint16_t track_number);
 

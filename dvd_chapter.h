@@ -1,7 +1,6 @@
 #ifndef DVD_INFO_CHAPTER_H
 #define DVD_INFO_CHAPTER_H
 
-#include "dvd_info.h"
 #include "dvd_cell.h"
 
 struct dvd_chapter {
