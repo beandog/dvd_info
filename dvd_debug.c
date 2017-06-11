@@ -1,4 +1,121 @@
-#include "dvd_debug.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <stdbool.h>
+#include <inttypes.h>
+#include "dvd_info.h"
+#include "dvd_device.h"
+#include "dvd_vmg_ifo.h"
+#include "dvd_vts.h"
+#include "dvd_track.h"
+#include "dvd_chapter.h"
+#include "dvd_cell.h"
+#include "dvd_video.h"
+#include "dvd_audio.h"
+#include "dvd_subtitles.h"
+#include "dvd_time.h"
+#include "dvd_json.h"
+#include "dvd_vob.h"
+#ifdef __linux__
+#include <linux/cdrom.h>
+#include "dvd_drive.h"
+#endif
+#ifndef VERSION
+#define VERSION "1.0"
+#endif
+
+int dvd_debug(dvd_reader_t *dvdread_dvd);
+int main(int argc, char **argv);
+void print_usage(char *binary);
+
+int main(int argc, char **argv) {
+
+	// Program name
+	const char program_name[] = "dvd_debug";
+	int retval = 0;
+
+	// Device hardware
+	int dvd_fd = 0;
+	const char *device_filename = NULL;
+
+	// libdvdread
+	dvd_reader_t *dvdread_dvd = NULL;
+
+	if (argc > 1 && argv[optind])
+		device_filename = argv[optind];
+	else
+		device_filename = DEFAULT_DVD_DEVICE;
+
+	// Check to see if device can be accessed
+	if(!dvd_device_access(device_filename)) {
+		fprintf(stderr, "%s: cannot access %s\n", program_name, device_filename);
+		return 1;
+	}
+
+	// Check to see if device can be opened
+	dvd_fd = dvd_device_open(device_filename);
+	if(dvd_fd < 0) {
+		fprintf(stderr, "%s: error opening %s\n", program_name, device_filename);
+		return 1;
+	}
+	dvd_device_close(dvd_fd);
+
+#ifdef __linux__
+
+	// Poll drive status if it is hardware
+	if(dvd_device_is_hardware(device_filename)) {
+
+		// Wait for the drive to become ready
+		if(!dvd_drive_has_media(device_filename)) {
+
+			fprintf(stderr, "drive status: ");
+			dvd_drive_display_status(device_filename);
+
+			return 1;
+
+		}
+
+	}
+
+#endif
+
+	// begin libdvdread usage
+
+	// Open DVD device
+	dvdread_dvd = DVDOpen(device_filename);
+	if(!dvdread_dvd) {
+		fprintf(stderr, "%s: Opening DVD %s failed\n", program_name, device_filename);
+		return 1;
+	}
+
+	retval = dvd_debug(dvdread_dvd);
+	DVDClose(dvdread_dvd);
+	return retval;
+
+}
+
+void print_usage(char *binary) {
+
+	printf("%s %s - display verbose details about a DVD\n", binary, VERSION);
+	printf("\n");
+	printf("Usage: %s [dvd path]\n", binary);
+	printf("\n");
+	printf("DVD path can be a directory, a device filename, or a local file.\n");
+	printf("\n");
+	printf("Examples:\n");
+	printf("  dvd_info /dev/dvd	# Read a DVD drive directly\n");
+	printf("  dvd_info movie.iso	# Read an image file\n");
+	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
+	printf("\n");
+	printf("Default DVD path is %s\n", DEFAULT_DVD_DEVICE);
+	printf("\n");
+	printf("See 'man dvd_info' for more details, or http://dvds.beandog.org/\n");
+
+}
 
 int dvd_debug(dvd_reader_t *dvdread_dvd) {
 
