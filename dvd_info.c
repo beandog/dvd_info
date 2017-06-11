@@ -783,7 +783,7 @@ void print_usage(char *binary) {
 	printf("  dvd_info movie.iso	# Read an image file\n");
 	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
 	printf("\n");
-	printf("If no DVD path is given, %s is used in its place.\n", DEFAULT_DVD_DEVICE);
+	printf("Default DVD path is %s\n", DEFAULT_DVD_DEVICE);
 	printf("\n");
 	printf("See 'man dvd_info' for more details, or http://dvds.beandog.org/\n");
 
