@@ -752,6 +752,7 @@ void print_usage(char *binary) {
 	printf("\n");
 	printf("Options:\n");
 	printf("  -t, --track [number]	Limit to one title track\n");
+	printf("  -j, --json		Display output in JSON format\n");
 	printf("\n");
 	printf("Extra information:\n");
 	printf("  -a, --audio		audio streams\n");
@@ -781,9 +782,6 @@ void print_usage(char *binary) {
 	printf("  dvd_info /dev/dvd	# Read a DVD drive directly\n");
 	printf("  dvd_info movie.iso	# Read an image file\n");
 	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
-	printf("\n");
-	printf("Default output is similar in syntax to 'lsdvd' program, and is\n");
-	printf("not as verbose as JSON's format (see dvd_json).\n");
 	printf("\n");
 	printf("If no DVD path is given, %s is used in its place.\n", DEFAULT_DVD_DEVICE);
 	printf("\n");
