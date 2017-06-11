@@ -47,9 +47,6 @@ dvd_drive_status_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_drive_status_LDADD = $(DVDREAD_LIBS)
 endif
 
-install-exec-hook:
-	$(LN_S) -f $(DESTDIR)$(bindir)/dvd_info $(DESTDIR)$(bindir)/dvd_xchap
-
 uninstall:
 	-rm $(DESTDIR)$(bindir)/dvd_info
 	-rm $(DESTDIR)$(bindir)/dvd_copy

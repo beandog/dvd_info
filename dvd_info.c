@@ -590,6 +590,13 @@ int main(int argc, char **argv) {
 
 	}
 
+	/** JSON display output **/
+
+	if(p_dvd_json) {
+		dvd_json(dvd_info, dvd_tracks, track_number, d_first_track, d_last_track);
+		goto cleanup;
+	}
+
 	/**
 	 * lsdvd style output (default)
 	 *
@@ -599,114 +606,105 @@ int main(int argc, char **argv) {
 	 * - lsdvd output only displays *active* audio tracks, while the JSON
 	 *   shows all of them, but they are flagged as active or not.
 	 */
-	if(p_dvd_info) {
 
-		printf("Disc Title: %s\n", dvd_info.title);
+	printf("Disc Title: %s\n", dvd_info.title);
 
-		for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
+	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
-			dvd_track = dvd_tracks[track_number - 1];
-			dvd_video = dvd_tracks[track_number - 1].dvd_video;
+		dvd_track = dvd_tracks[track_number - 1];
+		dvd_video = dvd_tracks[track_number - 1].dvd_video;
 
-			/*
-			if(dvd_query) {
+		/*
+		if(dvd_query) {
 
-				// dvd_query - limit to video format
-				if(d_ntsc && strncmp(dvd_video.format, "NTSC", 4) != 0)
-					continue;
-				if(d_pal && strncmp(dvd_video.format, "PAL", 3) != 0)
-					continue;
+			// dvd_query - limit to video format
+			if(d_ntsc && strncmp(dvd_video.format, "NTSC", 4) != 0)
+				continue;
+			if(d_pal && strncmp(dvd_video.format, "PAL", 3) != 0)
+				continue;
 
-				// dvd_query - limit to aspect ratio
-				if(d_aspect_16x9 && strncmp(dvd_video.aspect_ratio, "16:9", 4) != 0)
-					continue;
-				if(d_aspect_4x3 && strncmp(dvd_video.aspect_ratio, "4:3", 3) != 0)
-					continue;
+			// dvd_query - limit to aspect ratio
+			if(d_aspect_16x9 && strncmp(dvd_video.aspect_ratio, "16:9", 4) != 0)
+				continue;
+			if(d_aspect_4x3 && strncmp(dvd_video.aspect_ratio, "4:3", 3) != 0)
+				continue;
 
-				// dvd_query - limit to active audio tracks
-				if(d_has_audio && !dvd_track.audio_tracks)
-					continue;
+			// dvd_query - limit to active audio tracks
+			if(d_has_audio && !dvd_track.audio_tracks)
+				continue;
 
-				// dvd_query - limit to active subtitle tracks
-				if(d_has_subtitles && !dvd_track.active_subs)
-					continue;
+			// dvd_query - limit to active subtitle tracks
+			if(d_has_subtitles && !dvd_track.active_subs)
+				continue;
 
-				// dvd_query - skip "empty" tracks, have less than one second of length
-				if(d_skip_empty && dvd_track.msecs < 1000)
-					continue;
+			// dvd_query - skip "empty" tracks, have less than one second of length
+			if(d_skip_empty && dvd_track.msecs < 1000)
+				continue;
 
-				// dvd_query - skip "empty" tracks, no audio or subtitle tracks
-				if(d_skip_empty && !dvd_track.audio_tracks && !dvd_track.active_subs)
-					continue;
+			// dvd_query - skip "empty" tracks, no audio or subtitle tracks
+			if(d_skip_empty && !dvd_track.audio_tracks && !dvd_track.active_subs)
+				continue;
 
-			}
-			*/
+		}
+		*/
 
-			// Display track information
-			printf("Track: %02u ", dvd_track.track);
-			printf("Length: %s ", dvd_track.length);
-			printf("Chapters: %02u ", dvd_track.chapters);
-			printf("Cells: %02u ", dvd_track.cells);
-			printf("Audio streams: %02u ", dvd_track.active_audio);
-			printf("Subpictures: %02u\n", dvd_track.active_subs);
+		// Display track information
+		printf("Track: %02u ", dvd_track.track);
+		printf("Length: %s ", dvd_track.length);
+		printf("Chapters: %02u ", dvd_track.chapters);
+		printf("Cells: %02u ", dvd_track.cells);
+		printf("Audio streams: %02u ", dvd_track.active_audio);
+		printf("Subpictures: %02u\n", dvd_track.active_subs);
 
-			// Display video information
-			if(d_video) {
-				printf("	Video format: %s Aspect ratio: %s Width: %u Height: %u FPS: %s Display format: %s\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, dvd_video.fps, display_formats[dvd_video.df]);
-			}
+		// Display video information
+		if(d_video) {
+			printf("	Video format: %s Aspect ratio: %s Width: %u Height: %u FPS: %s Display format: %s\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, dvd_video.fps, display_formats[dvd_video.df]);
+		}
 
-			// Display audio tracks
-			if(d_audio && dvd_track.audio_tracks) {
+		// Display audio tracks
+		if(d_audio && dvd_track.audio_tracks) {
 
-				for(c = 0; c < dvd_track.audio_tracks; c++) {
+			for(c = 0; c < dvd_track.audio_tracks; c++) {
 
-					dvd_audio = dvd_track.dvd_audio_tracks[c];
-					printf("        Audio: %02u Language: %s Codec: %s Channels: %u Stream id: %s Active: %s\n", dvd_audio.track, (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"), dvd_audio.codec, dvd_audio.channels, dvd_audio.stream_id, (dvd_audio.active ? "yes" : "no"));
-
-				}
-
-			}
-
-
-			// Display chapters
-			if(d_chapters && dvd_track.chapters) {
-
-				for(c = 0; c < dvd_track.chapters; c++) {
-
-					dvd_chapter = dvd_track.dvd_chapters[c];
-					printf("        Chapter: %02u Length: %s\n", dvd_chapter.chapter, dvd_chapter.length);
-
-
-				}
-
-			}
-
-			// Display track cells
-			if(d_cells && dvd_track.cells) {
-
-				for(c = 0; c < dvd_track.cells; c++) {
-
-					dvd_cell = dvd_track.dvd_cells[c];
-					printf("	Cell: %02u Length: %s\n", dvd_cell.cell, dvd_cell.length);
-
-				}
+				dvd_audio = dvd_track.dvd_audio_tracks[c];
+				printf("        Audio: %02u Language: %s Codec: %s Channels: %u Stream id: %s Active: %s\n", dvd_audio.track, (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"), dvd_audio.codec, dvd_audio.channels, dvd_audio.stream_id, (dvd_audio.active ? "yes" : "no"));
 
 			}
 
 		}
 
+		// Display chapters
+		if(d_chapters && dvd_track.chapters) {
 
-		if(d_all_tracks)
-			printf("Longest track: %02u\n", dvd_info.longest_track);
+			for(c = 0; c < dvd_track.chapters; c++) {
+
+				dvd_chapter = dvd_track.dvd_chapters[c];
+				printf("        Chapter: %02u Length: %s\n", dvd_chapter.chapter, dvd_chapter.length);
+
+			}
+
+		}
+
+		// Display track cells
+		if(d_cells && dvd_track.cells) {
+
+			for(c = 0; c < dvd_track.cells; c++) {
+
+				dvd_cell = dvd_track.dvd_cells[c];
+				printf("	Cell: %02u Length: %s\n", dvd_cell.cell, dvd_cell.length);
+
+			}
+
+		}
 
 	}
 
-	/** JSON display output **/
-
-	if(p_dvd_json)
-		dvd_json(dvd_info, dvd_tracks, track_number, d_first_track, d_last_track);
+	if(d_all_tracks)
+		printf("Longest track: %02u\n", dvd_info.longest_track);
 
 	// Cleanup
+	
+	cleanup:
 
 	if(vmg_ifo)
 		ifoClose(vmg_ifo);
