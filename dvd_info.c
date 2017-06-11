@@ -643,33 +643,37 @@ int main(int argc, char **argv) {
 			dvd_track = dvd_tracks[track_number - 1];
 			dvd_video = dvd_tracks[track_number - 1].dvd_video;
 
-			// dvd_query - limit to video format
-			if(d_ntsc && strncmp(dvd_video.format, "NTSC", 4) != 0)
-				continue;
-			if(d_pal && strncmp(dvd_video.format, "PAL", 3) != 0)
-				continue;
+			if(dvd_query) {
 
-			// dvd_query - limit to aspect ratio
-			if(d_aspect_16x9 && strncmp(dvd_video.aspect_ratio, "16:9", 4) != 0)
-				continue;
-			if(d_aspect_4x3 && strncmp(dvd_video.aspect_ratio, "4:3", 3) != 0)
-				continue;
+				// dvd_query - limit to video format
+				if(d_ntsc && strncmp(dvd_video.format, "NTSC", 4) != 0)
+					continue;
+				if(d_pal && strncmp(dvd_video.format, "PAL", 3) != 0)
+					continue;
 
-			// dvd_query - limit to active audio tracks
-			if(d_has_audio && !dvd_track.audio_tracks)
-				continue;
+				// dvd_query - limit to aspect ratio
+				if(d_aspect_16x9 && strncmp(dvd_video.aspect_ratio, "16:9", 4) != 0)
+					continue;
+				if(d_aspect_4x3 && strncmp(dvd_video.aspect_ratio, "4:3", 3) != 0)
+					continue;
 
-			// dvd_query - limit to active subtitle tracks
-			if(d_has_subtitles && !dvd_track.active_subs)
-				continue;
+				// dvd_query - limit to active audio tracks
+				if(d_has_audio && !dvd_track.audio_tracks)
+					continue;
 
-			// dvd_query - skip "empty" tracks, have less than one second of length
-			if(d_skip_empty && dvd_track.msecs < 1000)
-				continue;
+				// dvd_query - limit to active subtitle tracks
+				if(d_has_subtitles && !dvd_track.active_subs)
+					continue;
 
-			// dvd_query - skip "empty" tracks, no audio or subtitle tracks
-			if(d_skip_empty && !dvd_track.audio_tracks && !dvd_track.active_subs)
-				continue;
+				// dvd_query - skip "empty" tracks, have less than one second of length
+				if(d_skip_empty && dvd_track.msecs < 1000)
+					continue;
+
+				// dvd_query - skip "empty" tracks, no audio or subtitle tracks
+				if(d_skip_empty && !dvd_track.audio_tracks && !dvd_track.active_subs)
+					continue;
+
+			}
 
 			// Display track information
 			printf("Track: %02u ", dvd_track.track);
