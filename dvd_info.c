@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include <inttypes.h>
-#include <libgen.h>
 #include "dvd_info.h"
 #include "dvd_device.h"
 #include "dvd_vmg_ifo.h"
@@ -38,7 +37,7 @@ int main(int argc, char **argv) {
 	// Program name
 	bool p_dvd_info = true;
 	bool p_dvd_json = false;
-	char *program_name = basename(argv[0]);
+	char program_name[] = "dvd_info";
 
 	// Display output
 	int d_debug = 0;
