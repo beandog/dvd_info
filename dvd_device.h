@@ -2,16 +2,18 @@
 #define DVD_INFO_DEVICE_H
 
 // Default DVD device
-#ifdef __linux__
+#if defined (__linux__)
 #include <linux/cdrom.h>
 #define DEFAULT_DVD_DEVICE "/dev/sr0"
-#elif __FreeBSD__ || __DragonFly__
-#define DEFAULT_DVD_DEVICE "/dev/acd0"
-#elif __NetBSD__
-#define DEFAULT_DVD_DEVICE "/dev/cd0d"
-#elif __OpenBSD__
-#define DEFAULT_DVD_DEVICE "/dev/cd0c"
-#elif __APPLE__ && __MACH__
+#elif defined (__DragonFly__)
+#define DEFAULT_DVD_DEVICE "/dev/cd0"
+#elif defined (__FreeBSD__)
+#define DEFAULT_DVD_DEVICE "/dev/cd0"
+#elif defined (__NetBSD__)
+#define DEFAULT_DVD_DEVICE "/dev/rcd0d"
+#elif defined (__OpenBSD__)
+#define DEFAULT_DVD_DEVICE "/dev/rcd0c"
+#elif defined (__APPLE__) && defined (__MACH__)
 #define DEFAULT_DVD_DEVICE "/dev/disk1"
 #else
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
