@@ -47,8 +47,6 @@ int main(int argc, char **argv) {
 	 * Parse options
 	 */
 
-	bool copy_tracks = true;
-	bool copy_cells = false;
 	bool opt_track_number = false;
 	int arg_track_number = 0;
 	uint16_t d_first_track = 1;
@@ -125,7 +123,6 @@ int main(int argc, char **argv) {
 						arg_track_number = ((uint8_t)(optarg[0] - 48) * 10) + ((uint8_t)(optarg[1] - 48));
 				}
 				opt_track_number = true;
-				copy_tracks = true;
 				break;
 
 			// ignore unknown arguments
@@ -359,9 +356,6 @@ int main(int argc, char **argv) {
 	int track_fd = 0;
 	char track_filename[18] = {'\0'};
 
-	int cell_fd = 0;
-	char cell_filename[26] = {'\0'};
-
 	/**
 	 * Copy selected tracks
 	 */
@@ -377,13 +371,11 @@ int main(int argc, char **argv) {
 
 		printf("Track: %02u, Length: %s Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_tracks[ix].track, dvd_tracks[ix].length, dvd_tracks[ix].chapters, dvd_tracks[ix].cells, dvd_tracks[ix].audio_tracks, dvd_tracks[ix].subtitles, dvd_tracks[ix].filesize, dvd_tracks[ix].blocks);
 
-		if(copy_tracks) {
-			snprintf(track_filename, 17, "dvd_track_%02i.vob", track);
-			track_fd = open(track_filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
-			if(track_fd == -1) {
-				printf("Couldn't create file %s\n", track_filename);
-				continue;
-			}
+		snprintf(track_filename, 17, "dvd_track_%02i.vob", track);
+		track_fd = open(track_filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
+		if(track_fd == -1) {
+			printf("Couldn't create file %s\n", track_filename);
+			continue;
 		}
 
 		track_blocks_written = 0;
@@ -412,11 +404,6 @@ int main(int argc, char **argv) {
 			
 			offset = (int)dvd_cell.first_sector;
 
-			if(copy_cells) {
-				snprintf(cell_filename, 26, "dvd_track_%02i_cell_%02i.vob", dvd_tracks[ix].track, dvd_cell.cell);
-				cell_fd = open(cell_filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
-			}
-
 			// This is where you would change the boundaries -- are you dumping to a track file (no boundaries) or a VOB (boundaries)
 			while(cell_blocks_written < dvd_cell.blocks) {
 
@@ -443,13 +430,8 @@ int main(int argc, char **argv) {
 				offset += dvdread_read_blocks;
 
 				// Write the buffer to the track file
-				if(copy_tracks) {
-					bytes_written = write(track_fd, dvd_read_buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
-				}
-				// Write the buffer to the cell file
-				if(copy_cells) {
-					write(cell_fd, dvd_read_buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
-				}
+				bytes_written = write(track_fd, dvd_read_buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
+
 				if(!bytes_written) {
 					printf("* Could not write data from cell %u\n", dvd_cell.cell);
 					return 1;
@@ -470,13 +452,9 @@ int main(int argc, char **argv) {
 
 			}
 
-			if(copy_cells)
-				close(cell_fd);
-		
 		}
 
-		if(copy_tracks)
-			close(track_fd);
+		close(track_fd);
 
 		DVDCloseFile(dvdread_vts_file);
 
