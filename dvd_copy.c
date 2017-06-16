@@ -37,7 +37,6 @@
 #define DVD_COPY_BYTES_LIMIT ( DVD_COPY_BLOCK_LIMIT * DVD_VIDEO_LB_LEN )
 
 int main(int, char **);
-ssize_t dvd_copy_blocks(const int fd, unsigned char *buffer, dvd_file_t *dvdread_vts_file, const int offset, const ssize_t num_blocks);
 void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo);
 void print_usage(char *binary);
 
@@ -472,32 +471,6 @@ int main(int argc, char **argv) {
 		DVDClose(dvdread_dvd);
 	
 	return 0;
-
-}
-
-ssize_t dvd_copy_blocks(const int fd, unsigned char *buffer, dvd_file_t *dvdread_vts_file, const int offset, const ssize_t num_blocks) {
-
-	// unsigned char *buffer = NULL;
-	ssize_t num_copied = 0;
-	ssize_t blocks = 0;
-
-	buffer = (unsigned char *)calloc(1, (uint64_t)DVD_COPY_BYTES_LIMIT * sizeof(unsigned char));
-	if(buffer == NULL)
-		return -2;
-
-	blocks = DVDReadBlocks(dvdread_vts_file, offset, (uint64_t)num_blocks, buffer);
-
-	if(!blocks)
-		return -1;
-
-	if(blocks != num_blocks)
-		return 0;
-	
-	num_copied = write(fd, buffer, (uint64_t)(blocks * DVD_VIDEO_LB_LEN));
-
-	printf("wrote %lu num blocks offset: %i amount: %lu\n", num_copied, offset, num_blocks);
-
-	return num_copied;
 
 }
 
