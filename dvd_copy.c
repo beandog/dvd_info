@@ -111,9 +111,7 @@ int main(int argc, char **argv) {
 				if(arg_last_chapter < arg_first_chapter)
 					arg_last_chapter = arg_first_chapter;
 
-				printf("chapters %u to %u\n", arg_first_chapter, arg_last_chapter);
-
-				return 0;
+				break;
 
 			case 'h':
 				print_usage("dvd_copy");
@@ -296,6 +294,19 @@ int main(int argc, char **argv) {
 	
 	dvd_track = dvd_tracks[dvd_copy.track - 1];
 
+	// Set the proper chapter range
+	if(arg_first_chapter > dvd_track.chapters) {
+		dvd_copy.first_chapter = dvd_track.chapters;
+		fprintf(stderr, "Resetting first chapter to %u\n", dvd_copy.first_chapter);
+	} else
+		dvd_copy.first_chapter = arg_first_chapter;
+	
+	if(arg_last_chapter > dvd_track.chapters) {
+		dvd_copy.last_chapter = dvd_track.chapters;
+		fprintf(stderr, "Resetting last chapter to %u\n", dvd_copy.last_chapter);
+	} else
+		dvd_copy.last_chapter = arg_last_chapter;
+	
 	// Set default filename
 	snprintf(dvd_copy.filename, 17, "dvd_track_%02u.vob", dvd_copy.track);
 	printf("dvd_copy.filename: %s\n", dvd_copy.filename);
