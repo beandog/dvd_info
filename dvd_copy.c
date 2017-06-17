@@ -45,6 +45,10 @@ struct dvd_copy {
 	uint16_t track;
 	uint8_t first_chapter;
 	uint8_t last_chapter;
+	uint8_t first_cell;
+	uint8_t last_cell;
+	ssize_t blocks;
+	ssize_t filesize;
 	char filename[PATH_MAX];
 	int fd;
 };
@@ -79,6 +83,10 @@ int main(int argc, char **argv) {
 	dvd_copy.track = 1;
 	dvd_copy.first_chapter = 1;
 	dvd_copy.last_chapter = 99;
+	dvd_copy.first_cell = 1;
+	dvd_copy.last_cell = 1;
+	dvd_copy.blocks = 0;
+	dvd_copy.filesize = 0;
 	strncpy(dvd_copy.filename, "dvd_track_01.vob", 17);
 	dvd_copy.fd = -1;
 
@@ -269,9 +277,6 @@ int main(int argc, char **argv) {
 	uint16_t ix = 0;
 	uint16_t track = 1;
 	
-	uint8_t c = 0;
-	uint8_t cell = 1;
-
 	uint32_t longest_msecs = 0;
 	
 	for(ix = 0, track = 1; ix < dvd_info.tracks; ix++, track++) {
@@ -354,75 +359,95 @@ int main(int argc, char **argv) {
 
 	track_blocks_written = 0;
 
-	for(c = 0, cell = 1; c < dvd_track.cells; c++, cell++) {
+	dvd_copy.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_copy.first_chapter);
+	dvd_copy.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_copy.last_chapter);
 
-		dvd_cell.cell = cell;
-		dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-		dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-		dvd_cell.first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-		dvd_cell.last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-		strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell), DVD_CELL_LENGTH);
-		cell_sectors = dvd_cell.last_sector - dvd_cell.first_sector;
-
-		printf("        Cell: %02u, Filesize: %lu, Blocks: %lu, Sectors: %i to %i\n", dvd_cell.cell, dvd_cell.filesize, dvd_cell.blocks, dvd_cell.first_sector, dvd_cell.last_sector);
-
-		cell_blocks_written = 0;
-
-		if(dvd_cell.last_sector > dvd_cell.first_sector)
-			cell_sectors++;
-
-		if(dvd_cell.last_sector < dvd_cell.first_sector) {
-			printf("* DEBUG Someone doing something nasty? The last sector is listed before the first; skipping cell\n");
-			continue;
-		}
+	// Get limits of copy
+	for(dvd_cell.cell = dvd_copy.first_cell; dvd_cell.cell < dvd_copy.last_cell + 1; dvd_cell.cell++) {
 		
-		offset = (int)dvd_cell.first_sector;
+		dvd_copy.blocks += dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+		dvd_copy.filesize += dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 
-		// This is where you would change the boundaries -- are you dumping to a track file (no boundaries) or a VOB (boundaries)
-		while(cell_blocks_written < dvd_cell.blocks) {
+	}
 
-			// Reset to the defaults
-			read_blocks = DVD_COPY_BLOCK_LIMIT;
+	struct dvd_chapter dvd_chapter;
 
-			if(read_blocks > (dvd_cell.blocks - cell_blocks_written)) {
-				read_blocks = dvd_cell.blocks - cell_blocks_written;
+	for(dvd_chapter.chapter = dvd_copy.first_chapter; dvd_chapter.chapter < dvd_copy.last_chapter + 1; dvd_chapter.chapter++) {
+
+		dvd_chapter.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
+		dvd_chapter.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
+		strncpy(dvd_chapter.length, dvd_chapter_length(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter), DVD_CHAPTER_LENGTH);
+
+		for(dvd_cell.cell = dvd_chapter.first_cell; dvd_cell.cell < dvd_chapter.last_cell + 1; dvd_cell.cell++) {
+
+			dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+			dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+			dvd_cell.first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+			dvd_cell.last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+			strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell), DVD_CELL_LENGTH);
+			cell_sectors = dvd_cell.last_sector - dvd_cell.first_sector;
+
+			printf("        Chapter: %02u, Cell: %02u, Filesize: %lu, Blocks: %lu, Sectors: %i to %i\n", dvd_chapter.chapter, dvd_cell.cell, dvd_cell.filesize, dvd_cell.blocks, dvd_cell.first_sector, dvd_cell.last_sector);
+
+			cell_blocks_written = 0;
+
+			if(dvd_cell.last_sector > dvd_cell.first_sector)
+				cell_sectors++;
+
+			if(dvd_cell.last_sector < dvd_cell.first_sector) {
+				printf("* DEBUG Someone doing something nasty? The last sector is listed before the first; skipping cell\n");
+				continue;
 			}
+			
+			offset = (int)dvd_cell.first_sector;
 
-			dvdread_read_blocks = DVDReadBlocks(dvdread_vts_file, offset, (uint64_t)read_blocks, dvd_read_buffer);
-			if(!dvdread_read_blocks) {
-				printf("* Could not read data from cell %u\n", dvd_cell.cell);
-				return 1;
+			// This is where you would change the boundaries -- are you dumping to a track file (no boundaries) or a VOB (boundaries)
+			while(cell_blocks_written < dvd_cell.blocks) {
+
+				// Reset to the defaults
+				read_blocks = DVD_COPY_BLOCK_LIMIT;
+
+				if(read_blocks > (dvd_cell.blocks - cell_blocks_written)) {
+					read_blocks = dvd_cell.blocks - cell_blocks_written;
+				}
+
+				dvdread_read_blocks = DVDReadBlocks(dvdread_vts_file, offset, (uint64_t)read_blocks, dvd_read_buffer);
+				if(!dvdread_read_blocks) {
+					printf("* Could not read data from cell %u\n", dvd_cell.cell);
+					return 1;
+				}
+
+				// Check to make sure the amount read was what we wanted
+				if(dvdread_read_blocks != read_blocks) {
+					printf("*** Asked for %ld and only got %ld\n", read_blocks, dvdread_read_blocks);
+					return 1;
+				}
+
+				// Increment the offsets
+				offset += dvdread_read_blocks;
+
+				// Write the buffer to the track file
+				bytes_written = write(dvd_copy.fd, dvd_read_buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
+
+				if(!bytes_written) {
+					printf("* Could not write data from cell %u\n", dvd_cell.cell);
+					return 1;
+				}
+
+				// Check to make sure we wrote as much as we asked for
+				if(bytes_written != dvdread_read_blocks * DVD_VIDEO_LB_LEN) {
+					printf("*** Tried to write %ld bytes and only wrote %ld instead\n", dvdread_read_blocks * DVD_VIDEO_LB_LEN, bytes_written);
+					return 1;
+				}
+
+				// Increment the amount of blocks written
+				cell_blocks_written += dvdread_read_blocks;
+				track_blocks_written += dvdread_read_blocks;
+
+				printf("Progress %lu%%\r", track_blocks_written * 100 / dvd_copy.blocks);
+				fflush(stdout);
+
 			}
-
-			// Check to make sure the amount read was what we wanted
-			if(dvdread_read_blocks != read_blocks) {
-				printf("*** Asked for %ld and only got %ld\n", read_blocks, dvdread_read_blocks);
-				return 1;
-			}
-
-			// Increment the offsets
-			offset += dvdread_read_blocks;
-
-			// Write the buffer to the track file
-			bytes_written = write(dvd_copy.fd, dvd_read_buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
-
-			if(!bytes_written) {
-				printf("* Could not write data from cell %u\n", dvd_cell.cell);
-				return 1;
-			}
-
-			// Check to make sure we wrote as much as we asked for
-			if(bytes_written != dvdread_read_blocks * DVD_VIDEO_LB_LEN) {
-				printf("*** Tried to write %ld bytes and only wrote %ld instead\n", dvdread_read_blocks * DVD_VIDEO_LB_LEN, bytes_written);
-				return 1;
-			}
-
-			// Increment the amount of blocks written
-			cell_blocks_written += dvdread_read_blocks;
-			track_blocks_written += dvdread_read_blocks;
-
-			printf("Progress %lu%%\r", track_blocks_written * 100 / dvd_track.blocks);
-			fflush(stdout);
 
 		}
 
