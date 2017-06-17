@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
@@ -9,7 +10,6 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <getopt.h>
-#include <inttypes.h>
 #ifdef __linux__
 #include <linux/cdrom.h>
 #include "dvd_drive.h"

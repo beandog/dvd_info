@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -7,7 +8,6 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <stdbool.h>
-#include <inttypes.h>
 #include <linux/cdrom.h>
 #include <linux/limits.h>
 #include <dvdread/dvd_reader.h>

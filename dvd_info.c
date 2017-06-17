@@ -7,7 +7,6 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <getopt.h>
-#include <inttypes.h>
 #include "dvd_info.h"
 #include "dvd_device.h"
 #include "dvd_vmg_ifo.h"
