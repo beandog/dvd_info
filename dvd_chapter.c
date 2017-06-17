@@ -42,7 +42,7 @@ uint8_t dvd_chapter_first_cell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 uint8_t dvd_chapter_last_cell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
-		return 0;
+		return chapter_number;
 
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
