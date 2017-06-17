@@ -56,6 +56,7 @@ int main(int argc, char **argv) {
 	 */
 
 	bool opt_track_number = false;
+	bool opt_chapter_number = false;
 	uint16_t arg_track_number = 0;
 	int long_index = 0;
 	int opt = 0;
@@ -86,9 +87,7 @@ int main(int argc, char **argv) {
 		switch(opt) {
 
 			case 'c':
-				arg_first_chapter = 1;
-				arg_last_chapter = 99;
-
+				opt_chapter_number = true;
 				token = strtok(optarg, "-"); {
 					if(strlen(token) > 2) {
 						fprintf(stderr, "Chapter range must be between 1 and 99\n");
@@ -295,17 +294,22 @@ int main(int argc, char **argv) {
 	dvd_track = dvd_tracks[dvd_copy.track - 1];
 
 	// Set the proper chapter range
-	if(arg_first_chapter > dvd_track.chapters) {
-		dvd_copy.first_chapter = dvd_track.chapters;
-		fprintf(stderr, "Resetting first chapter to %u\n", dvd_copy.first_chapter);
-	} else
-		dvd_copy.first_chapter = arg_first_chapter;
-	
-	if(arg_last_chapter > dvd_track.chapters) {
+	if(opt_chapter_number) {
+		if(arg_first_chapter > dvd_track.chapters) {
+			dvd_copy.first_chapter = dvd_track.chapters;
+			fprintf(stderr, "Resetting first chapter to %u\n", dvd_copy.first_chapter);
+		} else
+			dvd_copy.first_chapter = arg_first_chapter;
+		
+		if(arg_last_chapter > dvd_track.chapters) {
+			dvd_copy.last_chapter = dvd_track.chapters;
+			fprintf(stderr, "Resetting last chapter to %u\n", dvd_copy.last_chapter);
+		} else
+			dvd_copy.last_chapter = arg_last_chapter;
+	} else {
+		dvd_copy.first_chapter = 1;
 		dvd_copy.last_chapter = dvd_track.chapters;
-		fprintf(stderr, "Resetting last chapter to %u\n", dvd_copy.last_chapter);
-	} else
-		dvd_copy.last_chapter = arg_last_chapter;
+	}
 	
 	// Set default filename
 	snprintf(dvd_copy.filename, 17, "dvd_track_%02u.vob", dvd_copy.track);
