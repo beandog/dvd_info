@@ -294,6 +294,8 @@ int main(int argc, char **argv) {
 	
 	uint8_t c = 0;
 	uint8_t cell = 1;
+
+	uint32_t longest_msecs = 0;
 	
 	for(ix = 0, track = 1; ix < dvd_info.tracks; ix++, track++) {
  
@@ -301,9 +303,18 @@ int main(int argc, char **argv) {
 		vts_ifo = vts_ifos[vts];
 		dvd_track_info(&dvd_tracks[ix], track, vmg_ifo, vts_ifo);
 
+		if(dvd_tracks[ix].msecs > longest_msecs) {
+			dvd_info.longest_track = track;
+			longest_msecs = dvd_tracks[ix].msecs;
+		}
+
 		// printf("Track: %02u, Length: %s Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u\n", track, dvd_tracks[ix].length, dvd_tracks[ix].chapters, dvd_tracks[ix].cells, dvd_tracks[ix].audio_tracks, dvd_tracks[ix].subtitles);
 
 	}
+
+	// Set the track number to rip if none is passed as an argument
+	if(!opt_track_number)
+		d_first_track = dvd_info.longest_track;
 
 	/**
 	 * File descriptors and filenames
