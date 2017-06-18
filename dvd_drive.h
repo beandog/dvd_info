@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "dvd_device.h"
 
+#ifdef __linux__
 int dvd_drive_get_status(const char *device_filename);
 
 bool dvd_drive_has_media(const char *device_filename);
@@ -15,5 +16,6 @@ bool dvd_drive_is_closed(const char *device_filename);
 bool dvd_drive_is_ready(const char *device_filename);
 
 void dvd_drive_display_status(const char *device_filename);
+#endif
 
 #endif

@@ -1,6 +1,6 @@
-#ifdef __linux__
-
 #include "dvd_drive.h"
+
+#ifdef __linux__
 
 /**
  * @file dvd_drive.h
