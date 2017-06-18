@@ -10,7 +10,7 @@
 #elif defined (__FreeBSD__)
 #define DEFAULT_DVD_DEVICE "/dev/cd0"
 #elif defined (__NetBSD__)
-#define DEFAULT_DVD_DEVICE "/dev/rcd0d"
+#define DEFAULT_DVD_DEVICE "/dev/cd0d"
 #elif defined (__OpenBSD__)
 #define DEFAULT_DVD_DEVICE "/dev/rcd0c"
 #elif defined (__APPLE__) && defined (__MACH__)
