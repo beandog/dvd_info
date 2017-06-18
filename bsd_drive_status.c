@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <dvdread/dvd_reader.h>
+#include <dvdread/ifo_read.h>
 #if defined (__NetBSD__) || defined (__OpenBSD__)
 #include <util.h>
 #endif
@@ -24,6 +25,13 @@
 /**
  * bsd_drive_status.c
  * Get the status of a DVD drive tray
+
+ * Exit codes:
+ * 0 - ran succesfully
+ * 1 - ran with errors
+ * 2 - drive is closed with no disc OR drive is open
+ * 3 - drive is closed with a DVD
+ * 4 - drive is closed with a disc that is not a DVD
  */
 
 /*
@@ -36,12 +44,6 @@
  *  
  * To compile:
  * gcc -o dvd_drive_status bsd_drive_status.c -I/usr/local/include -L/usr/local/lib -ldvdread -lutil
- *
- * Exit codes:
- * 0 - ran succesfully
- * 1 - ran with errors
- * 2 - drive is closed with no disc OR drive is open
- * 3 - drive is closed with a disc
  *
  * OpenBSD's kernel doesn't seem to have a 'polling' status for the drive,
  * because it doesn't allow opening the raw device while it's in that state.
@@ -93,12 +95,12 @@ int main(int argc, char **argv) {
 		raw_device_filename = DEFAULT_DVD_RAW_DEVICE;
 	}
 
-	int fd;
+	int fd = -1;
 
 	fd = open(raw_device_filename, O_RDONLY);
 
 	if(fd < 0) {
-		fprintf(stderr, "Could not open device %s\n", raw_device_filename);
+		fprintf(stderr, "could not open device %s\n", raw_device_filename);
 		return 1;
 	}
 	
@@ -109,7 +111,6 @@ int main(int argc, char **argv) {
 	if(fd < 0) {
 		if(errno == EIO) {
 			printf("drive is closed with no disc OR drive is open\n");
-			close(fd);
 			return 2;
 		// I've somehow thrown this error a few times, but don't know how :| 
 		/*
@@ -119,18 +120,36 @@ int main(int argc, char **argv) {
 			return 2;
 		*/
 		} else {
-			close(fd);
 			fprintf(stderr, "something unexpected happnd ... send a bug report! returned errno: %i\n", errno);
 			return 1;
 		}
 
 	}
 
-	if(DVDOpen(device_filename)) {
+	/**
+	 * Look to see if the disc in the drive is a DVD or not.
+	 * libdvdread will open any disc just fine, so scan it to see if there
+	 * is a VMG IFO as well as an additional check.
+	 */
+	dvd_reader_t *dvdread_dvd = NULL;
+	dvdread_dvd = DVDOpen(device_filename);
+	if(dvdread_dvd) {
 
-		printf("drive closed with disc\n");
-		close(fd);
-		return 3;
+		ifo_handle_t *vmg_ifo = NULL;
+		vmg_ifo = ifoOpen(dvdread_dvd, 0);
+
+		if(vmg_ifo != NULL) {
+			printf("drive is closed with a DVD\n");
+			DVDClose(dvdread_dvd);
+			close(fd);
+			return 3;
+		} else {
+			ifoClose(vmg_ifo);
+			DVDClose(dvdread_dvd);
+			close(fd);
+			printf("drive is closed with a disc that is not a DVD\n");
+			return 4;
+		}
 
 	}
 
