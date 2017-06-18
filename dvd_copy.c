@@ -387,7 +387,7 @@ int main(int argc, char **argv) {
 			strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell), DVD_CELL_LENGTH);
 			cell_sectors = dvd_cell.last_sector - dvd_cell.first_sector;
 
-			printf("        Chapter: %02u, Cell: %02u, Filesize: %lu, Blocks: %lu, Sectors: %i to %i\n", dvd_chapter.chapter, dvd_cell.cell, dvd_cell.filesize, dvd_cell.blocks, dvd_cell.first_sector, dvd_cell.last_sector);
+			printf("        Chapter: %02u, Cell: %02u, VTS: %u, Filesize: %lu, Blocks: %lu, Sectors: %i to %i\n", dvd_chapter.chapter, dvd_cell.cell, vts, dvd_cell.filesize, dvd_cell.blocks, dvd_cell.first_sector, dvd_cell.last_sector);
 
 			cell_blocks_written = 0;
 
