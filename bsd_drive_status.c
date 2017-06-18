@@ -7,16 +7,24 @@
 #include <unistd.h>
 #include <errno.h>
 #include <dvdread/dvd_reader.h>
+#if defined (__NetBSD__) || defined (__OpenBSD__)
+#include <util.h>
+#endif
+#ifdef __FreeBSD__
+#define DEFAULT_DVD_RAW_DEVICE "/dev/cd0"
+#endif
+#ifdef __NetBSD__
+#define DEFAULT_DVD_RAW_DEVICE "/dev/rcd0d"
+#endif
+#ifdef __OpenBSD__
+#define DEFAULT_DVD_RAW_DEVICE "/dev/rcd0c"
+#endif
+#include "dvd_device.h"
 
 /**
  * bsd_drive_status.c
  * Get the status of a DVD drive tray
  */
-
-
-#ifdef __OpenBSD__
-#include <util.h>
-#define DVD_INFO_DEFAULT_DVD_RAW_DEVICE "/dev/rcd0c"
 
 /*
  *   ___                   ____ ____  ____  
@@ -43,15 +51,7 @@
  * cd0(atapiscsi0:0:0): Check Condition (error 0x70) on opcode 0x0
  *   SENSE KEY: Not Ready
  *    ASC/ASCQ: Medium Not Present
- */
-
-#endif
-
-#ifdef __NetBSD__
-#include <util.h>
-#define DVD_INFO_DEFAULT_DVD_RAW_DEVICE "/dev/rcd0d"
-
-/*
+ *
  *  _   _      _   ____ ____  ____  
  * | \ | | ___| |_| __ ) ___||  _ \
  * |  \| |/ _ \ __|  _ \___ \| | | |
@@ -62,14 +62,6 @@
  * To compile:
  * gcc -o dvd_drive_status bsd_drive_status.c -I/usr/pkg/include -Wl,-R/usr/pkg/lib -L/usr/pkg/lib -ldvdread -lutil
  *
- */
-
-#endif
-
-#ifdef __FreeBSD__
-#define DVD_INFO_DEFAULT_DVD_RAW_DEVICE "/dev/cd0"
-
-/*
  *  _____              ____ ____  ____  
  * |  ___| __ ___  ___| __ ) ___||  _ \
  * | |_ | '__/ _ \/ _ \  _ \___ \| | | |
@@ -79,69 +71,45 @@
  *
  * To compile:
  * gcc -o dvd_drive_status bsd_drive_status.c -I/usr/local/include -L/usr/local/lib -ldvdread
+ *
  */
-  
-#endif
 
 int main(int argc, char **argv) {
 
-	// Device filename length will never exceed 11 chars, and check for any "-" flags passed
-	if((argc > 1 && strlen(argv[1]) > 11) || (argc > 2) || (argc > 1 && (strncmp(argv[1], "-", 1) == 0))) {
-		printf("dvd_drive_status [device]\n");
-		return 0;
+	if(argc == 2 || argc > 3 || (argc > 1 && strncmp(&argv[0][0], "-", 1) == 0)) {
+		printf("dvd_drive_status [dvd_device dvd_raw_device]\n");
+		printf("Default devices: %s %s\n", DEFAULT_DVD_DEVICE, DEFAULT_DVD_RAW_DEVICE);
+		return 1;
 	}
 
 	char *device_filename;
-	char raw_device[11] = {'\0'};
-	char block_device[10] = {'\0'};
-	bool valid_device = false;
+	char *raw_device_filename;
 
-	if(argc > 1)
+	if(argc > 2) {
 		device_filename = argv[1];
-	else
-		device_filename = DVD_INFO_DEFAULT_DVD_RAW_DEVICE;
+		raw_device_filename = argv[2];
+	} else {
+		device_filename = DEFAULT_DVD_DEVICE;
+		raw_device_filename = DEFAULT_DVD_RAW_DEVICE;
+	}
 
-	if(strlen(device_filename) == 3 && (strncmp(device_filename, "cd", 2) == 0) && isdigit(device_filename[2])) {
-		valid_device = true;
-		raw_device[8] = device_filename[2];
-		snprintf(raw_device, 11, "/dev/rcd%cc", device_filename[2]);
-		snprintf(block_device, 10, "/dev/cd%cc", device_filename[2]);
+	int fd;
+
+	fd = open(raw_device_filename, O_RDONLY);
+
+	if(fd < 0) {
+		fprintf(stderr, "Could not open device %s\n", raw_device_filename);
+		return 1;
 	}
 	
-	if(strlen(device_filename) == 9 && (strncmp(device_filename, "/dev/cd", 7) == 0) && isdigit(device_filename[7]) && device_filename[8] == 'c') {
-		valid_device = true;
-		snprintf(raw_device, 11, "/dev/rcd%cc", device_filename[7]);
-		snprintf(block_device, 10, "/dev/cd%cc", device_filename[7]);
-	}
+	close(fd);
 
-	if(strlen(device_filename) == 10 && (strncmp(device_filename, "/dev/rcd", 8) == 0) && isdigit(device_filename[8]) && device_filename[9] == 'c') {
-		valid_device = true;
-		snprintf(raw_device, 11, "/dev/rcd%cc", device_filename[8]);
-		snprintf(block_device, 10, "/dev/cd%cc", device_filename[8]);
-	}
+	fd = open(DEFAULT_DVD_DEVICE, O_RDONLY);
 
-	if(!valid_device) {
-		printf("invalid device: %s\n", device_filename);
-		return 1;
-	}
-
-	int fd_raw_device;
-
-	fd_raw_device = open(raw_device, O_RDONLY);
-
-	if(fd_raw_device < 0) {
-		printf("could not open device %s\n", raw_device);
-		return 1;
-	}
-
-	int fd_block_device;
-
-	fd_block_device = open(block_device, O_RDONLY);
-
-	if(fd_block_device < 0) {
+	if(fd < 0) {
 		if(errno == EIO) {
 			printf("drive is closed with no disc OR drive is open\n");
-			close(fd_raw_device);
+			close(fd);
 			return 2;
 		// I've somehow thrown this error a few times, but don't know how :| 
 		/*
@@ -151,24 +119,22 @@ int main(int argc, char **argv) {
 			return 2;
 		*/
 		} else {
-			close(fd_raw_device);
-			printf("something unexpected happnd ... send a bug report! returned errno: %i\n", errno);
+			close(fd);
+			fprintf(stderr, "something unexpected happnd ... send a bug report! returned errno: %i\n", errno);
 			return 1;
 		}
 
 	}
 
-	if(DVDOpen(block_device)) {
+	if(DVDOpen(device_filename)) {
 
 		printf("drive closed with disc\n");
-		close(fd_raw_device);
-		close(fd_block_device);
+		close(fd);
 		return 3;
 
 	}
 
-	close(fd_raw_device);
-	close(fd_block_device);
+	close(fd);
 
 	return 0;
 
