@@ -3,37 +3,38 @@
 const char *dvd_title(const char *device_filename) {
 
 	char dvd_title[DVD_TITLE + 1] = {'\0'};
-	FILE *filehandle = 0;
-	size_t x = 0;
-	size_t y = 0;
+	int fd = -1;	
+
 
 	// If we can't even open the device, exit quietly
-	filehandle = fopen(device_filename, "r");
-	if(filehandle == NULL) {
+	fd = open(device_filename, O_RDONLY | O_NONBLOCK);
+	if(fd == -1) {
 		return "";
 	}
 
 	// The DVD title is on the volume, and doesn't need the dvdread or
 	// dvdnav library to access it.
-	if(fseek(filehandle, 32808, SEEK_SET) == -1) {
-		fclose(filehandle);
+	if(lseek(fd, 32768, SEEK_SET) != 32768) {
+		close(fd);
 		return "";
 	}
 
-	x = fread(dvd_title, 1, DVD_TITLE, filehandle);
-	dvd_title[DVD_TITLE] = '\0';
-	if(x == 0) {
-		fclose(filehandle);
+	char buffer[2048] = {'\0'};
+
+	if(read(fd, buffer, 2048) != 2048) {
+		close(fd);
 		return "";
 	}
+	snprintf(dvd_title, DVD_TITLE, "%s", buffer + 40);
 
-	fclose(filehandle);
+	close(fd);
 
 	// Right trim the string
-	y = strlen(dvd_title);
-	while(y-- > 2) {
-		if(dvd_title[y] == ' ') {
-			dvd_title[y] = '\0';
+	unsigned long l = 0;
+	l = strlen(dvd_title);
+	while(l-- > 2) {
+		if(dvd_title[l] == ' ') {
+			dvd_title[l] = '\0';
 		}
 	}
 
