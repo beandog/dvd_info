@@ -318,7 +318,6 @@ int main(int argc, char **argv) {
 	
 	// Set default filename
 	snprintf(dvd_copy.filename, 17, "dvd_track_%02u.vob", dvd_copy.track);
-	printf("dvd_copy.filename: %s\n", dvd_copy.filename);
 
 	/**
 	 * Integers for numbers of blocks read, copied, counters
