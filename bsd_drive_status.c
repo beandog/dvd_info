@@ -8,16 +8,13 @@
 #include <errno.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
-#if defined (__NetBSD__) || defined (__OpenBSD__)
-#include <util.h>
-#endif
-#ifdef __FreeBSD__
+#if defined (__FreeBSD__)
 #define DEFAULT_DVD_RAW_DEVICE "/dev/cd0"
-#endif
-#ifdef __NetBSD__
+#elif defined (__NetBSD__)
+#include <util.h>
 #define DEFAULT_DVD_RAW_DEVICE "/dev/rcd0d"
-#endif
-#ifdef __OpenBSD__
+#elif defined (__OpenBSD__)
+#include <util.h>
 #define DEFAULT_DVD_RAW_DEVICE "/dev/rcd0c"
 #endif
 #include "dvd_device.h"
