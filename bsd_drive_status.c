@@ -97,7 +97,10 @@ int main(int argc, char **argv) {
 	fd = open(raw_device_filename, O_RDONLY);
 
 	if(fd < 0) {
-		fprintf(stderr, "could not open device %s\n", raw_device_filename);
+		if(errno == EACCES)
+			fprintf(stderr, "could not open device %s permission denied\n", raw_device_filename);
+		else
+			fprintf(stderr, "could not open device %s (errno: %i)\n", raw_device_filename, errno);
 		return 1;
 	}
 	
@@ -128,7 +131,7 @@ int main(int argc, char **argv) {
 	 */
 	dvd_reader_t *dvdread_dvd = NULL;
 	
-	// NetBSD will throw syslog messages if there's a disc in the drive that's
+	// FreeBSD and NetBSD will throw syslog messages if there's a disc in the drive that's
 	// not a DVD.
 	dvdread_dvd = DVDOpen(device_filename);
 	if(dvdread_dvd) {
