@@ -71,7 +71,12 @@ int main(int argc, char **argv) {
         if(eject_device) {
 
 		errno = 0;
+#ifdef __NetBSD__
+		int arg = 0;
+		retval = ioctl(cdrom, DIOCEJECT, &arg);
+#else
 		retval = ioctl(cdrom, CDIOCEJECT);
+#endif
 
 		if(retval < 0) {
 			fprintf(stderr, "Could not eject tray (errno: %i)\n", errno);
