@@ -6,6 +6,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/cdio.h>
+#ifdef __OpenBSD__
+#include <sys/dkio.h>
+#endif
 #include <sys/ioctl.h>
 
 #if defined (__FreeBSD__)
@@ -71,7 +74,7 @@ int main(int argc, char **argv) {
         if(eject_device) {
 
 		errno = 0;
-#ifdef __NetBSD__
+#if defined(__NetBSD__) || defined(__OpenBSD__)
 		int arg = 0;
 		retval = ioctl(cdrom, DIOCEJECT, &arg);
 #else
