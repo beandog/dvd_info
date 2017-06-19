@@ -38,12 +38,11 @@ int main(int argc, char **argv) {
 
 	}
 
-	char device_filename[11] = {'\0'};
-	if(argv[optind]) {
-		strncpy(device_filename, argv[optind], 10);
-	} else {
-		strncpy(device_filename, DEFAULT_DVD_DEVICE, 10);
-	}
+	const char *device_filename = NULL;
+	if(argv[optind])
+		device_filename = argv[optind];
+	else
+		device_filename = DEFAULT_DVD_DEVICE;
 
 	int cdrom = -1;
         cdrom = open(device_filename, O_RDONLY);
@@ -61,20 +60,37 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+/* See /usr/src/usr.sbin/cdcontrol/cdcontrol.c */
+#ifdef __FreeBSD__
+	int i = -1;
+ 	i = ioctl(cdrom, CDIOCALLOW);
+#endif
+
+	int retval = -1;
+
         if(eject_device) {
 
-		int retval = 0;
+		errno = 0;
 		retval = ioctl(cdrom, CDIOCEJECT);
 
 		if(retval < 0) {
-			printf("retval: %i\n", retval);
-			printf("errno: %i\n", errno);
+			fprintf(stderr, "Could not eject tray (errno: %i)\n", errno);
+			close(cdrom);
+			return 1;
+		}
+
+	} else {
+
+		errno = 0;
+		retval = ioctl(cdrom, CDIOCCLOSE);
+		
+		if(retval < 0) {
+			fprintf(stderr, "Could not close tray (errno: %i)\n", errno);
 			close(cdrom);
 			return 1;
 		}
 
 	}
-	
 
 	close(cdrom);
 
