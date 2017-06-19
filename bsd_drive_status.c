@@ -142,6 +142,8 @@ int main(int argc, char **argv) {
 	if(dvdread_dvd) {
 
 		ifo_handle_t *vmg_ifo = NULL;
+		
+		// OpenBSD will throw a syslog error here if the tray is open
 		vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
 		if(vmg_ifo == NULL) {
