@@ -81,8 +81,8 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	char *device_filename;
-	char *raw_device_filename;
+	const char *device_filename = NULL;
+	const char *raw_device_filename = NULL;
 
 	if(argc > 2) {
 		device_filename = argv[1];
@@ -106,18 +106,16 @@ int main(int argc, char **argv) {
 	fd = open(DEFAULT_DVD_DEVICE, O_RDONLY);
 
 	if(fd < 0) {
-		if(errno == EIO) {
-			printf("drive is closed with no disc OR drive is open\n");
+#ifdef __NetBSD__
+		if(errno == ENODEV)
+#else
+		if(errno == EIO)
+#endif
+		{
+			printf("drive is closed with no disc or drive is open\n");
 			return 2;
-		// I've somehow thrown this error a few times, but don't know how :| 
-		/*
-		} else if(errno == ENXIO || errno == ENOMEDIUM) {
-			printf("drive closed with no disc\n");
-			close(fd_raw_device);
-			return 2;
-		*/
 		} else {
-			fprintf(stderr, "something unexpected happnd ... send a bug report! returned errno: %i\n", errno);
+			fprintf(stderr, "could not detect drive status (errno: %i)\n", errno);
 			return 1;
 		}
 
@@ -129,6 +127,9 @@ int main(int argc, char **argv) {
 	 * is a VMG IFO as well as an additional check.
 	 */
 	dvd_reader_t *dvdread_dvd = NULL;
+	
+	// NetBSD will throw syslog messages if there's a disc in the drive that's
+	// not a DVD.
 	dvdread_dvd = DVDOpen(device_filename);
 	if(dvdread_dvd) {
 
