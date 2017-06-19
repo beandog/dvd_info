@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <getopt.h>
+#include <limits.h>
 #ifdef __linux__
 #include <linux/cdrom.h>
 #include "dvd_drive.h"
