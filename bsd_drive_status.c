@@ -22,7 +22,12 @@
 /**
  * bsd_drive_status.c
  * Get the status of a DVD drive tray
-
+ *
+ * This program does its best to tell you if there is a DVD tray in the drive,
+ * not the SCSI status of the device (doing so would require lower-level code).
+ * Because of that, you may see some errors thrown to syslog while trying to
+ * access filesystems that aren't there or devices that aren't ready.
+ *
  * Exit codes:
  * 0 - ran succesfully
  * 1 - ran with errors
@@ -106,7 +111,7 @@ int main(int argc, char **argv) {
 	
 	close(fd);
 
-	fd = open(DEFAULT_DVD_DEVICE, O_RDONLY);
+	fd = open(device_filename, O_RDONLY);
 
 	if(fd < 0) {
 #ifdef __NetBSD__
@@ -139,17 +144,22 @@ int main(int argc, char **argv) {
 		ifo_handle_t *vmg_ifo = NULL;
 		vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
-		if(vmg_ifo != NULL) {
+		if(vmg_ifo == NULL) {
+			ifoClose(vmg_ifo);
+			DVDClose(dvdread_dvd);
+			close(fd);
+#ifdef __OpenBSD__
+			printf("drive is closed with no disc or non-DVD or drive is open\n");
+			return 2;
+#else
+			printf("drive is closed with a disc that is not a DVD\n");
+			return 4;
+#endif
+		} else {
 			printf("drive is closed with a DVD\n");
 			DVDClose(dvdread_dvd);
 			close(fd);
 			return 3;
-		} else {
-			ifoClose(vmg_ifo);
-			DVDClose(dvdread_dvd);
-			close(fd);
-			printf("drive is closed with a disc that is not a DVD\n");
-			return 4;
 		}
 
 	}
