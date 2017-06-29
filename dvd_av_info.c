@@ -135,10 +135,9 @@ int main(int argc, char **argv) {
 	printf("* video codec name: %s\n", video_codec->name);
 	printf("* video start_time: %lu\n", video_stream->start_time);
 	printf("* video duration: %lu\n", video_stream->duration);
-	// all three will be 0
+	// both will be 0
 	// printf("* video bitrate: %lu\n", video_codec_context->bit_rate);
 	// printf("* video frame size: %i\n", video_codec_context->frame_size);
-	// printf("* video bits per raw sample: %i\n", video_codec_context->bits_per_raw_sample);
 	printf("* video color range: %s\n", av_color_range_name(video_codec_context->color_range));
 	printf("* video width: %d\n", video_codec_context->width);
 	printf("* video height: %d\n", video_codec_context->height);
