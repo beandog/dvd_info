@@ -47,8 +47,6 @@ int main(int argc, char **argv) {
 	}
 
 	AVStream *data_stream = NULL;
-	AVCodec *data_codec = NULL;
-	AVCodecContext *data_codec_context = NULL;
 
 	AVStream *video_stream = NULL;
 	AVCodec *video_codec = NULL;
@@ -98,12 +96,7 @@ int main(int argc, char **argv) {
 	// If decoding from an arbitrary media file, the decoder would be found by
 	// scanning the media file. With a DVD, the data stream is DVD nav packets,
 	// the video is MPEG2, etc., so load manually
-	// data_codec = avcodec_find_decoder(data_stream->codecpar->codec_id);
-
-	data_codec = avcodec_find_decoder(AV_CODEC_ID_DVD_NAV);
-	data_codec_context = avcodec_alloc_context3(data_codec);
-	avcodec_parameters_to_context(data_codec_context, data_stream->codecpar);
-	avcodec_open2(data_codec_context, data_codec, NULL);
+	// video_codec = avcodec_find_decoder(video_stream->codecpar->codec_id);
 
 	video_codec = avcodec_find_decoder(AV_CODEC_ID_MPEG2VIDEO);
 	video_codec_context = avcodec_alloc_context3(video_codec);
