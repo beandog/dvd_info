@@ -67,15 +67,17 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	opterr = 1;
 	const char *str_options;
-	str_options = "c:ht:";
+	str_options = "c:ho:t:";
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
+	const char *output_filename = NULL;
 	char *token = NULL;
 	struct dvd_copy dvd_copy;
 
 	struct option long_options[] = {
 
 		{ "chapters", required_argument, 0, 'c' },
+		{ "output_filename", required_argument, 0, 'o' },
 		{ "track", required_argument, 0, 't' },
 		{ 0, 0, 0, 0 }
 
@@ -124,6 +126,10 @@ int main(int argc, char **argv) {
 			case 'h':
 				print_usage("dvd_copy");
 				return 0;
+
+			case 'o':
+				strncpy(dvd_copy.filename, optarg, PATH_MAX);
+				break;
 
 			case 't':
 				opt_track_number = true;
@@ -318,7 +324,8 @@ int main(int argc, char **argv) {
 	}
 	
 	// Set default filename
-	snprintf(dvd_copy.filename, 17, "dvd_track_%02u.vob", dvd_copy.track);
+	if(output_filename == NULL)
+		snprintf(dvd_copy.filename, 17, "dvd_track_%02u.vob", dvd_copy.track);
 
 	/**
 	 * Integers for numbers of blocks read, copied, counters
@@ -495,7 +502,7 @@ void print_usage(char *binary) {
 
 	printf("%s - Copy a DVD track\n", binary);
 	printf("\n");
-	printf("Usage: %s [-t track] [-c chapter[-chapter]] [dvd path]\n", binary);
+	printf("Usage: %s [-t track] [-c chapter[-chapter]] [-o filename] [dvd path]\n", binary);
 	printf("\n");
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
