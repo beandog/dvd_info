@@ -495,7 +495,7 @@ void print_usage(char *binary) {
 
 	printf("%s - Copy a DVD track\n", binary);
 	printf("\n");
-	printf("Usage: %s [-t track] [dvd path]\n", binary);
+	printf("Usage: %s [-t track] [-c chapter[-chapter]] [dvd path]\n", binary);
 	printf("\n");
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
