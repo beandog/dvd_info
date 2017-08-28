@@ -1,4 +1,4 @@
-bin_PROGRAMS = dvd_info dvd_copy dvd_id dvd_title dvd_xchap dvd_debug dvd_cat dvd_av_info dvd_ppm dvd_extract_mpeg2
+bin_PROGRAMS = dvd_info dvd_copy dvd_id dvd_title dvd_xchap dvd_debug dvd_cat dvd_ppm dvd_extract_mpeg2
 man_MANS = dvd_info.1
 
 if LINUX_DRIVE_TOOLS
@@ -15,7 +15,7 @@ dvd_info_LDADD = $(DVDREAD_LIBS)
 
 dvd_copy_SOURCES = dvd_copy.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c
 dvd_copy_CFLAGS = $(DVDREAD_CFLAGS)
-dvd_copy_LDADD = $(DVDREAD_LIBS) -lrt -lavcodec -lavformat -lavutil -lswscale -lswresample
+dvd_copy_LDADD = $(DVDREAD_LIBS)
 
 dvd_cat_SOURCES = dvd_cat.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c
 dvd_cat_CFLAGS = $(DVDREAD_CFLAGS)
