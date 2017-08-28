@@ -128,7 +128,8 @@ int main(int argc, char **argv) {
 				return 0;
 
 			case 'o':
-				strncpy(dvd_copy.filename, optarg, PATH_MAX);
+				output_filename = optarg;
+				strncpy(dvd_copy.filename, output_filename, PATH_MAX);
 				break;
 
 			case 't':
