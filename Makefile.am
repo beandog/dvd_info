@@ -1,4 +1,4 @@
-bin_PROGRAMS = dvd_info dvd_copy dvd_id dvd_title dvd_xchap dvd_debug dvd_cat dvd_ppm dvd_extract_mpeg2
+bin_PROGRAMS = dvd_info dvd_copy dvd_id dvd_title dvd_xchap dvd_debug dvd_ppm dvd_extract_mpeg2
 man_MANS = dvd_info.1
 
 if LINUX_DRIVE_TOOLS
