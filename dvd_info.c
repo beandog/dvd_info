@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
 	// Audio
 	struct dvd_audio dvd_audio;
 	dvd_audio.track = 1;
-	dvd_audio.active = 0;
+	dvd_audio.active = false;
 	memset(dvd_audio.stream_id, '\0', sizeof(dvd_audio.stream_id));
 	memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
 	memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));

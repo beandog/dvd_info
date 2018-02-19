@@ -74,15 +74,15 @@ uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
  * @param audio_track audio track
  * @return boolean
  */
-uint8_t dvd_audio_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, const uint8_t audio_track) {
+bool dvd_audio_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, const uint8_t audio_track) {
 
 	uint8_t audio_tracks = dvd_track_audio_tracks(vts_ifo);
 
 	if(audio_track > DVD_AUDIO_STREAM_LIMIT || audio_track > audio_tracks)
-		return 0;
+		return false;
 
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
-		return 0;
+		return false;
 
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
@@ -90,12 +90,12 @@ uint8_t dvd_audio_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_if
 	pgc_t *pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
 
 	if(!pgc)
-		return 0;
+		return false;
 
 	if(pgc->audio_control[audio_track - 1] & 0x8000)
-		return 1;
+		return true;
 
-	return 0;
+	return false;
 
 }
 
