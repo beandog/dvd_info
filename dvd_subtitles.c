@@ -164,7 +164,6 @@ void dvd_subtitle_lang_code(char *dest_str, const ifo_handle_t *vts_ifo, const u
  * Possible ranges: 0x20 to 0x3f
  *
  * @param subtitle_track subtitle track number
- * @return stream id
  */
 void dvd_subtitle_stream_id(char *dest_str, const uint8_t subtitle_track) {
 
