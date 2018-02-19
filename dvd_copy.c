@@ -369,7 +369,7 @@ int main(int argc, char **argv) {
 	// Open the VTS VOB
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
-	printf("Track: %02u, Length: %s Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
+	printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
 
 	dvd_copy.fd = open(dvd_copy.filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
 	if(dvd_copy.fd == -1) {
