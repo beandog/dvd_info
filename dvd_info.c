@@ -37,6 +37,8 @@ int main(int argc, char **argv) {
 	// Program name
 	bool p_dvd_info = true;
 	bool p_dvd_json = false;
+	bool p_dvd_id = false;
+	bool p_dvd_title = false;
 	char program_name[] = "dvd_info";
 
 	// lsdvd similar display output
@@ -156,7 +158,7 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	// Send 'invalid argument' to stderr
 	opterr = 1;
-	const char p_short_opts[] = "acdhjqst:Vvx";
+	const char p_short_opts[] = "acdhijqsTt:Vvx";
 
 	struct option p_long_opts[] = {
 
@@ -169,6 +171,8 @@ int main(int argc, char **argv) {
 		{ "json", no_argument, NULL, 'j' },
 		{ "track", required_argument, NULL, 't' },
 		{ "quiet", no_argument, NULL, 'q' },
+		{ "id", no_argument, NULL, 'i' },
+		{ "title", no_argument, NULL, 'T' },
 		{ "help", no_argument, NULL, 'h' },
 		{ "version", no_argument, NULL, 'V' },
 		{ 0, 0, 0, 0 }
@@ -202,6 +206,11 @@ int main(int argc, char **argv) {
 				d_cells = true;
 				break;
 
+			case 'i':
+				p_dvd_id = true;
+				p_dvd_info = false;
+				break;
+
 			case 'j':
 				p_dvd_json = true;
 				p_dvd_info = false;
@@ -218,6 +227,11 @@ int main(int argc, char **argv) {
 			case 't':
 				opt_track_number = true;
 				arg_track_number = (unsigned int)strtoumax(optarg, NULL, 0);
+				break;
+
+			case 'T':
+				p_dvd_title = true;
+				p_dvd_id = false;
 				break;
 
 			case 'v':
@@ -307,6 +321,12 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "%s: Opening DVD %s failed\n", program_name, device_filename);
 		return 1;
 	}
+
+	// dvd_id
+	if(p_dvd_id) {
+		printf("%s\n", dvdread_id);
+		return 0;
+	}
 	
 	// Open VMG IFO -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
@@ -370,11 +390,26 @@ int main(int argc, char **argv) {
 	}
 
 	// GRAB ALL THE THINGS
-	dvd_info.side = dvd_info_side(vmg_ifo);
 	dvd_title(dvd_info.title, device_filename);
+	dvd_info.side = dvd_info_side(vmg_ifo);
 	dvd_provider_id(dvd_info.provider_id, vmg_ifo);
 	dvd_vmg_id(dvd_info.vmg_id, vmg_ifo);
 	strncpy(dvd_info.dvdread_id, dvdread_id, DVD_DVDREAD_ID);
+
+	if(p_dvd_title) {
+		if(!strlen(dvd_info.title)) {
+			fprintf(stderr, "DVD titles are only printed if device is a DVD drive or a UDF image (.iso)\n");
+			if(vmg_ifo)
+				ifoClose(vmg_ifo);
+
+			if(dvdread_dvd)
+				DVDClose(dvdread_dvd);
+
+			return 1;
+		}
+		printf("%s\n", dvd_info.title);
+		goto cleanup;
+	}
 
 	/**
 	 * Track information
@@ -692,6 +727,8 @@ void print_usage(char *binary) {
 	printf("\n");
 	printf("Formatting:\n");
 	printf("  -j, --json		Display output in JSON format\n");
+	printf("  -i, --id		Display DVD id only (from libdvdread)\n");
+	printf("  -t, --title		Display DVD title only (path must be device or file)\n");
 	printf("\n");
 	printf("Other:\n");
 	printf("  -q, --quiet		Don't display DVD title, longest track\n");
