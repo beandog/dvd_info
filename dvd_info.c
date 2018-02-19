@@ -577,16 +577,16 @@ int main(int argc, char **argv) {
 		dvd_video = dvd_tracks[track_number - 1].dvd_video;
 
 		// Display track information
-		printf("Track: %02u ", dvd_track.track);
-		printf("Length: %s ", dvd_track.length);
-		printf("Chapters: %02u ", dvd_track.chapters);
-		printf("Cells: %02u ", dvd_track.cells);
-		printf("Audio streams: %02u ", dvd_track.active_audio_streams);
+		printf("Track: %02u, ", dvd_track.track);
+		printf("Length: %s, ", dvd_track.length);
+		printf("Chapters: %02u, ", dvd_track.chapters);
+		printf("Cells: %02u, ", dvd_track.cells);
+		printf("Audio streams: %02u, ", dvd_track.active_audio_streams);
 		printf("Subpictures: %02u\n", dvd_track.active_subs);
 
 		// Display video information
 		if(d_video) {
-			printf("	Video format: %s Aspect ratio: %s Width: %u Height: %u FPS: %s Display format: %s\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, dvd_video.fps, display_formats[dvd_video.df]);
+			printf("	Video format: %s, Aspect ratio: %s, Width: %u, Height: %u, FPS: %s, Display format: %s\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, dvd_video.fps, display_formats[dvd_video.df]);
 		}
 
 		// Display audio tracks
@@ -595,7 +595,7 @@ int main(int argc, char **argv) {
 			for(c = 0; c < dvd_track.audio_tracks; c++) {
 
 				dvd_audio = dvd_track.dvd_audio_tracks[c];
-				printf("        Audio: %02u Language: %s Codec: %s Channels: %u Stream id: %s Active: %s\n", dvd_audio.track, (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"), dvd_audio.codec, dvd_audio.channels, dvd_audio.stream_id, (dvd_audio.active ? "yes" : "no"));
+				printf("        Audio: %02u, Language: %s, Codec: %s, Channels: %u, Stream id: %s, Active: %s\n", dvd_audio.track, (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"), dvd_audio.codec, dvd_audio.channels, dvd_audio.stream_id, (dvd_audio.active ? "yes" : "no"));
 
 			}
 
@@ -607,7 +607,7 @@ int main(int argc, char **argv) {
 			for(c = 0; c < dvd_track.chapters; c++) {
 
 				dvd_chapter = dvd_track.dvd_chapters[c];
-				printf("        Chapter: %02u Length: %s\n", dvd_chapter.chapter, dvd_chapter.length);
+				printf("        Chapter: %02u, Length: %s\n", dvd_chapter.chapter, dvd_chapter.length);
 
 			}
 
@@ -619,7 +619,7 @@ int main(int argc, char **argv) {
 			for(c = 0; c < dvd_track.cells; c++) {
 
 				dvd_cell = dvd_track.dvd_cells[c];
-				printf("	Cell: %02u Length: %s\n", dvd_cell.cell, dvd_cell.length);
+				printf("	Cell: %02u, Length: %s\n", dvd_cell.cell, dvd_cell.length);
 
 			}
 
@@ -631,7 +631,7 @@ int main(int argc, char **argv) {
 			for(c = 0; c < dvd_track.subtitles; c++) {
 
 				dvd_subtitle = dvd_track.dvd_subtitles[c];
-				printf("        Subtitle: %02u Language: %s Stream id: %s Active: %s\n", dvd_subtitle.track, (strlen(dvd_subtitle.lang_code) ? dvd_subtitle.lang_code : "--"), dvd_subtitle.stream_id, (dvd_subtitle.active ? "yes" : "no"));
+				printf("        Subtitle: %02u, Language: %s, Stream id: %s, Active: %s\n", dvd_subtitle.track, (strlen(dvd_subtitle.lang_code) ? dvd_subtitle.lang_code : "--"), dvd_subtitle.stream_id, (dvd_subtitle.active ? "yes" : "no"));
 
 			}
 
