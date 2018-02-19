@@ -55,16 +55,18 @@ uint8_t dvd_track_ttn(const ifo_handle_t *vmg_ifo, const uint16_t track_number) 
  *
  * @param vts_ifo libdvdread IFO handle
  */
-const char *dvd_vts_id(const ifo_handle_t *vts_ifo) {
+bool dvd_vts_id(char *dest_str, const ifo_handle_t *vts_ifo) {
 
 	size_t i = 0;
 
 	for(i = 0; i < strlen(vts_ifo->vtsi_mat->vts_identifier); i++) {
 		if(!isascii(vts_ifo->vtsi_mat->vts_identifier[i]))
-			return "";
+			return false;
 	}
 
-	return strndup(vts_ifo->vtsi_mat->vts_identifier, DVD_VTS_ID);
+	strncpy(dest_str, vts_ifo->vtsi_mat->vts_identifier, DVD_VTS_ID);
+
+	return true;
 
 }
 
