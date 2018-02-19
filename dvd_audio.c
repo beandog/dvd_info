@@ -115,7 +115,7 @@ uint8_t dvd_track_num_audio_lang_code_streams(const ifo_handle_t *vts_ifo, const
 
 	for(i = 0; i < audio_tracks; i++) {
 
-		strncpy(str, dvd_audio_lang_code(vts_ifo, i), DVD_AUDIO_LANG_CODE);
+		dvd_audio_lang_code(str, vts_ifo, i);
 
 		if(strncmp(str, lang_code, DVD_AUDIO_LANG_CODE) == 0)
 			language_tracks++;
@@ -241,21 +241,19 @@ bool dvd_audio_stream_id(char *dest_str, const ifo_handle_t *vts_ifo, const uint
  * @param audio_stream audio track number
  * @return language code
  */
-const char *dvd_audio_lang_code(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
+bool dvd_audio_lang_code(char *dest_str, const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
 
 	if(vts_ifo->vtsi_mat == NULL)
-		return "";
+		return false;
 
 	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
 	uint8_t lang_type = audio_attr->lang_type;
 
 	if(lang_type != 1)
-		return "";
+		return true;
 
-	char lang_code[3] = {'\0'};
+	snprintf(dest_str, DVD_AUDIO_LANG_CODE + 1, "%c%c", audio_attr->lang_code >> 8, audio_attr->lang_code & 0xff);
 
-	snprintf(lang_code, DVD_AUDIO_LANG_CODE + 1, "%c%c", audio_attr->lang_code >> 8, audio_attr->lang_code & 0xff);
-
-	return strndup(lang_code, DVD_AUDIO_LANG_CODE);
+	return true;
 
 }

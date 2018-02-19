@@ -442,22 +442,22 @@ int main(int argc, char **argv) {
 			for(c = 0; c < dvd_track.audio_tracks; c++) {
 
 				memset(&dvd_audio, 0, sizeof(dvd_audio));
-				memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
-				memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
 
 				dvd_audio.track = c + 1;
 				dvd_audio.active = dvd_audio_active(vmg_ifo, vts_ifo, dvd_track.track, dvd_audio.track);
 				if(dvd_audio.active)
 					dvd_track.active_audio++;
-				strncpy(dvd_audio.lang_code, dvd_audio_lang_code(vts_ifo, c), DVD_AUDIO_LANG_CODE);
-
-				memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
-				dvd_audio_codec(dvd_audio.codec, vts_ifo, c);
 
 				dvd_audio.channels = dvd_audio_channels(vts_ifo, c);
 
 				memset(dvd_audio.stream_id, '\0', sizeof(dvd_audio.stream_id));
 				dvd_audio_stream_id(dvd_audio.stream_id, vts_ifo, c);
+
+				memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
+				dvd_audio_lang_code(dvd_audio.lang_code, vts_ifo, c);
+
+				memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
+				dvd_audio_codec(dvd_audio.codec, vts_ifo, c);
 
 				dvd_track.dvd_audio_tracks[c] = dvd_audio;
 
