@@ -117,6 +117,16 @@ On my box:
 
   $ AUTOCONF_VERSION=2.69 AUTOMAKE_VERSION=1.15 autoreconf -fi
 
+See also:
+
+  * http://github.com/beandog/bluray_info - similar tools for Blu-ray discs
+  * http://dvds.beandog.org - my site all about DVDs
+  * http://bluray.beandog.org - I store some source tarballs here
+  * http://nx.beandog - my *n*x wiki
+  * https://twitter.com/beandog76 - my twitter feed
+  * http://wonkabar.org - my *very old* blog with some multimedia content
+  * https://forums.gentoo.org/viewforum-f-33.html - Gentoo Linux Multimedia
+
 Support:
 
 I love hunting down anomalies, so if you run into something odd on a disc, let
