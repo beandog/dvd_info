@@ -1,0 +1,136 @@
+dvd_info - a set of utilities for accessing DVDs
+
+Includes:
+
+* dvd_info - display information about a DVD in human-readable or JSON output,
+	disc title, disc ID, disc chapters in OGM container format
+
+* dvd_copy - copy a DVD title to the filesystem
+
+* dvd_drive_status - display drive status: open, closed, closed with disc,
+	or polling
+
+Requirements:
+
+* libdvdread >= 4.2.1
+* libdvdcss >= 1.2.13
+
+Development:
+
+The git repo on github is *NOT* intended to build from a straight pull. There
+are programs I'm working on that are not in the Makefile.am yet (or there are
+more than are in the repo). You can, of course, try to build it, but I don't
+target releases here.
+
+Download releases at: http://dvdinfo.sf.net/
+
+Sources:
+
+The source can be either a device name, a single file, or a directory. The
+program will the default blu-ray drive if no path is given.
+
+  $ dvd_info
+  $ dvd_info /dev/sr0
+  $ dvd_info ~/Media/DVD.ADVENTURE.iso
+  $ dvd_info ~/Media/DVD.ADVENTURE/
+  $ dvd_info /mnt/dvd
+
+If you're going to do a lot of reads on a disc drive, I'd recommend mounting it
+so the access can be cached -- this is especially helpful when using / testing
+bluray_copy a lot to get chapters, titles, playlists, etc.
+
+  # mount /dev/sr0 -o ro -t udf /mnt/dvd
+
+Depending on your luck / region / disc drive / disc / local alien invasion, you
+may or may not be able to make an ISO directly from a disc.
+
+If you want to give it a whirl, I recommend ddrescue:
+
+  $ ddrescue -b 2048 -n /dev/sr0 dvd.iso ddrescue.log
+
+dvd_info:
+
+Usage: dvd_info [options] [-t track number] [dvd path]
+
+Options:
+  -t, --track #		Limit to one track number (default: longest)
+
+Detailed information:
+  -a, --audio		audio streams
+  -v, --video		video
+  -c, --chapters	chapters
+  -s, --subtitles	subtitles
+  -d, --cells		cells
+  -x, --all		display all
+
+Formatting:
+  -j, --json		Display output in JSON format
+  -o, --ogm		Display OGM chapter format for track (default: longest)
+  -i, --id		Display DVD id only (from libdvdread)
+  -T, --title		Display DVD title only (path must be device or file)
+
+Other:
+  -q, --quiet		Don't display DVD title, longest track
+  -h, --help		Display these help options
+  -V, --version		Version information
+
+DVD path can be a device name, a single file, or directory.
+
+Examples:
+  dvd_info		# Read default DVD device (/dev/sr0)
+  dvd_info /dev/dvd	# Read a specific DVD device
+  dvd_info movie.iso	# Read an image file
+  dvd_info ~/movie/	# Read a directory that contains VIDEO_TS
+
+The syntax and output was designed to closely resemble the awesome program
+"lsdvd." The OGM chapter format matches "dvdxchap" from the ogmtools package.
+
+dvd_copy:
+
+Usage: dvd_copy [-t track] [-c chapter[-chapter]] [-o filename] [dvd path]
+
+DVD path can be a device name, a single file, or directory.
+
+Examples:
+  dvd_copy		# Read default DVD device (/dev/sr0)
+  dvd_copy /dev/dvd	# Read a specific DVD device
+  dvd_copy movie.iso	# Read an image file
+  dvd_copy ~/movie/	# Read a directory that contains VIDEO_TS
+
+If no output file is specified, it will save to a format of "track_XX.vob".
+
+If no track is selected, dvd_copy will simply select the longest track.
+
+Portability:
+
+Runs on GNU/Linux and OpenBSD.
+
+I take a minimalist approach to my code, and so there is only the minimum
+of required autotools content in the repo: configure.ac and Makefile.am
+This allows the user to build the config files on their system. Run
+"autoreconf -fi" and you'll have the familiar configure, make, make install
+setup.
+
+For OpenBSD, you'll need to set AUTOCONF_VERSION and AUTOMAKE_VERSION.
+
+On my box:
+
+  $ AUTOCONF_VERSION=2.69 AUTOMAKE_VERSION=1.15 autoreconf -fi
+
+Support:
+
+I love hunting down anomalies, so if you run into something odd on a disc, let
+me know and I'd love to look into it. Bug reports are good, too.
+
+If you want to say thanks, buy me a Blu-ray disc :D There's nothing I'd love
+more than a new disc to play with (and something to watch as well).
+Here's my Amazon wishlist: http://a.co/ik9j9Fw if you're feeling generous!
+
+For this project, the code is at github - https://github.com/beandog/dvd_info
+However, I run releases through SourceForge - http://dvdinfo.sf.net/
+
+If you have questions, feel free to contact me at steve.dibb@gmail.com
+
+Copyright:
+
+Licensed under GPL-2. See https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
