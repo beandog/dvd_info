@@ -94,7 +94,7 @@ uint32_t dvd_time_to_milliseconds(dvd_time_t *dvd_time) {
  *
  * @param milliseconds milliseconds
  */
-bool milliseconds_length_format(char *dest_str, const uint32_t milliseconds) {
+void milliseconds_length_format(char *dest_str, const uint32_t milliseconds) {
 
 	uint32_t total_seconds = milliseconds / 1000;
 	uint32_t hours = total_seconds / (3600);
@@ -107,8 +107,6 @@ bool milliseconds_length_format(char *dest_str, const uint32_t milliseconds) {
 	uint32_t msecs = milliseconds - (hours * 3600 * 1000) - (minutes * 60 * 1000) - (seconds * 1000);
 
 	snprintf(dest_str, DVD_CHAPTER_LENGTH + 1, "%02u:%02u:%02u.%03u", hours, minutes, seconds, msecs);
-
-	return true;
 
 }
 
@@ -246,38 +244,32 @@ uint32_t dvd_track_total_chapter_msecs(const ifo_handle_t *vmg_ifo, const ifo_ha
 /**
  * Get the formatted string length of a title track
  */
-bool dvd_track_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+void dvd_track_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
 	uint32_t msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track_number);
 
 	milliseconds_length_format(dest_str, msecs);
-
-	return true;
 
 }
 
 /**
  * Get the formatted string length of a chapter
  */
-bool dvd_chapter_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
+void dvd_chapter_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
 
 	uint32_t msecs = dvd_chapter_msecs(vmg_ifo, vts_ifo, track_number, chapter_number);
 
 	milliseconds_length_format(dest_str, msecs);
-
-	return true;
 
 }
 
 /**
  * Get the formatted string length of a cell
  */
-bool dvd_cell_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
+void dvd_cell_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
 
 	uint32_t msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, track_number, cell_number);
 
 	milliseconds_length_format(dest_str, msecs);
-
-	return true;
 
 }
