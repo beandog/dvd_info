@@ -33,12 +33,12 @@ bool dvd_video_pan_scan(const ifo_handle_t *vts_ifo);
 
 bool dvd_video_codec(char *dest_str, const ifo_handle_t *vts_ifo);
 
-const char *dvd_track_video_format(const ifo_handle_t *vts_ifo);
+bool dvd_track_video_format(char *dest_str, const ifo_handle_t *vts_ifo);
 
-const char *dvd_video_aspect_ratio(const ifo_handle_t *vts_ifo);
+bool dvd_video_aspect_ratio(char *dest_str, const ifo_handle_t *vts_ifo);
 
 double dvd_track_fps(dvd_time_t *dvd_time);
 
-const char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
+bool dvd_track_str_fps(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
 #endif

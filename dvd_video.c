@@ -340,16 +340,16 @@ bool dvd_video_codec(char *dest_str, const ifo_handle_t *vts_ifo) {
  * @param vts_ifo dvdread track IFO handler
  * @retval video format
  */
-const char *dvd_track_video_format(const ifo_handle_t *vts_ifo) {
+bool dvd_track_video_format(char *dest_str, const ifo_handle_t *vts_ifo) {
 
 	if(vts_ifo->vtsi_mat == NULL)
-		return "";
+		return false;
 	else if(vts_ifo->vtsi_mat->vts_video_attr.video_format == 0)
-		return "NTSC";
+		strncpy(dest_str, "NTSC", DVD_VIDEO_FORMAT);
 	else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
-		return  "PAL";
-	else
-		return "";
+		strncpy(dest_str, "PAL", DVD_VIDEO_FORMAT);
+
+	return true;
 
 }
 
@@ -359,16 +359,16 @@ const char *dvd_track_video_format(const ifo_handle_t *vts_ifo) {
  * @param vts_ifo dvdread track IFO handler
  * @retval aspect ratio
  */
-const char *dvd_video_aspect_ratio(const ifo_handle_t *vts_ifo) {
+bool dvd_video_aspect_ratio(char *dest_str, const ifo_handle_t *vts_ifo) {
 
 	if(vts_ifo->vtsi_mat == NULL)
-		return "";
+		return false;
 	else if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
-		return "4:3";
+		strncpy(dest_str, "4:3", DVD_VIDEO_ASPECT_RATIO);
 	else if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
-		return "16:9";
-	else
-		return "";
+		strncpy(dest_str, "16:9", DVD_VIDEO_ASPECT_RATIO);
+
+	return true;
 
 }
 
@@ -382,26 +382,25 @@ double dvd_track_fps(dvd_time_t *dvd_time) {
 
 }
 
-const char *dvd_track_str_fps(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+bool dvd_track_str_fps(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
-		return "";
+		return false;
 
-	char str[DVD_VIDEO_FPS + 1] = {'\0'};
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
 	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
 	if(!pgc)
-		return "";
+		return false;
 
 	double fps = dvd_track_fps(&pgc->playback_time);
 
 	if(fps > 0) {
-		snprintf(str, DVD_VIDEO_FPS + 1, "%02.02f", fps);
-		return strndup(str, DVD_VIDEO_FPS);
-	} else {
-		return "";
+		snprintf(dest_str, DVD_VIDEO_FPS + 1, "%02.02f", fps);
+		return true;
 	}
+	
+	return false;
 
 }

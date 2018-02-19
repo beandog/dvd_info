@@ -416,10 +416,15 @@ int main(int argc, char **argv) {
 		memset(dvd_video.codec, '\0', sizeof(dvd_video.codec));
 		dvd_video_codec(dvd_video.codec, vts_ifo);
 
-		strncpy(dvd_video.format, dvd_track_video_format(vts_ifo), DVD_VIDEO_FORMAT);
+		memset(dvd_video.format, '\0', sizeof(dvd_video.format));
+		dvd_track_video_format(dvd_video.format, vts_ifo);
+
 		dvd_video.width = dvd_video_width(vts_ifo);
 		dvd_video.height = dvd_video_height(vts_ifo);
-		strncpy(dvd_video.aspect_ratio, dvd_video_aspect_ratio(vts_ifo), DVD_VIDEO_ASPECT_RATIO);
+
+		memset(dvd_video.aspect_ratio, '\0', sizeof(dvd_video.aspect_ratio));
+		dvd_video_aspect_ratio(dvd_video.aspect_ratio, vts_ifo);
+
 		dvd_video.letterbox = dvd_video_letterbox(vts_ifo);
 		dvd_video.pan_and_scan = dvd_video_pan_scan(vts_ifo);
 		dvd_video.df = dvd_video_df(vts_ifo);
@@ -429,7 +434,9 @@ int main(int argc, char **argv) {
 		dvd_track.subtitles = dvd_track_subtitles(vts_ifo);
 		dvd_track.active_subs = 0;
 		dvd_track.cells = dvd_track_cells(vmg_ifo, vts_ifo, dvd_track.track);
-		strncpy(dvd_video.fps, dvd_track_str_fps(vmg_ifo, vts_ifo, dvd_track.track), DVD_VIDEO_FPS);
+
+		memset(dvd_video.fps, '\0', sizeof(dvd_video.fps));
+		dvd_track_str_fps(dvd_video.fps, vmg_ifo, vts_ifo, dvd_track.track);
 
 		dvd_track.dvd_video = dvd_video;
 
