@@ -155,16 +155,17 @@ bool dvd_track_has_audio_lang_code(const ifo_handle_t *vts_ifo, const char *lang
  * @param audio_stream audio track number
  * @return audio codec
  */
-const char *dvd_audio_codec(const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
+bool dvd_audio_codec(char *dest_str, const ifo_handle_t *vts_ifo, const uint8_t audio_stream) {
 
 	if(vts_ifo->vtsi_mat == NULL)
-		return "";
+		return false;
 
 	const char *audio_codecs[7] = { "ac3", "", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
 	audio_attr_t *audio_attr =  &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
 	uint8_t audio_codec = audio_attr->audio_format;
 
-	return strndup(audio_codecs[audio_codec], DVD_AUDIO_CODEC);
+	strncpy(dest_str, audio_codecs[audio_codec], DVD_AUDIO_CODEC + 1);
+	return true;
 
 }
 

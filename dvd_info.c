@@ -450,7 +450,10 @@ int main(int argc, char **argv) {
 				if(dvd_audio.active)
 					dvd_track.active_audio++;
 				strncpy(dvd_audio.lang_code, dvd_audio_lang_code(vts_ifo, c), DVD_AUDIO_LANG_CODE);
-				strncpy(dvd_audio.codec, dvd_audio_codec(vts_ifo, c), DVD_AUDIO_CODEC);
+
+				memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
+				dvd_audio_codec(dvd_audio.codec, vts_ifo, c);
+
 				dvd_audio.channels = dvd_audio_channels(vts_ifo, c);
 				strncpy(dvd_audio.stream_id, dvd_audio_stream_id(vts_ifo, c), DVD_AUDIO_STREAM_ID);
 

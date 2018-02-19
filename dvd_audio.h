@@ -22,7 +22,7 @@ uint8_t dvd_track_num_audio_lang_code_streams(const ifo_handle_t *vts_ifo, const
 
 bool dvd_track_has_audio_lang_code(const ifo_handle_t *vts_ifo, const char *lang_code);
 
-const char *dvd_audio_codec(const ifo_handle_t *vts_ifo, const uint8_t audio_stream);
+bool dvd_audio_codec(char *dest_str, const ifo_handle_t *vts_ifo, const uint8_t audio_stream);
 
 uint8_t dvd_audio_channels(const ifo_handle_t *vts_ifo, const uint8_t audio_track);
 
