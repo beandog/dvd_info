@@ -38,9 +38,6 @@ int main(int argc, char **argv) {
 	bool p_dvd_json = false;
 	char program_name[] = "dvd_info";
 
-	// Display output
-	int d_debug = 0;
-
 	// lsdvd display output
 	int d_audio = 0;
 	int d_video = 0;
@@ -161,7 +158,6 @@ int main(int argc, char **argv) {
 
 	struct option p_long_opts[] = {
 
-		{ "debug", no_argument, NULL, 'z' },
 		{ "audio", no_argument, NULL, 'a' },
 		{ "video", no_argument, NULL, 'v' },
 		{ "chapters", no_argument, NULL, 'c' },
@@ -221,10 +217,6 @@ int main(int argc, char **argv) {
 				d_chapters = 1;
 				d_subtitles = 1;
 				d_cells = 1;
-				break;
-
-			case 'z':
-				d_debug = 1;
 				break;
 
 			// ignore unknown arguments
@@ -339,20 +331,13 @@ int main(int argc, char **argv) {
 
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
-		if(d_debug)
-			fprintf(stderr, "[DEBUG] %s: Opening IFO %u\n", program_name, vts);
-
 		vts_ifos[vts] = ifoOpen(dvdread_dvd, vts);
 
 		if(vts_ifos[vts] == NULL) {
-			if(d_debug)
-				fprintf(stderr, "[DEBUG] %s: opening VTS IFO %u failed; skipping IFO\n", program_name, vts);
 			valid_ifos[vts] = false;
 			has_invalid_ifos = true;
 			vts_ifos[vts] = NULL;
 		} else if(!ifo_is_vts(vts_ifos[vts])) {
-			if(d_debug)
-				fprintf(stderr, "[DEBUG] %s: opening VTSI_MAT for VTS IFO %u failed; skipping IFO\n", program_name, vts);
 			valid_ifos[vts] = false;
 			has_invalid_ifos = true;
 			ifoClose(vts_ifos[vts]);
@@ -368,12 +353,7 @@ int main(int argc, char **argv) {
 
 	// Exit if the track requested is on an invalid IFO
 	if(has_invalid_ifos && opt_track_number) {
-
 		vts = dvd_vts_ifo_number(vmg_ifo, track_number);
-
-		if(valid_ifos[vts] == false && d_debug)
-			fprintf(stderr, "[DEBUG] %s: the VTS IFO %u for title track %u is invalid, setting all values to zero.\n", program_name, vts, track_number);
-
 	}
 
 	// GRAB ALL THE THINGS
@@ -396,9 +376,6 @@ int main(int argc, char **argv) {
 
 		// Set track values to empty if it is invalid
 		if(valid_ifos[dvd_track.vts] == false) {
-
-			if(d_debug)
-				fprintf(stderr, "[DEBUG] %s: IFO %u for track %u is invalid, skipping track\n", program_name, dvd_track.vts, track_number);
 
 			dvd_track.track = track_number;
 			dvd_track.valid = 0;
