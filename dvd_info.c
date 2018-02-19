@@ -625,6 +625,18 @@ int main(int argc, char **argv) {
 
 		}
 
+		// Display subtitles
+		if(d_subtitles && dvd_track.subtitles) {
+
+			for(c = 0; c < dvd_track.subtitles; c++) {
+
+				dvd_subtitle = dvd_track.dvd_subtitles[c];
+				printf("        Subtitle: %02u Language: %s Stream id: %s Active: %s\n", dvd_subtitle.track, (strlen(dvd_subtitle.lang_code) ? dvd_subtitle.lang_code : "--"), dvd_subtitle.stream_id, (dvd_subtitle.active ? "yes" : "no"));
+
+			}
+
+		}
+
 	}
 
 	if(d_all_tracks)
