@@ -401,7 +401,7 @@ int main(int argc, char **argv) {
 		dvd_track.track = track_number;
 		dvd_track.valid = 1;
 		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
-		memset(dvd_track.length, '\0', sizeof(dvd_track.length));
+		snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
 		dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.msecs = dvd_track_msecs(vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
@@ -512,7 +512,7 @@ int main(int argc, char **argv) {
 
 				dvd_chapter.chapter = c + 1;
 
-				memset(dvd_chapter.length, '\0', sizeof(dvd_chapter.length));
+				snprintf(dvd_chapter.length, DVD_CHAPTER_LENGTH + 1, "00:00:00.000");
 				dvd_chapter_length(dvd_chapter.length, vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 
 				dvd_chapter.msecs = dvd_chapter_msecs(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
@@ -535,7 +535,7 @@ int main(int argc, char **argv) {
 
 				dvd_cell.cell = c + 1;
 
-				memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
+				snprintf(dvd_cell.length, DVD_CELL_LENGTH + 1, "00:00:00.000");
 				dvd_cell_length(dvd_cell.length, vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 
 				dvd_cell.msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
