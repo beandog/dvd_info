@@ -60,7 +60,7 @@ bool dvd_vts_id(char *dest_str, const ifo_handle_t *vts_ifo) {
 	size_t i = 0;
 
 	for(i = 0; i < strlen(vts_ifo->vtsi_mat->vts_identifier); i++) {
-		if(!isascii(vts_ifo->vtsi_mat->vts_identifier[i]))
+		if(!isalnum(vts_ifo->vtsi_mat->vts_identifier[i]))
 			return false;
 	}
 
