@@ -151,7 +151,7 @@ bool dvd_subtitle_lang_code(char *dest_str, const ifo_handle_t *vts_ifo, const u
 	if(!isalpha(lang_code[0]) || !isalpha(lang_code[1]))
 		return true;
 
-	strncpy(dest_str, lang_code, DVD_SUBTITLE_LANG_CODE + 1);
+	strncpy(dest_str, lang_code, DVD_SUBTITLE_LANG_CODE);
 	return true;
 
 }

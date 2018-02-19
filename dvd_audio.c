@@ -164,7 +164,7 @@ bool dvd_audio_codec(char *dest_str, const ifo_handle_t *vts_ifo, const uint8_t 
 	audio_attr_t *audio_attr =  &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
 	uint8_t audio_codec = audio_attr->audio_format;
 
-	strncpy(dest_str, audio_codecs[audio_codec], DVD_AUDIO_CODEC + 1);
+	strncpy(dest_str, audio_codecs[audio_codec], DVD_AUDIO_CODEC);
 	return true;
 
 }

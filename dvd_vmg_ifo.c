@@ -37,7 +37,7 @@ bool dvd_title(char *dest_str, const char *device_filename) {
 		}
 	}
 
-	strncpy(dest_str, dvd_title, DVD_TITLE + 1);
+	strncpy(dest_str, dvd_title, DVD_TITLE);
 
 	return true;
 
@@ -58,7 +58,7 @@ bool dvd_dvdread_id(char *dest_str, dvd_reader_t *dvdread_dvd) {
 	for(x = 0; x < (DVD_DVDREAD_ID / 2); x++)
 		snprintf(&dvdread_id[x * 2], DVD_DVDREAD_ID + 1, "%02x", dvdread_ifo_md5[x]);
 
-	strncpy(dest_str, dvdread_id, DVD_DVDREAD_ID + 1);
+	strncpy(dest_str, dvdread_id, DVD_DVDREAD_ID);
 
 	return true;
 
@@ -93,7 +93,7 @@ uint16_t dvd_video_title_sets(const ifo_handle_t *vmg_ifo) {
 bool dvd_provider_id(char *dest_str, const ifo_handle_t *vmg_ifo) {
 
 	if(ifo_is_vmg(vmg_ifo))
-		strncpy(dest_str, vmg_ifo->vmgi_mat->provider_identifier, DVD_PROVIDER_ID + 1);
+		strncpy(dest_str, vmg_ifo->vmgi_mat->provider_identifier, DVD_PROVIDER_ID);
 
 	return true;
 
@@ -101,8 +101,10 @@ bool dvd_provider_id(char *dest_str, const ifo_handle_t *vmg_ifo) {
 
 bool dvd_vmg_id(char *dest_str, const ifo_handle_t *vmg_ifo) {
 
+	printf("strlen: %lu\n", strlen(vmg_ifo->vmgi_mat->vmg_identifier));
+
 	if(ifo_is_vmg(vmg_ifo))
-		strncpy(dest_str, vmg_ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID + 1);
+		strncpy(dest_str, vmg_ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID);
 
 	return true;
 

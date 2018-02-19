@@ -323,10 +323,10 @@ bool dvd_video_codec(char *dest_str, const ifo_handle_t *vts_ifo) {
 	if(vts_ifo->vtsi_mat == NULL)
 		return false;
 	else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0) {
-		strncpy(dest_str, "MPEG1", DVD_VIDEO_CODEC + 1);
+		strncpy(dest_str, "MPEG1", DVD_VIDEO_CODEC);
 		return true;
 	} else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1) {
-		strncpy(dest_str, "MPEG2", DVD_VIDEO_CODEC + 1);
+		strncpy(dest_str, "MPEG2", DVD_VIDEO_CODEC);
 		return true;
 	}
 
