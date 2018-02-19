@@ -40,12 +40,12 @@ int main(int argc, char **argv) {
 	char program_name[] = "dvd_info";
 
 	// lsdvd similar display output
-	int d_audio = 0;
-	int d_video = 0;
-	int d_chapters = 0;
-	int d_subtitles = 0;
-	int d_cells = 0;
-	int d_quiet = 0;
+	bool d_audio = false;
+	bool d_video = false;
+	bool d_chapters = false;
+	bool d_subtitles = false;
+	bool d_cells = false;
+	bool d_quiet = false;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
 	// Track
 	struct dvd_track dvd_track;
 	dvd_track.track = 1;
-	dvd_track.valid = 1;
+	dvd_track.valid = true;
 	dvd_track.vts = 1;
 	dvd_track.ttn = 1;
 	snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
@@ -191,15 +191,15 @@ int main(int argc, char **argv) {
 				return 0;
 
 			case 'a':
-				d_audio = 1;
+				d_audio = true;
 				break;
 
 			case 'c':
-				d_chapters = 1;
+				d_chapters = true;
 				break;
 
 			case 'd':
-				d_cells = 1;
+				d_cells = true;
 				break;
 
 			case 'j':
@@ -208,11 +208,11 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'q':
-				d_quiet = 1;
+				d_quiet = true;
 				break;
 
 			case 's':
-				d_subtitles = 1;
+				d_subtitles = true;
 				break;
 
 			case 't':
@@ -221,15 +221,15 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'v':
-				d_video = 1;
+				d_video = true;
 				break;
 
 			case 'x':
-				d_audio = 1;
-				d_video = 1;
-				d_chapters = 1;
-				d_subtitles = 1;
-				d_cells = 1;
+				d_audio = true;
+				d_video = true;
+				d_chapters = true;
+				d_subtitles = true;
+				d_cells = true;
 				break;
 
 			// ignore unknown arguments
@@ -391,7 +391,7 @@ int main(int argc, char **argv) {
 		if(valid_ifos[dvd_track.vts] == false) {
 
 			dvd_track.track = track_number;
-			dvd_track.valid = 0;
+			dvd_track.valid = false;
 
 			dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
 			snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
@@ -412,7 +412,7 @@ int main(int argc, char **argv) {
 		vts_ifo = vts_ifos[dvd_track.vts];
 
 		dvd_track.track = track_number;
-		dvd_track.valid = 1;
+		dvd_track.valid = true;
 		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
 		snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
 		dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_track.track);
