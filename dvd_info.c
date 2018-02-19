@@ -289,12 +289,12 @@ int main(int argc, char **argv) {
 	}
 
 	// Check if DVD has an identifier, fail otherwise
-	strncpy(dvdread_id, dvd_dvdread_id(dvdread_dvd), DVD_DVDREAD_ID);
+	dvd_dvdread_id(dvdread_id, dvdread_dvd);
 	if(strlen(dvdread_id) == 0) {
 		fprintf(stderr, "%s: Opening DVD %s failed\n", program_name, device_filename);
 		return 1;
 	}
-
+	
 	// Open VMG IFO -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo)) {
@@ -358,9 +358,9 @@ int main(int argc, char **argv) {
 
 	// GRAB ALL THE THINGS
 	dvd_info.side = dvd_info_side(vmg_ifo);
-	strncpy(dvd_info.title, dvd_title(device_filename), DVD_TITLE);
-	strncpy(dvd_info.provider_id, dvd_provider_id(vmg_ifo), DVD_PROVIDER_ID);
-	strncpy(dvd_info.vmg_id, dvd_vmg_id(vmg_ifo), DVD_VMG_ID);
+	dvd_title(dvd_info.title, device_filename);
+	dvd_provider_id(dvd_info.provider_id, vmg_ifo);
+	dvd_vmg_id(dvd_info.vmg_id, vmg_ifo);
 	strncpy(dvd_info.dvdread_id, dvdread_id, DVD_DVDREAD_ID);
 
 	/**

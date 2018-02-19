@@ -60,7 +60,7 @@ bool ifo_is_vmg(const ifo_handle_t *ifo);
  *
  * @param device_filename device filename
  */
-const char *dvd_title(const char *device_filename);
+bool dvd_title(char *dest_str, const char *device_filename);
 
 /**
  * Get a unique identifier of the DVD.
@@ -70,7 +70,7 @@ const char *dvd_title(const char *device_filename);
  *
  * @param dvdread_dvd dvdreader_t handle
  */
-const char *dvd_dvdread_id(dvd_reader_t *dvdread_dvd);
+bool dvd_dvdread_id(char *dest_str, dvd_reader_t *dvdread_dvd);
 
 /**
  * Get the number of tracks on a DVD
@@ -135,7 +135,7 @@ uint16_t dvd_video_title_sets(const ifo_handle_t *vmg_ifo);
  *
  * @param vmg_ifo dvdread IFO handle
  */
-const char *dvd_provider_id(const ifo_handle_t *vmg_ifo);
+bool dvd_provider_id(char *dest_str, const ifo_handle_t *vmg_ifo);
 
 /**
  * Get the DVD's VMG id
@@ -144,7 +144,7 @@ const char *dvd_provider_id(const ifo_handle_t *vmg_ifo);
  *
  * @param vmg_ifo libdvdread IFO handle
  */
-const char *dvd_vmg_id(const ifo_handle_t *vmg_ifo);
+bool dvd_vmg_id(char *dest_str, const ifo_handle_t *vmg_ifo);
 
 /**
  * Get the DVD side
@@ -168,7 +168,7 @@ uint8_t dvd_info_side(const ifo_handle_t *vmg_ifo);
  * @param vmg_ifo libdvdread IFO handle
  * @return DVD speficiation
  */
-const char *dvd_specification_version(const ifo_handle_t *vmg_ifo);
+bool dvd_specification_version(char *dest_str, const ifo_handle_t *vmg_ifo);
 
 /**
  * Get the DVD serial id from dvdnav

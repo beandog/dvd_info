@@ -1,48 +1,49 @@
 #include "dvd_vmg_ifo.h"
 
-const char *dvd_title(const char *device_filename) {
+bool dvd_title(char *dest_str, const char *device_filename) {
 
 	char dvd_title[DVD_TITLE + 1] = {'\0'};
 	int fd = -1;	
 
-
 	// If we can't even open the device, exit quietly
 	fd = open(device_filename, O_RDONLY | O_NONBLOCK);
 	if(fd == -1) {
-		return "";
+		return false;
 	}
 
 	// The DVD title is on the volume, and doesn't need the dvdread or
 	// dvdnav library to access it.
 	if(lseek(fd, 32768, SEEK_SET) != 32768) {
 		close(fd);
-		return "";
+		return false;
 	}
 
 	char buffer[2048] = {'\0'};
 
 	if(read(fd, buffer, 2048) != 2048) {
 		close(fd);
-		return "";
+		return false;
 	}
 	snprintf(dvd_title, DVD_TITLE, "%s", buffer + 40);
 
 	close(fd);
 
 	// Right trim the string
-	unsigned long l = 0;
-	l = strlen(dvd_title);
-	while(l-- > 2) {
-		if(dvd_title[l] == ' ') {
-			dvd_title[l] = '\0';
+	unsigned long dvd_title_length = 0;
+	dvd_title_length = strlen(dvd_title);
+	while(dvd_title_length-- > 2) {
+		if(dvd_title[dvd_title_length] == ' ') {
+			dvd_title[dvd_title_length] = '\0';
 		}
 	}
 
-	return strndup(dvd_title, DVD_TITLE);
+	strncpy(dest_str, dvd_title, DVD_TITLE + 1);
+
+	return true;
 
 }
 
-const char *dvd_dvdread_id(dvd_reader_t *dvdread_dvd) {
+bool dvd_dvdread_id(char *dest_str, dvd_reader_t *dvdread_dvd) {
 
 	int dvdread_retval = 0;
 	uint8_t dvdread_ifo_md5[16] = {0};
@@ -52,12 +53,14 @@ const char *dvd_dvdread_id(dvd_reader_t *dvdread_dvd) {
 	// DVDDiscID will open the VMG IFO
 	dvdread_retval = DVDDiscID(dvdread_dvd, dvdread_ifo_md5);
 	if(dvdread_retval == -1)
-		return "";
+		return false;
 
 	for(x = 0; x < (DVD_DVDREAD_ID / 2); x++)
 		snprintf(&dvdread_id[x * 2], DVD_DVDREAD_ID + 1, "%02x", dvdread_ifo_md5[x]);
 
-	return strndup(dvdread_id, DVD_DVDREAD_ID);
+	strncpy(dest_str, dvdread_id, DVD_DVDREAD_ID + 1);
+
+	return true;
 
 }
 
@@ -87,21 +90,21 @@ uint16_t dvd_video_title_sets(const ifo_handle_t *vmg_ifo) {
 		return 0;
 }
 
-const char *dvd_provider_id(const ifo_handle_t *vmg_ifo) {
+bool dvd_provider_id(char *dest_str, const ifo_handle_t *vmg_ifo) {
 
 	if(ifo_is_vmg(vmg_ifo))
-		return strndup(vmg_ifo->vmgi_mat->provider_identifier, DVD_PROVIDER_ID);
-	else
-		return "";
+		strncpy(dest_str, vmg_ifo->vmgi_mat->provider_identifier, DVD_PROVIDER_ID + 1);
+
+	return true;
 
 }
 
-const char *dvd_vmg_id(const ifo_handle_t *vmg_ifo) {
+bool dvd_vmg_id(char *dest_str, const ifo_handle_t *vmg_ifo) {
 
 	if(ifo_is_vmg(vmg_ifo))
-		return strndup(vmg_ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID);
-	else
-		return "";
+		strncpy(dest_str, vmg_ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID + 1);
+
+	return true;
 
 }
 
@@ -118,14 +121,14 @@ uint8_t dvd_info_side(const ifo_handle_t *vmg_ifo) {
 
 }
 
-const char *dvd_specification_version(const ifo_handle_t *vmg_ifo) {
+bool dvd_specification_version(char *dest_str, const ifo_handle_t *vmg_ifo) {
 
 	if(ifo_is_vmg(vmg_ifo)) {
-		char str[DVD_SPECIFICATION_VERSION + 1] = {'\0'};
-		snprintf(str, DVD_SPECIFICATION_VERSION + 1, "%01x.%01x", vmg_ifo->vmgi_mat->specification_version >> 4, vmg_ifo->vmgi_mat->specification_version & 0xf);
-		return strndup(str, DVD_SPECIFICATION_VERSION + 1);
-	} else
-		return "";
+		snprintf(dest_str, DVD_SPECIFICATION_VERSION + 1, "%01x.%01x", vmg_ifo->vmgi_mat->specification_version >> 4, vmg_ifo->vmgi_mat->specification_version & 0xf);
+		return true;
+	}
+
+	return false;
 
 }
 
