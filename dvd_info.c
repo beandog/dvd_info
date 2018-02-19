@@ -36,7 +36,6 @@ void print_version(char *binary);
 int main(int argc, char **argv) {
 
 	// Program name
-	bool p_dvd_info = true;
 	bool p_dvd_json = false;
 	bool p_dvd_id = false;
 	bool p_dvd_title = false;
@@ -211,12 +210,10 @@ int main(int argc, char **argv) {
 
 			case 'i':
 				p_dvd_id = true;
-				p_dvd_info = false;
 				break;
 
 			case 'j':
 				p_dvd_json = true;
-				p_dvd_info = false;
 				break;
 
 			case 'q':
@@ -234,7 +231,6 @@ int main(int argc, char **argv) {
 
 			case 'T':
 				p_dvd_title = true;
-				p_dvd_info = false;
 				break;
 
 			case 'v':
@@ -243,7 +239,6 @@ int main(int argc, char **argv) {
 
 			case 'o':
 				p_dvd_ogm = true;
-				p_dvd_info = false;
 				break;
 
 			case 'x':
