@@ -34,7 +34,7 @@ struct dvd_track {
 	uint8_t cells;
 	struct dvd_video dvd_video;
 	struct dvd_audio *dvd_audio_tracks;
-	uint8_t active_audio;
+	uint8_t active_audio_streams;
 	struct dvd_subtitle *dvd_subtitles;
 	uint8_t active_subs;
 	struct dvd_chapter *dvd_chapters;

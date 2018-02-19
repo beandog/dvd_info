@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
 	dvd_track.msecs = 0;
 	dvd_track.chapters = 0;
 	dvd_track.audio_tracks = 0;
-	dvd_track.active_audio = 0;
+	dvd_track.active_audio_streams = 0;
 	dvd_track.subtitles = 0;
 	dvd_track.active_subs = 0;
 	dvd_track.cells = 0;
@@ -385,7 +385,7 @@ int main(int argc, char **argv) {
 			dvd_track.msecs = 0;
 			dvd_track.chapters = 0;
 			dvd_track.audio_tracks = 0;
-			dvd_track.active_audio = 0;
+			dvd_track.active_audio_streams = 0;
 			dvd_track.subtitles = 0;
 			dvd_track.active_subs = 0;
 			dvd_track.cells = 0;
@@ -430,7 +430,7 @@ int main(int argc, char **argv) {
 		dvd_video.df = dvd_video_df(vts_ifo);
 		dvd_video.angles = dvd_video_angles(vmg_ifo, dvd_track.track);
 		dvd_track.audio_tracks = dvd_track_audio_tracks(vts_ifo);
-		dvd_track.active_audio = 0;
+		dvd_track.active_audio_streams = 0;
 		dvd_track.subtitles = dvd_track_subtitles(vts_ifo);
 		dvd_track.active_subs = 0;
 		dvd_track.cells = dvd_track_cells(vmg_ifo, vts_ifo, dvd_track.track);
@@ -453,7 +453,7 @@ int main(int argc, char **argv) {
 				dvd_audio.track = c + 1;
 				dvd_audio.active = dvd_audio_active(vmg_ifo, vts_ifo, dvd_track.track, dvd_audio.track);
 				if(dvd_audio.active)
-					dvd_track.active_audio++;
+					dvd_track.active_audio_streams++;
 
 				dvd_audio.channels = dvd_audio_channels(vts_ifo, c);
 
@@ -581,7 +581,7 @@ int main(int argc, char **argv) {
 		printf("Length: %s ", dvd_track.length);
 		printf("Chapters: %02u ", dvd_track.chapters);
 		printf("Cells: %02u ", dvd_track.cells);
-		printf("Audio streams: %02u ", dvd_track.active_audio);
+		printf("Audio streams: %02u ", dvd_track.active_audio_streams);
 		printf("Subpictures: %02u\n", dvd_track.active_subs);
 
 		// Display video information
