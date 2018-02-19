@@ -206,20 +206,19 @@ uint8_t dvd_audio_channels(const ifo_handle_t *vts_ifo, const uint8_t audio_trac
  * @param audio_track audio track number
  * @return audio stream id
  */
-const char *dvd_audio_stream_id(const ifo_handle_t *vts_ifo, const uint8_t audio_track) {
+bool dvd_audio_stream_id(char *dest_str, const ifo_handle_t *vts_ifo, const uint8_t audio_track) {
 
 	if(vts_ifo->vtsi_mat == NULL)
-		return "";
+		return false;
 
 	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_track];
 	uint8_t audio_format = audio_attr->audio_format;
 	uint8_t audio_id[7] = {0x80, 0, 0xC0, 0xC0, 0xA0, 0, 0x88};
 	uint8_t audio_stream_id = audio_id[audio_format] + audio_track;
-	char str[DVD_AUDIO_STREAM_ID + 1] = {'\0'};
 
-	snprintf(str, DVD_AUDIO_STREAM_ID + 1, "0x%x", audio_stream_id);
+	snprintf(dest_str, DVD_AUDIO_STREAM_ID + 1, "0x%x", audio_stream_id);
 
-	return strndup(str, DVD_AUDIO_STREAM_ID);
+	return true;
 
 }
 
