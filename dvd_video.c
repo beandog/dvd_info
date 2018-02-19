@@ -318,16 +318,19 @@ bool dvd_video_pan_scan(const ifo_handle_t *vts_ifo) {
  * @param vts_ifo dvdread track IFO handler
  * @retval video codec
  */
-const char *dvd_video_codec(const ifo_handle_t *vts_ifo) {
+bool dvd_video_codec(char *dest_str, const ifo_handle_t *vts_ifo) {
 
 	if(vts_ifo->vtsi_mat == NULL)
-		return "";
-	else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0)
-		return "MPEG1";
-	else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
-		return "MPEG2";
-	else
-		return "";
+		return false;
+	else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0) {
+		strncpy(dest_str, "MPEG1", DVD_VIDEO_CODEC + 1);
+		return true;
+	} else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1) {
+		strncpy(dest_str, "MPEG2", DVD_VIDEO_CODEC + 1);
+		return true;
+	}
+
+	return false;
 
 }
 

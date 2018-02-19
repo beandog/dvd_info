@@ -31,7 +31,7 @@ bool dvd_video_letterbox(const ifo_handle_t *vts_ifo);
 
 bool dvd_video_pan_scan(const ifo_handle_t *vts_ifo);
 
-const char *dvd_video_codec(const ifo_handle_t *vts_ifo);
+bool dvd_video_codec(char *dest_str, const ifo_handle_t *vts_ifo);
 
 const char *dvd_track_video_format(const ifo_handle_t *vts_ifo);
 

@@ -413,7 +413,9 @@ int main(int argc, char **argv) {
 
 		/** Video **/
 
-		strncpy(dvd_video.codec, dvd_video_codec(vts_ifo), DVD_VIDEO_CODEC);
+		memset(dvd_video.codec, '\0', sizeof(dvd_video.codec));
+		dvd_video_codec(dvd_video.codec, vts_ifo);
+
 		strncpy(dvd_video.format, dvd_track_video_format(vts_ifo), DVD_VIDEO_FORMAT);
 		dvd_video.width = dvd_video_width(vts_ifo);
 		dvd_video.height = dvd_video_height(vts_ifo);
