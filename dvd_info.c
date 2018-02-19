@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
 	// Subtitles
 	struct dvd_subtitle dvd_subtitle;
 	dvd_subtitle.track = 1;
-	dvd_subtitle.active = 0;
+	dvd_subtitle.active = false;
 	memset(dvd_subtitle.stream_id, '\0', sizeof(dvd_subtitle.stream_id));
 	memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
 

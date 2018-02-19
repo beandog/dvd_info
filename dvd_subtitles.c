@@ -55,15 +55,15 @@ uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle
  * @param subtitle_track track number
  * @return boolean
  */
-uint8_t dvd_subtitle_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, uint8_t subtitle_track) {
+bool dvd_subtitle_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, uint8_t subtitle_track) {
 
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
-		return 0;
+		return false;
 
 	uint8_t subtitles = dvd_track_subtitles(vts_ifo);
 
 	if(subtitle_track > DVD_SUBTITLE_STREAM_LIMIT || subtitle_track > subtitles)
-		return 0;
+		return false;
 
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
@@ -71,10 +71,10 @@ uint8_t dvd_subtitle_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts
 	pgc_t *pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
 
 	if(!pgc)
-		return 0;
+		return false;
 
 	if(pgc->subp_control[subtitle_track - 1] & 0x80000000)
-		return 1;
+		return true;
 
 	return 0;
 
