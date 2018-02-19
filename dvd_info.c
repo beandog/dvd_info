@@ -30,6 +30,7 @@
 
 int main(int argc, char **argv);
 void print_usage(char *binary);
+void print_version(char *binary);
 
 int main(int argc, char **argv) {
 
@@ -38,12 +39,13 @@ int main(int argc, char **argv) {
 	bool p_dvd_json = false;
 	char program_name[] = "dvd_info";
 
-	// lsdvd display output
+	// lsdvd similar display output
 	int d_audio = 0;
 	int d_video = 0;
 	int d_chapters = 0;
 	int d_subtitles = 0;
 	int d_cells = 0;
+	int d_quiet = 0;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -154,7 +156,7 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	// Send 'invalid argument' to stderr
 	opterr = 1;
-	const char p_short_opts[] = "acdhjst:vxz";
+	const char p_short_opts[] = "acdhjqst:Vvx";
 
 	struct option p_long_opts[] = {
 
@@ -166,6 +168,9 @@ int main(int argc, char **argv) {
 		{ "all", no_argument, NULL, 'x' },
 		{ "json", no_argument, NULL, 'j' },
 		{ "track", required_argument, NULL, 't' },
+		{ "quiet", no_argument, NULL, 'q' },
+		{ "help", no_argument, NULL, 'h' },
+		{ "version", no_argument, NULL, 'V' },
 		{ 0, 0, 0, 0 }
 
 	};
@@ -179,6 +184,10 @@ int main(int argc, char **argv) {
 
 			case 'h':
 				print_usage(program_name);
+				return 0;
+
+			case 'V':
+				print_version(program_name);
 				return 0;
 
 			case 'a':
@@ -196,6 +205,10 @@ int main(int argc, char **argv) {
 			case 'j':
 				p_dvd_json = true;
 				p_dvd_info = false;
+				break;
+
+			case 'q':
+				d_quiet = 1;
 				break;
 
 			case 's':
@@ -222,7 +235,7 @@ int main(int argc, char **argv) {
 			// ignore unknown arguments
 			case '?':
 				print_usage(program_name);
-				return 1;
+				return 0;
 			// let getopt_long set the variable
 			case 0:
 			default:
@@ -569,7 +582,8 @@ int main(int argc, char **argv) {
 	 *   shows all of them, but they are flagged as active or not.
 	 */
 
-	printf("Disc Title: %s\n", dvd_info.title);
+	if(!d_quiet)
+		printf("Disc title: %s\n", dvd_info.title);
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
@@ -639,7 +653,7 @@ int main(int argc, char **argv) {
 
 	}
 
-	if(d_all_tracks)
+	if(d_all_tracks && !d_quiet)
 		printf("Longest track: %02u\n", dvd_info.longest_track);
 
 	// Cleanup
@@ -666,10 +680,9 @@ void print_usage(char *binary) {
 	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
 	printf("\n");
 	printf("Options:\n");
-	printf("  -t, --track [number]	Limit to one title track\n");
-	printf("  -j, --json		Display output in JSON format\n");
+	printf("  -t, --track #		Limit to one track number\n");
 	printf("\n");
-	printf("Extra information:\n");
+	printf("Detailed information:\n");
 	printf("  -a, --audio		audio streams\n");
 	printf("  -v, --video		video\n");
 	printf("  -c, --chapters	chapters\n");
@@ -677,15 +690,26 @@ void print_usage(char *binary) {
 	printf("  -d, --cells		cells\n");
 	printf("  -x, --all		display all\n");
 	printf("\n");
-	printf("DVD path can be a directory, a device filename, or a local file.\n");
+	printf("Formatting:\n");
+	printf("  -j, --json		Display output in JSON format\n");
+	printf("\n");
+	printf("Other:\n");
+	printf("  -q, --quiet		Don't display DVD title, longest track\n");
+	printf("  -h, --help		Display these help options\n");
+	printf("  -V, --version		Version information\n");
+	printf("\n");
+	printf("DVD path can be a device name, a single file, or directory.\n");
 	printf("\n");
 	printf("Examples:\n");
-	printf("  dvd_info /dev/dvd	# Read a DVD drive directly\n");
+	printf("  dvd_info		# Read default DVD device (%s)\n", DEFAULT_DVD_DEVICE);
+	printf("  dvd_info /dev/dvd	# Read a specific DVD device\n");
 	printf("  dvd_info movie.iso	# Read an image file\n");
-	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
-	printf("\n");
-	printf("Default DVD path is %s\n", DEFAULT_DVD_DEVICE);
-	printf("\n");
-	printf("See 'man dvd_info' for more details, or http://dvds.beandog.org/\n");
+	printf("  dvd_info ~/movie/	# Read a directory that contains VIDEO_TS\n");
+
+}
+
+void print_version(char *binary) {
+
+	printf("%s %s - http://dvds.beandog.org/ - (c) 2014 Steve Dibb <steve.dibb@gmail.com>, licensed under GPL-2\n", binary, VERSION);
 
 }
