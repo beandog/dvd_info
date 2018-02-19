@@ -25,6 +25,8 @@
 #include "dvd_chapter.h"
 #include "dvd_cell.h"
 #include "dvd_video.h"
+#include "dvd_audio.h"
+#include "dvd_subtitles.h"
 #include "dvd_time.h"
 #ifndef VERSION
 #define VERSION "1.0"
@@ -499,6 +501,10 @@ void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, co
 	dvd_track_length(dvd_track->length, vmg_ifo, vts_ifo, track_number);
 	dvd_track->msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track_number);
 	dvd_track->chapters = dvd_track_chapters(vmg_ifo, vts_ifo, track_number);
+	dvd_track->audio_tracks = dvd_track_audio_tracks(vts_ifo);
+	dvd_track->subtitles = dvd_track_subtitles(vts_ifo);
+	dvd_track->active_audio_streams = dvd_audio_active_tracks(vmg_ifo, vts_ifo, track_number);
+	dvd_track->active_subs = dvd_track_active_subtitles(vmg_ifo, vts_ifo, track_number);
 	dvd_track->cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 	dvd_track->blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
 	dvd_track->filesize = dvd_track_filesize(vmg_ifo, vts_ifo, track_number);
