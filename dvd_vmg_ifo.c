@@ -101,8 +101,6 @@ bool dvd_provider_id(char *dest_str, const ifo_handle_t *vmg_ifo) {
 
 bool dvd_vmg_id(char *dest_str, const ifo_handle_t *vmg_ifo) {
 
-	printf("strlen: %lu\n", strlen(vmg_ifo->vmgi_mat->vmg_identifier));
-
 	if(ifo_is_vmg(vmg_ifo))
 		strncpy(dest_str, vmg_ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID);
 
