@@ -28,6 +28,9 @@
 #include "dvd_audio.h"
 #include "dvd_subtitles.h"
 #include "dvd_time.h"
+#ifndef VERSION
+#define VERSION "1.0"
+#endif
 
 #ifndef DVD_VIDEO_LB_LEN
 #define DVD_VIDEO_LB_LEN 2048
@@ -41,6 +44,7 @@
 int main(int, char **);
 void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo);
 void print_usage(char *binary);
+void print_version(char *binary);
 
 struct dvd_copy {
 	uint16_t track;
@@ -67,7 +71,7 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	opterr = 1;
 	const char *str_options;
-	str_options = "c:ho:t:";
+	str_options = "c:ho:t:V";
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
 	const char *output_filename = NULL;
@@ -79,6 +83,8 @@ int main(int argc, char **argv) {
 		{ "chapters", required_argument, 0, 'c' },
 		{ "output_filename", required_argument, 0, 'o' },
 		{ "track", required_argument, 0, 't' },
+		{ "help", no_argument, 0, 'h' },
+		{ "version", no_argument, 0, 'V' },
 		{ 0, 0, 0, 0 }
 
 	};
@@ -135,6 +141,11 @@ int main(int argc, char **argv) {
 			case 't':
 				opt_track_number = true;
 				arg_track_number = (uint16_t)strtoumax(optarg, NULL, 0);
+				break;
+
+			case 'V':
+				print_version("dvd_copy");
+				return 0;
 				break;
 
 			// ignore unknown arguments
@@ -512,5 +523,11 @@ void print_usage(char *binary) {
 	printf("  dvd_copy /dev/dvd	# Read a specific DVD device\n");
 	printf("  dvd_copy movie.iso	# Read an image file\n");
 	printf("  dvd_copy ~/movie/	# Read a directory that contains VIDEO_TS\n");
+
+}
+
+void print_version(char *binary) {
+
+	printf("%s %s - http://dvds.beandog.org/ - (c) 2014 Steve Dibb <steve.dibb@gmail.com>, licensed under GPL-2\n", binary, VERSION);
 
 }
