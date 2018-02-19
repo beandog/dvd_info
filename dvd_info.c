@@ -48,20 +48,6 @@ int main(int argc, char **argv) {
 	int d_subtitles = 0;
 	int d_cells = 0;
 
-	// dvd_query
-	/*
-	bool dvd_query = false;
-	int d_ntsc = 0;
-	int d_pal = 0;
-	int d_aspect_16x9 = 0;
-	int d_aspect_4x3 = 0;
-	int d_has_audio = 0;
-	int d_ac3_codec = 0;
-	int d_dts_codec = 0;
-	int d_has_subtitles = 0;
-	int d_skip_empty = 0;
-	*/
-
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
 	bool d_all_tracks = true;
@@ -184,20 +170,6 @@ int main(int argc, char **argv) {
 		{ "all", no_argument, NULL, 'x' },
 		{ "json", no_argument, NULL, 'j' },
 		{ "track", required_argument, NULL, 't' },
-
-		// dvd_query
-		/*
-		{ "ntsc", no_argument, &d_ntsc, 1 },
-		{ "pal", no_argument, &d_pal, 1 },
-		{ "aspect-16x9", no_argument, &d_aspect_16x9, 1 },
-		{ "aspect-4x3", no_argument, &d_aspect_4x3, 1 },
-		{ "has-audio", no_argument, &d_has_audio, 1 },
-		{ "ac3-codec", no_argument, &d_ac3_codec, 1 },
-		{ "dts-codec", no_argument, &d_dts_codec, 1 },
-		{ "has-subtitles", no_argument, &d_has_subtitles, 1 },
-		{ "skip-empty", no_argument, &d_skip_empty, 1 },
-		*/
-
 		{ 0, 0, 0, 0 }
 
 	};
@@ -282,13 +254,6 @@ int main(int argc, char **argv) {
 
 	/** Begin dvd_info :) */
 	
-	// Toggle if a custom query is run
-	/*
-	if(d_ntsc || d_pal || d_aspect_16x9 || d_aspect_4x3 || d_has_audio || d_ac3_codec || d_dts_codec || d_has_subtitles)
-		dvd_query = true;
-	dvd_query = false;
-	*/
-
 	// Check to see if device can be accessed
 	if(!dvd_device_access(device_filename)) {
 		fprintf(stderr, "%s: cannot access %s\n", program_name, device_filename);
@@ -612,40 +577,6 @@ int main(int argc, char **argv) {
 		dvd_track = dvd_tracks[track_number - 1];
 		dvd_video = dvd_tracks[track_number - 1].dvd_video;
 
-		/*
-		if(dvd_query) {
-
-			// dvd_query - limit to video format
-			if(d_ntsc && strncmp(dvd_video.format, "NTSC", 4) != 0)
-				continue;
-			if(d_pal && strncmp(dvd_video.format, "PAL", 3) != 0)
-				continue;
-
-			// dvd_query - limit to aspect ratio
-			if(d_aspect_16x9 && strncmp(dvd_video.aspect_ratio, "16:9", 4) != 0)
-				continue;
-			if(d_aspect_4x3 && strncmp(dvd_video.aspect_ratio, "4:3", 3) != 0)
-				continue;
-
-			// dvd_query - limit to active audio tracks
-			if(d_has_audio && !dvd_track.audio_tracks)
-				continue;
-
-			// dvd_query - limit to active subtitle tracks
-			if(d_has_subtitles && !dvd_track.active_subs)
-				continue;
-
-			// dvd_query - skip "empty" tracks, have less than one second of length
-			if(d_skip_empty && dvd_track.msecs < 1000)
-				continue;
-
-			// dvd_query - skip "empty" tracks, no audio or subtitle tracks
-			if(d_skip_empty && !dvd_track.audio_tracks && !dvd_track.active_subs)
-				continue;
-
-		}
-		*/
-
 		// Display track information
 		printf("Track: %02u ", dvd_track.track);
 		printf("Length: %s ", dvd_track.length);
@@ -735,20 +666,6 @@ void print_usage(char *binary) {
 	printf("  -d, --cells		cells\n");
 	printf("  -x, --all		display all\n");
 	printf("\n");
-	// Will be part of a future release (dvd_query)
-	/*
-	printf("Limit displayed tracks based on specific features:\n");
-	printf("  --ntsc		Video format is NTSC\n");
-	printf("  --pal			Video format is PAL\n");
-	printf("  --aspect-16x9		Video aspect ratio is 16:9\n");
-	printf("  --aspect-4x3	 	Video aspect ratio is 4:3\n");
-	printf("  --has-audio		Audio tracks present\n");
-	printf("  --has-subtitles  	Subtitle tracks present\n");
-	printf("  --ac3-codec		Dolby Digital audio tracks\n");
-	printf("  --dts-codec		DTS audio tracks\n");
-	printf("  --skip-empty		Hide empty tracks\n");
-	printf("\n");
-	*/
 	printf("DVD path can be a directory, a device filename, or a local file.\n");
 	printf("\n");
 	printf("Examples:\n");
