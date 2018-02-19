@@ -501,17 +501,16 @@ void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, co
 
 void print_usage(char *binary) {
 
-	printf("%s - Copy a DVD track\n", binary);
+	printf("%s %s - copy a DVD track to the filesystem\n", binary, VERSION);
 	printf("\n");
 	printf("Usage: %s [-t track] [-c chapter[-chapter]] [-o filename] [dvd path]\n", binary);
 	printf("\n");
-	printf("DVD path can be a directory, a device filename, or a local file.\n");
+	printf("DVD path can be a device name, a single file, or directory.\n");
 	printf("\n");
 	printf("Examples:\n");
-	printf("  dvd_info " DEFAULT_DVD_DEVICE "	# Read a DVD drive directly\n");
-	printf("  dvd_info movie.iso	# Read an image file\n");
-	printf("  dvd_info movie/	# Read a directory that contains VIDEO_TS\n");
-	printf("\n");
-	printf("If no DVD path is given, %s is used in its place.\n", DEFAULT_DVD_DEVICE);
+	printf("  dvd_copy		# Read default DVD device (%s)\n", DEFAULT_DVD_DEVICE);
+	printf("  dvd_copy /dev/dvd	# Read a specific DVD device\n");
+	printf("  dvd_copy movie.iso	# Read an image file\n");
+	printf("  dvd_copy ~/movie/	# Read a directory that contains VIDEO_TS\n");
 
 }
