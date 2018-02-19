@@ -20,8 +20,8 @@ uint8_t dvd_track_num_subtitle_lang_code_streams(const ifo_handle_t *vts_ifo, co
 
 bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *vts_ifo, const char *lang_code);
 
-const char *dvd_subtitle_lang_code(const ifo_handle_t *vts_ifo, const uint8_t subtitle_track);
+bool dvd_subtitle_lang_code(char *dest_str, const ifo_handle_t *vts_ifo, const uint8_t subtitle_track);
 
-const char *dvd_subtitle_stream_id(const uint8_t subtitle_track);
+bool dvd_subtitle_stream_id(char *dest_str, const uint8_t subtitle_track);
 
 #endif

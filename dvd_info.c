@@ -480,8 +480,14 @@ int main(int argc, char **argv) {
 				dvd_subtitle.active = dvd_subtitle_active(vmg_ifo, vts_ifo, dvd_track.track, dvd_subtitle.track);
 				if(dvd_subtitle.active)
 					dvd_track.active_subs++;
-				strncpy(dvd_subtitle.stream_id, dvd_subtitle_stream_id(c), DVD_SUBTITLE_STREAM_ID);
-				strncpy(dvd_subtitle.lang_code, dvd_subtitle_lang_code(vts_ifo, c), DVD_SUBTITLE_LANG_CODE);
+
+
+				memset(dvd_subtitle.stream_id, 0, sizeof(dvd_subtitle.stream_id));
+				dvd_subtitle_stream_id(dvd_subtitle.stream_id, c);
+
+
+				memset(dvd_subtitle.lang_code, 0, sizeof(dvd_subtitle.lang_code));
+				dvd_subtitle_lang_code(dvd_subtitle.lang_code, vts_ifo, c);
 
 				dvd_track.dvd_subtitles[c] = dvd_subtitle;
 
