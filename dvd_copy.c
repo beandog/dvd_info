@@ -25,8 +25,6 @@
 #include "dvd_chapter.h"
 #include "dvd_cell.h"
 #include "dvd_video.h"
-#include "dvd_audio.h"
-#include "dvd_subtitles.h"
 #include "dvd_time.h"
 #ifndef VERSION
 #define VERSION "1.0"
@@ -146,7 +144,6 @@ int main(int argc, char **argv) {
 			case 'V':
 				print_version("dvd_copy");
 				return 0;
-				break;
 
 			// ignore unknown arguments
 			case '?':
@@ -218,7 +215,9 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	printf("Disc Title: %s\n", dvd_title(device_filename));
+	char dvd_copy_title[DVD_TITLE + 1];
+	dvd_title(dvd_copy_title, device_filename);
+	printf("Disc title: %s\n", dvd_copy_title);
 
 	uint16_t num_ifos = 1;
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
@@ -395,7 +394,7 @@ int main(int argc, char **argv) {
 
 		dvd_chapter.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
 		dvd_chapter.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
-		strncpy(dvd_chapter.length, dvd_chapter_length(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter), DVD_CHAPTER_LENGTH);
+		dvd_chapter_length(dvd_chapter.length, vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
 
 		for(dvd_cell.cell = dvd_chapter.first_cell; dvd_cell.cell < dvd_chapter.last_cell + 1; dvd_cell.cell++) {
 
@@ -403,7 +402,7 @@ int main(int argc, char **argv) {
 			dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 			dvd_cell.first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 			dvd_cell.last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-			strncpy(dvd_cell.length, dvd_cell_length(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell), DVD_CELL_LENGTH);
+			dvd_cell_length(dvd_cell.length, vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 			cell_sectors = dvd_cell.last_sector - dvd_cell.first_sector;
 
 			printf("        Chapter: %02u, Cell: %02u, VTS: %u, Filesize: %lu, Blocks: %lu, Sectors: %i to %i\n", dvd_chapter.chapter, dvd_cell.cell, vts, dvd_cell.filesize, dvd_cell.blocks, dvd_cell.first_sector, dvd_cell.last_sector);
@@ -497,13 +496,9 @@ void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, co
 	dvd_track->valid = 1;
 	dvd_track->vts = dvd_vts_ifo_number(vmg_ifo, track_number);
 	dvd_track->ttn = dvd_track_ttn(vmg_ifo, track_number);
-	strncpy(dvd_track->length, dvd_track_length(vmg_ifo, vts_ifo, track_number), DVD_TRACK_LENGTH);
+	dvd_track_length(dvd_track->length, vmg_ifo, vts_ifo, track_number);
 	dvd_track->msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track_number);
 	dvd_track->chapters = dvd_track_chapters(vmg_ifo, vts_ifo, track_number);
-	dvd_track->audio_tracks = dvd_track_audio_tracks(vts_ifo);
-	dvd_track->subtitles = dvd_track_subtitles(vts_ifo);
-	dvd_track->active_audio = dvd_audio_active_tracks(vmg_ifo, vts_ifo, track_number);
-	dvd_track->active_subs = dvd_track_active_subtitles(vmg_ifo, vts_ifo, track_number);
 	dvd_track->cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 	dvd_track->blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
 	dvd_track->filesize = dvd_track_filesize(vmg_ifo, vts_ifo, track_number);
