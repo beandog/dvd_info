@@ -136,7 +136,7 @@ bool dvd_track_has_subtitle_lang_code(const ifo_handle_t *vts_ifo, const char *l
  * Get the lang code of a subtitle track for a title track
  *
  */
-bool dvd_subtitle_lang_code(char *dest_str, const ifo_handle_t *vts_ifo, const uint8_t subtitle_track) {
+void dvd_subtitle_lang_code(char *dest_str, const ifo_handle_t *vts_ifo, const uint8_t subtitle_track) {
 
 	char lang_code[3] = {'\0'};
 	subp_attr_t *subp_attr = NULL;
@@ -144,15 +144,14 @@ bool dvd_subtitle_lang_code(char *dest_str, const ifo_handle_t *vts_ifo, const u
 	subp_attr = &vts_ifo->vtsi_mat->vts_subp_attr[subtitle_track];
 
 	if(subp_attr->type == 0 && subp_attr->lang_code == 0 && subp_attr->zero1 == 0 && subp_attr->zero2 == 0 && subp_attr->lang_extension == 0) {
-		return true;
+		return;
 	}
 	snprintf(lang_code, DVD_SUBTITLE_LANG_CODE + 1, "%c%c", subp_attr->lang_code >> 8, subp_attr->lang_code & 0xff);
 
 	if(!isalpha(lang_code[0]) || !isalpha(lang_code[1]))
-		return true;
+		return;
 
 	strncpy(dest_str, lang_code, DVD_SUBTITLE_LANG_CODE);
-	return true;
 
 }
 
@@ -167,10 +166,8 @@ bool dvd_subtitle_lang_code(char *dest_str, const ifo_handle_t *vts_ifo, const u
  * @param subtitle_track subtitle track number
  * @return stream id
  */
-bool dvd_subtitle_stream_id(char *dest_str, const uint8_t subtitle_track) {
+void dvd_subtitle_stream_id(char *dest_str, const uint8_t subtitle_track) {
 
 	snprintf(dest_str, DVD_SUBTITLE_STREAM_ID + 1, "0x%x", 0x20 + subtitle_track);
-
-	return true;
 
 }
