@@ -19,6 +19,7 @@
 #include "dvd_subtitles.h"
 #include "dvd_time.h"
 #include "dvd_json.h"
+#include "dvd_ogm.h"
 #include "dvd_vob.h"
 #ifdef __linux__
 #include <linux/cdrom.h>
@@ -39,6 +40,7 @@ int main(int argc, char **argv) {
 	bool p_dvd_json = false;
 	bool p_dvd_id = false;
 	bool p_dvd_title = false;
+	bool p_dvd_ogm = false;
 	char program_name[] = "dvd_info";
 
 	// lsdvd similar display output
@@ -158,7 +160,7 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	// Send 'invalid argument' to stderr
 	opterr = 1;
-	const char p_short_opts[] = "acdhijqsTt:Vvx";
+	const char p_short_opts[] = "acdhijoqsTt:Vvx";
 
 	struct option p_long_opts[] = {
 
@@ -173,6 +175,7 @@ int main(int argc, char **argv) {
 		{ "quiet", no_argument, NULL, 'q' },
 		{ "id", no_argument, NULL, 'i' },
 		{ "title", no_argument, NULL, 'T' },
+		{ "ogm", no_argument, NULL, 'o' },
 		{ "help", no_argument, NULL, 'h' },
 		{ "version", no_argument, NULL, 'V' },
 		{ 0, 0, 0, 0 }
@@ -231,11 +234,16 @@ int main(int argc, char **argv) {
 
 			case 'T':
 				p_dvd_title = true;
-				p_dvd_id = false;
+				p_dvd_info = false;
 				break;
 
 			case 'v':
 				d_video = true;
+				break;
+
+			case 'o':
+				p_dvd_ogm = true;
+				p_dvd_info = false;
 				break;
 
 			case 'x':
@@ -607,6 +615,15 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
+	/** dvdxchap display output **/
+	if(p_dvd_ogm) {
+		if(opt_track_number)
+			dvd_ogm(dvd_tracks[opt_track_number]);
+		else
+			dvd_ogm(dvd_tracks[dvd_info.longest_track]);
+		goto cleanup;
+	}
+
 	/**
 	 * lsdvd style output (default)
 	 *
@@ -715,7 +732,7 @@ void print_usage(char *binary) {
 	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
 	printf("\n");
 	printf("Options:\n");
-	printf("  -t, --track #		Limit to one track number\n");
+	printf("  -t, --track #		Limit to one track number (default: longest)\n");
 	printf("\n");
 	printf("Detailed information:\n");
 	printf("  -a, --audio		audio streams\n");
@@ -727,8 +744,9 @@ void print_usage(char *binary) {
 	printf("\n");
 	printf("Formatting:\n");
 	printf("  -j, --json		Display output in JSON format\n");
+	printf("  -o, --ogm		Display OGM chapter format for track (default: longest)\n");
 	printf("  -i, --id		Display DVD id only (from libdvdread)\n");
-	printf("  -t, --title		Display DVD title only (path must be device or file)\n");
+	printf("  -T, --title		Display DVD title only (path must be device or file)\n");
 	printf("\n");
 	printf("Other:\n");
 	printf("  -q, --quiet		Don't display DVD title, longest track\n");
