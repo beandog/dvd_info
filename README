@@ -104,7 +104,7 @@ If no track is selected, dvd_copy will simply select the longest track.
 
 Portability:
 
-Runs on GNU/Linux and OpenBSD.
+Runs on GNU/Linux, OpenBSD, and NetBSD.
 
 I take a minimalist approach to my code, and so there is only the minimum
 of required autotools content in the repo: configure.ac and Makefile.am
