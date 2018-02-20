@@ -104,19 +104,14 @@ If no track is selected, dvd_copy will simply select the longest track.
 
 Portability:
 
-Runs on GNU/Linux, OpenBSD, and NetBSD.
+Runs on GNU/Linux, OpenBSD, and NetBSD. See its DVD wiki page for specific
+OS instructions: http://dvds.beandog.org/doku.php?id=dvd_info
 
 I take a minimalist approach to my code, and so there is only the minimum
 of required autotools content in the repo: configure.ac and Makefile.am
 This allows the user to build the config files on their system. Run
 "autoreconf -fi" and you'll have the familiar configure, make, make install
 setup.
-
-For OpenBSD, you'll need to set AUTOCONF_VERSION and AUTOMAKE_VERSION.
-
-On my box:
-
-  $ AUTOCONF_VERSION=2.69 AUTOMAKE_VERSION=1.15 autoreconf -fi
 
 See also:
 
