@@ -8,7 +8,6 @@ AC_PROG_CC_C99
 
 dnl Use pkg-config to check for libdvdread, libdvdcss
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
-PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.2.13])
 
 dnl The DVD drive tools are OS-specific
 AC_CANONICAL_HOST
