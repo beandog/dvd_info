@@ -22,7 +22,9 @@ are programs I'm working on that are not in the Makefile.am yet (or there are
 more than are in the repo). You can, of course, try to build it, but I don't
 target releases here.
 
-Download releases at: http://dvdinfo.sf.net/
+Version 1.0 released on 2018-02-19
+
+* https://sourceforge.net/projects/dvdinfo/files/
 
 Sources:
 
