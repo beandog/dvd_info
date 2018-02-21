@@ -32,9 +32,6 @@
 #include <linux/cdrom.h>
 #include "dvd_drive.h"
 #endif
-#ifndef VERSION
-#define VERSION "1.0"
-#endif
 
 #ifndef DVD_VIDEO_LB_LEN
 #define DVD_VIDEO_LB_LEN 2048
