@@ -127,6 +127,12 @@ See also:
   * http://wonkabar.org - my *very old* blog with some multimedia content
   * https://forums.gentoo.org/viewforum-f-33.html - Gentoo Linux Multimedia
 
+Other stuff:
+
+I don't have my own tool to copy the entire DVD file structure to the
+filesystem, simply because I don't really need one. I use dvdbackup, and that's
+what I'd recommend. See http://dvdbackup.sourceforge.net/
+
 Support:
 
 I love hunting down anomalies, so if you run into something odd on a disc, let
