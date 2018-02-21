@@ -217,9 +217,19 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	char dvd_copy_title[DVD_TITLE + 1];
-	dvd_title(dvd_copy_title, device_filename);
-	printf("Disc title: %s\n", dvd_copy_title);
+	// DVD
+	struct dvd_info dvd_info;
+	memset(dvd_info.dvdread_id, '\0', sizeof(dvd_info.dvdread_id));
+	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
+	dvd_info.side = 1;
+	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
+	memset(dvd_info.provider_id, '\0', sizeof(dvd_info.provider_id));
+	memset(dvd_info.vmg_id, '\0', sizeof(dvd_info.vmg_id));
+	dvd_info.tracks = dvd_tracks(vmg_ifo);
+	dvd_info.longest_track = 1;
+
+	dvd_title(dvd_info.title, device_filename);
+	printf("Disc title: %s\n", dvd_info.title);
 
 	uint16_t num_ifos = 1;
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
@@ -232,13 +242,6 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// DVD
-	struct dvd_info dvd_info;
-	memset(&dvd_info, 0, sizeof(dvd_info));
-	dvd_info.tracks = dvd_tracks(vmg_ifo);
-	dvd_info.longest_track = 1;
-	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
-	dvd_info.tracks = dvd_tracks(vmg_ifo);
 
 	// Track
 	struct dvd_track dvd_track;
