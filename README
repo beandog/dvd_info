@@ -14,6 +14,10 @@ Requirements:
 
 * libdvdread >= 4.2.1 (libdvdcss required for decryption)
 
+Homepage:
+
+  * http://dvds.beandog.org/doku.php?id=dvd_info
+
 Development:
 
 The git repo on github is *NOT* intended to build from a straight pull. There
