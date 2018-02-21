@@ -1,0 +1,8 @@
+1.1
+
+* Fixed a bug in dvd_copy where "Disc title" output would be garbage
+
+1.0 - 2018-02-20
+
+* First release after working on this for years, woots!
+* dvd_info, dvd_copy, dvd_drive_status initial builds
