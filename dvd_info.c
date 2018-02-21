@@ -26,7 +26,7 @@
 #include "dvd_drive.h"
 #endif
 #ifndef VERSION
-#define VERSION "1.0"
+#define VERSION "1.1"
 #endif
 
 int main(int argc, char **argv);
