@@ -29,7 +29,7 @@
 #include "dvd_subtitles.h"
 #include "dvd_time.h"
 #ifndef VERSION
-#define VERSION "1.1"
+#define VERSION "1.2"
 #endif
 
 #ifndef DVD_VIDEO_LB_LEN
