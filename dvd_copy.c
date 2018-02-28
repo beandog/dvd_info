@@ -66,6 +66,7 @@ int main(int argc, char **argv) {
 
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
+	bool p_dvd_cat = false;
 	uint16_t arg_track_number = 0;
 	int long_index = 0;
 	int opt = 0;
@@ -134,8 +135,13 @@ int main(int argc, char **argv) {
 				return 0;
 
 			case 'o':
-				output_filename = optarg;
-				strncpy(dvd_copy.filename, output_filename, PATH_MAX);
+				if(strlen(optarg) == 1 && strncmp("-", optarg, 1) == 0) {
+					p_dvd_cat = true;
+					fprintf(stderr, "Outputting DVD stream to stdout, all messges will go to stderr\n");
+				} else {
+					output_filename = optarg;
+					strncpy(dvd_copy.filename, output_filename, PATH_MAX);
+				}
 				break;
 
 			case 't':
