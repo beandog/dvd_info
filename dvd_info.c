@@ -400,16 +400,6 @@ int main(int argc, char **argv) {
 	strncpy(dvd_info.dvdread_id, dvdread_id, DVD_DVDREAD_ID);
 
 	if(p_dvd_title) {
-		if(!strlen(dvd_info.title)) {
-			fprintf(stderr, "DVD titles are only printed if device is a DVD drive or a UDF image (.iso)\n");
-			if(vmg_ifo)
-				ifoClose(vmg_ifo);
-
-			if(dvdread_dvd)
-				DVDClose(dvdread_dvd);
-
-			return 1;
-		}
 		printf("%s\n", dvd_info.title);
 		goto cleanup;
 	}
