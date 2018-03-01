@@ -578,11 +578,10 @@ void print_usage(char *binary) {
 	printf("  dvd_copy ~/movie/	# Read a directory that contains VIDEO_TS\n");
 	printf("\n");
 	printf("Output filenames:\n");
-	printf("  dvd_copy -o video.vob	# Save to \"video.vob\"\n");
-	printf("  dvd_copy -o video.mpg	# Save to \"video.mpg\"\n");
+	printf("  dvd_copy		# Save to \"dvd_track_##.vob\" where ## is longest track\n");
+	printf("  dvd_copy -o video.vob	# Save to \"video.vob\" (MPEG2 program stream)\n");
+	printf("  dvd_copy -o video.mpg	# Save to \"video.mpg\" (MPEG2 program stream)\n");
 	printf("  dvd_copy -o -		# Stream to console output (stdout)\n");
-	printf("\n");
-	printf("If no output filename is given, will save track to \"dvd_track_##.vob\"\n");
 
 }
 
