@@ -1,4 +1,8 @@
-1.1
+1.2 - 2018-02-28
+
+* dvd_copy can copy track to stdout
+
+1.1 - 2018-02-21
 
 * Fixed a bug in dvd_copy where "Disc title" output would be garbage
 
