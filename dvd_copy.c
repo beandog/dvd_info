@@ -81,14 +81,13 @@ int main(int argc, char **argv) {
 	str_options = "c:ho:t:V";
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
-	const char *output_filename = NULL;
 	char *token = NULL;
 	struct dvd_copy dvd_copy;
 
 	struct option long_options[] = {
 
 		{ "chapters", required_argument, 0, 'c' },
-		{ "output_filename", required_argument, 0, 'o' },
+		{ "dvd_copy.filename", required_argument, 0, 'o' },
 		{ "track", required_argument, 0, 't' },
 		{ "help", no_argument, 0, 'h' },
 		{ "version", no_argument, 0, 'V' },
@@ -148,9 +147,7 @@ int main(int argc, char **argv) {
 					p_dvd_copy = true;
 					p_dvd_cat = false;
 					opt_filename = true;
-					output_filename = optarg;
-					dvd_copy.filename = calloc(strlen(optarg), sizeof(unsigned char));
-					strncpy(dvd_copy.filename, optarg, strlen(optarg));
+					dvd_copy.filename = optarg;
 				}
 				break;
 
@@ -410,10 +407,12 @@ int main(int argc, char **argv) {
 	if(p_dvd_copy)
 		printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
 
-	dvd_copy.fd = open(dvd_copy.filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
-	if(dvd_copy.fd == -1) {
-		fprintf(stderr, "Couldn't create file %s\n", dvd_copy.filename);
-		return 1;
+	if(p_dvd_copy) {
+		dvd_copy.fd = open(dvd_copy.filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
+		if(dvd_copy.fd == -1) {
+			fprintf(stderr, "Couldn't create file %s\n", dvd_copy.filename);
+			return 1;
+		}
 	}
 
 	track_blocks_written = 0;
