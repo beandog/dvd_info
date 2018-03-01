@@ -32,14 +32,18 @@
 #define VERSION "1.2"
 #endif
 
+#define DVD_INFO_PROGRAM "dvd_copy"
+
 #ifndef DVD_VIDEO_LB_LEN
 #define DVD_VIDEO_LB_LEN 2048
 #endif
 
 #define DVD_COPY_BLOCK_LIMIT 512
+#define DVD_CAT_BLOCK_LIMIT 1
 
 // 2048 * 512 = 1 MB
 #define DVD_COPY_BYTES_LIMIT ( DVD_COPY_BLOCK_LIMIT * DVD_VIDEO_LB_LEN )
+#define DVD_CAT_BYTES_LIMIT ( DVD_CAT_BLOCK_LIMIT * DVD_VIDEO_LB_LEN )
 
 int main(int, char **);
 void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo);
@@ -132,15 +136,17 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'h':
-				print_usage("dvd_copy");
+				print_usage(DVD_INFO_PROGRAM);
 				return 0;
 
 			case 'o':
 				if(strlen(optarg) == 1 && strncmp("-", optarg, 1) == 0) {
 					p_dvd_copy = false;
 					p_dvd_cat = true;
-					fprintf(stderr, "Outputting DVD stream to stdout, all messges will go to stderr\n");
+					fprintf(stderr, "[%s] outputting stream to stdout\n", DVD_INFO_PROGRAM);
 				} else {
+					p_dvd_copy = true;
+					p_dvd_cat = false;
 					output_filename = optarg;
 					strncpy(dvd_copy.filename, output_filename, PATH_MAX);
 				}
@@ -356,15 +362,31 @@ int main(int argc, char **argv) {
 	 * Integers for numbers of blocks read, copied, counters
 	 */
 	int offset = 0;
-	ssize_t read_blocks = DVD_COPY_BLOCK_LIMIT; // this can be changed, if you want to to do testing on different block sizes (grab more / less data on each read)
 	ssize_t dvdread_read_blocks = 0; // num blocks passed by dvdread function
 	ssize_t cell_blocks_written = 0;
 	ssize_t track_blocks_written = 0;
 	ssize_t bytes_written = 0;
 	uint32_t cell_sectors = 0;
 
+	// Copy size
+	// For p_dvd_copy, the amount is variable, regarding the code
+	// For p_dvd_cat, limit the blocks to one so it is reading the minimum that
+	// dvdread will provide.
+	ssize_t read_blocks = 1;
+	if(p_dvd_copy)
+		read_blocks = DVD_COPY_BLOCK_LIMIT; // this can be changed, if you want to to do testing on different block sizes (grab more / less data on each read)
+	else if(p_dvd_cat)
+		read_blocks = DVD_CAT_BLOCK_LIMIT;
+	else
+		read_blocks = 1;
+
 	unsigned char *dvd_read_buffer = NULL;
-	dvd_read_buffer = (unsigned char *)calloc(1, (uint64_t)DVD_COPY_BYTES_LIMIT * sizeof(unsigned char));
+	if(p_dvd_copy)
+		dvd_read_buffer = (unsigned char *)calloc(1, (uint64_t)DVD_COPY_BYTES_LIMIT * sizeof(unsigned char));
+	else if (p_dvd_cat)
+		dvd_read_buffer = (unsigned char *)calloc(1, (uint64_t)DVD_CAT_BYTES_LIMIT * sizeof(unsigned char));
+	else
+		dvd_read_buffer = (unsigned char *)calloc(1, 1 * sizeof(unsigned char));
 	if(dvd_read_buffer == NULL) {
 		fprintf(stderr, "Couldn't allocate memory\n");
 		return 1;
@@ -439,7 +461,12 @@ int main(int argc, char **argv) {
 			while(cell_blocks_written < dvd_cell.blocks) {
 
 				// Reset to the defaults
-				read_blocks = DVD_COPY_BLOCK_LIMIT;
+				if(p_dvd_copy)
+					read_blocks = DVD_COPY_BLOCK_LIMIT;
+				else if(p_dvd_cat)
+					read_blocks = DVD_CAT_BLOCK_LIMIT;
+				else
+					read_blocks = 1;
 
 				if(read_blocks > (dvd_cell.blocks - cell_blocks_written)) {
 					read_blocks = dvd_cell.blocks - cell_blocks_written;
@@ -461,7 +488,12 @@ int main(int argc, char **argv) {
 				offset += dvdread_read_blocks;
 
 				// Write the buffer to the track file
-				bytes_written = write(dvd_copy.fd, dvd_read_buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
+				if(p_dvd_copy)
+					bytes_written = write(dvd_copy.fd, dvd_read_buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
+				else if(p_dvd_cat)
+					bytes_written = write(1, dvd_read_buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
+				else
+					bytes_written = 0;
 
 				if(!bytes_written) {
 					fprintf(stderr, "* Could not write data from cell %u\n", dvd_cell.cell);
@@ -530,7 +562,7 @@ void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, co
 
 void print_usage(char *binary) {
 
-	printf("%s %s - copy a DVD track to the filesystem\n", binary, VERSION);
+	printf("%s %s - copy a single DVD track to the filesystem\n", binary, VERSION);
 	printf("\n");
 	printf("Usage: %s [-t track] [-c chapter[-chapter]] [-o filename] [dvd path]\n", binary);
 	printf("\n");
@@ -541,11 +573,18 @@ void print_usage(char *binary) {
 	printf("  dvd_copy /dev/dvd	# Read a specific DVD device\n");
 	printf("  dvd_copy movie.iso	# Read an image file\n");
 	printf("  dvd_copy ~/movie/	# Read a directory that contains VIDEO_TS\n");
+	printf("\n");
+	printf("Output filenames:\n");
+	printf("  dvd_copy -o video.vob	# Save to \"video.vob\"\n");
+	printf("  dvd_copy -o video.mpg	# Save to \"video.mpg\"\n");
+	printf("  dvd_copy -o -		# Stream to console output (stdout)\n");
+	printf("\n");
+	printf("If no output filename is given, will save track to \"dvd_track_##.vob\"\n");
 
 }
 
 void print_version(char *binary) {
 
-	printf("%s %s - http://dvds.beandog.org/ - (c) 2014 Steve Dibb <steve.dibb@gmail.com>, licensed under GPL-2\n", binary, VERSION);
+	printf("%s %s - http://dvds.beandog.org/ - (c) 2018 Steve Dibb <steve.dibb@gmail.com>, licensed under GPL-2\n", binary, VERSION);
 
 }
