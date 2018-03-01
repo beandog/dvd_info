@@ -237,7 +237,8 @@ int main(int argc, char **argv) {
 	dvd_info.longest_track = 1;
 
 	dvd_title(dvd_info.title, device_filename);
-	printf("Disc title: %s\n", dvd_info.title);
+	if(p_dvd_copy)
+		printf("Disc title: %s\n", dvd_info.title);
 
 	uint16_t num_ifos = 1;
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
@@ -380,7 +381,8 @@ int main(int argc, char **argv) {
 	// Open the VTS VOB
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
-	printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
+	if(p_dvd_copy)
+		printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
 
 	dvd_copy.fd = open(dvd_copy.filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
 	if(dvd_copy.fd == -1) {
@@ -418,7 +420,8 @@ int main(int argc, char **argv) {
 			dvd_cell_length(dvd_cell.length, vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 			cell_sectors = dvd_cell.last_sector - dvd_cell.first_sector;
 
-			printf("        Chapter: %02u, Cell: %02u, VTS: %u, Filesize: %lu, Blocks: %lu, Sectors: %i to %i\n", dvd_chapter.chapter, dvd_cell.cell, vts, dvd_cell.filesize, dvd_cell.blocks, dvd_cell.first_sector, dvd_cell.last_sector);
+			if(p_dvd_copy)
+				printf("        Chapter: %02u, Cell: %02u, VTS: %u, Filesize: %lu, Blocks: %lu, Sectors: %i to %i\n", dvd_chapter.chapter, dvd_cell.cell, vts, dvd_cell.filesize, dvd_cell.blocks, dvd_cell.first_sector, dvd_cell.last_sector);
 
 			cell_blocks_written = 0;
 
@@ -475,7 +478,7 @@ int main(int argc, char **argv) {
 				cell_blocks_written += dvdread_read_blocks;
 				track_blocks_written += dvdread_read_blocks;
 
-				if(!p_dvd_cat) {
+				if(p_dvd_copy) {
 					printf("Progress %lu%%\r", track_blocks_written * 100 / dvd_copy.blocks);
 					fflush(stdout);
 				}
@@ -490,7 +493,8 @@ int main(int argc, char **argv) {
 
 	DVDCloseFile(dvdread_vts_file);
 
-	printf("\n");
+	if(p_dvd_copy)
+		printf("\n");
 	
 	if(vts_ifo)
 		ifoClose(vts_ifo);
