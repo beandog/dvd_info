@@ -574,8 +574,8 @@ void print_usage(char *binary) {
 	printf("Examples:\n");
 	printf("  dvd_copy		# Read default DVD device (%s)\n", DEFAULT_DVD_DEVICE);
 	printf("  dvd_copy /dev/dvd	# Read a specific DVD device\n");
-	printf("  dvd_copy movie.iso	# Read an image file\n");
-	printf("  dvd_copy ~/movie/	# Read a directory that contains VIDEO_TS\n");
+	printf("  dvd_copy video.iso    # Read an image file\n");
+	printf("  dvd_copy ~/Videos/DVD	# Read a directory that contains VIDEO_TS\n");
 	printf("\n");
 	printf("Output filenames:\n");
 	printf("  dvd_copy		# Save to \"dvd_track_##.vob\" where ## is longest track\n");
