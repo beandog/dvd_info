@@ -149,7 +149,7 @@ int main(int argc, char **argv) {
 					p_dvd_cat = false;
 					opt_filename = true;
 					output_filename = optarg;
-					dvd_copy.filename = calloc(1, sizeof(unsigned char) * (strlen(optarg)));
+					dvd_copy.filename = calloc(strlen(optarg), sizeof(unsigned char));
 					strncpy(dvd_copy.filename, optarg, strlen(optarg));
 				}
 				break;
@@ -358,7 +358,7 @@ int main(int argc, char **argv) {
 	
 	// Set default filename
 	if(!opt_filename) {
-		dvd_copy.filename = calloc(1, sizeof(unsigned char) * (DVD_COPY_FILENAME + 1));
+		dvd_copy.filename = calloc(DVD_COPY_FILENAME + 1, sizeof(unsigned char));
 		snprintf(dvd_copy.filename, DVD_COPY_FILENAME + 1, "dvd_track_%02u.vob", dvd_copy.track);
 	}
 
