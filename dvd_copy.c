@@ -210,7 +210,7 @@ int main(int argc, char **argv) {
 	dvdread_dvd = DVDOpen(device_filename);
 
 	if(!dvdread_dvd) {
-		printf("* dvdread could not open %s\n", device_filename);
+		fprintf(stderr, "* dvdread could not open %s\n", device_filename);
 		return 1;
 	}
 
@@ -218,7 +218,7 @@ int main(int argc, char **argv) {
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
 	if(vmg_ifo == NULL) {
-		printf("* Could not open IFO zero\n");
+		fprintf(stderr, "* Could not open IFO zero\n");
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
@@ -241,8 +241,8 @@ int main(int argc, char **argv) {
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
 
 	if(num_ifos < 1) {
-		printf("* DVD has no title IFOs?!\n");
-		printf("* Most likely a bug in libdvdread or a bad master or problems reading the disc\n");
+		fprintf(stderr, "* DVD has no title IFOs?!\n");
+		fprintf(stderr, "* Most likely a bug in libdvdread or a bad master or problems reading the disc\n");
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -269,7 +269,7 @@ int main(int argc, char **argv) {
 
 	vts_ifo = ifoOpen(dvdread_dvd, vts);
 	if(vts_ifo == NULL) {
-		printf("* Could not open VTS_IFO for track %u\n", 1);
+		fprintf(stderr, "* Could not open VTS_IFO for track %u\n", 1);
 		return 1;
 	}
 	ifoClose(vts_ifo);
