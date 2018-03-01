@@ -10,7 +10,6 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <getopt.h>
-#include <limits.h>
 #ifdef __linux__
 #include <linux/cdrom.h>
 #include "dvd_drive.h"
@@ -33,6 +32,7 @@
 #endif
 
 #define DVD_INFO_PROGRAM "dvd_copy"
+#define DVD_COPY_FILENAME 16
 
 #ifndef DVD_VIDEO_LB_LEN
 #define DVD_VIDEO_LB_LEN 2048
@@ -58,7 +58,7 @@ struct dvd_copy {
 	uint8_t last_cell;
 	ssize_t blocks;
 	ssize_t filesize;
-	char filename[PATH_MAX];
+	char *filename;
 	int fd;
 };
 
@@ -72,6 +72,7 @@ int main(int argc, char **argv) {
 	bool opt_chapter_number = false;
 	bool p_dvd_copy = true;
 	bool p_dvd_cat = false;
+	bool opt_filename = false;
 	uint16_t arg_track_number = 0;
 	int long_index = 0;
 	int opt = 0;
@@ -102,7 +103,6 @@ int main(int argc, char **argv) {
 	dvd_copy.last_cell = 1;
 	dvd_copy.blocks = 0;
 	dvd_copy.filesize = 0;
-	strncpy(dvd_copy.filename, "dvd_track_01.vob", 17);
 	dvd_copy.fd = -1;
 
 	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
@@ -147,8 +147,10 @@ int main(int argc, char **argv) {
 				} else {
 					p_dvd_copy = true;
 					p_dvd_cat = false;
+					opt_filename = true;
 					output_filename = optarg;
-					strncpy(dvd_copy.filename, output_filename, PATH_MAX);
+					dvd_copy.filename = calloc(1, sizeof(unsigned char) * (strlen(optarg)));
+					strncpy(dvd_copy.filename, optarg, strlen(optarg));
 				}
 				break;
 
@@ -355,8 +357,10 @@ int main(int argc, char **argv) {
 	}
 	
 	// Set default filename
-	if(output_filename == NULL)
-		snprintf(dvd_copy.filename, 17, "dvd_track_%02u.vob", dvd_copy.track);
+	if(!opt_filename) {
+		dvd_copy.filename = calloc(1, sizeof(unsigned char) * (DVD_COPY_FILENAME + 1));
+		snprintf(dvd_copy.filename, DVD_COPY_FILENAME + 1, "dvd_track_%02u.vob", dvd_copy.track);
+	}
 
 	/**
 	 * Integers for numbers of blocks read, copied, counters
