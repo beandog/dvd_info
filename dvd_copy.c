@@ -363,7 +363,7 @@ int main(int argc, char **argv) {
 	unsigned char *dvd_read_buffer = NULL;
 	dvd_read_buffer = (unsigned char *)calloc(1, (uint64_t)DVD_COPY_BYTES_LIMIT * sizeof(unsigned char));
 	if(dvd_read_buffer == NULL) {
-		printf("Couldn't allocate memory\n");
+		fprintf(stderr, "Couldn't allocate memory\n");
 		return 1;
 	}
 
@@ -382,7 +382,7 @@ int main(int argc, char **argv) {
 
 	dvd_copy.fd = open(dvd_copy.filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
 	if(dvd_copy.fd == -1) {
-		printf("Couldn't create file %s\n", dvd_copy.filename);
+		fprintf(stderr, "Couldn't create file %s\n", dvd_copy.filename);
 		return 1;
 	}
 
@@ -424,7 +424,7 @@ int main(int argc, char **argv) {
 				cell_sectors++;
 
 			if(dvd_cell.last_sector < dvd_cell.first_sector) {
-				printf("* DEBUG Someone doing something nasty? The last sector is listed before the first; skipping cell\n");
+				fprintf(stderr, "* DEBUG Someone doing something nasty? The last sector is listed before the first; skipping cell\n");
 				continue;
 			}
 			
@@ -442,13 +442,13 @@ int main(int argc, char **argv) {
 
 				dvdread_read_blocks = DVDReadBlocks(dvdread_vts_file, offset, (uint64_t)read_blocks, dvd_read_buffer);
 				if(!dvdread_read_blocks) {
-					printf("* Could not read data from cell %u\n", dvd_cell.cell);
+					fprintf(stderr, "* Could not read data from cell %u\n", dvd_cell.cell);
 					return 1;
 				}
 
 				// Check to make sure the amount read was what we wanted
 				if(dvdread_read_blocks != read_blocks) {
-					printf("*** Asked for %ld and only got %ld\n", read_blocks, dvdread_read_blocks);
+					fprintf(stderr, "*** Asked for %ld and only got %ld\n", read_blocks, dvdread_read_blocks);
 					return 1;
 				}
 
@@ -459,13 +459,13 @@ int main(int argc, char **argv) {
 				bytes_written = write(dvd_copy.fd, dvd_read_buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
 
 				if(!bytes_written) {
-					printf("* Could not write data from cell %u\n", dvd_cell.cell);
+					fprintf(stderr, "* Could not write data from cell %u\n", dvd_cell.cell);
 					return 1;
 				}
 
 				// Check to make sure we wrote as much as we asked for
 				if(bytes_written != dvdread_read_blocks * DVD_VIDEO_LB_LEN) {
-					printf("*** Tried to write %ld bytes and only wrote %ld instead\n", dvdread_read_blocks * DVD_VIDEO_LB_LEN, bytes_written);
+					fprintf(stderr, "*** Tried to write %ld bytes and only wrote %ld instead\n", dvdread_read_blocks * DVD_VIDEO_LB_LEN, bytes_written);
 					return 1;
 				}
 
@@ -473,8 +473,10 @@ int main(int argc, char **argv) {
 				cell_blocks_written += dvdread_read_blocks;
 				track_blocks_written += dvdread_read_blocks;
 
-				printf("Progress %lu%%\r", track_blocks_written * 100 / dvd_copy.blocks);
-				fflush(stdout);
+				if(!p_dvd_cat) {
+					printf("Progress %lu%%\r", track_blocks_written * 100 / dvd_copy.blocks);
+					fflush(stdout);
+				}
 
 			}
 
