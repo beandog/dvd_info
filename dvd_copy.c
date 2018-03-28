@@ -103,6 +103,9 @@ int main(int argc, char **argv) {
 	dvd_copy.filesize = 0;
 	dvd_copy.fd = -1;
 
+	if(p_dvd_cat)
+		dvd_copy.fd = 1;
+
 	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
 
 		switch(opt) {
