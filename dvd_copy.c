@@ -102,6 +102,7 @@ int main(int argc, char **argv) {
 	dvd_copy.blocks = 0;
 	dvd_copy.filesize = 0;
 	dvd_copy.fd = -1;
+	memset(dvd_copy.buffer, 0, sizeof(dvd_copy.buffer));
 
 	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
 
@@ -373,7 +374,6 @@ int main(int argc, char **argv) {
 	// For p_dvd_cat, limit the blocks to one so it is reading the minimum that
 	// dvdread will provide.
 	ssize_t read_blocks = DVD_COPY_BLOCK_LIMIT;
-	memset(dvd_copy.buffer, 0, sizeof(dvd_copy.buffer));
 
 	/**
 	 * File descriptors and filenames
