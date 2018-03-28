@@ -39,11 +39,9 @@
 #endif
 
 #define DVD_COPY_BLOCK_LIMIT 512
-#define DVD_CAT_BLOCK_LIMIT 1
 
 // 2048 * 512 = 1 MB
 #define DVD_COPY_BYTES_LIMIT ( DVD_COPY_BLOCK_LIMIT * DVD_VIDEO_LB_LEN )
-#define DVD_CAT_BYTES_LIMIT ( DVD_CAT_BLOCK_LIMIT * DVD_VIDEO_LB_LEN )
 
 int main(int, char **);
 void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo);
@@ -60,6 +58,7 @@ struct dvd_copy {
 	ssize_t filesize;
 	char *filename;
 	int fd;
+	unsigned char buffer[DVD_COPY_BYTES_LIMIT];
 };
 
 int main(int argc, char **argv) {
@@ -373,25 +372,8 @@ int main(int argc, char **argv) {
 	// For p_dvd_copy, the amount is variable, regarding the code
 	// For p_dvd_cat, limit the blocks to one so it is reading the minimum that
 	// dvdread will provide.
-	ssize_t read_blocks = 1;
-	if(p_dvd_copy)
-		read_blocks = DVD_COPY_BLOCK_LIMIT; // this can be changed, if you want to to do testing on different block sizes (grab more / less data on each read)
-	else if(p_dvd_cat)
-		read_blocks = DVD_CAT_BLOCK_LIMIT;
-	else
-		read_blocks = 1;
-
-	unsigned char *dvd_read_buffer = NULL;
-	if(p_dvd_copy)
-		dvd_read_buffer = (unsigned char *)calloc(1, (uint64_t)DVD_COPY_BYTES_LIMIT * sizeof(unsigned char));
-	else if (p_dvd_cat)
-		dvd_read_buffer = (unsigned char *)calloc(1, (uint64_t)DVD_CAT_BYTES_LIMIT * sizeof(unsigned char));
-	else
-		dvd_read_buffer = (unsigned char *)calloc(1, 1 * sizeof(unsigned char));
-	if(dvd_read_buffer == NULL) {
-		fprintf(stderr, "Couldn't allocate memory\n");
-		return 1;
-	}
+	ssize_t read_blocks = DVD_COPY_BLOCK_LIMIT;
+	memset(dvd_copy.buffer, 0, sizeof(dvd_copy.buffer));
 
 	/**
 	 * File descriptors and filenames
@@ -464,18 +446,13 @@ int main(int argc, char **argv) {
 			while(cell_blocks_written < dvd_cell.blocks) {
 
 				// Reset to the defaults
-				if(p_dvd_copy)
-					read_blocks = DVD_COPY_BLOCK_LIMIT;
-				else if(p_dvd_cat)
-					read_blocks = DVD_CAT_BLOCK_LIMIT;
-				else
-					read_blocks = 1;
+				read_blocks = DVD_COPY_BLOCK_LIMIT;
 
 				if(read_blocks > (dvd_cell.blocks - cell_blocks_written)) {
 					read_blocks = dvd_cell.blocks - cell_blocks_written;
 				}
 
-				dvdread_read_blocks = DVDReadBlocks(dvdread_vts_file, offset, (uint64_t)read_blocks, dvd_read_buffer);
+				dvdread_read_blocks = DVDReadBlocks(dvdread_vts_file, offset, (uint64_t)read_blocks, dvd_copy.buffer);
 				if(!dvdread_read_blocks) {
 					fprintf(stderr, "* Could not read data from cell %u\n", dvd_cell.cell);
 					return 1;
@@ -491,12 +468,7 @@ int main(int argc, char **argv) {
 				offset += dvdread_read_blocks;
 
 				// Write the buffer to the track file
-				if(p_dvd_copy)
-					bytes_written = write(dvd_copy.fd, dvd_read_buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
-				else if(p_dvd_cat)
-					bytes_written = write(1, dvd_read_buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
-				else
-					bytes_written = 0;
+				bytes_written = write(dvd_copy.fd, dvd_copy.buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
 
 				if(!bytes_written) {
 					fprintf(stderr, "* Could not write data from cell %u\n", dvd_cell.cell);
