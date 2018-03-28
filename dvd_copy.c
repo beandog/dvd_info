@@ -399,8 +399,6 @@ int main(int argc, char **argv) {
 		dvd_copy.fd = 1;
 	}
 
-	track_blocks_written = 0;
-
 	dvd_copy.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_copy.first_chapter);
 	dvd_copy.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_copy.last_chapter);
 
