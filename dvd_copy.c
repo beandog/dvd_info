@@ -367,6 +367,7 @@ int main(int argc, char **argv) {
 	ssize_t cell_blocks_written = 0;
 	ssize_t track_blocks_written = 0;
 	ssize_t bytes_written = 0;
+	ssize_t total_bytes_written = 0;
 	uint32_t cell_sectors = 0;
 
 	// Copy size
@@ -484,11 +485,11 @@ int main(int argc, char **argv) {
 				// Increment the amount of blocks written
 				cell_blocks_written += dvdread_read_blocks;
 				track_blocks_written += dvdread_read_blocks;
+				total_bytes_written += bytes_written;
 
-				if(p_dvd_copy) {
-					printf("Progress %lu%%\r", track_blocks_written * 100 / dvd_copy.blocks);
-					fflush(stdout);
-				}
+				// fprintf(p_dvd_copy ? stdout : stderr, "Progress: %lu%% - %lu/%lu MBs\r", track_blocks_written * 100 / dvd_copy.blocks, total_bytes_written / 1024 / 1024, dvd_copy.filesize / 1024 / 1024);
+				fprintf(p_dvd_copy ? stdout : stderr, "Progress: %lu/%lu MBs (%lu%%)\r", total_bytes_written / 1024 / 1024, dvd_copy.filesize / 1024 / 1024, track_blocks_written * 100 / dvd_copy.blocks);
+				fflush(p_dvd_copy ? stdout : stderr);
 
 			}
 
@@ -500,8 +501,7 @@ int main(int argc, char **argv) {
 
 	DVDCloseFile(dvdread_vts_file);
 
-	if(p_dvd_copy)
-		printf("\n");
+	fprintf(p_dvd_copy ? stdout : stderr, "\n");
 	
 	if(vts_ifo)
 		ifoClose(vts_ifo);
