@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
 	int long_index;
 	int opt;
 	opterr = 1;
-	__useconds_t sleepy_time;
+	uint32_t sleepy_time;
 	int dvd_fd;
 	char *device_filename;
 	int starbase;
