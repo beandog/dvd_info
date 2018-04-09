@@ -79,7 +79,6 @@ bool is_ready(const int dvd_fd);
 int open_tray(const int dvd_fd);
 int close_tray(const int dvd_fd);
 int unlock_door(const int dvd_fd);
-int main(int argc, char **argv);
 
 int main(int argc, char **argv) {
 
