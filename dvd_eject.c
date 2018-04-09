@@ -90,12 +90,12 @@ int main(int argc, char **argv) {
 	int dvd_fd = -1;
 	char *device_filename;
 	int starbase = 51;
-	bool eject_open = true;
-	bool eject_close = false;
-	bool tray_open = false;
-	bool tray_has_media = false;
-	bool retry = false;
-	bool wait = true;
+	bool p_dvd_eject = true;
+	bool p_dvd_close = false;
+	bool dvd_drive_opened = false;
+	bool dvd_drive_has_media = false;
+	// bool opt_retry = false;
+	bool opt_wait = true;
 	int max_waiting_times = 15;
 	int times_waited = 0;
 	int retval = -1;
@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
 		{ "close", no_argument, 0, 't' },
 		{ "help", no_argument, 0, 'h' },
 		{ "no-wait", no_argument, 0, 'n' },
-		{ "retry", no_argument, 0, 'r' },
+		// { "retry", no_argument, 0, 'r' },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -117,14 +117,14 @@ int main(int argc, char **argv) {
 				d_help = true;
 				break;
 			case 'n':
-				wait = false;
+				opt_wait = false;
 				break;
-			case 'r':
-				retry = true;
-				break;
+			// case 'r':
+			//	opt_retry = true;
+			//	break;
 			case 't':
-				eject_open = false;
-				eject_close = true;
+				p_dvd_eject = false;
+				p_dvd_close = true;
 				break;
 			case '?':
 				d_help = true;
@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
 		printf("-h, --help	Display this help output\n");
 		printf("-t, --close	Close tray\n");
 		printf("-n, --no-wait	Don't wait for device to be ready when closing\n");
-		printf("-r, --retry	Keep retrying to open / close a tray\n");
+		// printf("-r, --retry	Keep retrying to open / close a tray\n");
 		printf("\nDefault device is %s\n", DEFAULT_DVD_DEVICE);
 		return 0;
 	}
@@ -170,13 +170,13 @@ int main(int argc, char **argv) {
 
 	}
 
-	if(eject_open)
+	if(p_dvd_eject)
 		printf("[Open Drive Tray]\n");
-	if(eject_close)
+	if(p_dvd_close)
 		printf("[Close Drive Tray]\n");
 	printf("* Device: %s\n", device_filename);
 
-	if(wait == false && is_ready(dvd_fd) == false) {
+	if(opt_wait == false && is_ready(dvd_fd) == false) {
 		printf("* No waiting requested, and device is not ready. Exiting\n");
 		close(dvd_fd);
 		return 0;
@@ -214,25 +214,25 @@ int main(int argc, char **argv) {
 
 	printf(" at your command!\n");
 
-	tray_open = is_open(dvd_fd);
-	tray_has_media = has_media(dvd_fd);
+	dvd_drive_opened = is_open(dvd_fd);
+	dvd_drive_has_media = has_media(dvd_fd);
 
-	if(tray_open)
+	if(dvd_drive_opened)
 		printf("* Docking port status: open\n");
 	else {
 		printf("* Docking port status: closed\n");
-		if(!tray_has_media)
+		if(!dvd_drive_has_media)
 			printf("* Shuttle bay empty\n");
 	}
 
 	// Check for silly users
-	if(eject_open && tray_open) {
+	if(p_dvd_eject && dvd_drive_opened) {
 	//	printf("* Are you sure you belong on the bridge, sir?\n");
 		close(dvd_fd);
 		return 0;
 	}
 
-	if(eject_close && !tray_open) {
+	if(p_dvd_close && !dvd_drive_opened) {
 
 		if(has_media(dvd_fd)) {
 			printf("* Scanning Deck C section 55 for anomalies ... ");
@@ -250,7 +250,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Open the tray as requested, if it is closed
-	if(eject_open && !tray_open) {
+	if(p_dvd_eject && !dvd_drive_opened) {
 
 		unlock_door(dvd_fd);
 
@@ -258,13 +258,15 @@ int main(int argc, char **argv) {
 		retval = open_tray(dvd_fd);
 
 		printf("* Awaiting clearance for warp speed, captain ...");
-		while((wait == true) && (is_ready(dvd_fd) == false)) {
-			printf(".");
-			usleep(sleepy_time);
+		if(opt_wait) {
+			while(!is_ready(dvd_fd)) {
+				printf(".");
+				usleep(sleepy_time);
+			}
 		}
 
 		// Do one last nap
-		usleep(1000000);
+		usleep(sleepy_time);
 
 		printf(" engaging at warp 5.1 sir!\n");
 
@@ -275,7 +277,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Close the tray as requested, if it is open
-	if(eject_close && tray_open) {
+	if(p_dvd_close && dvd_drive_opened) {
 
 		printf("* Shuttle cleared for docking!\n");
 		retval = close_tray(dvd_fd);
@@ -286,9 +288,11 @@ int main(int argc, char **argv) {
 			return 1;
 		}
 
-		while((wait == true) && (is_ready(dvd_fd) == false)) {
-			printf("* Steady as she goes ...\n");
-			usleep(sleepy_time);
+		if(opt_wait) {
+			while(!is_ready(dvd_fd)) {
+				printf("* Steady as she goes ...\n");
+				usleep(sleepy_time);
+			}
 		}
 
 		// Open DVD device
