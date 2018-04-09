@@ -105,16 +105,19 @@ int main(int argc, char **argv) {
 
 	struct option long_options[] = {
 		{ "close", no_argument, 0, 't' },
+		{ "help", no_argument, 0, 'h' },
+		{ "no-wait", no_argument, 0, 'n' },
+		{ "retry", no_argument, 0, 'r' },
 		{ 0, 0, 0, 0 }
 	};
 
-	while((opt = getopt_long(argc, argv, "ghrt", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "hnrt", long_options, &long_index )) != -1) {
 		switch(opt) {
-			case 'g':
-				wait = false;
-				break;
 			case 'h':
 				d_help = true;
+				break;
+			case 'n':
+				wait = false;
 				break;
 			case 'r':
 				retry = true;
@@ -123,19 +126,22 @@ int main(int argc, char **argv) {
 				eject_open = false;
 				eject_close = true;
 				break;
+			case '?':
+				d_help = true;
+				break;
+			case 0:
 			default:
 				break;
 		}
 	}
 
 	if(d_help) {
-		printf("dvd_eject [options] [device]\n");
-		printf("\t-h\tthis help output\n");
-		printf("\t-t\tclose tray instead of opening\n");
-		printf("\t-w\twait for device to become ready after opening / closing (default)\n");
-		printf("\t-g\tdo not wait for device to become ready\n");
-		printf("\t-r\tkeep retrying to open / close a device\n");
-		printf("\t-q\tdo not display progress\n");
+		printf("dvd_eject [options] [device]\n\n");
+		printf("-h, --help	Display this help output\n");
+		printf("-t, --close	Close tray\n");
+		printf("-n, --no-wait	Don't wait for device to be ready when closing\n");
+		printf("-r, --retry	Keep retrying to open / close a tray\n");
+		printf("\nDefault device is %s\n", DEFAULT_DVD_DEVICE);
 		return 0;
 	}
 
