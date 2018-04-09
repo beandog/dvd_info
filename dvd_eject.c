@@ -83,23 +83,23 @@ int main(int argc, char **argv);
 
 int main(int argc, char **argv) {
 
-	char *str_options;
-	int long_index;
-	int opt;
+	int long_index = 0;
+	int opt = 0;
 	opterr = 1;
-	uint32_t sleepy_time;
-	int dvd_fd;
+	uint32_t sleepy_time = 1000000;
+	int dvd_fd = -1;
 	char *device_filename;
-	int starbase;
-	bool eject_open, eject_close;
-	bool tray_open;
-	bool tray_has_media;
-	bool retry;
-	bool wait;
-	int max_waiting_times;
-	int times_waited;
-	int retval;
-	bool d_help;
+	int starbase = 51;
+	bool eject_open = true;
+	bool eject_close = false;
+	bool tray_open = false;
+	bool tray_has_media = false;
+	bool retry = false;
+	bool wait = true;
+	int max_waiting_times = 15;
+	int times_waited = 0;
+	int retval = -1;
+	bool d_help = false;
 	// dvdcss_t *dvdcss;
 	// dvd_reader_t *dvdread_dvd;
 
@@ -108,21 +108,7 @@ int main(int argc, char **argv) {
 		{ 0, 0, 0, 0 }
 	};
 
-	starbase = 51;
-	str_options = "ghrt";
-	sleepy_time = 1000000;
-	eject_open = true;
-	eject_close = false;
-	tray_open = false;
-	tray_has_media = false;
-	retry = false;
-	wait = true;
-	max_waiting_times = 15;
-	times_waited = 0;
-	retval = 0;
-	d_help = false;
-
-	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "ghrt", long_options, &long_index )) != -1) {
 		switch(opt) {
 			case 'g':
 				wait = false;
@@ -166,7 +152,6 @@ int main(int argc, char **argv) {
 
 	if(dvd_fd < 0) {
 		printf("error opening %s\n", device_filename);
-		printf("errno: %i\n", errno);
 		return 1;
 	}
 
@@ -186,7 +171,7 @@ int main(int argc, char **argv) {
 	printf("* Device: %s\n", device_filename);
 
 	if(wait == false && is_ready(dvd_fd) == false) {
-		printf("* No waiting requested, and device is not ready.  Exiting\n");
+		printf("* No waiting requested, and device is not ready. Exiting\n");
 		close(dvd_fd);
 		return 0;
 	}
@@ -205,7 +190,6 @@ int main(int argc, char **argv) {
 				printf("* Closing file descriptor worked\n");
 			} else {
 				printf("* Closing file descriptor failed, continuing anyway\n");
-				printf("errno: %i\n", errno);
 			}
 			printf("* Reopening file descriptor\n");
 			dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
@@ -217,7 +201,6 @@ int main(int argc, char **argv) {
 					return 1;
 				}
 				printf("* Opening file descriptor failed, exiting\n");
-				printf("errno: %i\n", errno);
 				return 1;
 			}
 		}
