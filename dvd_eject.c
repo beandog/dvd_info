@@ -9,7 +9,6 @@
 #include <sys/ioctl.h>
 #include <getopt.h>
 #include <dvdcss/dvdcss.h>
-// #include <dvdread/dvd_reader.h>
 
 #define DEFAULT_DVD_DEVICE "/dev/sr0"
 
@@ -73,13 +72,13 @@
  *
  */
 
-int drive_status(const int cdrom);
-bool has_media(const int cdrom);
-bool is_open(const int cdrom);
-bool is_ready(const int cdrom);
-int open_tray(const int cdrom);
-int close_tray(const int cdrom);
-int unlock_door(const int cdrom);
+int drive_status(const int dvd_fd);
+bool has_media(const int dvd_fd);
+bool is_open(const int dvd_fd);
+bool is_ready(const int dvd_fd);
+int open_tray(const int dvd_fd);
+int close_tray(const int dvd_fd);
+int unlock_door(const int dvd_fd);
 int main(int argc, char **argv);
 
 int main(int argc, char **argv) {
@@ -89,7 +88,7 @@ int main(int argc, char **argv) {
 	int opt;
 	opterr = 1;
 	__useconds_t sleepy_time;
-	int cdrom;
+	int dvd_fd;
 	char *device_filename;
 	int starbase;
 	bool eject_open, eject_close;
@@ -163,19 +162,19 @@ int main(int argc, char **argv) {
 		starbase = 71;
 	}
 
-	cdrom = open(device_filename, O_RDONLY | O_NONBLOCK);
+	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
 
-	if(cdrom < 0) {
+	if(dvd_fd < 0) {
 		printf("error opening %s\n", device_filename);
 		printf("errno: %i\n", errno);
 		return 1;
 	}
 
 	// Fetch status
-	if(drive_status(cdrom) < 0) {
+	if(drive_status(dvd_fd) < 0) {
 
 		printf("%s is not a DVD drive\n", device_filename);
-		close(cdrom);
+		close(dvd_fd);
 		return 1;
 
 	}
@@ -186,15 +185,15 @@ int main(int argc, char **argv) {
 		printf("[Close Drive Tray]\n");
 	printf("* Device: %s\n", device_filename);
 
-	if(wait == false && is_ready(cdrom) == false) {
+	if(wait == false && is_ready(dvd_fd) == false) {
 		printf("* No waiting requested, and device is not ready.  Exiting\n");
-		close(cdrom);
+		close(dvd_fd);
 		return 0;
 	}
 
 	printf("* Prepping crew, sir ...");
 	// Wait for the device to be ready before performing any actions
-	while(is_ready(cdrom) == false) {
+	while(is_ready(dvd_fd) == false) {
 		printf(".");
 		usleep(sleepy_time);
 		times_waited += 1;
@@ -202,19 +201,19 @@ int main(int argc, char **argv) {
 			printf("\n");
 			printf("* Waited %i, tired of waiting, trying workarounds\n", max_waiting_times);
 			printf("* Closing and reopening device\n");
-			if(close(cdrom) == 0) {
+			if(close(dvd_fd) == 0) {
 				printf("* Closing file descriptor worked\n");
 			} else {
 				printf("* Closing file descriptor failed, continuing anyway\n");
 				printf("errno: %i\n", errno);
 			}
 			printf("* Reopening file descriptor\n");
-			cdrom = open(device_filename, O_RDONLY | O_NONBLOCK);
-			if(cdrom == 0) {
+			dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
+			if(dvd_fd == 0) {
 				printf("* Closing and reopening file descriptor worked, checking if device is ready now\n");
-				if(is_ready(cdrom) == false) {
+				if(is_ready(dvd_fd) == false) {
 					printf("* Drive still not marked as ready, quitting\n");
-					close(cdrom);
+					close(dvd_fd);
 					return 1;
 				}
 				printf("* Opening file descriptor failed, exiting\n");
@@ -226,8 +225,8 @@ int main(int argc, char **argv) {
 
 	printf(" at your command!\n");
 
-	tray_open = is_open(cdrom);
-	tray_has_media = has_media(cdrom);
+	tray_open = is_open(dvd_fd);
+	tray_has_media = has_media(dvd_fd);
 
 	if(tray_open)
 		printf("* Docking port status: open\n");
@@ -240,13 +239,13 @@ int main(int argc, char **argv) {
 	// Check for silly users
 	if(eject_open && tray_open) {
 	//	printf("* Are you sure you belong on the bridge, sir?\n");
-		close(cdrom);
+		close(dvd_fd);
 		return 0;
 	}
 
 	if(eject_close && !tray_open) {
 
-		if(has_media(cdrom)) {
+		if(has_media(dvd_fd)) {
 			printf("* Scanning Deck C section 55 for anomalies ... ");
 			if(dvdcss_open(device_filename) == NULL) {
 				printf("red alert!!\n");
@@ -256,7 +255,7 @@ int main(int argc, char **argv) {
 			}
 		}
 
-		close(cdrom);
+		close(dvd_fd);
 		return 0;
 
 	}
@@ -264,13 +263,13 @@ int main(int argc, char **argv) {
 	// Open the tray as requested, if it is closed
 	if(eject_open && !tray_open) {
 
-		unlock_door(cdrom);
+		unlock_door(dvd_fd);
 
 		printf("* Leaving space dock ...\n");
-		retval = open_tray(cdrom);
+		retval = open_tray(dvd_fd);
 
 		printf("* Awaiting clearance for warp speed, captain ...");
-		while((wait == true) && (is_ready(cdrom) == false)) {
+		while((wait == true) && (is_ready(dvd_fd) == false)) {
 			printf(".");
 			usleep(sleepy_time);
 		}
@@ -280,7 +279,7 @@ int main(int argc, char **argv) {
 
 		printf(" engaging at warp 5.1 sir!\n");
 
-		close(cdrom);
+		close(dvd_fd);
 
 		return 0;
 
@@ -290,21 +289,21 @@ int main(int argc, char **argv) {
 	if(eject_close && tray_open) {
 
 		printf("* Shuttle cleared for docking!\n");
-		retval = close_tray(cdrom);
+		retval = close_tray(dvd_fd);
 
 		if(retval != 0) {
 			printf("* Emergency cleanup on deck twelve! :(\n");
-			close(cdrom);
+			close(dvd_fd);
 			return 1;
 		}
 
-		while((wait == true) && (is_ready(cdrom) == false)) {
+		while((wait == true) && (is_ready(dvd_fd) == false)) {
 			printf("* Steady as she goes ...\n");
 			usleep(sleepy_time);
 		}
 
 		// Open DVD device
-		if(has_media(cdrom)) {
+		if(has_media(dvd_fd)) {
 			printf("* Scanning Deck C section 55 for anomalies ... ");
 			if(dvdcss_open(device_filename) == NULL)
 				printf("red alert!!\n");
@@ -325,66 +324,66 @@ int main(int argc, char **argv) {
 
 		printf("* Welcome to the station! Enjoy your stay.\n");
 
-		close(cdrom);
+		close(dvd_fd);
 
 		return 0;
 
 	}
 
-	close(cdrom);
+	close(dvd_fd);
 
 	return 0;
 
 }
 
-int drive_status(const int cdrom) {
+int drive_status(const int dvd_fd) {
 
-	return ioctl(cdrom, CDROM_DRIVE_STATUS);
+	return ioctl(dvd_fd, CDROM_DRIVE_STATUS);
 
 }
 
-bool has_media(const int cdrom) {
+bool has_media(const int dvd_fd) {
 
-	if(drive_status(cdrom) == CDS_DISC_OK)
+	if(drive_status(dvd_fd) == CDS_DISC_OK)
 		return true;
 	else
 		return false;
 
 }
 
-bool is_open(const int cdrom) {
+bool is_open(const int dvd_fd) {
 
-	if(drive_status(cdrom) == CDS_TRAY_OPEN)
+	if(drive_status(dvd_fd) == CDS_TRAY_OPEN)
 		return true;
 	else
 		return false;
 
 }
 
-bool is_ready(const int cdrom) {
+bool is_ready(const int dvd_fd) {
 
-	if(drive_status(cdrom) != CDS_DRIVE_NOT_READY)
+	if(drive_status(dvd_fd) != CDS_DRIVE_NOT_READY)
 		return true;
 	else
 		return false;
 
 }
 
-int open_tray(const int cdrom) {
+int open_tray(const int dvd_fd) {
 
-	return ioctl(cdrom, CDROMEJECT);
-
-}
-
-int close_tray(const int cdrom) {
-
-	return ioctl(cdrom, CDROMCLOSETRAY);
+	return ioctl(dvd_fd, CDROMEJECT);
 
 }
 
-int unlock_door(const int cdrom) {
+int close_tray(const int dvd_fd) {
 
-	return ioctl(cdrom, CDROM_LOCKDOOR, 0);
+	return ioctl(dvd_fd, CDROMCLOSETRAY);
+
+}
+
+int unlock_door(const int dvd_fd) {
+
+	return ioctl(dvd_fd, CDROM_LOCKDOOR, 0);
 
 }
 
