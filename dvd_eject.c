@@ -5,9 +5,13 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <limits.h>
+#include <stdlib.h>
 #include <linux/cdrom.h>
 #include <sys/ioctl.h>
+#include <sys/mount.h>
 #include <getopt.h>
+#include <mntent.h>
 #include <dvdcss/dvdcss.h>
 
 #define DEFAULT_DVD_DEVICE "/dev/sr0"
@@ -79,6 +83,7 @@ bool is_ready(const int dvd_fd);
 int open_tray(const int dvd_fd);
 int close_tray(const int dvd_fd);
 int unlock_door(const int dvd_fd);
+int8_t is_mounted(const char *device_filename);
 
 int main(int argc, char **argv) {
 
@@ -87,7 +92,8 @@ int main(int argc, char **argv) {
 	opterr = 1;
 	uint32_t sleepy_time = 1000000;
 	int dvd_fd = -1;
-	char *device_filename;
+	char display_filename[PATH_MAX] = {'\0'};
+	char device_filename[PATH_MAX] = {'\0'};
 	int starbase = 51;
 	bool p_dvd_eject = true;
 	bool p_dvd_close = false;
@@ -144,10 +150,13 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
-	if(argv[optind])
-		device_filename = argv[optind];
-	else
-		device_filename = DEFAULT_DVD_DEVICE;
+	if(argv[optind]) {
+		snprintf(display_filename, PATH_MAX, "%s", argv[optind]);
+		realpath(argv[optind], device_filename);
+	} else {
+		snprintf(display_filename, PATH_MAX, "%s", DEFAULT_DVD_DEVICE);
+		realpath(display_filename, device_filename);
+	}
 
 	if(strlen(device_filename) == 11 && strcmp("/dev/bluray", device_filename) == 0) {
 		starbase = 71;
@@ -252,6 +261,31 @@ int main(int argc, char **argv) {
 	if(p_dvd_eject && !dvd_drive_opened) {
 
 		unlock_door(dvd_fd);
+
+		bool device_mounted = is_mounted(device_filename);
+
+		if(device_mounted) {
+			printf("* Releasing docking clamps ...\n");
+
+			// We may be superuser, so try this first
+			retval = umount(device_filename);
+			if(retval != 0 && errno == EBUSY) {
+				printf("* The cargo bay is being accessed ... mission delayed.\n");
+				device_mounted = false;
+			}
+
+			// Try unmounting it using a system call
+			if(device_mounted) {
+				char umount_str[PATH_MAX + 8] = {'\0'};
+				snprintf(umount_str, PATH_MAX + 8, "%s%s", "umount ", device_filename);
+				system(umount_str);
+
+				// Ignore the system retval, check ourselves if it passed
+				if(is_mounted(device_filename)) {
+					printf("* Junior crew may have scraped the sides .. check for faulty mounts!\n");
+				}
+			}
+		}
 
 		printf("* Leaving space dock ...\n");
 		retval = open_tray(dvd_fd);
@@ -379,3 +413,36 @@ int unlock_door(const int dvd_fd) {
 
 }
 
+/**
+ * Check if a device is mounted or not.
+ * Returns 1 if true; 0 if false; -1 if it can't tell
+ * Used to unmount a drive before ejecting it
+ */
+int8_t is_mounted(const char *device_filename) {
+
+	if(strncmp(device_filename, "/dev/", 5) != 0) {
+		return 0;
+	}
+
+	FILE *mtab = setmntent("/proc/mounts", "r");
+
+	if(mtab == NULL) {
+		return -1;
+	}
+
+	struct mntent *mnt = getmntent(mtab);
+
+	while(mnt != NULL) {
+
+		printf("checking %s\n", mnt->mnt_fsname);
+
+		if(strncmp(device_filename, mnt->mnt_fsname, strlen(device_filename)) == 0)
+			return 1;
+
+		mnt = getmntent(mtab);
+
+	}
+
+	return 0;
+
+}
