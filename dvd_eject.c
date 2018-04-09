@@ -420,27 +420,17 @@ int unlock_door(const int dvd_fd) {
  */
 int8_t is_mounted(const char *device_filename) {
 
-	if(strncmp(device_filename, "/dev/", 5) != 0) {
-		return 0;
-	}
-
 	FILE *mtab = setmntent("/proc/mounts", "r");
 
-	if(mtab == NULL) {
+	if(mtab == NULL)
 		return -1;
-	}
 
 	struct mntent *mnt = getmntent(mtab);
 
 	while(mnt != NULL) {
-
-		printf("checking %s\n", mnt->mnt_fsname);
-
 		if(strncmp(device_filename, mnt->mnt_fsname, strlen(device_filename)) == 0)
 			return 1;
-
 		mnt = getmntent(mtab);
-
 	}
 
 	return 0;
