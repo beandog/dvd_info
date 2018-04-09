@@ -182,7 +182,7 @@ int main(int argc, char **argv) {
 		printf("[Open Drive Tray]\n");
 	if(p_dvd_close)
 		printf("[Close Drive Tray]\n");
-	printf("* Device: %s\n", device_filename);
+	printf("* Device: %s\n", display_filename);
 
 	if(opt_wait == false && is_ready(dvd_fd) == false) {
 		printf("* No waiting requested, and device is not ready. Exiting\n");
@@ -235,7 +235,7 @@ int main(int argc, char **argv) {
 
 	// Check for silly users
 	if(p_dvd_eject && dvd_drive_opened) {
-	//	printf("* Are you sure you belong on the bridge, sir?\n");
+		printf("* Are you sure you belong on the bridge, sir?\n");
 		close(dvd_fd);
 		return 0;
 	}
