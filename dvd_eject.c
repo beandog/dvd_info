@@ -33,6 +33,19 @@
  * Usage:
  * $ dvd_eject -h
  *
+ * BUGS
+ *
+ * I found one race condition where if you close the tray (using dvd_eject -t),
+ * have a trigger mount it when udev fires one, and immediately try to eject
+ * it again, it will fail. Unlocking the tray seems to be a requirement before
+ * it can send a command to open it. So, if you have a sequence like this, it
+ * will try, but fail: 1) close tray 2) mount disc 3) immediately eject. I
+ * believe the reason is that the drive status will report whether its ready or
+ * not, regardless of it being in the process of mounted. The is_mounted check
+ * will pass, and unmounting it passes fine as well, but unlocking the door
+ * will continue to fail. I haven't been able to find a fix for this yet.
+ * However, you shouldn't run into this bug unless you are debugging like me.
+ *
  * Story mode:
  *
  * I've spent a lot of time trying to track down why the hardware will send
@@ -260,12 +273,11 @@ int main(int argc, char **argv) {
 	// Open the tray as requested, if it is closed
 	if(p_dvd_eject && !dvd_drive_opened) {
 
-		unlock_door(dvd_fd);
-
 		bool device_mounted = is_mounted(device_filename);
 
+		printf("* Releasing docking clamps ...\n");
+
 		if(device_mounted) {
-			printf("* Releasing docking clamps ...\n");
 
 			// We may be superuser, so try this first
 			retval = umount(device_filename);
@@ -287,6 +299,13 @@ int main(int argc, char **argv) {
 			}
 		}
 
+		retval = unlock_door(dvd_fd);
+		if(retval) {
+			printf("* Docking clamps could not be released!\n");
+			printf("* Taking off too soon? Disabling engines, try again in a few seconds.\n");
+			close(dvd_fd);
+			return 1;
+		}
 		printf("* Leaving space dock ...\n");
 		retval = open_tray(dvd_fd);
 
@@ -404,6 +423,12 @@ int open_tray(const int dvd_fd) {
 int close_tray(const int dvd_fd) {
 
 	return ioctl(dvd_fd, CDROMCLOSETRAY);
+
+}
+
+int lock_door(const int dvd_fd) {
+
+	return ioctl(dvd_fd, CDROM_LOCKDOOR, 1);
 
 }
 
