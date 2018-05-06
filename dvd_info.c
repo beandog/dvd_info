@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
 	bool d_all_tracks = true;
+	bool debug = false;
 	uint16_t d_first_track = 1;
 	uint16_t d_last_track = 1;
 	uint16_t track_number = 1;
@@ -159,7 +160,7 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	// Send 'invalid argument' to stderr
 	opterr = 1;
-	const char p_short_opts[] = "acdhijoqsTt:Vvx";
+	const char p_short_opts[] = "acdhijoqsTt:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -177,6 +178,7 @@ int main(int argc, char **argv) {
 		{ "ogm", no_argument, NULL, 'o' },
 		{ "help", no_argument, NULL, 'h' },
 		{ "version", no_argument, NULL, 'V' },
+		{ "debug", no_argument, NULL, 'z' },
 		{ 0, 0, 0, 0 }
 
 	};
@@ -247,6 +249,10 @@ int main(int argc, char **argv) {
 				d_chapters = true;
 				d_subtitles = true;
 				d_cells = true;
+				break;
+
+			case 'z':
+				debug = true;
 				break;
 
 			// ignore unknown arguments
@@ -702,7 +708,10 @@ int main(int argc, char **argv) {
 			for(c = 0; c < dvd_track.cells; c++) {
 
 				dvd_cell = dvd_track.dvd_cells[c];
-				printf("	Cell: %02u, Length: %s\n", dvd_cell.cell, dvd_cell.length);
+				printf("	Cell: %02u, Length: %s", dvd_cell.cell, dvd_cell.length);
+				if(debug)
+					printf(" First sector: %u, Last sector: %u", dvd_cell.first_sector, dvd_cell.last_sector);
+				printf("\n");
 
 			}
 
