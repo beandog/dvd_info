@@ -72,3 +72,111 @@ ssize_t dvd_cell_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_i
 	return filesize;
 
 }
+
+bool dvd_track_min_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+
+	uint8_t cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
+
+	if(!cells)
+		return false;
+
+	uint8_t cell = 2;
+	uint32_t first_sector = 0;
+	uint32_t min_sector = 0;
+
+	min_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, 1);
+
+	for(cell = 2; cell < cells + 1; cell++) {
+
+		first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, cell);
+
+		if(first_sector < min_sector)
+			return true;
+
+		min_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, cell);
+
+	}
+
+	return false;
+
+}
+
+bool dvd_track_max_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+
+	uint8_t cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
+
+	if(!cells)
+		return false;
+
+	uint8_t cell = 2;
+	uint32_t last_sector = 0;
+	uint32_t max_sector = 0;
+
+	max_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, 1);
+
+	for(cell = 2; cell < cells + 1; cell++) {
+
+		last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, cell);
+
+		if(last_sector < max_sector)
+			return true;
+
+		max_sector = last_sector;
+
+	}
+
+	return false;
+
+}
+
+bool dvd_track_repeat_first_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+
+	uint8_t cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
+
+	if(!cells || cells == 1)
+		return false;
+
+	uint8_t cell = 2;
+	uint32_t first_cell_first_sector = 0;
+	uint32_t first_sector = 0;
+
+	first_cell_first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, 1);
+
+	for(cell = 2; cell < cells + 1; cell++) {
+
+		first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, cell);
+
+		if(first_sector == first_cell_first_sector)
+			return true;
+
+	}
+
+	return false;
+
+}
+
+bool dvd_track_repeat_last_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+
+	uint8_t cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
+
+	if(!cells || cells == 1)
+		return false;
+
+	uint8_t cell = 2;
+	uint32_t first_cell_last_sector = 0;
+	uint32_t last_sector = 0;
+
+	first_cell_last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, 1);
+
+	for(cell = 2; cell < cells + 1; cell++) {
+
+		last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, cell);
+
+		if(last_sector == first_cell_last_sector)
+			return true;
+
+	}
+
+	return false;
+
+}
