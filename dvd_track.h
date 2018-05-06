@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
-#include <assert.h>
 #include "dvd_cell.h"
 #include "dvd_vmg_ifo.h"
 
