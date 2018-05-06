@@ -91,13 +91,35 @@ uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 }
 
 uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+	
+	printf("calling dvd_track_cells()\n");
 
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
 		return 0;
+	
+	printf("no null values\n");
 
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
+
+	printf("ttn: %i\n", ttn);
+
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+
+	assert(ttn - 1 >= 0);
+	printf("ttn index: %i\n", ttn - 1);
+	assert(vts_ifo != NULL);
+	assert(vts_ifo->vts_ptt_srpt != NULL);
+	printf("index: %i\n", vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1);
+	printf("vts_pgcit successful\n");
+
+	assert((vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1) > -1);
+
+	if(vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc == NULL)
+		return 0;
+
 	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+
+	printf("pgc successful\n");
 
 	// If there's no cell playback, then override the number in the PGC and report as
 	// zero so that they are not accessed.

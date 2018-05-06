@@ -715,6 +715,17 @@ int main(int argc, char **argv) {
 
 			}
 
+			if(dvd_track.cells > 1) {
+				if(dvd_track_min_sector_error(vmg_ifo, vts_ifo, dvd_track.track))
+					printf("        Warning: Cell minimum sector error\n");
+				if(dvd_track_max_sector_error(vmg_ifo, vts_ifo, dvd_track.track))
+					printf("        Warning: Cell maximum sector error\n");
+				if(dvd_track_repeat_first_sector_error(vmg_ifo, vts_ifo, dvd_track.track))
+					printf("        Warning: First cell sector is repeated\n");
+				if(dvd_track_repeat_last_sector_error(vmg_ifo, vts_ifo, dvd_track.track))
+					printf("        Warning: Last cell sector is repeated\n");
+			}
+
 		}
 
 		// Display subtitles
