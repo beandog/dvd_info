@@ -77,7 +77,7 @@ bool dvd_track_min_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
 
 	uint8_t cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 
-	if(!cells)
+	if(!cells || cells == 1)
 		return false;
 
 	uint8_t cell = 2;
@@ -105,7 +105,7 @@ bool dvd_track_max_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
 
 	uint8_t cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 
-	if(!cells)
+	if(!cells || cells == 1)
 		return false;
 
 	uint8_t cell = 2;
