@@ -437,9 +437,10 @@ int main(int argc, char **argv) {
 		// There are two ways a track can be marked as invalid - either the VTS
 		// is bad, or the track has an empty length. The first one, it could be
 		// a number of things, but the second is likely by design in order to
-		// break DVD software.
+		// break DVD software. Invalid DVD tracks appear as completely empty in
+		// dvd_info's output.
 
-		// Set track values to empty if it is invalid
+		// If the IFO is invalid, skip the residing track
 		if(valid_ifos[dvd_track.vts] == false) {
 			dvd_track.valid = false;
 			dvd_tracks[track_number - 1] = dvd_track;
@@ -457,6 +458,34 @@ int main(int argc, char **argv) {
 
 		if(dvd_track.msecs == 0) {
 			dvd_track.valid = false;
+			dvd_tracks[track_number - 1] = dvd_track;
+			continue;
+		}
+
+		// Misordering the cells is one way to break a DVD. Check for
+		// this misbehavior and flag the track as invalid if present.
+		if(dvd_track_min_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
+			dvd_track.valid = false;
+			if(debug)
+				fprintf(stderr,"        Track: %02u, Warning: Cell minimum sector error\n", track_number);
+		}
+		if(dvd_track_max_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
+			dvd_track.valid = false;
+			if(debug)
+				fprintf(stderr, "        Track: %02u, Warning: Cell maximum sector error\n", track_number);
+		}
+		if(dvd_track_repeat_first_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
+			dvd_track.valid = false;
+			if(debug)
+				fprintf(stderr, "        Track: %02u, Warning: First cell sector is repeated\n", track_number);
+		}
+		if(dvd_track_repeat_last_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
+			dvd_track.valid = false;
+			if(debug)
+				fprintf(stderr, "        Track: %02u, Warning: Last cell sector is repeated\n", track_number);
+		}
+
+		if(dvd_track.valid == false) {
 			dvd_tracks[track_number - 1] = dvd_track;
 			continue;
 		}
@@ -692,17 +721,6 @@ int main(int argc, char **argv) {
 					printf(" First sector: %u, Last sector: %u", dvd_cell.first_sector, dvd_cell.last_sector);
 				printf("\n");
 
-			}
-
-			if(dvd_track.cells > 1) {
-				if(dvd_track_min_sector_error(vmg_ifo, vts_ifo, dvd_track.track))
-					printf("        Warning: Cell minimum sector error\n");
-				if(dvd_track_max_sector_error(vmg_ifo, vts_ifo, dvd_track.track))
-					printf("        Warning: Cell maximum sector error\n");
-				if(dvd_track_repeat_first_sector_error(vmg_ifo, vts_ifo, dvd_track.track))
-					printf("        Warning: First cell sector is repeated\n");
-				if(dvd_track_repeat_last_sector_error(vmg_ifo, vts_ifo, dvd_track.track))
-					printf("        Warning: Last cell sector is repeated\n");
 			}
 
 		}
