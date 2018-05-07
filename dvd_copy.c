@@ -28,7 +28,7 @@
 #include "dvd_subtitles.h"
 #include "dvd_time.h"
 #ifndef VERSION
-#define VERSION "1.2"
+#define VERSION "1.3"
 #endif
 
 #define DVD_INFO_PROGRAM "dvd_copy"
