@@ -716,10 +716,7 @@ int main(int argc, char **argv) {
 			for(c = 0; c < dvd_track.cells; c++) {
 
 				dvd_cell = dvd_track.dvd_cells[c];
-				printf("	Cell: %02u, Length: %s", dvd_cell.cell, dvd_cell.length);
-				if(debug)
-					printf(" First sector: %u, Last sector: %u", dvd_cell.first_sector, dvd_cell.last_sector);
-				printf("\n");
+				printf("	Cell: %02u, Length: %s, First sector: %u, Last sector: %u\n", dvd_cell.cell, dvd_cell.length, dvd_cell.first_sector, dvd_cell.last_sector);
 
 			}
 
