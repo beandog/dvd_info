@@ -26,7 +26,7 @@
 #include "dvd_drive.h"
 #endif
 #ifndef VERSION
-#define VERSION "1.2"
+#define VERSION "1.3"
 #endif
 
 int main(int argc, char **argv);
@@ -52,6 +52,7 @@ int main(int argc, char **argv) {
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
+	bool d_all_info = false;
 	bool d_all_tracks = true;
 	bool debug = false;
 	uint16_t d_first_track = 1;
@@ -100,6 +101,10 @@ int main(int argc, char **argv) {
 	dvd_track.subtitles = 0;
 	dvd_track.active_subs = 0;
 	dvd_track.cells = 0;
+	dvd_track.min_sector_error = false;
+	dvd_track.max_sector_error = false;
+	dvd_track.repeat_first_sector_error = false;
+	dvd_track.repeat_last_sector_error = false;
 
 	// Video
 	struct dvd_video dvd_video;
@@ -244,6 +249,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'x':
+				d_all_info = true;
 				d_audio = true;
 				d_video = true;
 				d_chapters = true;
@@ -433,6 +439,10 @@ int main(int argc, char **argv) {
 		dvd_track.subtitles = 0;
 		dvd_track.active_subs = 0;
 		dvd_track.cells = 0;
+		dvd_track.min_sector_error = false;
+		dvd_track.max_sector_error = false;
+		dvd_track.repeat_first_sector_error = false;
+		dvd_track.repeat_last_sector_error = false;
 
 		// There are two ways a track can be marked as invalid - either the VTS
 		// is bad, or the track has an empty length. The first one, it could be
@@ -466,21 +476,25 @@ int main(int argc, char **argv) {
 		// this misbehavior and flag the track as invalid if present.
 		if(dvd_track_min_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
 			dvd_track.valid = false;
+			dvd_track.min_sector_error = true;
 			if(debug)
 				fprintf(stderr,"        Track: %02u, Warning: Cell minimum sector error\n", track_number);
 		}
 		if(dvd_track_max_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
 			dvd_track.valid = false;
+			dvd_track.max_sector_error = true;
 			if(debug)
 				fprintf(stderr, "        Track: %02u, Warning: Cell maximum sector error\n", track_number);
 		}
 		if(dvd_track_repeat_first_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
 			dvd_track.valid = false;
+			dvd_track.repeat_first_sector_error = true;
 			if(debug)
 				fprintf(stderr, "        Track: %02u, Warning: First cell sector is repeated\n", track_number);
 		}
 		if(dvd_track_repeat_last_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
 			dvd_track.valid = false;
+			dvd_track.repeat_last_sector_error = true;
 			if(debug)
 				fprintf(stderr, "        Track: %02u, Warning: Last cell sector is repeated\n", track_number);
 		}
@@ -680,6 +694,21 @@ int main(int argc, char **argv) {
 		printf("Cells: %02u, ", dvd_track.cells);
 		printf("Audio streams: %02u, ", dvd_track.active_audio_streams);
 		printf("Subpictures: %02u\n", dvd_track.active_subs);
+
+		if(dvd_track.valid == false && d_all_info == true) {
+
+			printf("        Warning: track flagged as invalid\n");
+
+			if(dvd_track.min_sector_error)
+				printf("	Warning: cell sectors are out of order, minimum cell boundaries broken\n");
+			if(dvd_track.max_sector_error)
+				printf("	Warning: cell sectors are out of order, maximum cell boundaries broken\n");
+			if(dvd_track.repeat_first_sector_error)
+				printf("	Warning: first cell sector is reused\n");
+			if(dvd_track.repeat_last_sector_error)
+				printf("	Warning: last cell sector is reused\n");
+
+		}
 
 		// Display video information
 		if(d_video && dvd_track.valid == true) {
