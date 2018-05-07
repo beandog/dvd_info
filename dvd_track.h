@@ -32,6 +32,10 @@ struct dvd_track {
 	uint8_t audio_tracks;
 	uint8_t subtitles;
 	uint8_t cells;
+	bool min_sector_error;
+	bool max_sector_error;
+	bool repeat_first_sector_error;
+	bool repeat_last_sector_error;
 	struct dvd_video dvd_video;
 	struct dvd_audio *dvd_audio_tracks;
 	uint8_t active_audio_streams;
