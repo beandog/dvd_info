@@ -1,4 +1,4 @@
-AC_INIT([dvd_info], [1.2])
+AC_INIT([dvd_info], [1.3])
 
 dnl This is not a GNU package, so ignore required files / format
 AM_INIT_AUTOMAKE([foreign])
