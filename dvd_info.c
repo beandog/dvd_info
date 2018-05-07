@@ -682,12 +682,12 @@ int main(int argc, char **argv) {
 		printf("Subpictures: %02u\n", dvd_track.active_subs);
 
 		// Display video information
-		if(d_video) {
+		if(d_video && dvd_track.valid == true) {
 			printf("	Video format: %s, Aspect ratio: %s, Width: %u, Height: %u, FPS: %s, Display format: %s\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, dvd_video.fps, display_formats[dvd_video.df]);
 		}
 
 		// Display audio tracks
-		if(d_audio && dvd_track.audio_tracks) {
+		if(d_audio && dvd_track.audio_tracks && dvd_track.valid == true) {
 
 			for(c = 0; c < dvd_track.audio_tracks; c++) {
 
@@ -699,7 +699,7 @@ int main(int argc, char **argv) {
 		}
 
 		// Display chapters
-		if(d_chapters && dvd_track.chapters) {
+		if(d_chapters && dvd_track.chapters && dvd_track.valid == true) {
 
 			for(c = 0; c < dvd_track.chapters; c++) {
 
@@ -711,7 +711,7 @@ int main(int argc, char **argv) {
 		}
 
 		// Display track cells
-		if(d_cells && dvd_track.cells) {
+		if(d_cells && dvd_track.cells && dvd_track.valid == true) {
 
 			for(c = 0; c < dvd_track.cells; c++) {
 
@@ -723,7 +723,7 @@ int main(int argc, char **argv) {
 		}
 
 		// Display subtitles
-		if(d_subtitles && dvd_track.subtitles) {
+		if(d_subtitles && dvd_track.subtitles && dvd_track.valid == true) {
 
 			for(c = 0; c < dvd_track.subtitles; c++) {
 
