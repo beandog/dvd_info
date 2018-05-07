@@ -299,15 +299,25 @@ int main(int argc, char **argv) {
 			}
 		}
 
-		retval = unlock_door(dvd_fd);
-		if(retval) {
-			printf("* Docking clamps could not be released!\n");
-			printf("* Taking off too soon? Disabling engines, try again in a few seconds.\n");
-			close(dvd_fd);
-			return 1;
-		}
+		// Ideally, opening the tray will unlock it as well. If not, try again
+		// after unlocking it directly.
 		printf("* Leaving space dock ...\n");
 		retval = open_tray(dvd_fd);
+		if(retval) {
+			retval = unlock_door(dvd_fd);
+			if(retval) {
+				printf("* Docking clamps could not be released!\n");
+				printf("* Taking off too soon? Disabling engines, try again in a few seconds.\n");
+				close(dvd_fd);
+				return 1;
+			}
+			retval = open_tray(dvd_fd);
+			if(retval) {
+				printf("* Door seems to be stuck ... giving up\n");
+				close(dvd_fd);
+				return 1;
+			}
+		}
 
 		printf("* Awaiting clearance for warp speed, captain ...");
 		if(opt_wait) {
