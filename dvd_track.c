@@ -91,12 +91,16 @@ uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 }
 
 uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
-
+	
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
 		return 0;
-
+	
 	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
+
 	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	if(vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc == NULL)
+		return 0;
+
 	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
 
 	// If there's no cell playback, then override the number in the PGC and report as
