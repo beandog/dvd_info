@@ -418,70 +418,49 @@ int main(int argc, char **argv) {
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
+		dvd_track.track = track_number;
+
+		dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, track_number);
+		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
+
+		// Initialize track to default values
+		dvd_track.valid = true;
+		snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
+		dvd_track.msecs = 0;
+		dvd_track.chapters = 0;
+		dvd_track.audio_tracks = 0;
+		dvd_track.active_audio_streams = 0;
+		dvd_track.subtitles = 0;
+		dvd_track.active_subs = 0;
+		dvd_track.cells = 0;
+
 		// There are two ways a track can be marked as invalid - either the VTS
 		// is bad, or the track has an empty length. The first one, it could be
 		// a number of things, but the second is likely by design in order to
 		// break DVD software.
 
-		// Open IFO
-		dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, track_number);
-
 		// Set track values to empty if it is invalid
 		if(valid_ifos[dvd_track.vts] == false) {
-
-			dvd_track.track = track_number;
 			dvd_track.valid = false;
-
-			dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
-			snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
-			dvd_track.msecs = 0;
-			dvd_track.chapters = 0;
-			dvd_track.audio_tracks = 0;
-			dvd_track.active_audio_streams = 0;
-			dvd_track.subtitles = 0;
-			dvd_track.active_subs = 0;
-			dvd_track.cells = 0;
-
 			dvd_tracks[track_number - 1] = dvd_track;
-
 			continue;
-
 		}
 
 		vts_ifo = vts_ifos[dvd_track.vts];
-
-		dvd_track.track = track_number;
-		dvd_track.msecs = dvd_track_msecs(vmg_ifo, vts_ifo, dvd_track.track);
 
 		// If the length is empty, disregard all other data attached to it.
 		// While this does mean that it inaccurately reports all the information
 		// about the track, it does mean that something else using this will
 		// not choke on it. That being the case, this is a FIXME.
 
+		dvd_track.msecs = dvd_track_msecs(vmg_ifo, vts_ifo, dvd_track.track);
+
 		if(dvd_track.msecs == 0) {
-
 			dvd_track.valid = false;
-
-			dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
-			snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
-			dvd_track.msecs = 0;
-			dvd_track.chapters = 0;
-			dvd_track.audio_tracks = 0;
-			dvd_track.active_audio_streams = 0;
-			dvd_track.subtitles = 0;
-			dvd_track.active_subs = 0;
-			dvd_track.cells = 0;
-
 			dvd_tracks[track_number - 1] = dvd_track;
-
 			continue;
-
 		}
 
-		dvd_track.valid = true;
-
-		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
-		snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
 		dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
 
