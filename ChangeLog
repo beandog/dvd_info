@@ -1,3 +1,8 @@
+1.3
+
+* Detect intentionally broken DVDs and flag tracks as invalid and display
+  errors
+
 1.2 - 2018-02-28
 
 * dvd_copy can copy track to stdout

@@ -418,70 +418,78 @@ int main(int argc, char **argv) {
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
+		dvd_track.track = track_number;
+
+		dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, track_number);
+		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
+
+		// Initialize track to default values
+		dvd_track.valid = true;
+		snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
+		dvd_track.msecs = 0;
+		dvd_track.chapters = 0;
+		dvd_track.audio_tracks = 0;
+		dvd_track.active_audio_streams = 0;
+		dvd_track.subtitles = 0;
+		dvd_track.active_subs = 0;
+		dvd_track.cells = 0;
+
 		// There are two ways a track can be marked as invalid - either the VTS
 		// is bad, or the track has an empty length. The first one, it could be
 		// a number of things, but the second is likely by design in order to
-		// break DVD software.
+		// break DVD software. Invalid DVD tracks appear as completely empty in
+		// dvd_info's output.
 
-		// Open IFO
-		dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, track_number);
-
-		// Set track values to empty if it is invalid
+		// If the IFO is invalid, skip the residing track
 		if(valid_ifos[dvd_track.vts] == false) {
-
-			dvd_track.track = track_number;
 			dvd_track.valid = false;
-
-			dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
-			snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
-			dvd_track.msecs = 0;
-			dvd_track.chapters = 0;
-			dvd_track.audio_tracks = 0;
-			dvd_track.active_audio_streams = 0;
-			dvd_track.subtitles = 0;
-			dvd_track.active_subs = 0;
-			dvd_track.cells = 0;
-
 			dvd_tracks[track_number - 1] = dvd_track;
-
 			continue;
-
 		}
 
 		vts_ifo = vts_ifos[dvd_track.vts];
-
-		dvd_track.track = track_number;
-		dvd_track.msecs = dvd_track_msecs(vmg_ifo, vts_ifo, dvd_track.track);
 
 		// If the length is empty, disregard all other data attached to it.
 		// While this does mean that it inaccurately reports all the information
 		// about the track, it does mean that something else using this will
 		// not choke on it. That being the case, this is a FIXME.
 
+		dvd_track.msecs = dvd_track_msecs(vmg_ifo, vts_ifo, dvd_track.track);
+
 		if(dvd_track.msecs == 0) {
-
 			dvd_track.valid = false;
-
-			dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
-			snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
-			dvd_track.msecs = 0;
-			dvd_track.chapters = 0;
-			dvd_track.audio_tracks = 0;
-			dvd_track.active_audio_streams = 0;
-			dvd_track.subtitles = 0;
-			dvd_track.active_subs = 0;
-			dvd_track.cells = 0;
-
 			dvd_tracks[track_number - 1] = dvd_track;
-
 			continue;
-
 		}
 
-		dvd_track.valid = true;
+		// Misordering the cells is one way to break a DVD. Check for
+		// this misbehavior and flag the track as invalid if present.
+		if(dvd_track_min_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
+			dvd_track.valid = false;
+			if(debug)
+				fprintf(stderr,"        Track: %02u, Warning: Cell minimum sector error\n", track_number);
+		}
+		if(dvd_track_max_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
+			dvd_track.valid = false;
+			if(debug)
+				fprintf(stderr, "        Track: %02u, Warning: Cell maximum sector error\n", track_number);
+		}
+		if(dvd_track_repeat_first_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
+			dvd_track.valid = false;
+			if(debug)
+				fprintf(stderr, "        Track: %02u, Warning: First cell sector is repeated\n", track_number);
+		}
+		if(dvd_track_repeat_last_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
+			dvd_track.valid = false;
+			if(debug)
+				fprintf(stderr, "        Track: %02u, Warning: Last cell sector is repeated\n", track_number);
+		}
 
-		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
-		snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
+		if(dvd_track.valid == false) {
+			dvd_tracks[track_number - 1] = dvd_track;
+			continue;
+		}
+
 		dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
 
@@ -674,12 +682,12 @@ int main(int argc, char **argv) {
 		printf("Subpictures: %02u\n", dvd_track.active_subs);
 
 		// Display video information
-		if(d_video) {
+		if(d_video && dvd_track.valid == true) {
 			printf("	Video format: %s, Aspect ratio: %s, Width: %u, Height: %u, FPS: %s, Display format: %s\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, dvd_video.fps, display_formats[dvd_video.df]);
 		}
 
 		// Display audio tracks
-		if(d_audio && dvd_track.audio_tracks) {
+		if(d_audio && dvd_track.audio_tracks && dvd_track.valid == true) {
 
 			for(c = 0; c < dvd_track.audio_tracks; c++) {
 
@@ -691,7 +699,7 @@ int main(int argc, char **argv) {
 		}
 
 		// Display chapters
-		if(d_chapters && dvd_track.chapters) {
+		if(d_chapters && dvd_track.chapters && dvd_track.valid == true) {
 
 			for(c = 0; c < dvd_track.chapters; c++) {
 
@@ -703,33 +711,19 @@ int main(int argc, char **argv) {
 		}
 
 		// Display track cells
-		if(d_cells && dvd_track.cells) {
+		if(d_cells && dvd_track.cells && dvd_track.valid == true) {
 
 			for(c = 0; c < dvd_track.cells; c++) {
 
 				dvd_cell = dvd_track.dvd_cells[c];
-				printf("	Cell: %02u, Length: %s", dvd_cell.cell, dvd_cell.length);
-				if(debug)
-					printf(" First sector: %u, Last sector: %u", dvd_cell.first_sector, dvd_cell.last_sector);
-				printf("\n");
+				printf("	Cell: %02u, Length: %s, First sector: %u, Last sector: %u\n", dvd_cell.cell, dvd_cell.length, dvd_cell.first_sector, dvd_cell.last_sector);
 
-			}
-
-			if(dvd_track.cells > 1) {
-				if(dvd_track_min_sector_error(vmg_ifo, vts_ifo, dvd_track.track))
-					printf("        Warning: Cell minimum sector error\n");
-				if(dvd_track_max_sector_error(vmg_ifo, vts_ifo, dvd_track.track))
-					printf("        Warning: Cell maximum sector error\n");
-				if(dvd_track_repeat_first_sector_error(vmg_ifo, vts_ifo, dvd_track.track))
-					printf("        Warning: First cell sector is repeated\n");
-				if(dvd_track_repeat_last_sector_error(vmg_ifo, vts_ifo, dvd_track.track))
-					printf("        Warning: Last cell sector is repeated\n");
 			}
 
 		}
 
 		// Display subtitles
-		if(d_subtitles && dvd_track.subtitles) {
+		if(d_subtitles && dvd_track.subtitles && dvd_track.valid == true) {
 
 			for(c = 0; c < dvd_track.subtitles; c++) {
 
