@@ -2,6 +2,7 @@
 #define DVD_INFO_VTS_H
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <dvdread/dvd_reader.h>
 #include "dvd_specs.h"
 
