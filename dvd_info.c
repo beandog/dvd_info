@@ -451,6 +451,8 @@ int main(int argc, char **argv) {
 		// dvd_info's output.
 
 		// If the IFO is invalid, skip the residing track
+		// Note to self: I know I've seen some where there are invalid IFOs, but I need
+		// to document which ones they are.
 		if(valid_ifos[dvd_track.vts] == false) {
 			dvd_track.valid = false;
 			dvd_tracks[track_number - 1] = dvd_track;
@@ -690,9 +692,12 @@ int main(int argc, char **argv) {
 		printf("Audio streams: %02u, ", dvd_track.active_audio_streams);
 		printf("Subpictures: %02u\n", dvd_track.active_subs);
 
-		if(dvd_track.valid == false && (d_all_info == true|| debug == true)) {
+		if(dvd_track.valid == false && (d_all_info == true || debug == true)) {
 
 			printf("        Warning: track flagged as invalid\n");
+
+			if(valid_ifos[dvd_track.vts] == false)
+				printf("	Error: IFO is marked as invalid\n");
 
 			if(dvd_track.msecs == 0)
 				printf("	Warning: track has zero playback length\n");
