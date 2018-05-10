@@ -502,6 +502,8 @@ int main(int argc, char **argv) {
 			continue;
 		}
 
+		/** Valid tracks only at this point forwards */
+
 		if(dvd_track.msecs > longest_msecs) {
 			dvd_info.longest_track = dvd_track.track;
 			longest_msecs = dvd_track.msecs;
