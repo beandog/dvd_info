@@ -470,6 +470,14 @@ int main(int argc, char **argv) {
 			dvd_track.valid = false;
 		}
 
+		// Even though it is zero length, display what the broken value claims to be.
+		// This is helpful for cross-referencing other apps which will display the
+		// same values.
+		dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_track.track);
+
+		// Same for chapters
+		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
+
 		// Misordering the cells is one way to break a DVD. Check for
 		// this misbehavior and flag the track as invalid if present.
 		if(dvd_track_min_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
@@ -493,9 +501,6 @@ int main(int argc, char **argv) {
 			dvd_tracks[track_number - 1] = dvd_track;
 			continue;
 		}
-
-		dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_track.track);
-		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
 
 		if(dvd_track.msecs > longest_msecs) {
 			dvd_info.longest_track = dvd_track.track;
