@@ -81,11 +81,13 @@ int main(int argc, char **argv) {
 	memset(dvd_info.vmg_id, '\0', sizeof(dvd_info.vmg_id));
 	dvd_info.tracks = 1;
 	dvd_info.longest_track = 1;
+	dvd_info.valid_video_title_sets = 0;
+	dvd_info.invalid_video_title_sets = 0;
+	dvd_info.valid_tracks = 0;
+	dvd_info.invalid_tracks = 0;
 
 	// Video Title Set
-	struct dvd_vts dvd_vts;
-	dvd_vts.vts = 1;
-	memset(dvd_vts.id, '\0', sizeof(dvd_vts.id));
+	struct dvd_vts dvd_vts[99];
 
 	// Track
 	struct dvd_track dvd_track;
@@ -373,25 +375,33 @@ int main(int argc, char **argv) {
 
 	// Exit if all the IFOs cannot be opened
 	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
-	bool valid_ifos[DVD_MAX_VTS_IFOS] = { false };
 	ifo_handle_t *vts_ifos[DVD_MAX_VTS_IFOS];
 	vts_ifos[0] = NULL;
 
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
+		dvd_vts[vts].vts = vts;
+		dvd_vts[vts].valid = false;
+		dvd_vts[vts].blocks = 0;
+		dvd_vts[vts].filesize = 0;
+		dvd_vts[vts].vobs = 0;
+		dvd_vts[vts].tracks = 0;
+		dvd_vts[vts].valid_tracks = 0;
+		dvd_vts[vts].invalid_tracks = 0;
+
 		vts_ifos[vts] = ifoOpen(dvdread_dvd, vts);
 
 		if(vts_ifos[vts] == NULL) {
-			valid_ifos[vts] = false;
+			dvd_vts[vts].valid = false;
 			has_invalid_ifos = true;
 			vts_ifos[vts] = NULL;
 		} else if(!ifo_is_vts(vts_ifos[vts])) {
-			valid_ifos[vts] = false;
+			dvd_vts[vts].valid = false;
 			has_invalid_ifos = true;
 			ifoClose(vts_ifos[vts]);
 			vts_ifos[vts] = NULL;
 		} else {
-			valid_ifos[vts] = true;
+			dvd_vts[vts].valid = true;
 		}
 
 	}
@@ -429,6 +439,8 @@ int main(int argc, char **argv) {
 		dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, track_number);
 		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
 
+		dvd_vts[dvd_track.vts].tracks++;
+
 		// Initialize track to default values
 		dvd_track.valid = true;
 		snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
@@ -453,9 +465,10 @@ int main(int argc, char **argv) {
 		// If the IFO is invalid, skip the residing track
 		// Note to self: I know I've seen some where there are invalid IFOs, but I need
 		// to document which ones they are.
-		if(valid_ifos[dvd_track.vts] == false) {
+		if(dvd_vts[dvd_track.vts].valid == false) {
 			dvd_track.valid = false;
 			dvd_tracks[track_number - 1] = dvd_track;
+			dvd_info.invalid_tracks++;
 			continue;
 		}
 
@@ -495,12 +508,17 @@ int main(int argc, char **argv) {
 		// but for now, for visibility's sake, it's simpler to leave it all at zeroes.
 
 		if(dvd_track.valid == false) {
-			valid_ifos[dvd_track.vts] = false;
+			dvd_vts[dvd_track.vts].valid = false;
+			dvd_vts[dvd_track.vts].invalid_tracks++;
 			dvd_tracks[track_number - 1] = dvd_track;
+			dvd_info.invalid_tracks++;
 			continue;
 		}
 
 		/** Valid tracks only at this point forwards */
+
+		dvd_vts[dvd_track.vts].valid_tracks++;
+		dvd_info.valid_tracks++;
 
 		dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
@@ -682,8 +700,16 @@ int main(int argc, char **argv) {
 
 	// Print the valid and invalid VTSs
 	if(debug) {
+		printf("	Tracks: %02u, Valid: %02u, Invalid: %02u\n", dvd_info.tracks, dvd_info.valid_tracks, dvd_info.invalid_tracks);
 		for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
-			printf("	VTS %02u is %s\n", vts, ((valid_ifos[vts] == true) ? "valid" : "invalid"));
+			if(dvd_vts[vts].valid == true)
+				dvd_info.valid_video_title_sets++;
+			else
+				dvd_info.invalid_video_title_sets++;
+		}
+		printf("	Video Title Sets: %02u, Valid: %02u, Invalid: %02u\n", dvd_info.video_title_sets, dvd_info.valid_video_title_sets, dvd_info.invalid_video_title_sets);
+		for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
+			printf("	VTS: %02u, Tracks: %02u, Valid: %02u, Invalid: %02u\n", vts, dvd_vts[vts].tracks, dvd_vts[vts].valid_tracks, dvd_vts[vts].invalid_tracks);
 		}
 	}
 
@@ -708,7 +734,7 @@ int main(int argc, char **argv) {
 
 			printf("        Warning: track flagged as invalid\n");
 
-			if(valid_ifos[dvd_track.vts] == false)
+			if(dvd_vts[dvd_track.vts].valid == false)
 				printf("	Error: IFO is marked as invalid\n");
 
 			if(dvd_track.msecs == 0)
