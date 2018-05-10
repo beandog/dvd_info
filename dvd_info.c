@@ -692,6 +692,10 @@ int main(int argc, char **argv) {
 		printf("Audio streams: %02u, ", dvd_track.active_audio_streams);
 		printf("Subpictures: %02u\n", dvd_track.active_subs);
 
+		if(debug) {
+			printf("	VTS: %02u, TTN: %02u\n", dvd_track.vts, dvd_track.ttn);
+		}
+
 		if(dvd_track.valid == false && (d_all_info == true || debug == true)) {
 
 			printf("        Warning: track flagged as invalid\n");
