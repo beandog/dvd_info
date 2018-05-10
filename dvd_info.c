@@ -495,6 +495,7 @@ int main(int argc, char **argv) {
 		// but for now, for visibility's sake, it's simpler to leave it all at zeroes.
 
 		if(dvd_track.valid == false) {
+			valid_ifos[dvd_track.vts] = false;
 			dvd_tracks[track_number - 1] = dvd_track;
 			continue;
 		}
@@ -678,6 +679,13 @@ int main(int argc, char **argv) {
 
 	if(!d_quiet)
 		printf("Disc title: %s\n", dvd_info.title);
+
+	// Print the valid and invalid VTSs
+	if(debug) {
+		for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
+			printf("	VTS %02u is %s\n", vts, ((valid_ifos[vts] == true) ? "valid" : "invalid"));
+		}
+	}
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
