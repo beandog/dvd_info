@@ -36,15 +36,9 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 		printf("  {\n");
 		printf("   \"track\": %u,\n", dvd_track.track);
 
-		// If the title track is invalid, skip to the next one
-		printf("   \"valid\": %u", dvd_track.valid);
-		if(dvd_track.valid == 0) {
-			printf("\n  }");
-			if(track_number + 1 <= d_last_track)
-				printf(",");
-			printf("\n");
-			continue;
-		}
+		// Display if the track is flagged as invalid
+		if(debug)
+			printf("   \"valid\": %u", dvd_track.valid);
 
 		printf(",\n");
 
