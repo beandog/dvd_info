@@ -468,8 +468,6 @@ int main(int argc, char **argv) {
 
 		if(dvd_track.msecs == 0) {
 			dvd_track.valid = false;
-			dvd_tracks[track_number - 1] = dvd_track;
-			continue;
 		}
 
 		// Misordering the cells is one way to break a DVD. Check for
@@ -477,26 +475,18 @@ int main(int argc, char **argv) {
 		if(dvd_track_min_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
 			dvd_track.valid = false;
 			dvd_track.min_sector_error = true;
-			if(debug)
-				fprintf(stderr,"        Track: %02u, Warning: Cell minimum sector error\n", track_number);
 		}
 		if(dvd_track_max_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
 			dvd_track.valid = false;
 			dvd_track.max_sector_error = true;
-			if(debug)
-				fprintf(stderr, "        Track: %02u, Warning: Cell maximum sector error\n", track_number);
 		}
 		if(dvd_track_repeat_first_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
 			dvd_track.valid = false;
 			dvd_track.repeat_first_sector_error = true;
-			if(debug)
-				fprintf(stderr, "        Track: %02u, Warning: First cell sector is repeated\n", track_number);
 		}
 		if(dvd_track_repeat_last_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
 			dvd_track.valid = false;
 			dvd_track.repeat_last_sector_error = true;
-			if(debug)
-				fprintf(stderr, "        Track: %02u, Warning: Last cell sector is repeated\n", track_number);
 		}
 
 		if(dvd_track.valid == false) {
@@ -695,10 +685,12 @@ int main(int argc, char **argv) {
 		printf("Audio streams: %02u, ", dvd_track.active_audio_streams);
 		printf("Subpictures: %02u\n", dvd_track.active_subs);
 
-		if(dvd_track.valid == false && d_all_info == true) {
+		if(dvd_track.valid == false && (d_all_info == true|| debug == true)) {
 
 			printf("        Warning: track flagged as invalid\n");
 
+			if(dvd_track.msecs == 0)
+				printf("	Warning: track has zero playback length\n");
 			if(dvd_track.min_sector_error)
 				printf("	Warning: cell sectors are out of order, minimum cell boundaries broken\n");
 			if(dvd_track.max_sector_error)
