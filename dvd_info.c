@@ -469,7 +469,7 @@ int main(int argc, char **argv) {
 			dvd_track.valid = false;
 			dvd_tracks[track_number - 1] = dvd_track;
 			dvd_info.invalid_tracks++;
-			continue;
+			// continue;
 		}
 
 		vts_ifo = vts_ifos[dvd_track.vts];
@@ -512,7 +512,7 @@ int main(int argc, char **argv) {
 			dvd_vts[dvd_track.vts].invalid_tracks++;
 			dvd_tracks[track_number - 1] = dvd_track;
 			dvd_info.invalid_tracks++;
-			continue;
+			// continue;
 		}
 
 		/** Valid tracks only at this point forwards */
@@ -730,13 +730,12 @@ int main(int argc, char **argv) {
 			printf("	VTS: %02u, TTN: %02u\n", dvd_track.vts, dvd_track.ttn);
 		}
 
-		if(dvd_track.valid == false && (d_all_info == true || debug == true)) {
+		if(dvd_track.valid == false && debug == true) {
 
 			printf("        Warning: track flagged as invalid\n");
 
 			if(dvd_vts[dvd_track.vts].valid == false)
 				printf("	Error: IFO is marked as invalid\n");
-
 			if(dvd_track.msecs == 0)
 				printf("	Warning: track has zero playback length\n");
 			if(dvd_track.min_sector_error)
@@ -751,12 +750,12 @@ int main(int argc, char **argv) {
 		}
 
 		// Display video information
-		if(d_video && dvd_track.valid == true) {
+		if(d_video) {
 			printf("	Video format: %s, Aspect ratio: %s, Width: %u, Height: %u, FPS: %s, Display format: %s\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, dvd_video.fps, display_formats[dvd_video.df]);
 		}
 
 		// Display audio tracks
-		if(d_audio && dvd_track.audio_tracks && dvd_track.valid == true) {
+		if(d_audio && dvd_track.audio_tracks) {
 
 			for(c = 0; c < dvd_track.audio_tracks; c++) {
 
@@ -768,7 +767,7 @@ int main(int argc, char **argv) {
 		}
 
 		// Display chapters
-		if(d_chapters && dvd_track.chapters && dvd_track.valid == true) {
+		if(d_chapters && dvd_track.chapters) {
 
 			for(c = 0; c < dvd_track.chapters; c++) {
 
@@ -780,7 +779,7 @@ int main(int argc, char **argv) {
 		}
 
 		// Display track cells
-		if(d_cells && dvd_track.cells && dvd_track.valid == true) {
+		if(d_cells && dvd_track.cells) {
 
 			for(c = 0; c < dvd_track.cells; c++) {
 
@@ -792,7 +791,7 @@ int main(int argc, char **argv) {
 		}
 
 		// Display subtitles
-		if(d_subtitles && dvd_track.subtitles && dvd_track.valid == true) {
+		if(d_subtitles && dvd_track.subtitles) {
 
 			for(c = 0; c < dvd_track.subtitles; c++) {
 
