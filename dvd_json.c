@@ -42,7 +42,6 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 		printf("   \"msecs\": %u,\n", dvd_track.msecs);
 		printf("   \"vts\": %u,\n", dvd_track.vts);
 		printf("   \"ttn\": %u,\n", dvd_track.ttn);
-		printf("   \"cells\": %u,\n", dvd_track.cells);
 
 		printf("   \"video\": {\n");
 
