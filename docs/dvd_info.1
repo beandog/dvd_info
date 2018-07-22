@@ -95,6 +95,10 @@ Scan a single ISO of a DVD:
 .PP
 	dvd_info dvd.iso
 
+.SH DVD TIME FORMAT
+
+Lengths on tracks and chapters are in hours : minutes : seconds : millseconds format.
+
 .SH DVD WIDESCREEN VIDEO
 
 Note that it's not possible using this tool alone (or dvd_json) to tell for certain if the video on a track is anamorphic or letterbox. The DVD specification allows the flags to be set manually, and that is what is shown with the "Display format" output.
@@ -129,10 +133,6 @@ Closed captioning streams are subtitles that are in text format. found on some D
 .B dvd_info
 doesn't scan it to look for them. Other tools such as HandBrake do. ccextractor can export the subtitles directly from a local VOB file.
 
-.SH SEE ALSO 
-.B dvd_copy
-- copy a track off of a DVD to a file
-
 .SH LINKS
 See http://dvds.beandog.org for more information about the project, DVDs and multimedia in general on Linux and *BSD systems
 
@@ -152,6 +152,9 @@ dvd_info is free software; you can redistribute it and/or modify it under the te
 
 .SH BUGS
 Lots of effort is made to work around any nasty bugs or poisoned data in the DVD metadata and structure to give accurate information, as well as to compile the code with little (to no!) compiler errors at all. Some DVDs may not be able to be read for a variety of reasons: poorly mastered disc from provider, phyiscally damaged by scratches or heat, or additional DRM methods and intentionally breaking the format specs.
+
+.SH SEE ALSO
+dvd_copy(1), dvd_drive_status(1), dvd_eject(1)
 
 .SH AUTHORS
 .B dvd_info
