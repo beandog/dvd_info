@@ -16,6 +16,12 @@ dvd_info - display the content info of a DVD
 .B dvd_info
 is a program to scan a DVD and display details about its contents.
 .SH OPTIONS
+.B -t, --track [
+.I track_number
+]
+
+	Limit display to specific track number.
+
 .B -a, --audio
 
 	Display the audio tracks and its contents.
@@ -40,11 +46,33 @@ is a program to scan a DVD and display details about its contents.
 
 	Display all information about a DVD.
 
-.B -t, --track [
-.I track_number
-]
+.B -j, --json
 
-	Limit display to specific track number.
+	Display all information about a DVD in JSON format.
+
+.B -o, --ogm
+
+	Display chapter information about a track (default: longest) in OGM format (usable by ogmmerge and mkvmerge), the same format as dvdxchap.
+
+.B -i, --id
+
+	Display the DVD id only, created by libdvdread.
+
+.B -T, --title
+
+	Display the UDF volume name, available on a device or single ISO.
+
+.B -q, --quiet
+
+	Don't display DVD title header or longest track footer.
+
+.B -h, --help
+
+	Display help output.
+
+.B -v, --version
+
+	Display version information.
 
 .PP
 .I dvd_path
@@ -55,9 +83,9 @@ Scan a DVD device:
 .PP
 	dvd_info /dev/sr0
 .PP
-Read the contents of a DVD backed up to a filesystem:
+Read the contents of a DVD backed up to a filesystem (will contain VIDEO_TS and/or AUDIO_TS directories):
 .PP
-	dvd_info VIDEO_TS/
+	dvd_info dvd/
 .PP
 Scan a single ISO of a DVD:
 .PP
