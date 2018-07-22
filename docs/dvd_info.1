@@ -79,7 +79,11 @@ is a program to scan a DVD and display details about its contents.
 can be a device filename, a directory, or a file. If no argument is given, scan the primary DVD drive.
 
 .SH EXAMPLES
-Scan a DVD device:
+Read default DVD device:
+.PP
+	dvd_info
+.PP
+Scan a specific DVD device:
 .PP
 	dvd_info /dev/sr0
 .PP
@@ -110,7 +114,7 @@ outputs will display that information.
 The information is presented with the idea of ignoring the audio tracks that are not active can help you narrow down which track is a feature, or has the preferred language, etc.
 
 .SH DVD AUDIO CODECS
-The DVD specification allows for six audio codecs to be used, but the most common are Dolby Digital (ac3) and Digital Theater Sound (dts), each of which can contain up to six channels.
+The DVD specification allows for six audio codecs to be used, but the most common are Dolby Digital (ac3) and Digital Theater Sound (dts), each of which can contain up to six channels (5.1 surround sound).
 
 .SH DVD SUBTITLES
 For both
