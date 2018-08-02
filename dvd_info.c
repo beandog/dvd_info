@@ -469,7 +469,7 @@ int main(int argc, char **argv) {
 			dvd_track.valid = false;
 			dvd_tracks[track_number - 1] = dvd_track;
 			dvd_info.invalid_tracks++;
-			// continue;
+			continue;
 		}
 
 		vts_ifo = vts_ifos[dvd_track.vts];
@@ -512,7 +512,7 @@ int main(int argc, char **argv) {
 			dvd_vts[dvd_track.vts].invalid_tracks++;
 			dvd_tracks[track_number - 1] = dvd_track;
 			dvd_info.invalid_tracks++;
-			// continue;
+			continue;
 		}
 
 		/** Valid tracks only at this point forwards */
