@@ -21,7 +21,7 @@
  *
  * Opens / closes a disc tray, and decrypts the CSS on the drive to avoid
  * any spatial anomalies (and hardware devices whining to the kernel about
- * reading sectors without authentication).  Requires libdvdcss as a
+ * reading sectors without authentication). Requires libdvdcss as a
  * dependency library.
  *
  * Three return values: 0 on success, 1 on error, 2 on success and drive has
@@ -154,7 +154,7 @@ int main(int argc, char **argv) {
 	}
 
 	if(d_help) {
-		printf("dvd_eject [options] [device]\n\n");
+		printf("Usage: dvd_eject [options] [device]\n\n");
 		printf("-h, --help	Display this help output\n");
 		printf("-t, --close	Close tray\n");
 		printf("-n, --no-wait	Don't wait for device to be ready when closing\n");
