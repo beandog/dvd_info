@@ -472,8 +472,6 @@ int main(int argc, char **argv) {
 		if(dvd_vts[dvd_track.vts].valid == false) {
 			dvd_track.valid = false;
 			dvd_tracks[track_number - 1] = dvd_track;
-			dvd_info.invalid_tracks++;
-			continue;
 		}
 
 		vts_ifo = vts_ifos[dvd_track.vts];
@@ -516,16 +514,15 @@ int main(int argc, char **argv) {
 			dvd_vts[dvd_track.vts].invalid_tracks++;
 			dvd_tracks[track_number - 1] = dvd_track;
 			dvd_info.invalid_tracks++;
-			continue;
 		}
-
-		/** Valid tracks only at this point forwards */
-
-		dvd_vts[dvd_track.vts].valid_tracks++;
-		dvd_info.valid_tracks++;
 
 		dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
+
+		if(dvd_track.valid == true) {
+			dvd_vts[dvd_track.vts].valid_tracks++;
+			dvd_info.valid_tracks++;
+		}
 
 		if(dvd_track.msecs > longest_msecs) {
 			dvd_info.longest_track = dvd_track.track;
