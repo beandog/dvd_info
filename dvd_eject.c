@@ -107,6 +107,7 @@ int main(int argc, char **argv) {
 	int dvd_fd = -1;
 	char display_filename[PATH_MAX] = {'\0'};
 	char device_filename[PATH_MAX] = {'\0'};
+	char *path;
 	int starbase = 51;
 	bool p_dvd_eject = true;
 	bool p_dvd_close = false;
@@ -165,10 +166,10 @@ int main(int argc, char **argv) {
 
 	if(argv[optind]) {
 		snprintf(display_filename, PATH_MAX, "%s", argv[optind]);
-		realpath(argv[optind], device_filename);
+		path = realpath(argv[optind], device_filename);
 	} else {
 		snprintf(display_filename, PATH_MAX, "%s", DEFAULT_DVD_DEVICE);
-		realpath(display_filename, device_filename);
+		path = realpath(display_filename, device_filename);
 	}
 
 	if(strlen(device_filename) == 11 && strcmp("/dev/bluray", device_filename) == 0) {
@@ -290,7 +291,7 @@ int main(int argc, char **argv) {
 			if(device_mounted) {
 				char umount_str[PATH_MAX + 8] = {'\0'};
 				snprintf(umount_str, PATH_MAX + 8, "%s%s", "umount ", device_filename);
-				system(umount_str);
+				retval = system(umount_str);
 
 				// Ignore the system retval, check ourselves if it passed
 				if(is_mounted(device_filename)) {
