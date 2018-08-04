@@ -834,10 +834,10 @@ void print_usage(char *binary) {
 	printf("  -t, --track #		Limit to one track number (default: longest)\n");
 	printf("\n");
 	printf("Detailed information:\n");
+	printf("  -v, --video		video stream\n");
 	printf("  -a, --audio		audio streams\n");
-	printf("  -v, --video		video\n");
+	printf("  -s, --subtitles	VobSub subtitles\n");
 	printf("  -c, --chapters	chapters\n");
-	printf("  -s, --subtitles	subtitles\n");
 	printf("  -d, --cells		cells\n");
 	printf("  -x, --all		display all\n");
 	printf("\n");
