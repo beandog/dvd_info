@@ -489,6 +489,13 @@ int main(int argc, char **argv) {
 
 		// Misordering the cells is one way to break a DVD. Check for
 		// this misbehavior and flag the track as invalid if present.
+
+		// FIXME the checks here are pretty aggressive, and not always
+		// accurate. A track could jump back to previous cells, for example,
+		// if it wanted to replay something from earlier. That is not harmless.
+		// Needs more research.
+
+		/*
 		if(dvd_track_min_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
 			dvd_track.valid = false;
 			dvd_track.min_sector_error = true;
@@ -505,6 +512,7 @@ int main(int argc, char **argv) {
 			dvd_track.valid = false;
 			dvd_track.repeat_last_sector_error = true;
 		}
+		*/
 
 		// FIXME at some point I'd like to output what the DVD claims the data is,
 		// but for now, for visibility's sake, it's simpler to leave it all at zeroes.
