@@ -1,0 +1,35 @@
+.\" Manpage for dvd_drive_status
+.\" Contact steve.dibb@gmail.com to correct errors or typos.
+.TH dvd_drive_status 1 "04 August 2018" "1.3" "dvd_drive_status man page"
+.SH NAME
+dvd_drive_status \- display the status of a DVD optical tray
+.SH SYNOPSIS
+\fBdvd_drive_status\fR [device]
+.SH DESCRIPTION
+\fBdvd_drive_status\fR returns the state of an optical drive.
+
+Optical drives can have one of six states: open, opening, closed, closing, closed with or without a disc.
+
+When an optical drive is physically opening or closing, there is a "polling" state where it cannot be accessed.  dvd_drive_status prints out the optical drive's state and returns a relevant exit code as well.
+
+Exit codes:
+
+ \fB1\fR - no disc (closed, no media)
+ \fB2\fR - tray open
+ \fB3\fR - drive not ready (opening or polling)
+ \fB4\fR - drive ready (closed, has media)
+ \fB5\fR - device exists, but is NOT a DVD drive
+ \fB6\fR - cannot access device
+ \fB7\fR - cannot find a device
+
+Use \fBdvd_eject(1)\fR to both close a tray and wait for it to finish polling.
+
+.SH OPTIONS
+.TP
+\fBdvd_drive_status\fR will take the device path as an argument, or use the system's default optical drive if none is given.
+
+.SH SEE ALSO
+dvd_eject(1), dvd_info(1), dvd_copy(1)
+
+.SH AUTHOR
+Steve Dibb (steve.dibb@gmail.com) http://dvds.beandog.org
