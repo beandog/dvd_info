@@ -61,6 +61,7 @@ int main(int argc, char **argv) {
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
 	uint8_t c = 0;
+	uint8_t d_stream_num = 0;
 
 	// Device hardware
 	int dvd_fd = 0;
@@ -275,6 +276,9 @@ int main(int argc, char **argv) {
 		}
 
 	}
+
+	if(debug && d_quiet)
+		d_quiet = false;
 
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
@@ -718,6 +722,9 @@ int main(int argc, char **argv) {
 		dvd_track = dvd_tracks[track_number - 1];
 		dvd_video = dvd_tracks[track_number - 1].dvd_video;
 
+		if(dvd_track.valid == false && d_quiet == true && debug == false)
+			continue;
+
 		// Display track information
 		printf("Track: %02u, ", dvd_track.track);
 		printf("Length: %s, ", dvd_track.length);
@@ -757,10 +764,17 @@ int main(int argc, char **argv) {
 		// Display audio tracks
 		if(d_audio && dvd_track.audio_tracks) {
 
+			d_stream_num = 1;
+
 			for(c = 0; c < dvd_track.audio_tracks; c++) {
 
 				dvd_audio = dvd_track.dvd_audio_tracks[c];
-				printf("        Audio: %02u, Language: %s, Codec: %s, Channels: %u, Stream id: %s, Active: %s\n", dvd_audio.track, (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"), dvd_audio.codec, dvd_audio.channels, dvd_audio.stream_id, (dvd_audio.active ? "yes" : "no"));
+
+				if(dvd_audio.active == false && d_quiet == true && debug == false)
+					continue;
+
+				printf("        Audio: %02u, Language: %s, Codec: %s, Channels: %u, Stream id: %s, Active: %s\n", d_stream_num, (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"), dvd_audio.codec, dvd_audio.channels, dvd_audio.stream_id, (dvd_audio.active ? "yes" : "no"));
+				d_stream_num++;
 
 			}
 
@@ -793,10 +807,17 @@ int main(int argc, char **argv) {
 		// Display subtitles
 		if(d_subtitles && dvd_track.subtitles) {
 
+			d_stream_num = 1;
+
 			for(c = 0; c < dvd_track.subtitles; c++) {
 
 				dvd_subtitle = dvd_track.dvd_subtitles[c];
-				printf("        Subtitle: %02u, Language: %s, Stream id: %s, Active: %s\n", dvd_subtitle.track, (strlen(dvd_subtitle.lang_code) ? dvd_subtitle.lang_code : "--"), dvd_subtitle.stream_id, (dvd_subtitle.active ? "yes" : "no"));
+
+				if(dvd_subtitle.active == false && d_quiet == true && debug == false)
+					continue;
+
+				printf("        Subtitle: %02u, Language: %s, Stream id: %s, Active: %s\n", d_stream_num, (strlen(dvd_subtitle.lang_code) ? dvd_subtitle.lang_code : "--"), dvd_subtitle.stream_id, (dvd_subtitle.active ? "yes" : "no"));
+				d_stream_num++;
 
 			}
 
@@ -848,7 +869,7 @@ void print_usage(char *binary) {
 	printf("  -T, --title		Display DVD title only (path must be device or file)\n");
 	printf("\n");
 	printf("Other:\n");
-	printf("  -q, --quiet		Don't display DVD title, longest track\n");
+	printf("  -q, --quiet		Don't display DVD title, longest track, invalid tracks, and inactive streams\n");
 	printf("  -h, --help		Display these help options\n");
 	printf("  -V, --version		Version information\n");
 	printf("\n");
