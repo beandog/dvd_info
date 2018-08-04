@@ -852,13 +852,13 @@ void print_usage(char *binary) {
 	printf("  -h, --help		Display these help options\n");
 	printf("  -V, --version		Version information\n");
 	printf("\n");
-	printf("DVD path can be a device name, a single file, or directory.\n");
+	printf("DVD path can be a device name, a single file, or a directory.\n");
 	printf("\n");
 	printf("Examples:\n");
-	printf("  dvd_info		# Read default DVD device (%s)\n", DEFAULT_DVD_DEVICE);
-	printf("  dvd_info /dev/dvd	# Read a specific DVD device\n");
-	printf("  dvd_info movie.iso	# Read an image file\n");
-	printf("  dvd_info ~/movie/	# Read a directory that contains VIDEO_TS\n");
+	printf("  dvd_info		Read default DVD device (%s)\n", DEFAULT_DVD_DEVICE);
+	printf("  dvd_info /dev/dvd	Read a specific DVD device\n");
+	printf("  dvd_info movie.iso	Read an image file\n");
+	printf("  dvd_info ~/movie/	Read a directory that contains VIDEO_TS\n");
 
 }
 
