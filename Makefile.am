@@ -1,7 +1,7 @@
 bin_PROGRAMS = dvd_info dvd_copy
 
 if LINUX_DRIVE_TOOLS
-bin_PROGRAMS += dvd_drive_status
+bin_PROGRAMS += dvd_drive_status dvd_eject
 endif
 
 if BSD_DRIVE_TOOLS
@@ -18,6 +18,10 @@ dvd_copy_LDADD = $(DVDREAD_LIBS) $(DVDCSS_LIBS)
 
 if LINUX_DRIVE_TOOLS
 dvd_drive_status_SOURCES = dvd_drive_status.c
+
+dvd_eject_SOURCES = dvd_eject.c
+dvd_eject_CFLAGS = $(DVDCSS_CFLAGS)
+dvd_eject_LDADD = $(DVDCSS_LIBS)
 endif
 
 if BSD_DRIVE_TOOLS
