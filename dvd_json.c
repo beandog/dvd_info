@@ -9,6 +9,7 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 	struct dvd_chapter dvd_chapter;
 	struct dvd_cell dvd_cell;
 	uint8_t c = 0;
+	const char *display_formats[4] = { "Pan and Scan or Letterbox", "Pan and Scan", "Letterbox", "" };
 
 	printf("{\n");
 
@@ -53,21 +54,11 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 		if(strlen(dvd_video.aspect_ratio))
 			printf(" \"aspect ratio\": \"%s\",", dvd_video.aspect_ratio);
 
-
-		// FIXME needs cleanup
-		/*
-		if(dvd_video.df == 0)
-			printf("   \"df\": \"Pan and Scan + Letterbox\",\n");
-		else if(dvd_video.df == 1)
-			printf("   \"df\": \"Pan and Scan\",\n");
-		else if(dvd_video.df == 2)
-			printf("   \"df\": \"Letterbox\",\n");
-		*/
-
 		printf(" \"width\": %u,", dvd_video.width);
 		printf(" \"height\": %u,", dvd_video.height);
 		printf(" \"angles\": %u,", dvd_video.angles);
-		printf(" \"fps\": \"%s\"", dvd_video.fps);
+		printf(" \"fps\": \"%s\",", dvd_video.fps);
+		printf(" \"display format\": \"%s\"", display_formats[dvd_video.df]);
 
 		printf(" }");
 		if(dvd_track.audio_tracks || dvd_track.subtitles || dvd_track.chapters || dvd_track.cells)
