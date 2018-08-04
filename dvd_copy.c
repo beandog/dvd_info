@@ -551,6 +551,7 @@ void print_usage(char *binary) {
 	printf("\n");
 	printf("Output filenames:\n");
 	printf("  dvd_copy		# Save to \"dvd_track_##.vob\" where ## is longest track\n");
+	printf("  dvd_copy -t 1		# Save to \"dvd_track_01.vob\"\n");
 	printf("  dvd_copy -o video.vob	# Save to \"video.vob\" (MPEG2 program stream)\n");
 	printf("  dvd_copy -o video.mpg	# Save to \"video.mpg\" (MPEG2 program stream)\n");
 	printf("  dvd_copy -o -		# Stream to console output (stdout)\n");
