@@ -43,10 +43,9 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 		printf(" \"msecs\": %u,", dvd_track.msecs);
 		printf(" \"vts\": %u,", dvd_track.vts);
 		printf(" \"ttn\": %u,", dvd_track.ttn);
-		printf(" \"valid\": %s\n", dvd_track.valid ? "yes" : "no");
+		printf(" \"valid\": \"%s\",", dvd_track.valid ? "yes" : "no");
 
 		printf(" \"video\": {");
-
 		printf(" \"codec\": \"%s\",", dvd_video.codec);
 		printf(" \"format\": \"%s\",", dvd_video.format);
 		printf(" \"aspect ratio\": \"%s\",", dvd_video.aspect_ratio);
@@ -55,8 +54,8 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 		printf(" \"angles\": %u,", dvd_video.angles);
 		printf(" \"fps\": \"%s\",", dvd_video.fps);
 		printf(" \"display format\": \"%s\"", display_formats[dvd_video.df]);
-
 		printf(" }");
+
 		if(dvd_track.audio_tracks || dvd_track.subtitles || dvd_track.chapters || dvd_track.cells)
 			printf(",");
 
