@@ -53,6 +53,7 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 		if(strlen(dvd_video.aspect_ratio))
 			printf(" \"aspect ratio\": \"%s\",", dvd_video.aspect_ratio);
 
+
 		// FIXME needs cleanup
 		/*
 		if(dvd_video.df == 0)
@@ -65,11 +66,8 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 
 		printf(" \"width\": %u,", dvd_video.width);
 		printf(" \"height\": %u,", dvd_video.height);
-		printf(" \"angles\": %u", dvd_video.angles);
-
-		// Only display FPS if it's been populated as a string
-		if(strlen(dvd_video.fps))
-			printf(", \"fps\": \"%s\"", dvd_video.fps);
+		printf(" \"angles\": %u,", dvd_video.angles);
+		printf(" \"fps\": \"%s\"", dvd_video.fps);
 
 		printf(" }");
 		if(dvd_track.audio_tracks || dvd_track.subtitles || dvd_track.chapters || dvd_track.cells)
