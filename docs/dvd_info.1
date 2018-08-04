@@ -33,6 +33,9 @@ Display cell indexes, time duration, first and last filesystem sectors.
 .TP
 \fB-x, --all \fR
 Display all information.
+.TP
+\fB-q, --quiet \fR
+Don't display DVD title, longest track, invalid tracks, and inactive streams.
 
 .SH FORMATTING
 .TP
@@ -47,6 +50,14 @@ Display DVD id only (from libdvdread).
 .TP
 \fB-T, --title \fR
 Display UDF volume name only (dvd path must be a device or a file).
+
+.SH QUIET MODE, INVALID TRACKS, AND INACTIVE STREAMS
+.TP
+There are a few ways a track can be marked as invalid - the filesystem is inaccessible, the VTS or IFO is bad, the track has an empty length, or the description of sector layouts is incorrect. There could be accidental errors when the disc was authored, or it was by design in order to break DVD software. The disc could be physically damaged as well. Invalid DVD tracks appear as completely empty in dvd_info's output. With quiet mode enabled, it will not be listed at all.
+.TP
+A DVD can have a an audio or subtitle stream marked as "inactive". The title track information will display the sum of active audio tracks, and the detailed information will list both active and inactive. Enabling quiet mode supresses inactive streams from being displayed.
+.TP
+In both cases, the JSON output format has variables for valid and inactive attributes.
 
 .SH HISTORY
 dvd_info closely mirrors the human-readable output of lsdvd.
