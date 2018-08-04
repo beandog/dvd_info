@@ -14,31 +14,22 @@ DVD path can be a device name, a single file, or a directory. Default is optical
 .SH OPTIONS
 .TP
 \fB-t, --track # \fR
-Limit to one track number (default: longest)
-.TP
-\fB-t, --track \fB[\fRtrack number\fB]\fR
-Only display information about one title track.
-
-.SH DETAILED INFORMATION
-.TP
-\fBdvd_info\fR displays disc title and a summary of each track in human-readable format.
-.TP
-For additional output:
-.TP
-\fB-a, --audio \fR
-Display information about any audio streams.
+Limit to one track number (default: longest).
 .TP
 \fB-v, --video \fR
-Display information about the video stream.
+Display video format, aspect ratio, height and width dimensions, frames per second, and display format. 
 .TP
-\fB-c, --chapters \fR
-Display chapters on tracks.
+\fB-a, --audio \fR
+Display audio stream indexes, languages, codecs, number of channels, stream ids, and active statuses.
 .TP
 \fB-s, --subtitles \fR
-Display subtitle tracks (VobSub).
+Display VobSub subtitle indexes, languages, stream ids, and active statuses.
+.TP
+\fB-c, --chapters \fR
+Display chapter indexes, time durations.
 .TP
 \fB-d, --cells \fR
-Display cells on tracks.
+Display cell indexes, time duration, first and last filesystem sectors.
 .TP
 \fB-x, --all \fR
 Display all information.
