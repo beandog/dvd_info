@@ -47,13 +47,9 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 
 		printf(" \"video\": {");
 
-		if(strlen(dvd_video.codec))
-			printf(" \"codec\": \"%s\",", dvd_video.codec);
-		if(strlen(dvd_video.format))
-			printf(" \"format\": \"%s\",", dvd_video.format);
-		if(strlen(dvd_video.aspect_ratio))
-			printf(" \"aspect ratio\": \"%s\",", dvd_video.aspect_ratio);
-
+		printf(" \"codec\": \"%s\",", dvd_video.codec);
+		printf(" \"format\": \"%s\",", dvd_video.format);
+		printf(" \"aspect ratio\": \"%s\",", dvd_video.aspect_ratio);
 		printf(" \"width\": %u,", dvd_video.width);
 		printf(" \"height\": %u,", dvd_video.height);
 		printf(" \"angles\": %u,", dvd_video.angles);
