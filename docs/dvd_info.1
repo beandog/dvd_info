@@ -17,7 +17,7 @@ DVD path can be a device name, a single file, or a directory. Default is optical
 Limit to one track number (default: longest).
 .TP
 \fB-v, --video \fR
-Display video format, aspect ratio, height and width dimensions, frames per second, and display format. 
+Display video format, aspect ratio, height and width dimensions, frames per second, and display format.
 .TP
 \fB-a, --audio \fR
 Display audio stream indexes, languages, codecs, number of channels, stream ids, and active statuses.
@@ -50,6 +50,57 @@ Display DVD id only (from libdvdread).
 .TP
 \fB-T, --title \fR
 Display UDF volume name only (dvd path must be a device or a file).
+
+.SH DVD METADATA
+.PP
+This is a general overview of all the data that is displayed by \fBdvd_info\fR, and what its purpose is.
+.SS "DVD"
+.IX Subsection "DVD"
+.PP
+Testing
+.IP title 4
+.IX Item "title"
+Volume title on the filesystem (UDF).  Maximum 32-character string.  Should not be considered a unique identifier for DVDs.
+.IP side 4
+.IX Item "side"
+Physical DVDs can be two-sided, so this will be either a 1 or a 2.
+.IP tracks 4
+.IX Item "tracks"
+The number of tracks, or titles, found on a DVD.
+.IP
+Note that the term "track" is ambiguous, since there are audio tracks and subtitle tracks as well.  In that light, the term "title track" is used throughout to refer to the main tracks on a DVD.
+.IP
+On a DVD for a movie, one title track is generally the main feature, and it is usually the longest one in length.
+.IP
+The maximum possible number of title tracks for a DVD is 99.
+.IP "longest track" 4
+.IX Item "longest track"
+The title track that has the longest length.  On a DVD for a movie, this is generally the main feature.
+.IP
+Some DVDs may have two versions of the same movie on the same side, such as one being fullscreen and the other widescreen.  It is possible that one of them is slightly longer than the other by a few microseconds or more.
+.IP "provider id" 4
+.IX Item "provider id"
+Provider ID field on DVD structure.  Maximum string length is 32 characters.
+.IP "vmg id" 4
+.IX Item "vmg id"
+The Video Manager Group (VMG) contains the Video Manager Group IFO (VMGI) and the optional Video Manager Group Menu (VMGM), and can sometimes have an identifier.  Generally will be set to "DVDVIDEO-VMG".  Maximum string length is 12 characters.
+.IP
+VMG files include VIDEO_TS.IFO, VIDEO_TS.BUP, which are required, and VIDEO_TS.VOB, which is optional.
+.IP "video title sets" 4
+.IX Item "video title sets"
+The number of Video Title Sets (VTS) on a DVD, which contains an IFO, a BUP, and a VOB.  Maximum number of VTSs is 99, with each one having up to 10 IFOs.
+.IP
+VTS files are indexed by number.  The first VTS files would be VTS_01_0.IFO, VTS_01_0.BUP, and VTS_01_0.VOB.
+.IP "dvdread id" 4
+.IX Item "dvdread id"
+The library to read DVDs, libdvdread, creates an MD5 hash of the first 10 IFOs on a DVD.  This can safely be used as a unique identifier for a DVD.  The string length is 32 characters.
+.SS "Title Tracks"
+.IX Subsection "Title Tracks"
+.PP
+dvd_info will display information for all titles that it can access or open the underlying VTS for using libdvdread.  If a title track cannot be opened, it will be skipped.
+.IP track 4
+.IX Item "track"
+The title track number.
 
 .SH QUIET MODE, INVALID TRACKS, AND INACTIVE STREAMS
 .TP
