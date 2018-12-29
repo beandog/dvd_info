@@ -1,0 +1,29 @@
+.\" Manpage for dvd_eject
+.\" Contact steve.dibb@gmail.com to correct errors or typos.
+.TH dvd_eject 1 "29 December 2018" "1.3" "dvd_eject man page"
+.SH NAME
+dvd_eject \- open or close a DVD optical drive tray 
+.SH SYNOPSIS
+\fBdvd_eject\fR [options] [device]
+.SH DESCRIPTION
+\fBdvd_eject\fR does its very best to eject a tray or to close one.
+
+When an optical drive is being closed, there is an amount of time where the operating system is polling the device, and it is not possible to access the DVD inside the tray. dvd_eject, when given the command to close a tray, will wait out the polling sequence, and then exit.
+
+This is handy in cases where a script may want to close a tray and immediately access its contents afterwards without checking for polling status. Alternatively, see dvd_drive_status(1) to get its status directly.
+
+dvd_eject can also open a tray to the best of its abilities. If the device is mounted, it will need proper permissions to unmount it.
+
+.SH OPTIONS
+.TP
+\fB-t, --close\fR
+Close the physical tray instead of opening it.
+.TP
+\fB-n, --no-wait\fR
+Don't wait for DVD to become available before exiting.
+
+.SH SEE ALSO
+eject(1), dvd_drive_status(1), dvd_info(1), dvd_copy(1)
+
+.SH AUTHOR
+Steve Dibb (steve.dibb@gmail.com) http://dvds.beandog.org
