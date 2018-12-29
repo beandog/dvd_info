@@ -84,7 +84,13 @@ int main(int argc, char **argv) {
 #endif
 
 		if(retval < 0) {
+#ifdef __DragonFly__
+			if(errno == EIO) {
+				fprintf(stderr, "Drive %s is busy polling, wait a moment and try again\n", device_filename);
+			}
+#else
 			fprintf(stderr, "Could not eject tray (errno: %i)\n", errno);
+#endif
 			close(cdrom);
 			return 1;
 		}
