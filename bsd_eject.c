@@ -65,7 +65,10 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-/* See /usr/src/usr.sbin/cdcontrol/cdcontrol.c */
+/*
+ * DragonFly BSD - see /usr/src/sys/sys/cdio.h
+ * FreeBSD - See /usr/src/usr.sbin/cdcontrol/cdcontrol.c
+*/
 #if defined(__DragonFly__) || defined(__FreeBSD__)
 	int i = -1;
  	i = ioctl(cdrom, CDIOCALLOW);
