@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
 	}
 
 /* See /usr/src/usr.sbin/cdcontrol/cdcontrol.c */
-#ifdef __FreeBSD__
+#if defined(__DragonFly__) || defined(__FreeBSD__)
 	int i = -1;
  	i = ioctl(cdrom, CDIOCALLOW);
 #endif
