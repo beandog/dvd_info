@@ -21,7 +21,7 @@ dvd_eject_LDADD = $(DVDCSS_LIBS)
 man1_MANS += docs/linux/dvd_eject.1 docs/linux/dvd_drive_status.1
 endif
 
-if BSD_DRIVE_TOOLS
+if BSD_DRIVE_STATUS_TOOL
 bin_PROGRAMS += dvd_drive_status
 
 dvd_drive_status_SOURCES = bsd_drive_status.c
@@ -29,4 +29,12 @@ dvd_drive_status_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_drive_status_LDADD = $(DVDREAD_LIBS)
 
 man1_MANS += docs/bsd/dvd_drive_status.1
+endif
+
+if BSD_EJECT_TOOL
+bin_PROGRAMS += dvd_eject
+
+dvd_eject_SOURCES = bsd_eject.c
+
+man1_MANS += docs/bsd/dvd_eject.1
 endif

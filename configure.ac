@@ -16,15 +16,20 @@ case "$host_os" in
   linux*)
     linux_drive_tools=yes
     ;;
-  netbsd* | openbsd* | freebsd* | dragonfly*)
-    bsd_drive_tools=yes
+  netbsd* | openbsd* | freebsd*)
+    bsd_drive_status_tool=yes
+    bsd_eject_tool=yes
+    ;;
+  dragonfly*)
+    bsd_eject_tool=yes
     ;;
   *)
     dvd_drive_tools=no
     ;;
 esac
 AM_CONDITIONAL([LINUX_DRIVE_TOOLS], [test x$linux_drive_tools = xyes])
-AM_CONDITIONAL([BSD_DRIVE_TOOLS], [test x$bsd_drive_tools = xyes])
+AM_CONDITIONAL([BSD_DRIVE_STATUS_TOOL], [test x$bsd_drive_status_tool = xyes])
+AM_CONDITIONAL([BSD_EJECT_TOOL], [test x$bsd_eject_tool = xyes])
 
 AC_CONFIG_FILES([Makefile])
 
