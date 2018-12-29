@@ -16,7 +16,7 @@ case "$host_os" in
   linux*)
     linux_drive_tools=yes
     ;;
-  netbsd* | openbsd* | freebsd*)
+  netbsd* | openbsd* | freebsd* | dragonfly*)
     bsd_drive_tools=yes
     ;;
   *)

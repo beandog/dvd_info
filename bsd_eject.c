@@ -11,7 +11,9 @@
 #endif
 #include <sys/ioctl.h>
 
-#if defined (__FreeBSD__)
+#if defined (__DragonFly__)
+#define DEFAULT_DVD_DEVICE "/dev/cd0"
+#elif defined (__FreeBSD__)
 #define DEFAULT_DVD_DEVICE "/dev/cd0"
 #elif defined (__NetBSD__)
 #define DEFAULT_DVD_DEVICE "/dev/rcd0d"

@@ -8,7 +8,10 @@
 #include <errno.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
-#if defined (__FreeBSD__)
+
+#if defined (__DragonFly__)
+#define DEFAULT_DVD_RAW_DEVICE "/dev/cd0"
+#elif defined (__FreeBSD__)
 #define DEFAULT_DVD_RAW_DEVICE "/dev/cd0"
 #elif defined (__NetBSD__)
 #include <util.h>
