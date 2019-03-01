@@ -402,6 +402,14 @@ int main(int argc, char **argv) {
 	dvd_trip.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_trip.track, dvd_trip.first_chapter);
 	dvd_trip.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_trip.track, dvd_trip.last_chapter);
 
+
+	// Set output frames per second based on source (NTSC or PAL)
+	char mpv_ofps[] = "30000/1001";
+	if(dvd_track_pal_video(vts_ifo))
+		snprintf(mpv_ofps, 3, "25");
+	if(verbose)
+		printf("dvd_trip: output frames per second: %s\n", mpv_ofps);
+
 	// Set default filename of "trip_encode.mkv"
 	if(dvd_trip.filename == NULL) {
 		dvd_trip.filename = calloc(16, sizeof(unsigned char));
@@ -483,7 +491,7 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "vf", "lavfi=yadif");
 	mpv_set_option_string(dvd_mpv, "ovc", "libx265");
 	mpv_set_option_string(dvd_mpv, "oac", "libfdk_aac");
-	mpv_set_option_string(dvd_mpv, "ofps", "30");
+	mpv_set_option_string(dvd_mpv, "ofps", mpv_ofps);
 
 	char ovcopts[109] = {'\0'};
 	snprintf(ovcopts, 109, "preset=%s,crf=%02u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", x265_preset, dvd_trip.x265_crf, x265_log_level);
