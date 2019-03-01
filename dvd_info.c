@@ -25,8 +25,8 @@
 #include <linux/cdrom.h>
 #include "dvd_drive.h"
 #endif
-#ifndef VERSION
-#define VERSION "1.3"
+#ifndef DVD_INFO_VERSION
+#define DVD_INFO_VERSION "1.3"
 #endif
 
 int main(int argc, char **argv);
@@ -852,7 +852,7 @@ int main(int argc, char **argv) {
 
 void print_usage(char *binary) {
 
-	printf("%s %s - display information about a DVD\n", binary, VERSION);
+	printf("%s %s - display information about a DVD\n", binary, DVD_INFO_VERSION);
 	printf("\n");
 	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
 	printf("\n");
@@ -890,6 +890,6 @@ void print_usage(char *binary) {
 
 void print_version(char *binary) {
 
-	printf("%s %s - http://dvds.beandog.org/ - (c) 2014 Steve Dibb <steve.dibb@gmail.com>, licensed under GPL-2\n", binary, VERSION);
+	printf("%s %s - http://dvds.beandog.org/ - (c) 2014 Steve Dibb <steve.dibb@gmail.com>, licensed under GPL-2\n", binary, DVD_INFO_VERSION);
 
 }

@@ -29,8 +29,8 @@
 #include "dvd_subtitles.h"
 #include "dvd_time.h"
 #include <mpv/client.h>
-#ifndef VERSION
-#define VERSION "1.3"
+#ifndef DVD_INFO_VERSION
+#define DVD_INFO_VERSION "1.3"
 #endif
 
 #define DVD_INFO_PROGRAM "dvd_player"
@@ -601,7 +601,7 @@ void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, co
 
 void print_usage(char *binary) {
 
-	printf("%s %s - play a DVD track\n", binary, VERSION);
+	printf("%s %s - play a DVD track\n", binary, DVD_INFO_VERSION);
 	printf("\n");
 	printf("Usage: %s [-t track] [-c chapter[-chapter]] [dvd path] [options]\n", binary);
 	printf("\n");
@@ -622,6 +622,6 @@ void print_usage(char *binary) {
 
 void print_version(char *binary) {
 
-	printf("%s %s - http://dvds.beandog.org/ - (c) 2018 Steve Dibb <steve.dibb@gmail.com>, licensed under GPL-2\n", binary, VERSION);
+	printf("%s %s - http://dvds.beandog.org/ - (c) 2018 Steve Dibb <steve.dibb@gmail.com>, licensed under GPL-2\n", binary, DVD_INFO_VERSION);
 
 }
