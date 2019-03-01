@@ -64,13 +64,13 @@ int main(int argc, char **argv) {
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
-	bool opt_preset = false;
+	bool opt_quality = false;
 	uint16_t arg_track_number = 0;
 	int long_index = 0;
 	int opt = 0;
 	opterr = 1;
 	const char *str_options;
-	str_options = "c:dfho:t:pqVvz";
+	str_options = "c:dfho:t:q:QVvz";
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
 	char *token = NULL;
@@ -92,8 +92,8 @@ int main(int argc, char **argv) {
 		{ "track", required_argument, 0, 't' },
 		{ "help", no_argument, 0, 'h' },
 		{ "version", no_argument, 0, 'V' },
-		{ "preset", required_argument, 0, 'p' },
-		{ "quiet", no_argument, 0, 'q' },
+		{ "quality", required_argument, 0, 'q' },
+		{ "quiet", no_argument, 0, 'Q' },
 		{ "verbose", no_argument, 0, 'v' },
 		{ "debug", no_argument, 0, 'z' },
 		{ 0, 0, 0, 0 }
@@ -142,26 +142,29 @@ int main(int argc, char **argv) {
 				print_usage(DVD_INFO_PROGRAM);
 				return 0;
 
-			case 'p':
+			case 'q':
 
 				if(strncmp(optarg, "low", 3) == 0) {
-					opt_preset = true;
+					opt_quality = true;
 					dvd_trip.x265_preset = 4;
 				} else if(strncmp(optarg, "medium", 6) == 0) {
-					opt_preset = true;
+					opt_quality = true;
 					dvd_trip.x265_preset = 5;
 				} else if(strncmp(optarg, "high", 4) == 0) {
-					opt_preset = true;
+					opt_quality = true;
 					dvd_trip.x265_preset = 6;
 					dvd_trip.x265_crf = 26;
 				} else if(strncmp(optarg, "insane", 6) == 0) {
-					opt_preset = true;
+					opt_quality = true;
 					dvd_trip.x265_preset = 7;
 					dvd_trip.x265_crf = 20;
+				} else {
+					printf("dvd_trip: valid presets: low, medium, high, insane\n");
+					return 1;
 				}
 				break;
 
-			case 'q':
+			case 'Q':
 				quiet = true;
 				verbose = false;
 				debug = false;
@@ -405,6 +408,42 @@ int main(int argc, char **argv) {
 		strncpy(dvd_trip.filename, "trip_encode.mkv", 16);
 	}
 
+	// libx265 configuration
+	char x265_log_level[5] = {'\0'};
+	if(quiet)
+		strncpy(x265_log_level, "none", 5);
+	else if (debug)
+		strncpy(x265_log_level, "full", 5);
+	else if (verbose)
+		strncpy(x265_log_level, "info", 5);
+	else
+		strncpy(x265_log_level, "info", 5);
+
+	char x265_preset[7] = {'\0'};
+	switch(dvd_trip.x265_preset) {
+		case 4:
+			strncpy(x265_preset, "fast", 5);
+			break;
+		case 5:
+			strncpy(x265_preset, "medium", 7);
+			break;
+		case 6:
+			strncpy(x265_preset, "slow", 5);
+			break;
+		case 7:
+			strncpy(x265_preset, "slower", 7);
+			break;
+		default:
+			strncpy(x265_preset, "medium", 7);
+			break;
+	}
+
+	if(verbose) {
+		printf("dvd_trip: x265 preset: %s\n", x265_preset);
+		printf("dvd_trip: x265 crf: %02u\n", dvd_trip.x265_crf);
+		printf("dvd_trip: x265 log level: %s\n", x265_log_level);
+	}
+
 	// DVD playback using libmpv
 	dvd_mpv = mpv_create();
 
@@ -445,15 +484,14 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "ovc", "libx265");
 	mpv_set_option_string(dvd_mpv, "oac", "libfdk_aac");
 	mpv_set_option_string(dvd_mpv, "ofps", "30");
-	/*
-	if(quiet)
-		mpv_set_option_string(dvd_mpv, "ovcopts", "preset=slower,x265-params=colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m:log-level=none");
-	else if(debug)
-		mpv_set_option_string(dvd_mpv, "ovcopts", "preset=slower,x265-params=colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m:log-level=full");
-	else
-		mpv_set_option_string(dvd_mpv, "ovcopts", "preset=slower,x265-params=colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m:log-level=info");
-	*/
-	mpv_set_option_string(dvd_mpv, "ovcopts", "preset=slower,crf=20,x265-params=colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m:log-level=full");
+
+	char ovcopts[109] = {'\0'};
+	snprintf(ovcopts, 109, "preset=%s,crf=%02u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", x265_preset, dvd_trip.x265_crf, x265_log_level);
+
+	if(debug)
+		printf("dvd_trip: mpv ovcopts: %s\n", ovcopts);
+
+	mpv_set_option_string(dvd_mpv, "ovcopts", ovcopts);
 
 	mpv_initialize(dvd_mpv);
 	mpv_command(dvd_mpv, dvd_mpv_commands);
