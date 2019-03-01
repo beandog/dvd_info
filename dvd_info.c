@@ -857,7 +857,7 @@ void print_usage(char *binary) {
 	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
 	printf("\n");
 	printf("Options:\n");
-	printf("  -t, --track #		Limit to one track number (default: longest)\n");
+	printf("  -t, --track #		Limit to one track number (default: all tracks)\n");
 	printf("\n");
 	printf("Detailed information:\n");
 	printf("  -v, --video		video stream\n");
