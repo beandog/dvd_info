@@ -460,8 +460,10 @@ int main(int argc, char **argv) {
 		mpv_request_log_messages(dvd_mpv, "debug");
 	else if(verbose)
 		mpv_request_log_messages(dvd_mpv, "v");
-	else
+	else if(quiet)
 		mpv_request_log_messages(dvd_mpv, "no");
+	else
+		mpv_request_log_messages(dvd_mpv, "info");
 
 	// mpv zero-indexes tracks
 	sprintf(dvd_mpv_args, "dvdread://%02u", dvd_trip.track - 1);
@@ -514,7 +516,7 @@ int main(int argc, char **argv) {
 		if(dvd_mpv_event->event_id == MPV_EVENT_SHUTDOWN || dvd_mpv_event->event_id == MPV_EVENT_END_FILE)
 			break;
 
-		if(dvd_mpv_event->event_id == MPV_EVENT_LOG_MESSAGE && verbose) {
+		if(dvd_mpv_event->event_id == MPV_EVENT_LOG_MESSAGE) {
 			dvd_mpv_log_message = (struct mpv_event_log_message *)dvd_mpv_event->data;
 			printf("libmpv: %s", dvd_mpv_log_message->text);
 		}
