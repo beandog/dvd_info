@@ -9,7 +9,11 @@ AC_PROG_CC_C99
 dnl Use pkg-config to check for libdvdread, libdvdcss
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
 PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.4.1])
-PKG_CHECK_MODULES([MPV], [mpv])
+
+dnl Using libmpv for the ripper and player is optional, but enabled by default
+AC_ARG_ENABLE([libmpv], AS_HELP_STRING([--disable-libmpv], [Disable libmpv support for player and ripper]))
+AS_IF([test "x$enable_libmpv" != "xno"], [PKG_CHECK_MODULES([MPV], [mpv >= 1.25.0])])
+AM_CONDITIONAL([DVD_MPV_SUPPORT], [test x$enable_libmpv != xno])
 
 dnl The DVD drive tools are OS-specific
 AC_CANONICAL_HOST
