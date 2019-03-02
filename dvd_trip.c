@@ -78,8 +78,8 @@ int main(int argc, char **argv) {
 	char dvd_mpv_args[13] = {'\0'};
 	char dvd_mpv_first_chapter[4] = {'\0'};
 	char dvd_mpv_last_chapter[4] = {'\0'};
-	mpv_handle *dvd_mpv;
-	mpv_event *dvd_mpv_event;
+	mpv_handle *dvd_mpv = NULL;
+	mpv_event *dvd_mpv_event = NULL;
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
 	const char *output_filename = "trip_encode.mkv";
 
