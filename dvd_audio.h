@@ -4,6 +4,7 @@
 #include "dvd_track.h"
 
 struct dvd_audio {
+	uint8_t ix;
 	uint8_t track;
 	bool active;
 	char stream_id[DVD_AUDIO_STREAM_ID + 1];

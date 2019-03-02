@@ -70,8 +70,8 @@ uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
  *
  * @param vmg_ifo dvdread track IFO handler
  * @param vts_ifo dvdread track IFO handler
- * @param title_track track number, one-indexed
- * @param audio_track audio track, one-indexed
+ * @param title_track track number
+ * @param audio_track audio track
  * @return boolean
  */
 bool dvd_audio_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, const uint8_t audio_track) {
@@ -92,7 +92,7 @@ bool dvd_audio_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, 
 	if(!pgc)
 		return false;
 
-	if(pgc->audio_control[audio_track - 1] & 0x8000)
+	if(pgc->audio_control[audio_track] & 0x8000)
 		return true;
 
 	return false;

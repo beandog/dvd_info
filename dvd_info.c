@@ -61,6 +61,8 @@ int main(int argc, char **argv) {
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
 	uint8_t c = 0;
+	uint8_t audio_track_ix = 0;
+	uint8_t subtitle_track_ix = 0;
 	uint8_t d_stream_num = 0;
 
 	// Device hardware
@@ -124,6 +126,7 @@ int main(int argc, char **argv) {
 
 	// Audio
 	struct dvd_audio dvd_audio;
+	dvd_audio.ix = 0;
 	dvd_audio.track = 1;
 	dvd_audio.active = false;
 	memset(dvd_audio.stream_id, '\0', sizeof(dvd_audio.stream_id));
@@ -572,27 +575,28 @@ int main(int argc, char **argv) {
 
 		if(dvd_track.audio_tracks && dvd_track.dvd_audio_tracks != NULL) {
 
-			for(c = 0; c < dvd_track.audio_tracks; c++) {
+			for(audio_track_ix = 0; audio_track_ix < dvd_track.audio_tracks; audio_track_ix++) {
 
 				memset(&dvd_audio, 0, sizeof(dvd_audio));
 
-				dvd_audio.track = c + 1;
-				dvd_audio.active = dvd_audio_active(vmg_ifo, vts_ifo, dvd_track.track, dvd_audio.track);
+				dvd_audio.track = audio_track_ix + 1;
+
+				dvd_audio.active = dvd_audio_active(vmg_ifo, vts_ifo, dvd_track.track, audio_track_ix);
 				if(dvd_audio.active)
 					dvd_track.active_audio_streams++;
 
-				dvd_audio.channels = dvd_audio_channels(vts_ifo, c);
+				dvd_audio.channels = dvd_audio_channels(vts_ifo, audio_track_ix);
 
 				memset(dvd_audio.stream_id, '\0', sizeof(dvd_audio.stream_id));
-				dvd_audio_stream_id(dvd_audio.stream_id, vts_ifo, c);
+				dvd_audio_stream_id(dvd_audio.stream_id, vts_ifo, audio_track_ix);
 
 				memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
-				dvd_audio_lang_code(dvd_audio.lang_code, vts_ifo, c);
+				dvd_audio_lang_code(dvd_audio.lang_code, vts_ifo, audio_track_ix);
 
 				memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
-				dvd_audio_codec(dvd_audio.codec, vts_ifo, c);
+				dvd_audio_codec(dvd_audio.codec, vts_ifo, audio_track_ix);
 
-				dvd_track.dvd_audio_tracks[c] = dvd_audio;
+				dvd_track.dvd_audio_tracks[audio_track_ix] = dvd_audio;
 
 			}
 
