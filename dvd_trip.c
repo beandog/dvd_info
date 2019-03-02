@@ -47,9 +47,12 @@ struct dvd_trip {
 	uint8_t last_cell;
 	ssize_t filesize;
 	char *filename;
-	char *preset;
-	uint8_t x265_preset;
-	uint8_t x265_crf;
+	char vcodec[8];
+	char vcodec_opts[120];
+	char vcodec_preset[11];
+	char vcodec_log_level[6];
+	uint8_t crf;
+	char fps[11];
 };
 
 int main(int argc, char **argv) {
@@ -69,8 +72,7 @@ int main(int argc, char **argv) {
 	int long_index = 0;
 	int opt = 0;
 	opterr = 1;
-	const char *str_options;
-	str_options = "c:dfho:t:q:QVvz";
+	const char str_options[] = "c:dfho:t:q:QVvz";
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
 	char *token = NULL;
@@ -81,7 +83,6 @@ int main(int argc, char **argv) {
 	mpv_handle *dvd_mpv = NULL;
 	mpv_event *dvd_mpv_event = NULL;
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
-	const char *output_filename = "trip_encode.mkv";
 
 	struct option long_options[] = {
 
@@ -105,8 +106,29 @@ int main(int argc, char **argv) {
 	dvd_trip.last_chapter = 99;
 	dvd_trip.first_cell = 1;
 	dvd_trip.last_cell = 1;
-	dvd_trip.x265_preset = 5;
-	dvd_trip.x265_crf = 28;
+
+	// FPS options: 30000/1001 25
+	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
+	strcpy(dvd_trip.fps, "30000/1001");
+
+	// x265 default CRF
+	dvd_trip.crf = 28;
+
+	// x265 presets: ultrafast superfast veryfast faster fast medium slow slower veryslow placebo
+	memset(dvd_trip.vcodec_preset, '\0', sizeof(dvd_trip.vcodec_preset));
+	strcpy(dvd_trip.vcodec_preset, "medium");
+
+	// x265 log levels: none error warning info debug full
+	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
+	strcpy(dvd_trip.vcodec_log_level, "info");
+
+	// dvd_trip default codec is x265
+	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
+	sprintf(dvd_trip.vcodec, "libx265");
+
+	// dvd_trip default x265 encoding options
+	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
+	sprintf(dvd_trip.vcodec_opts, "x265-params=log-level=%s:preset=%s:crf=%02u:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_log_level, dvd_trip.vcodec_preset, dvd_trip.crf);
 
 	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
 
@@ -143,21 +165,17 @@ int main(int argc, char **argv) {
 				return 0;
 
 			case 'q':
-
+				opt_quality = true;
 				if(strncmp(optarg, "low", 3) == 0) {
-					opt_quality = true;
-					dvd_trip.x265_preset = 4;
+					strcpy(dvd_trip.vcodec_preset, "fast");
 				} else if(strncmp(optarg, "medium", 6) == 0) {
-					opt_quality = true;
-					dvd_trip.x265_preset = 5;
+					strcpy(dvd_trip.vcodec_preset, "medium");
 				} else if(strncmp(optarg, "high", 4) == 0) {
-					opt_quality = true;
-					dvd_trip.x265_preset = 6;
-					dvd_trip.x265_crf = 26;
+					strcpy(dvd_trip.vcodec_preset, "slow");
+					dvd_trip.crf = 26;
 				} else if(strncmp(optarg, "insane", 6) == 0) {
-					opt_quality = true;
-					dvd_trip.x265_preset = 7;
-					dvd_trip.x265_crf = 20;
+					strcpy(dvd_trip.vcodec_preset, "slower");
+					dvd_trip.crf = 22;
 				} else {
 					printf("dvd_trip: valid presets: low, medium, high, insane\n");
 					return 1;
@@ -402,54 +420,33 @@ int main(int argc, char **argv) {
 	dvd_trip.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_trip.track, dvd_trip.first_chapter);
 	dvd_trip.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_trip.track, dvd_trip.last_chapter);
 
-
 	// Set output frames per second based on source (NTSC or PAL)
-	char mpv_ofps[] = "30000/1001";
-	if(dvd_track_pal_video(vts_ifo))
-		snprintf(mpv_ofps, 3, "25");
+	if(dvd_track_ntsc_video(vts_ifo))
+		strcpy(dvd_trip.fps, "30000/1001");
+	else if(dvd_track_pal_video(vts_ifo))
+		strcpy(dvd_trip.fps, "25");
+
 	if(verbose)
-		printf("dvd_trip: output frames per second: %s\n", mpv_ofps);
+		printf("dvd_trip: output frames per second: %s\n", dvd_trip.fps);
 
 	// Set default filename of "trip_encode.mkv"
-	if(dvd_trip.filename == NULL) {
+	if(!opt_filename) {
 		dvd_trip.filename = calloc(16, sizeof(unsigned char));
-		strncpy(dvd_trip.filename, "trip_encode.mkv", 16);
+		strcpy(dvd_trip.filename, "trip_encode.mkv");
 	}
 
 	// libx265 configuration
-	char x265_log_level[5] = {'\0'};
 	if(quiet)
-		strncpy(x265_log_level, "none", 5);
+		strcpy(dvd_trip.vcodec_log_level, "none");
 	else if (debug)
-		strncpy(x265_log_level, "full", 5);
+		strcpy(dvd_trip.vcodec_log_level, "full");
 	else if (verbose)
-		strncpy(x265_log_level, "info", 5);
-	else
-		strncpy(x265_log_level, "info", 5);
-
-	char x265_preset[7] = {'\0'};
-	switch(dvd_trip.x265_preset) {
-		case 4:
-			strncpy(x265_preset, "fast", 5);
-			break;
-		case 5:
-			strncpy(x265_preset, "medium", 7);
-			break;
-		case 6:
-			strncpy(x265_preset, "slow", 5);
-			break;
-		case 7:
-			strncpy(x265_preset, "slower", 7);
-			break;
-		default:
-			strncpy(x265_preset, "medium", 7);
-			break;
-	}
+		strcpy(dvd_trip.vcodec_log_level, "info");
 
 	if(verbose) {
-		printf("dvd_trip: x265 preset: %s\n", x265_preset);
-		printf("dvd_trip: x265 crf: %02u\n", dvd_trip.x265_crf);
-		printf("dvd_trip: x265 log level: %s\n", x265_log_level);
+		printf("dvd_trip: x265 preset: %s\n", dvd_trip.vcodec_preset);
+		printf("dvd_trip: x265 crf: %02u\n", dvd_trip.crf);
+		printf("dvd_trip: x265 log level: %s\n", dvd_trip.vcodec_log_level);
 	}
 
 	// DVD playback using libmpv
@@ -491,17 +488,16 @@ int main(int argc, char **argv) {
 	// Default DVD encoding options
 	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
 	mpv_set_option_string(dvd_mpv, "vf", "lavfi=yadif");
-	mpv_set_option_string(dvd_mpv, "ovc", "libx265");
+	mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
 	mpv_set_option_string(dvd_mpv, "oac", "libfdk_aac");
-	mpv_set_option_string(dvd_mpv, "ofps", mpv_ofps);
+	mpv_set_option_string(dvd_mpv, "ofps", dvd_trip.fps);
 
-	char ovcopts[109] = {'\0'};
-	snprintf(ovcopts, 109, "preset=%s,crf=%02u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", x265_preset, dvd_trip.x265_crf, x265_log_level);
+	sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
 
 	if(debug)
-		printf("dvd_trip: mpv ovcopts: %s\n", ovcopts);
+		printf("dvd_trip: mpv ovcopts: %s\n", dvd_trip.vcodec_opts);
 
-	mpv_set_option_string(dvd_mpv, "ovcopts", ovcopts);
+	mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
 
 	mpv_initialize(dvd_mpv);
 	mpv_command(dvd_mpv, dvd_mpv_commands);
