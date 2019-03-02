@@ -521,8 +521,10 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "input-default-bindings", "yes");
 	mpv_set_option_string(dvd_mpv, "input-vo-keyboard", "yes");
 	mpv_set_option_string(dvd_mpv, "resume-playback", "no");
-	mpv_set_option_string(dvd_mpv, "fullscreen", NULL);
-	mpv_set_option_string(dvd_mpv, "deinterlace", "yes");
+	if(dvd_playback.fullscreen)
+		mpv_set_option_string(dvd_mpv, "fullscreen", NULL);
+	if(dvd_playback.deinterlace)
+		mpv_set_option_string(dvd_mpv, "deinterlace", "yes");
 
 	mpv_initialize(dvd_mpv);
 	mpv_command(dvd_mpv, dvd_mpv_commands);
