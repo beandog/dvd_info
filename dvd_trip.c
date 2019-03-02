@@ -510,19 +510,21 @@ int main(int argc, char **argv) {
 
 		dvd_mpv_event = mpv_wait_event(dvd_mpv, -1);
 
-		if(dvd_mpv_event->event_id != MPV_EVENT_LOG_MESSAGE)
-			printf("mpv_event_name: %s\n", mpv_event_name(dvd_mpv_event->event_id));
+		// if(dvd_mpv_event->event_id != MPV_EVENT_LOG_MESSAGE)
+		//	printf("mpv_event_name: %s\n", mpv_event_name(dvd_mpv_event->event_id));
 
 		if(dvd_mpv_event->event_id == MPV_EVENT_SHUTDOWN || dvd_mpv_event->event_id == MPV_EVENT_END_FILE)
 			break;
 
 		if(dvd_mpv_event->event_id == MPV_EVENT_LOG_MESSAGE) {
 			dvd_mpv_log_message = (struct mpv_event_log_message *)dvd_mpv_event->data;
-			printf("libmpv: %s", dvd_mpv_log_message->text);
+			printf("mpv [%s]: %s", dvd_mpv_log_message->level, dvd_mpv_log_message->text);
 		}
 
+		/*
 		if(dvd_mpv_event->event_id == MPV_EVENT_CHAPTER_CHANGE)
 			printf("dvd_trip: changing chapters\n");
+		*/
 
 	}
 
