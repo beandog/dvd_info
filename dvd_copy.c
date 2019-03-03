@@ -131,6 +131,8 @@ int main(int argc, char **argv) {
 					arg_first_chapter = 1;
 				if(arg_last_chapter < arg_first_chapter)
 					arg_last_chapter = arg_first_chapter;
+				if(arg_first_chapter > arg_last_chapter)
+					arg_first_chapter = arg_last_chapter;
 
 				break;
 
