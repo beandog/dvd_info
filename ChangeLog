@@ -1,5 +1,7 @@
 1.3
 
+* Add dvd_trip - a tiny DVD ripper using libmpv
+* Add dvd_player - a DVD player using libmpv
 * Detect intentionally broken DVDs and flag tracks as invalid and display
   errors
 
