@@ -580,6 +580,6 @@ void print_usage(char *binary) {
 
 void print_version(char *binary) {
 
-	printf("%s %s - http://dvds.beandog.org/ - (c) 2018 Steve Dibb <steve.dibb@gmail.com>, licensed under GPL-2\n", binary, DVD_INFO_VERSION);
+	printf("%s %s\n", binary, DVD_INFO_VERSION);
 
 }
