@@ -432,7 +432,7 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.fps, "25");
 
 	if(verbose)
-		fprintf("dvd_trip: output frames per second: %s\n", dvd_trip.fps);
+		fprintf(stderr, "dvd_trip: output frames per second: %s\n", dvd_trip.fps);
 
 	// Set default filename of "trip_encode.mkv"
 	if(!opt_filename) {
@@ -449,9 +449,9 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.vcodec_log_level, "info");
 
 	if(verbose) {
-		printf("dvd_trip: x265 preset: %s\n", dvd_trip.vcodec_preset);
-		printf("dvd_trip: x265 crf: %02u\n", dvd_trip.crf);
-		printf("dvd_trip: x265 log level: %s\n", dvd_trip.vcodec_log_level);
+		fprintf(stderr, "dvd_trip: x265 preset: %s\n", dvd_trip.vcodec_preset);
+		fprintf(stderr,"dvd_trip: x265 crf: %02u\n", dvd_trip.crf);
+		fprintf(stderr, "dvd_trip: x265 log level: %s\n", dvd_trip.vcodec_log_level);
 	}
 
 	// DVD playback using libmpv
