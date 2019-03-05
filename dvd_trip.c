@@ -140,6 +140,7 @@ struct dvd_trip {
 	char vcodec_opts[256];
 	char vcodec_log_level[6];
 	char acodec[256];
+	char acodec_opts[256];
 	uint8_t crf;
 	char fps[11];
 	bool deinterlace;
@@ -219,6 +220,7 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
 	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
 	memset(dvd_trip.acodec, '\0', sizeof(dvd_trip.acodec));
+	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
 	dvd_trip.crf = 28;
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
 	dvd_trip.deinterlace = false;
