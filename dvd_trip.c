@@ -43,6 +43,83 @@
 #define DVD_TRIP_ACODEC_VORBIS	2
 #define DVD_TRIP_ACODEC_OPUS	3
 
+	/**
+	 *      _          _    _        _
+	 *   __| |_   ____| |  | |_ _ __(_)_ __
+	 *  / _` \ \ / / _` |  | __| '__| | '_ \
+	 * | (_| |\ V / (_| |  | |_| |  | | |_) |
+	 *  \__,_| \_/ \__,_|___\__|_|  |_| .__/
+	 * 	           |_____|        |_|
+	 *
+	 * ** the tiniest little dvd ripper you'll ever see :) **
+	 *
+	 * About
+	 *
+	 * dvd_trip is designed to be a tiny DVD ripper with very few options. The purpose being
+	 * that there is as little overhead as possible when wanting to do a quick DVD rip, and
+	 * has a good set of default encoding settings.
+	 *
+	 * Just running "dvd_trip" alone with no arguments or options will fetch the longest track
+	 * on the DVD, select the first English audio track, and encode it to H.265 using libx265 with
+	 * its medium preset and default CRF of 28, and AAC audio using libfdk-aac. It also preserves
+	 * the source's framerate.
+	 *
+	 * Because it is so tiny, some options it doesn't have that larger DVD ripper applications
+	 * would are: encoding multiple audio streams, audio passthrough, subtitle support (VOBSUB and
+	 * closed captioning), auto-cropping black bars, and custom audio and video codec options.
+	 *
+	 * However(!), if you want more features when ripping the DVD, you can use "dvd_copy" instead,
+	 * and output the track to stdout. Using ffmpeg / libav or otherwise can detect the streams
+	 * and encode, crop, copy, and so on directly. Example: dvd_copy -o - | ffprobe -i -
+	 *
+	 * Presets
+	 *
+	 * To keep things simple, dvd_trip only has three presets which fit the most commonly used
+	 * codecs and formats when ripping DVDs: "mkv", "mp4", "webp".
+	 *
+	 * Quality Levels
+	 *
+	 * The quality levels of dvd_trip could partially be described as the time it takes to encode
+	 * them, rather than an intentional target towards a quality level. In the case of the "low"
+	 * presets, the focus is simply to go faster. The "medium" preset uses the default encoding
+	 * settings from the codecs themselves. The "high" and "insane" presets bump up the bitrates
+	 * from the defaults and will make the encoding slower, while also looking much nicer.
+	 *
+	 * WebM encoding settings
+	 *
+	 * See https://www.webmproject.org/docs/encoder-parameters/ for examples of encoding settings
+	 *
+	 * libvpx comes with two codecs -- vpx8 and vpx9. vpx8 is older, and should have more playback
+	 * support on all devices. vpx9, the most recent, is going to be higher quality at the expense
+	 * of longer encoding times, and hardware support may not be as widespread. Be sure to do some
+	 * testing of your own! The encoding settings here use the examples from the project, and so
+	 * these should playback fine in most devices (web browsers, phones, etc.).
+	 *
+	 * WebM project recommends doing a two-pass by default, but for the "low" and "medium" presets
+	 * one-pass encodes are used with vpx8. For "high" and "insane" quality presets, two-pass
+	 * encodes are used, along with vpx9, which will take much longer. Two-pass encodes will also
+	 * write to log files in the current working directory to save stats.
+	 *
+	 * Vorbis, a lossy audio codec is used for "low" and "medium" presets, while Opus, a lossless
+	 * audio codec, is used for "high" and "insane" presets. Switching between these two will not
+	 * have a noticable impact on encoding time. For both audio codecs, default options are used.
+	 *
+	 * Here are the equivalent commands for quality using the "vpxenc" binary built with libvpx,
+	 * ignoring input and output filenames, and making some small adjustments for readability.
+	 *
+	 * It's important to note that "vpxenc"	uses bitrate in kbps, while libmpv accepts bps.
+	 *
+	 * WebM Presets
+	 *
+	 * "medium" - "1-Pass Good Quality VBR Encoding"
+	 *
+	 * vpxenc --codec=vp8 --passes=1 --threads=4 --good --cpu-used=0 --target-bitrate=2000
+	 * --end-usage=vbr --fps=30000/1001 --kf-min-dist=0 --kf-max-dist=360 --token-parts=2
+	 * --static-thresh=0 --min-q=0 --max-q=63
+	 *
+	 *
+	 */
+
 int main(int, char **);
 void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo);
 void print_usage(char *binary);
@@ -55,14 +132,14 @@ struct dvd_trip {
 	uint8_t first_cell;
 	uint8_t last_cell;
 	ssize_t filesize;
-	char *filename;
+	char filename[PATH_MAX - 1];
 	char preset[5];
 	char quality[7];
-	char vcodec[11];
+	char vcodec[256];
 	char vcodec_preset[11];
-	char vcodec_opts[120];
+	char vcodec_opts[256];
 	char vcodec_log_level[6];
-	char acodec[11];
+	char acodec[256];
 	uint8_t crf;
 	char fps[11];
 	bool deinterlace;
@@ -82,6 +159,12 @@ int main(int argc, char **argv) {
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
 	bool opt_quality = false;
+	bool opt_vpx8 = false;
+	bool opt_vpx9 = false;
+	bool opt_x264 = false;
+	bool opt_x265 = false;
+	bool opt_mpeg4 = false;
+	bool opt_matroska = false;
 	uint16_t arg_track_number = 0;
 	int long_index = 0;
 	int opt = 0;
@@ -126,8 +209,11 @@ int main(int argc, char **argv) {
 	dvd_trip.first_cell = 1;
 	dvd_trip.last_cell = 1;
 
+	memset(dvd_trip.filename, '\0', sizeof(dvd_trip.filename));
 	memset(dvd_trip.preset, '\0', sizeof(dvd_trip.preset));
+	strcpy(dvd_trip.preset, "mkv");
 	memset(dvd_trip.quality, '\0', sizeof(dvd_trip.quality));
+	strcpy(dvd_trip.quality, "medium");
 	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
 	memset(dvd_trip.vcodec_preset, '\0', sizeof(dvd_trip.vcodec_preset));
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
@@ -216,7 +302,8 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'o':
-				dvd_trip.filename = optarg;
+				opt_filename = true;
+				strncpy(dvd_trip.filename, optarg, PATH_MAX - 1);
 				break;
 
 			case 't':
@@ -455,38 +542,57 @@ int main(int argc, char **argv) {
 
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 
-	if(!opt_filename)
-		dvd_trip.filename = calloc(17, sizeof(unsigned char));
-
 	// Set preset defaults
 	if(strncmp(dvd_trip.preset, "mkv", 3) == 0) {
 
 		if(!opt_filename)
-			strncpy(dvd_trip.filename, "trip_encode.mkv", 16);
+			strcpy(dvd_trip.filename, "trip_encode.mkv");
 
 		strcpy(dvd_trip.vcodec, "libx265");
 		dvd_trip.crf = 28;
 		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
 		strcpy(dvd_trip.acodec, "libfdk_aac");
 
-	} else if(strncmp(dvd_trip.preset, "mp4", 3) == 0) {
+	}
+
+	if(strncmp(dvd_trip.preset, "mp4", 3) == 0) {
 
 		if(!opt_filename)
-			strncpy(dvd_trip.filename, "trip_encode.mp4", 16);
+			strcpy(dvd_trip.filename, "trip_encode.mp4");
 
 		strcpy(dvd_trip.vcodec, "libx264");
 		dvd_trip.crf = 23;
 		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x264-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
 		strcpy(dvd_trip.acodec, "libfdk_aac");
 
-	} else if(strncmp(dvd_trip.preset, "webm", 4) == 0) {
+	}
+
+	if(strncmp(dvd_trip.preset, "webm", 4) == 0) {
 
 		if(!opt_filename)
-			strncpy(dvd_trip.filename, "trip_encode.webm", 17);
+			strcpy(dvd_trip.filename, "trip_encode.webm");
 
-		strcpy(dvd_trip.vcodec, "libvpx-vp9");
-		strcpy(dvd_trip.vcodec_opts, "");
-		strcpy(dvd_trip.acodec, "libopus");
+		if(strncmp(dvd_trip.quality, "low", 3) == 0) {
+			strcpy(dvd_trip.vcodec, "libvpx");
+			strcpy(dvd_trip.vcodec_opts, "");
+			strcpy(dvd_trip.acodec, "libvorbis");
+		}
+
+		if(strncmp(dvd_trip.quality, "medium", 6) == 0) {
+			strcpy(dvd_trip.vcodec, "libvpx");
+			strcpy(dvd_trip.vcodec_opts, "threads=4,quality=good,cpu-used=0,b=2000000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m");
+			strcpy(dvd_trip.acodec, "libvorbis");
+		}
+
+		if(strncmp(dvd_trip.quality, "high", 6) == 0) {
+			strcpy(dvd_trip.vcodec, "libvpx-vp9");
+			strcpy(dvd_trip.vcodec_opts, "threads=4,quality=good,cpu-used=0,b=2000000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m");
+			strcpy(dvd_trip.acodec, "libopus");
+		}
+
+		// strcpy(dvd_trip.vcodec, "libvpx-vp9");
+		// strcpy(dvd_trip.vcodec_opts, "");
+		// strcpy(dvd_trip.acodec, "libopus");
 
 	}
 
@@ -495,6 +601,8 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.fps, "30000/1001");
 	else if(dvd_track_pal_video(vts_ifo))
 		strcpy(dvd_trip.fps, "25");
+	else
+		strcpy(dvd_trip.fps, "30000/1001");
 
 	// MPV's chapter range starts at the first one, and ends at the last one plus one
 	// fex: to play chapter 1 only, mpv --start '#1' --end '#2'
@@ -503,6 +611,7 @@ int main(int argc, char **argv) {
 
 	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
 	mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
+	mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
 	mpv_set_option_string(dvd_mpv, "track-auto-selection", "yes");
 	mpv_set_option_string(dvd_mpv, "input-default-bindings", "yes");
