@@ -32,6 +32,16 @@
 #endif
 
 #define DVD_INFO_PROGRAM "dvd_trip"
+#define DVD_TRIP_VCODEC_NONE	0
+#define DVD_TRIP_VCODEC_X264 	1
+#define DVD_TRIP_VCODEC_X265	2
+#define DVD_TRIP_VCODEC_VPX8	3
+#define DVD_TRIP_VCODEC_VPX9	4
+
+#define DVD_TRIP_ACODEC_NONE	0
+#define DVD_TRIP_ACODEC_AAC	1
+#define DVD_TRIP_ACODEC_VORBIS	2
+#define DVD_TRIP_ACODEC_OPUS	3
 
 int main(int, char **);
 void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo);
