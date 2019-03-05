@@ -56,12 +56,17 @@ struct dvd_trip {
 	uint8_t last_cell;
 	ssize_t filesize;
 	char *filename;
-	char vcodec[8];
-	char vcodec_opts[120];
+	char preset[5];
+	char quality[7];
+	char vcodec[11];
 	char vcodec_preset[11];
+	char vcodec_opts[120];
 	char vcodec_log_level[6];
+	char acodec[11];
 	uint8_t crf;
 	char fps[11];
+	bool deinterlace;
+	bool detelecine;
 };
 
 int main(int argc, char **argv) {
@@ -84,7 +89,6 @@ int main(int argc, char **argv) {
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
 	char *token = NULL;
-	struct dvd_trip dvd_trip;
 	char dvd_mpv_args[13] = {'\0'};
 	char dvd_mpv_first_chapter[4] = {'\0'};
 	char dvd_mpv_last_chapter[4] = {'\0'};
@@ -92,22 +96,20 @@ int main(int argc, char **argv) {
 	mpv_event *dvd_mpv_event = NULL;
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
 
-	const char str_options[] = "c:df:Hho:t:p:q:tVvz";
+	const char str_options[] = "c:deho:p:q:t:Vvz";
 	struct option long_options[] = {
 
 		{ "chapters", required_argument, 0, 'c' },
 		{ "track", required_argument, 0, 't' },
 
-		{ "format", required_argument, 0, 'f' },
 		{ "deinterlace", no_argument, 0, 'd' },
-		{ "detelecine", no_argument, 0, 't' },
+		{ "detelecine", no_argument, 0, 'e' },
 		{ "preset", required_argument, 0, 'p' },
 		{ "quality", required_argument, 0, 'q' },
 
 		{ "output", required_argument, 0, 'o' },
 
 		{ "help", no_argument, 0, 'h' },
-		{ "fullhelp", no_argument, 0, 'H' },
 		{ "version", no_argument, 0, 'V' },
 
 		{ "verbose", no_argument, 0, 'v' },
@@ -116,34 +118,25 @@ int main(int argc, char **argv) {
 
 	};
 
+	struct dvd_trip dvd_trip;
+
 	dvd_trip.track = 1;
 	dvd_trip.first_chapter = 1;
 	dvd_trip.last_chapter = 99;
 	dvd_trip.first_cell = 1;
 	dvd_trip.last_cell = 1;
 
-	// FPS options: 30000/1001 25
-	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
-	strcpy(dvd_trip.fps, "30000/1001");
-
-	// x265 default CRF
-	dvd_trip.crf = 28;
-
-	// x265 presets: ultrafast superfast veryfast faster fast medium slow slower veryslow placebo
-	memset(dvd_trip.vcodec_preset, '\0', sizeof(dvd_trip.vcodec_preset));
-	strcpy(dvd_trip.vcodec_preset, "medium");
-
-	// x265 log levels: none error warning info debug full
-	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
-	strcpy(dvd_trip.vcodec_log_level, "info");
-
-	// dvd_trip default codec is x265
+	memset(dvd_trip.preset, '\0', sizeof(dvd_trip.preset));
+	memset(dvd_trip.quality, '\0', sizeof(dvd_trip.quality));
 	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
-	sprintf(dvd_trip.vcodec, "libx265");
-
-	// dvd_trip default x265 encoding options
+	memset(dvd_trip.vcodec_preset, '\0', sizeof(dvd_trip.vcodec_preset));
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
-	sprintf(dvd_trip.vcodec_opts, "x265-params=log-level=%s:preset=%s:crf=%02u:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_log_level, dvd_trip.vcodec_preset, dvd_trip.crf);
+	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
+	memset(dvd_trip.acodec, '\0', sizeof(dvd_trip.acodec));
+	dvd_trip.crf = 28;
+	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
+	dvd_trip.deinterlace = false;
+	dvd_trip.detelecine = false;
 
 	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
 
@@ -175,24 +168,43 @@ int main(int argc, char **argv) {
 
 				break;
 
+			case 'd':
+				dvd_trip.deinterlace = true;
+				break;
+
+			case 'e':
+				dvd_trip.detelecine = true;
+				break;
+
 			case 'h':
 				print_usage(DVD_INFO_PROGRAM);
 				return 0;
 
+			case 'p':
+				if(strncmp(optarg, "mkv", 3) == 0) {
+					strcpy(dvd_trip.preset, "mkv");
+				} else if(strncmp(optarg, "mp4", 3) == 0) {
+					strcpy(dvd_trip.preset, "mp4");
+				} else if(strncmp(optarg, "webm", 4) == 0) {
+					strcpy(dvd_trip.preset, "webm");
+				} else {
+					printf("dvd_trip [error]: valid presets - mkv mp4 webm\n");
+					return 1;
+				}
+				break;
+
 			case 'q':
 				opt_quality = true;
 				if(strncmp(optarg, "low", 3) == 0) {
-					strcpy(dvd_trip.vcodec_preset, "fast");
+					strcpy(dvd_trip.quality, "low");
 				} else if(strncmp(optarg, "medium", 6) == 0) {
-					strcpy(dvd_trip.vcodec_preset, "medium");
+					strcpy(dvd_trip.quality, "medium");
 				} else if(strncmp(optarg, "high", 4) == 0) {
-					strcpy(dvd_trip.vcodec_preset, "slow");
-					dvd_trip.crf = 26;
+					strcpy(dvd_trip.quality, "high");
 				} else if(strncmp(optarg, "insane", 6) == 0) {
-					strcpy(dvd_trip.vcodec_preset, "slower");
-					dvd_trip.crf = 22;
+					strcpy(dvd_trip.quality, "insane");
 				} else {
-					printf("dvd_trip: valid presets: low, medium, high, insane\n");
+					printf("dvd_trip [error]: valid presets - low medium high insane\n");
 					return 1;
 				}
 				break;
@@ -434,6 +446,49 @@ int main(int argc, char **argv) {
 
 	dvd_trip.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_trip.track, dvd_trip.first_chapter);
 	dvd_trip.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_trip.track, dvd_trip.last_chapter);
+	// DVD playback using libmpv
+	dvd_mpv = mpv_create();
+
+
+	// MPV zero-indexes tracks
+	sprintf(dvd_mpv_args, "dvdread://%02u", dvd_trip.track - 1);
+
+	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
+
+	if(!opt_filename)
+		dvd_trip.filename = calloc(17, sizeof(unsigned char));
+
+	// Set preset defaults
+	if(strncmp(dvd_trip.preset, "mkv", 3) == 0) {
+
+		if(!opt_filename)
+			strncpy(dvd_trip.filename, "trip_encode.mkv", 16);
+
+		strcpy(dvd_trip.vcodec, "libx265");
+		dvd_trip.crf = 28;
+		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
+		strcpy(dvd_trip.acodec, "libfdk_aac");
+
+	} else if(strncmp(dvd_trip.preset, "mp4", 3) == 0) {
+
+		if(!opt_filename)
+			strncpy(dvd_trip.filename, "trip_encode.mp4", 16);
+
+		strcpy(dvd_trip.vcodec, "libx264");
+		dvd_trip.crf = 23;
+		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x264-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
+		strcpy(dvd_trip.acodec, "libfdk_aac");
+
+	} else if(strncmp(dvd_trip.preset, "webm", 4) == 0) {
+
+		if(!opt_filename)
+			strncpy(dvd_trip.filename, "trip_encode.webm", 17);
+
+		strcpy(dvd_trip.vcodec, "libvpx-vp9");
+		strcpy(dvd_trip.vcodec_opts, "");
+		strcpy(dvd_trip.acodec, "libopus");
+
+	}
 
 	// Set output frames per second based on source (NTSC or PAL)
 	if(dvd_track_ntsc_video(vts_ifo))
@@ -441,78 +496,55 @@ int main(int argc, char **argv) {
 	else if(dvd_track_pal_video(vts_ifo))
 		strcpy(dvd_trip.fps, "25");
 
-	if(verbose)
-		fprintf(stderr, "dvd_trip: output frames per second: %s\n", dvd_trip.fps);
-
-	// Set default filename of "trip_encode.mkv"
-	if(!opt_filename) {
-		dvd_trip.filename = calloc(16, sizeof(unsigned char));
-		strcpy(dvd_trip.filename, "trip_encode.mkv");
-	}
-
-	// libx265 configuration
-	if(quiet)
-		strcpy(dvd_trip.vcodec_log_level, "none");
-	else if (debug)
-		strcpy(dvd_trip.vcodec_log_level, "full");
-	else if (verbose)
-		strcpy(dvd_trip.vcodec_log_level, "info");
-
-	if(verbose) {
-		fprintf(stderr, "dvd_trip: x265 preset: %s\n", dvd_trip.vcodec_preset);
-		fprintf(stderr,"dvd_trip: x265 crf: %02u\n", dvd_trip.crf);
-		fprintf(stderr, "dvd_trip: x265 log level: %s\n", dvd_trip.vcodec_log_level);
-	}
-
-	// DVD playback using libmpv
-	dvd_mpv = mpv_create();
-
-	// Verbose output
-	if(debug)
-		mpv_request_log_messages(dvd_mpv, "debug");
-	else if(verbose)
-		mpv_request_log_messages(dvd_mpv, "v");
-	else if(quiet)
-		mpv_request_log_messages(dvd_mpv, "no");
-	else
-		mpv_request_log_messages(dvd_mpv, "info");
-
-	// mpv zero-indexes tracks
-	sprintf(dvd_mpv_args, "dvdread://%02u", dvd_trip.track - 1);
-
-	// mpv's chapter range starts at the first one, and ends at the last one plus one
+	// MPV's chapter range starts at the first one, and ends at the last one plus one
 	// fex: to play chapter 1 only, mpv --start '#1' --end '#2'
 	sprintf(dvd_mpv_first_chapter, "#%02u", dvd_trip.first_chapter);
 	sprintf(dvd_mpv_last_chapter, "#%02u", dvd_trip.last_chapter + 1);
 
-	// MPV uses zero-indexing for tracks, dvd_info uses one instead
-	const char *dvd_mpv_commands[] = {
-		"loadfile",
-		dvd_mpv_args,
-		NULL
-	};
-
+	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
+	mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
-	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
-	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 	mpv_set_option_string(dvd_mpv, "track-auto-selection", "yes");
 	mpv_set_option_string(dvd_mpv, "input-default-bindings", "yes");
 	mpv_set_option_string(dvd_mpv, "input-vo-keyboard", "yes");
 	mpv_set_option_string(dvd_mpv, "resume-playback", "no");
-
-	// Default DVD encoding options
-	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
-	mpv_set_option_string(dvd_mpv, "vf", "lavfi=yadif");
-	mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
-	mpv_set_option_string(dvd_mpv, "oac", "libfdk_aac");
+	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
+	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 	mpv_set_option_string(dvd_mpv, "ofps", dvd_trip.fps);
 
-	sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
+	if(strlen(dvd_trip.vcodec_opts))
+		mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
 
-	if(debug)
-		printf("dvd_trip: mpv ovcopts: %s\n", dvd_trip.vcodec_opts);
+	if(dvd_trip.deinterlace)
+		mpv_set_option_string(dvd_mpv, "vf", "lavfi=yadif");
 
-	mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
+	if(quiet) {
+		strcpy(dvd_trip.vcodec_log_level, "none");
+		mpv_request_log_messages(dvd_mpv, "no");
+	} else if (debug) {
+		mpv_request_log_messages(dvd_mpv, "debug");
+		strcpy(dvd_trip.vcodec_log_level, "full");
+	} else if(verbose) {
+		mpv_request_log_messages(dvd_mpv, "v");
+	} else {
+		mpv_request_log_messages(dvd_mpv, "info");
+		strcpy(dvd_trip.vcodec_log_level, "info");
+	}
+
+	if(!quiet) {
+		fprintf(stderr, "dvd_trip [info]: dvd track %u\n", dvd_trip.track);
+		fprintf(stderr, "dvd_trip [info]: chapters %u to %u\n", dvd_trip.first_chapter, dvd_trip.last_chapter);
+		fprintf(stderr, "dvd_trip [info]: saving to %s\n", dvd_trip.filename);
+		fprintf(stderr, "dvd_trip [info]: vcodec %s\n", dvd_trip.vcodec);
+		fprintf(stderr, "dvd_trip [info]: acodec %s\n", dvd_trip.acodec);
+		if(strlen(dvd_trip.vcodec_opts) > 0)
+			fprintf(stderr, "dvd_trip [info]: ovcopts %s\n", dvd_trip.vcodec_opts);
+		fprintf(stderr, "dvd_trip [info]: fps %s\n", dvd_trip.fps);
+		if(dvd_trip.deinterlace)
+			fprintf(stderr, "dvd_trip [info]: deinterlacing video\n");
+		if(dvd_trip.detelecine)
+			fprintf(stderr, "dvd_trip [info]: detelecining video\n");
+	}
 
 	mpv_initialize(dvd_mpv);
 	mpv_command(dvd_mpv, dvd_mpv_commands);
@@ -609,7 +641,6 @@ void print_usage(char *binary) {
 	printf("Display options:\n");
 	printf("  -v, --verbose			Verbose output\n");
 	printf("  -z, --debug			Debugging output\n");
-	printf("  -q, --quiet			No output\n");
 	printf("\n");
 	printf("Executable options:\n");
 	printf("  -h, --help			Show this help text and exit\n");
