@@ -71,7 +71,6 @@ int main(int argc, char **argv) {
 	int long_index = 0;
 	int opt = 0;
 	opterr = 1;
-	const char str_options[] = "c:dfho:t:q:QVvz";
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
 	char *token = NULL;
@@ -83,17 +82,24 @@ int main(int argc, char **argv) {
 	mpv_event *dvd_mpv_event = NULL;
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
 
+	const char str_options[] = "c:df:Hho:t:p:q:tVvz";
 	struct option long_options[] = {
 
 		{ "chapters", required_argument, 0, 'c' },
-		{ "deinterlace", no_argument, 0, 'd' },
-		{ "fullscreen", no_argument, 0, 'f' },
-		{ "output", required_argument, 0, 'o' },
 		{ "track", required_argument, 0, 't' },
-		{ "help", no_argument, 0, 'h' },
-		{ "version", no_argument, 0, 'V' },
+
+		{ "format", required_argument, 0, 'f' },
+		{ "deinterlace", no_argument, 0, 'd' },
+		{ "detelecine", no_argument, 0, 't' },
+		{ "preset", required_argument, 0, 'p' },
 		{ "quality", required_argument, 0, 'q' },
-		{ "quiet", no_argument, 0, 'Q' },
+
+		{ "output", required_argument, 0, 'o' },
+
+		{ "help", no_argument, 0, 'h' },
+		{ "fullhelp", no_argument, 0, 'H' },
+		{ "version", no_argument, 0, 'V' },
+
 		{ "verbose", no_argument, 0, 'v' },
 		{ "debug", no_argument, 0, 'z' },
 		{ 0, 0, 0, 0 }
@@ -426,7 +432,7 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.fps, "25");
 
 	if(verbose)
-		printf("dvd_trip: output frames per second: %s\n", dvd_trip.fps);
+		fprintf("dvd_trip: output frames per second: %s\n", dvd_trip.fps);
 
 	// Set default filename of "trip_encode.mkv"
 	if(!opt_filename) {
@@ -561,20 +567,45 @@ void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, co
 
 void print_usage(char *binary) {
 
-	printf("%s %s - a tiny DVD ripper\n", binary, DVD_INFO_VERSION);
+	printf("%s - a tiny DVD ripper\n", binary);
 	printf("\n");
-	printf("Usage: %s [-t track] [-c chapter[-chapter]] [dvd path] [options]\n", binary);
+	printf("Usage:\n");
+	printf("  dvd_trip [dvd path] [options]\n");
 	printf("\n");
-	// printf("Options:\n");
-	// printf("\n");
-	printf("DVD path can be a device name, a single file, or directory.\n");
+	printf("Default:\n");
+	printf("  dvd_trip /dev/dvd --main --preset mkv --quality medium --output trip_encode.mkv\n");
 	printf("\n");
-	printf("Examples:\n");
-	printf("  dvd_trip			# Read default DVD device (%s)\n", DEFAULT_DVD_DEVICE);
-	printf("  dvd_trip /dev/dvd		# Read a specific DVD device\n");
-	printf("  dvd_trip video.iso    	# Read an image file\n");
-	printf("  dvd_trip ~/Videos/DVD	# Read a directory that contains VIDEO_TS\n");
+	printf("Output options:\n");
+	printf("  -o, --output <filename>	Encode to filename (default: trip_encode.mkv)\n");
 	printf("\n");
+	printf("Input options:\n");
+	printf("  -m, --main			Select main DVD track (default: longest track)\n");
+	printf("  -t, --track			Select DVD track\n");
+	printf("  -c, --chapters		Select chapter(s) range (default: all)\n");
+	printf("        {start|start-end|-end}\n");
+	printf("  -a, --alang			Select audio language, two character code (default: en)\n");
+	printf("  -A, --aid			Select audio track ID\n");
+	printf("\n");
+	printf("Encoding options:\n");
+	printf("  -p, --preset			Select encoding preset:\n");
+	printf("        {mkv|mp4|webm}	        - mkv - Matroska container H.265 video AAC audio (default)\n");
+	printf("				- mp4 - MPEG4 container H.264 video AAC audio\n");
+	printf("				- webm - WebM container VPX9 video Opus audio\n");
+	printf("  -q, --quality			Video quality (default: medium)\n");
+	printf("        {low|medium|high|insane}\n");
+	printf("  -d, --deinterlace		Deinterlace using yadif video filter\n");
+	printf("  -e, --detelecine		Detelecine using pullup video filter\n");
+	printf("\n");
+	printf("Display options:\n");
+	printf("  -v, --verbose			Verbose output\n");
+	printf("  -z, --debug			Debugging output\n");
+	printf("  -q, --quiet			No output\n");
+	printf("\n");
+	printf("Executable options:\n");
+	printf("  -h, --help			Show this help text and exit\n");
+	printf("  -V, --version			Show version info and exit\n");
+	printf("\n");
+	printf("See man page for more details, or documentation at http://dvds.beandog.org/\n");
 
 }
 
