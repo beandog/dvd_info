@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
 	if(strlen(lang) >= 2)
 		snprintf(dvd_playback.subtitles_lang, 3, "%s", strndup(lang, 2));
 
-	const char str_options[] = "a:c:dfhNnps:t:Vvwz";
+	const char str_options[] = "a:c:dfhps:t:Vvwz";
 	struct option long_options[] = {
 
 		{ "track", required_argument, 0, 't' },
@@ -113,8 +113,6 @@ int main(int argc, char **argv) {
 		{ "slang", required_argument, 0, 's' },
 		{ "help", no_argument, 0, 'h' },
 		{ "version", no_argument, 0, 'V' },
-		{ "no-audio", no_argument, 0, 'N' },
-		{ "no-video", no_argument, 0, 'n' },
 		{ "widescreen", no_argument, 0, 'w' },
 		{ "pan-scan", no_argument, 0, 'p' },
 		{ "verbose", no_argument, 0, 'v' },
@@ -175,14 +173,6 @@ int main(int argc, char **argv) {
 			case 'h':
 				print_usage(DVD_INFO_PROGRAM);
 				return 0;
-
-			case 'N':
-				opt_no_audio = true;
-				break;
-
-			case 'n':
-				opt_no_video = true;
-				break;
 
 			case 'p':
 				opt_pan_scan = true;
