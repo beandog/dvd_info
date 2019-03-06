@@ -630,7 +630,8 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
 	mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
 	mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
-	mpv_set_option_string(dvd_mpv, "oacopts", dvd_trip.acodec_opts);
+	if(strlen(dvd_trip.acodec_opts) > 0)
+		mpv_set_option_string(dvd_mpv, "oacopts", dvd_trip.acodec_opts);
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
 	mpv_set_option_string(dvd_mpv, "track-auto-selection", "yes");
 	mpv_set_option_string(dvd_mpv, "input-default-bindings", "yes");
