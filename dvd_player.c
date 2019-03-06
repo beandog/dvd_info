@@ -98,13 +98,9 @@ int main(int argc, char **argv) {
 	memset(dvd_playback.audio_lang, '\0', sizeof(dvd_playback.audio_lang));
 	if(strlen(lang) >= 2)
 		snprintf(dvd_playback.audio_lang, 3, "%s", strndup(lang, 2));
-	else
-		strcpy(dvd_playback.audio_lang, "en");
 	memset(dvd_playback.subtitles_lang, '\0', sizeof(dvd_playback.subtitles_lang));
 	if(strlen(lang) >= 2)
 		snprintf(dvd_playback.subtitles_lang, 3, "%s", strndup(lang, 2));
-	else
-		strcpy(dvd_playback.subtitles_lang, "en");
 
 	const char str_options[] = "a:c:dfhNnps:t:Vvwz";
 	struct option long_options[] = {
@@ -481,7 +477,8 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "chapter", dvd_playback.mpv_chapters_range);
 	mpv_set_option_string(dvd_mpv, "input-default-bindings", "yes");
 	mpv_set_option_string(dvd_mpv, "input-vo-keyboard", "yes");
-	mpv_set_option_string(dvd_mpv, "alang", dvd_playback.audio_lang);
+	if(strlen(dvd_playback.audio_lang))
+		mpv_set_option_string(dvd_mpv, "alang", dvd_playback.audio_lang);
 	if(dvd_playback.subtitles)
 		mpv_set_option_string(dvd_mpv, "slang", dvd_playback.subtitles_lang);
 	if(dvd_playback.fullscreen)
@@ -568,9 +565,8 @@ void print_usage(char *binary) {
 	printf(" -p, --pan-scan			# Play longest pan & scan track (default: longest track)\n");
 	printf("\n");
 	printf("Languages - ISO 639-1 two-letter language codes (en, es, fr, pt, ..):\n");
-	printf(" -l  --language <lang>		# both audio and subtitles language\n");
-	printf(" -A, --alang <language>		# audio language only\n");
-	printf(" -S, --slang <language>		# subtitles language only\n");
+	printf(" -a, --alang <language>		# audio language only\n");
+	printf(" -s, --slang <language>		# subtitles language only\n");
 	printf("\n");
 	printf("DVD path can be a device name, a single file, or directory.\n");
 	printf("\n");
