@@ -129,8 +129,6 @@ struct dvd_trip {
 	uint16_t track;
 	uint8_t first_chapter;
 	uint8_t last_chapter;
-	uint8_t first_cell;
-	uint8_t last_cell;
 	ssize_t filesize;
 	char filename[PATH_MAX - 1];
 	char preset[5];
@@ -145,6 +143,8 @@ struct dvd_trip {
 	char fps[11];
 	bool deinterlace;
 	bool detelecine;
+	bool two_pass;
+	uint8_t pass;
 };
 
 int main(int argc, char **argv) {
@@ -207,8 +207,6 @@ int main(int argc, char **argv) {
 	dvd_trip.track = 1;
 	dvd_trip.first_chapter = 1;
 	dvd_trip.last_chapter = 99;
-	dvd_trip.first_cell = 1;
-	dvd_trip.last_cell = 1;
 
 	memset(dvd_trip.filename, '\0', sizeof(dvd_trip.filename));
 	memset(dvd_trip.preset, '\0', sizeof(dvd_trip.preset));
@@ -225,6 +223,8 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
 	dvd_trip.deinterlace = false;
 	dvd_trip.detelecine = false;
+	dvd_trip.two_pass = false;
+	dvd_trip.pass = 1;
 
 	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
 
@@ -533,16 +533,15 @@ int main(int argc, char **argv) {
 	if(!quiet)
 		printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
 
-	dvd_trip.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_trip.track, dvd_trip.first_chapter);
-	dvd_trip.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_trip.track, dvd_trip.last_chapter);
-	// DVD playback using libmpv
-	dvd_mpv = mpv_create();
-
-
 	// MPV zero-indexes tracks
 	sprintf(dvd_mpv_args, "dvdread://%02u", dvd_trip.track - 1);
 
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
+
+	pass_two:
+
+	// DVD playback using libmpv
+	dvd_mpv = mpv_create();
 
 	// Set preset defaults
 	if(strncmp(dvd_trip.preset, "mkv", 3) == 0) {
@@ -554,6 +553,7 @@ int main(int argc, char **argv) {
 		dvd_trip.crf = 28;
 		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
 		strcpy(dvd_trip.acodec, "libfdk_aac");
+		strcpy(dvd_trip.acodec_opts, "");
 
 	}
 
@@ -566,35 +566,40 @@ int main(int argc, char **argv) {
 		dvd_trip.crf = 23;
 		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x264-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
 		strcpy(dvd_trip.acodec, "libfdk_aac");
+		strcpy(dvd_trip.acodec_opts, "");
 
 	}
 
 	if(strncmp(dvd_trip.preset, "webm", 4) == 0) {
 
+		dvd_trip.two_pass = true;
+
+		fprintf(stderr, "dvd_trip [info]: starting pass %u\n", dvd_trip.pass);
+
 		if(!opt_filename)
 			strcpy(dvd_trip.filename, "trip_encode.webm");
 
+		strcpy(dvd_trip.vcodec, "libvpx-vp9");
+		strcpy(dvd_trip.acodec, "libopus");
+		strcpy(dvd_trip.acodec_opts, "application=audio");
+
 		if(strncmp(dvd_trip.quality, "low", 3) == 0) {
-			strcpy(dvd_trip.vcodec, "libvpx");
-			strcpy(dvd_trip.vcodec_opts, "");
-			strcpy(dvd_trip.acodec, "libvorbis");
+			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
 		}
 
 		if(strncmp(dvd_trip.quality, "medium", 6) == 0) {
-			strcpy(dvd_trip.vcodec, "libvpx");
-			strcpy(dvd_trip.vcodec_opts, "threads=4,quality=good,cpu-used=0,b=2000000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m");
-			strcpy(dvd_trip.acodec, "libvorbis");
+			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,quality=good,cpu-used=0,b=2000000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
 		}
 
-		if(strncmp(dvd_trip.quality, "high", 6) == 0) {
-			strcpy(dvd_trip.vcodec, "libvpx-vp9");
-			strcpy(dvd_trip.vcodec_opts, "threads=4,quality=good,cpu-used=0,b=2000000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m");
-			strcpy(dvd_trip.acodec, "libopus");
+		if(strncmp(dvd_trip.quality, "high", 4) == 0) {
+			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,quality=good,cpu-used=0,b=2160000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
+			strcpy(dvd_trip.acodec_opts, "application=audio,b=128000");
 		}
 
-		// strcpy(dvd_trip.vcodec, "libvpx-vp9");
-		// strcpy(dvd_trip.vcodec_opts, "");
-		// strcpy(dvd_trip.acodec, "libopus");
+		if(strncmp(dvd_trip.quality, "insane", 6) == 0) {
+			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,quality=best,cpu-used=0,b=2440000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
+			strcpy(dvd_trip.acodec_opts, "application=audio,b=256000");
+		}
 
 	}
 
@@ -613,7 +618,9 @@ int main(int argc, char **argv) {
 
 	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
 	mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
+	mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
 	mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
+	mpv_set_option_string(dvd_mpv, "oacopts", dvd_trip.acodec_opts);
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
 	mpv_set_option_string(dvd_mpv, "track-auto-selection", "yes");
 	mpv_set_option_string(dvd_mpv, "input-default-bindings", "yes");
@@ -622,9 +629,6 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 	mpv_set_option_string(dvd_mpv, "ofps", dvd_trip.fps);
-
-	if(strlen(dvd_trip.vcodec_opts))
-		mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
 
 	if(dvd_trip.deinterlace)
 		mpv_set_option_string(dvd_mpv, "vf", "lavfi=yadif");
@@ -642,14 +646,14 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.vcodec_log_level, "info");
 	}
 
-	if(!quiet) {
+	if(!quiet && dvd_trip.pass == 1) {
 		fprintf(stderr, "dvd_trip [info]: dvd track %u\n", dvd_trip.track);
 		fprintf(stderr, "dvd_trip [info]: chapters %u to %u\n", dvd_trip.first_chapter, dvd_trip.last_chapter);
 		fprintf(stderr, "dvd_trip [info]: saving to %s\n", dvd_trip.filename);
 		fprintf(stderr, "dvd_trip [info]: vcodec %s\n", dvd_trip.vcodec);
 		fprintf(stderr, "dvd_trip [info]: acodec %s\n", dvd_trip.acodec);
-		if(strlen(dvd_trip.vcodec_opts) > 0)
-			fprintf(stderr, "dvd_trip [info]: ovcopts %s\n", dvd_trip.vcodec_opts);
+		fprintf(stderr, "dvd_trip [info]: ovcopts %s\n", dvd_trip.vcodec_opts);
+		fprintf(stderr, "dvd_trip [info]: oacopts %s\n", dvd_trip.acodec_opts);
 		fprintf(stderr, "dvd_trip [info]: fps %s\n", dvd_trip.fps);
 		if(dvd_trip.deinterlace)
 			fprintf(stderr, "dvd_trip [info]: deinterlacing video\n");
@@ -667,8 +671,18 @@ int main(int argc, char **argv) {
 		// if(dvd_mpv_event->event_id != MPV_EVENT_LOG_MESSAGE)
 		//	printf("mpv_event_name: %s\n", mpv_event_name(dvd_mpv_event->event_id));
 
-		if(dvd_mpv_event->event_id == MPV_EVENT_SHUTDOWN || dvd_mpv_event->event_id == MPV_EVENT_END_FILE)
+		if(dvd_mpv_event->event_id == MPV_EVENT_SHUTDOWN)
 			break;
+
+		if(dvd_mpv_event->event_id == MPV_EVENT_END_FILE) {
+			if(dvd_trip.two_pass == false || (dvd_trip.two_pass == true && dvd_trip.pass == 2)) {
+				break;
+			} else if(dvd_trip.two_pass == true && dvd_trip.pass == 1) {
+				dvd_trip.pass = 2;
+				mpv_terminate_destroy(dvd_mpv);
+				goto pass_two;
+			}
+		}
 
 		if(dvd_mpv_event->event_id == MPV_EVENT_LOG_MESSAGE) {
 			dvd_mpv_log_message = (struct mpv_event_log_message *)dvd_mpv_event->data;
