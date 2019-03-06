@@ -190,6 +190,7 @@ int main(int argc, char **argv) {
 
 			case 's':
 				strncpy(dvd_playback.subtitles_lang, optarg, 2);
+				dvd_playback.subtitles = true;
 				break;
 
 			case 't':
