@@ -106,17 +106,15 @@ int main(int argc, char **argv) {
 	else
 		strcpy(dvd_playback.subtitles_lang, "en");
 
-	const char str_options[] = "A:c:dfhl:NnpS:st:Vvwz";
+	const char str_options[] = "a:c:dfhNnps:t:Vvwz";
 	struct option long_options[] = {
 
 		{ "track", required_argument, 0, 't' },
 		{ "chapters", required_argument, 0, 'c' },
 		{ "fullscreen", no_argument, 0, 'f' },
 		{ "deinterlace", no_argument, 0, 'd' },
-		{ "language", required_argument, 0, 'l' },
-		{ "alang", required_argument, 0, 'A' },
-		{ "slang", required_argument, 0, 'S' },
-		{ "subtitles", no_argument, 0, 's' },
+		{ "alang", required_argument, 0, 'a' },
+		{ "slang", required_argument, 0, 's' },
 		{ "help", no_argument, 0, 'h' },
 		{ "version", no_argument, 0, 'V' },
 		{ "no-audio", no_argument, 0, 'N' },
@@ -138,7 +136,7 @@ int main(int argc, char **argv) {
 
 		switch(opt) {
 
-			case 'A':
+			case 'a':
 				strncpy(dvd_playback.audio_lang, optarg, 2);
 				break;
 
@@ -182,11 +180,6 @@ int main(int argc, char **argv) {
 				print_usage(DVD_INFO_PROGRAM);
 				return 0;
 
-			case 'l':
-				strncpy(dvd_playback.audio_lang, optarg, 2);
-				strncpy(dvd_playback.subtitles_lang, optarg, 2);
-				break;
-
 			case 'N':
 				opt_no_audio = true;
 				break;
@@ -199,12 +192,8 @@ int main(int argc, char **argv) {
 				opt_pan_scan = true;
 				break;
 
-			case 'S':
-				strncpy(dvd_playback.subtitles_lang, optarg, 2);
-				break;
-
 			case 's':
-				dvd_playback.subtitles = true;
+				strncpy(dvd_playback.subtitles_lang, optarg, 2);
 				break;
 
 			case 't':
