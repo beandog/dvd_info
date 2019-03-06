@@ -141,8 +141,8 @@ int main(int argc, char **argv) {
 	uint8_t arg_last_chapter = 99;
 	char *token = NULL;
 	char dvd_mpv_args[13] = {'\0'};
-	char dvd_mpv_first_chapter[4] = {'\0'};
-	char dvd_mpv_last_chapter[4] = {'\0'};
+	char dvd_mpv_first_chapter[5] = {'\0'};
+	char dvd_mpv_last_chapter[5] = {'\0'};
 	mpv_handle *dvd_mpv = NULL;
 	mpv_event *dvd_mpv_event = NULL;
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
@@ -174,6 +174,9 @@ int main(int argc, char **argv) {
 	dvd_trip.track = 1;
 	dvd_trip.first_chapter = 1;
 	dvd_trip.last_chapter = 99;
+
+	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
+	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
 
 	memset(dvd_trip.filename, '\0', sizeof(dvd_trip.filename));
 	memset(dvd_trip.preset, '\0', sizeof(dvd_trip.preset));
@@ -620,8 +623,8 @@ int main(int argc, char **argv) {
 
 	// MPV's chapter range starts at the first one, and ends at the last one plus one
 	// fex: to play chapter 1 only, mpv --start '#1' --end '#2'
-	sprintf(dvd_mpv_first_chapter, "#%02u", dvd_trip.first_chapter);
-	sprintf(dvd_mpv_last_chapter, "#%02u", dvd_trip.last_chapter + 1);
+	sprintf(dvd_mpv_first_chapter, "#%03u", dvd_trip.first_chapter);
+	sprintf(dvd_mpv_last_chapter, "#%03u", dvd_trip.last_chapter + 1);
 
 	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
 	mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
