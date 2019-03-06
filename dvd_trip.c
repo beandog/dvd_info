@@ -530,10 +530,28 @@ int main(int argc, char **argv) {
 			strcpy(dvd_trip.filename, "trip_encode.mp4");
 
 		strcpy(dvd_trip.vcodec, "libx264");
-		dvd_trip.crf = 23;
-		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x264-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
+		strcpy(dvd_trip.vcodec_preset, "medium");
 		strcpy(dvd_trip.acodec, "libfdk_aac");
 		strcpy(dvd_trip.acodec_opts, "");
+
+		dvd_trip.crf = 23;
+
+		if(strncmp(dvd_trip.quality, "low", 3) == 0) {
+			strcpy(dvd_trip.vcodec_preset, "fast");
+		} else if(strncmp(dvd_trip.quality, "medium", 6) == 0) {
+			strcpy(dvd_trip.vcodec_preset, "medium");
+		} else if(strncmp(dvd_trip.quality, "high", 4) == 0) {
+			strcpy(dvd_trip.vcodec_preset, "slow");
+			strcpy(dvd_trip.acodec_opts, "b=192k");
+			dvd_trip.crf = 20;
+		} else if(strncmp(dvd_trip.quality, "insane", 6) == 0) {
+			strcpy(dvd_trip.vcodec_preset, "slower");
+			strcpy(dvd_trip.acodec_opts, "b=256k");
+			dvd_trip.crf = 14;
+		}
+
+		// x264 doesn't allow passing log level (that I can see)
+		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x264opts=colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf);
 
 	}
 
@@ -603,8 +621,12 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 	mpv_set_option_string(dvd_mpv, "ofps", dvd_trip.fps);
 
-	if(dvd_trip.deinterlace)
+	if(dvd_trip.deinterlace && dvd_trip.detelecine)
+		mpv_set_option_string(dvd_mpv, "vf", "lavfi=yadif,pullup,dejudder");
+	else if(dvd_trip.deinterlace)
 		mpv_set_option_string(dvd_mpv, "vf", "lavfi=yadif");
+	else if(dvd_trip.detelecine)
+		mpv_set_option_string(dvd_mpv, "vf", "lavfi=pullup,dejudder");
 
 	if(quiet) {
 		strcpy(dvd_trip.vcodec_log_level, "none");
