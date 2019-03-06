@@ -751,14 +751,13 @@ void print_usage(char *binary) {
 	printf("  dvd_trip [dvd path] [options]\n");
 	printf("\n");
 	printf("Default:\n");
-	printf("  dvd_trip /dev/dvd --main --preset mkv --quality medium --output trip_encode.mkv\n");
+	printf("  dvd_trip /dev/dvd --preset mkv --quality medium --output trip_encode.mkv\n");
 	printf("\n");
 	printf("Output options:\n");
 	printf("  -o, --output <filename>	Encode to filename (default: trip_encode.mkv)\n");
 	printf("\n");
 	printf("Input options:\n");
-	printf("  -m, --main			Select main DVD track (default: longest track)\n");
-	printf("  -t, --track			Select DVD track\n");
+	printf("  -t, --track			Select DVD track (default: longest)\n");
 	printf("  -c, --chapters		Select chapter(s) range (default: all)\n");
 	printf("        {start|start-end|-end}\n");
 	printf("  -a, --alang			Select audio language, two character code (default: en)\n");
