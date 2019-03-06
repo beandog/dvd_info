@@ -61,9 +61,7 @@ int main(int argc, char **argv) {
 	 * Parse options
 	 */
 
-	bool verbose = false;
 	bool debug = false;
-	bool quiet = false;
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
 	bool opt_widescreen = false;
@@ -107,7 +105,7 @@ int main(int argc, char **argv) {
 	else
 		strcpy(dvd_playback.subtitles_lang, "en");
 
-	const char str_options[] = "A:c:dfhql:NnpS:st:Vvwz";
+	const char str_options[] = "A:c:dfhl:NnpS:st:Vwz";
 	struct option long_options[] = {
 
 		{ "track", required_argument, 0, 't' },
@@ -122,8 +120,6 @@ int main(int argc, char **argv) {
 		{ "version", no_argument, 0, 'V' },
 		{ "no-audio", no_argument, 0, 'N' },
 		{ "no-video", no_argument, 0, 'n' },
-		{ "quiet", no_argument, 0, 'q' },
-		{ "verbose", no_argument, 0, 'v' },
 		{ "widescreen", no_argument, 0, 'w' },
 		{ "pan-scan", no_argument, 0, 'p' },
 		{ "debug", no_argument, 0, 'z' },
@@ -201,12 +197,6 @@ int main(int argc, char **argv) {
 				opt_pan_scan = true;
 				break;
 
-			case 'q':
-				quiet = true;
-				verbose = false;
-				debug = false;
-				break;
-
 			case 'S':
 				strncpy(dvd_playback.subtitles_lang, optarg, 2);
 				break;
@@ -224,16 +214,11 @@ int main(int argc, char **argv) {
 				print_version("dvd_player");
 				return 0;
 
-			case 'v':
-				verbose = true;
-				break;
-
 			case 'w':
 				opt_widescreen = true;
 				break;
 
 			case 'z':
-				verbose = true;
 				debug = true;
 				break;
 
@@ -254,11 +239,6 @@ int main(int argc, char **argv) {
 	if(opt_pan_scan && opt_widescreen)
 		opt_pan_scan = false;
 	
-	if(quiet && (verbose || debug)) {
-		verbose = false;
-		debug = false;
-	}
-
 	const char *device_filename = DEFAULT_DVD_DEVICE;
 
 	if (argv[optind])
@@ -327,8 +307,7 @@ int main(int argc, char **argv) {
 	dvd_info.longest_track = 1;
 
 	dvd_title(dvd_info.title, device_filename);
-	if(!quiet)
-		printf("Disc title: %s\n", dvd_info.title);
+	printf("Disc title: %s\n", dvd_info.title);
 
 	uint16_t num_ifos = 1;
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
@@ -464,21 +443,15 @@ int main(int argc, char **argv) {
 	// Open the VTS VOB
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
-	if(!quiet)
-		printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
+	printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
 
 	// DVD playback using libmpv
 	dvd_mpv = mpv_create();
 
-	// Verbose output
+	mpv_request_log_messages(dvd_mpv, "v");
+
 	if(debug)
 		mpv_request_log_messages(dvd_mpv, "debug");
-	else if(verbose)
-		mpv_request_log_messages(dvd_mpv, "v");
-	else if(quiet)
-		mpv_request_log_messages(dvd_mpv, "no");
-	else
-		mpv_request_log_messages(dvd_mpv, "info");
 
 	// mpv zero-indexes tracks
 	sprintf(dvd_mpv_args, "dvdread://%02u", dvd_playback.track - 1);
@@ -532,12 +505,12 @@ int main(int argc, char **argv) {
 		if(debug && dvd_mpv_event->event_id != MPV_EVENT_LOG_MESSAGE)
 			printf("dvd_player [mpv event id]: %d\n", dvd_mpv_event->event_id);
 
-		if((verbose || debug) && dvd_mpv_event->event_id == MPV_EVENT_LOG_MESSAGE) {
+		if(dvd_mpv_event->event_id == MPV_EVENT_LOG_MESSAGE) {
+
 			dvd_mpv_log_message = (struct mpv_event_log_message *)dvd_mpv_event->data;
-			if(debug && dvd_mpv_log_message->log_level != MPV_LOG_LEVEL_TRACE)
-				printf("mpv [%s]: %s", dvd_mpv_log_message->level, dvd_mpv_log_message->text);
-			else if(verbose && dvd_mpv_log_message->log_level != MPV_LOG_LEVEL_TRACE && dvd_mpv_log_message->log_level != MPV_LOG_LEVEL_DEBUG)
-				printf("mpv [%s]: %s", dvd_mpv_log_message->level, dvd_mpv_log_message->text);
+
+			printf("mpv [%s]: %s", dvd_mpv_log_message->level, dvd_mpv_log_message->text);
+
 		}
 
 	}
