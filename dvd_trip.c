@@ -517,10 +517,26 @@ int main(int argc, char **argv) {
 			strcpy(dvd_trip.filename, "trip_encode.mkv");
 
 		strcpy(dvd_trip.vcodec, "libx265");
-		dvd_trip.crf = 28;
-		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
+		strcpy(dvd_trip.vcodec_preset, "medium");
 		strcpy(dvd_trip.acodec, "libfdk_aac");
-		strcpy(dvd_trip.acodec_opts, "");
+
+		dvd_trip.crf = 28;
+
+		if(strncmp(dvd_trip.quality, "low", 3) == 0) {
+			strcpy(dvd_trip.vcodec_preset, "fast");
+		} else if(strncmp(dvd_trip.quality, "medium", 6) == 0) {
+			strcpy(dvd_trip.vcodec_preset, "medium");
+		} else if(strncmp(dvd_trip.quality, "high", 4) == 0) {
+			strcpy(dvd_trip.vcodec_preset, "slow");
+			strcpy(dvd_trip.acodec_opts, "b=192k");
+			dvd_trip.crf = 26;
+		} else if(strncmp(dvd_trip.quality, "insane", 6) == 0) {
+			strcpy(dvd_trip.vcodec_preset, "slower");
+			strcpy(dvd_trip.acodec_opts, "b=256k");
+			dvd_trip.crf = 20;
+		}
+
+		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
 
 	}
 
