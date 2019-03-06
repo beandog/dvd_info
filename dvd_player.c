@@ -50,8 +50,10 @@ struct dvd_playback {
 	bool fullscreen;
 	bool deinterlace;
 	char audio_lang[3];
+	char audio_aid[4];
 	bool subtitles;
 	char subtitles_lang[3];
+	char subtitles_sid[4];
 	char mpv_chapters_range[8];
 };
 
@@ -98,11 +100,13 @@ int main(int argc, char **argv) {
 	memset(dvd_playback.audio_lang, '\0', sizeof(dvd_playback.audio_lang));
 	if(strlen(lang) >= 2)
 		snprintf(dvd_playback.audio_lang, 3, "%s", strndup(lang, 2));
+	memset(dvd_playback.audio_aid, '\0', sizeof(dvd_playback.audio_aid));
 	memset(dvd_playback.subtitles_lang, '\0', sizeof(dvd_playback.subtitles_lang));
 	if(strlen(lang) >= 2)
 		snprintf(dvd_playback.subtitles_lang, 3, "%s", strndup(lang, 2));
+	memset(dvd_playback.subtitles_sid, '\0', sizeof(dvd_playback.subtitles_sid));
 
-	const char str_options[] = "a:c:dfhps:t:Vvwz";
+	const char str_options[] = "Aa:c:dfhpSs:t:Vvwz";
 	struct option long_options[] = {
 
 		{ "track", required_argument, 0, 't' },
@@ -111,6 +115,8 @@ int main(int argc, char **argv) {
 		{ "deinterlace", no_argument, 0, 'd' },
 		{ "alang", required_argument, 0, 'a' },
 		{ "slang", required_argument, 0, 's' },
+		{ "aid", required_argument, 0, 'A' },
+		{ "sid", required_argument, 0, 'S' },
 		{ "help", no_argument, 0, 'h' },
 		{ "version", no_argument, 0, 'V' },
 		{ "widescreen", no_argument, 0, 'w' },
@@ -129,6 +135,10 @@ int main(int argc, char **argv) {
 	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
 
 		switch(opt) {
+
+			case 'A':
+				strncpy(dvd_playback.audio_aid, optarg, 3);
+				break;
 
 			case 'a':
 				strncpy(dvd_playback.audio_lang, optarg, 2);
@@ -180,6 +190,11 @@ int main(int argc, char **argv) {
 
 			case 's':
 				strncpy(dvd_playback.subtitles_lang, optarg, 2);
+				dvd_playback.subtitles = true;
+				break;
+
+			case 'S':
+				strncpy(dvd_playback.subtitles_sid, optarg, 3);
 				dvd_playback.subtitles = true;
 				break;
 
@@ -468,9 +483,13 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "chapter", dvd_playback.mpv_chapters_range);
 	mpv_set_option_string(dvd_mpv, "input-default-bindings", "yes");
 	mpv_set_option_string(dvd_mpv, "input-vo-keyboard", "yes");
-	if(strlen(dvd_playback.audio_lang))
+	if(strlen(dvd_playback.audio_aid) > 0)
+		mpv_set_option_string(dvd_mpv, "aid", dvd_playback.audio_aid);
+	else if(strlen(dvd_playback.audio_lang) > 0)
 		mpv_set_option_string(dvd_mpv, "alang", dvd_playback.audio_lang);
-	if(dvd_playback.subtitles)
+	if(dvd_playback.subtitles && strlen(dvd_playback.subtitles_sid) > 0)
+		mpv_set_option_string(dvd_mpv, "sid", dvd_playback.subtitles_sid);
+	else if(dvd_playback.subtitles && strlen(dvd_playback.subtitles_lang) > 0)
 		mpv_set_option_string(dvd_mpv, "slang", dvd_playback.subtitles_lang);
 	if(dvd_playback.fullscreen)
 		mpv_set_option_string(dvd_mpv, "fullscreen", NULL);
