@@ -474,6 +474,10 @@ int main(int argc, char **argv) {
 
 	// Playback options and default configuration
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
+	if(strlen(dvd_info.title) > 0)
+		mpv_set_option_string(dvd_mpv, "title", dvd_info.title);
+	else
+		mpv_set_option_string(dvd_mpv, "title", "dvd_player");
 	mpv_set_option_string(dvd_mpv, "chapter", dvd_playback.mpv_chapters_range);
 	mpv_set_option_string(dvd_mpv, "input-default-bindings", "yes");
 	mpv_set_option_string(dvd_mpv, "input-vo-keyboard", "yes");
