@@ -652,6 +652,7 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.vcodec_log_level, "full");
 	} else if(verbose) {
 		mpv_request_log_messages(dvd_mpv, "v");
+		strcpy(dvd_trip.vcodec_log_level, "info");
 	} else {
 		mpv_request_log_messages(dvd_mpv, "info");
 		strcpy(dvd_trip.vcodec_log_level, "info");
