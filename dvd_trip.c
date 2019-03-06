@@ -85,39 +85,6 @@
 	 * settings from the codecs themselves. The "high" and "insane" presets bump up the bitrates
 	 * from the defaults and will make the encoding slower, while also looking much nicer.
 	 *
-	 * WebM encoding settings
-	 *
-	 * See https://www.webmproject.org/docs/encoder-parameters/ for examples of encoding settings
-	 *
-	 * libvpx comes with two codecs -- vpx8 and vpx9. vpx8 is older, and should have more playback
-	 * support on all devices. vpx9, the most recent, is going to be higher quality at the expense
-	 * of longer encoding times, and hardware support may not be as widespread. Be sure to do some
-	 * testing of your own! The encoding settings here use the examples from the project, and so
-	 * these should playback fine in most devices (web browsers, phones, etc.).
-	 *
-	 * WebM project recommends doing a two-pass by default, but for the "low" and "medium" presets
-	 * one-pass encodes are used with vpx8. For "high" and "insane" quality presets, two-pass
-	 * encodes are used, along with vpx9, which will take much longer. Two-pass encodes will also
-	 * write to log files in the current working directory to save stats.
-	 *
-	 * Vorbis, a lossy audio codec is used for "low" and "medium" presets, while Opus, a lossless
-	 * audio codec, is used for "high" and "insane" presets. Switching between these two will not
-	 * have a noticable impact on encoding time. For both audio codecs, default options are used.
-	 *
-	 * Here are the equivalent commands for quality using the "vpxenc" binary built with libvpx,
-	 * ignoring input and output filenames, and making some small adjustments for readability.
-	 *
-	 * It's important to note that "vpxenc"	uses bitrate in kbps, while libmpv accepts bps.
-	 *
-	 * WebM Presets
-	 *
-	 * "medium" - "1-Pass Good Quality VBR Encoding"
-	 *
-	 * vpxenc --codec=vp8 --passes=1 --threads=4 --good --cpu-used=0 --target-bitrate=2000
-	 * --end-usage=vbr --fps=30000/1001 --kf-min-dist=0 --kf-max-dist=360 --token-parts=2
-	 * --static-thresh=0 --min-q=0 --max-q=63
-	 *
-	 *
 	 */
 
 int main(int, char **);
@@ -583,21 +550,27 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.acodec, "libopus");
 		strcpy(dvd_trip.acodec_opts, "application=audio");
 
+		// Low - default options + setting color space
 		if(strncmp(dvd_trip.quality, "low", 3) == 0) {
 			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
 		}
 
+		// Medium - see https://www.webmproject.org/docs/encoder-parameters/
+		// '2-Pass Faster VBR Encoding'
 		if(strncmp(dvd_trip.quality, "medium", 6) == 0) {
-			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,quality=good,cpu-used=0,b=2000000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
+			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,threads=4,quality=good,cpu-used=1,b=2000000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
 		}
 
+		// High - cpu-used from 1 to 0, increase video and audio bitrate
 		if(strncmp(dvd_trip.quality, "high", 4) == 0) {
-			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,quality=good,cpu-used=0,b=2160000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
+			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,threads=4,quality=good,cpu-used=0,b=2160000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
 			strcpy(dvd_trip.acodec_opts, "application=audio,b=128000");
 		}
 
+		// Insane - upgrade quality from 'good' to 'best, enable automatic alt reference frames,
+		// set lag-in-frames (lookahead) to 16, increase video bitrate and max opus audio bitrate
 		if(strncmp(dvd_trip.quality, "insane", 6) == 0) {
-			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,quality=best,cpu-used=0,b=2440000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
+			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,auto-alt-ref=1,lag-in-frames=16,quality=best,cpu-used=0,b=2440000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
 			strcpy(dvd_trip.acodec_opts, "application=audio,b=256000");
 		}
 
