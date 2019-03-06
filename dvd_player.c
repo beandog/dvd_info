@@ -82,15 +82,15 @@ int main(int argc, char **argv) {
 	const char *lang = getenv("LANG");
 
 	// DVD player default options
-	dvd_playback.track = 1;
-	dvd_playback.first_chapter = 1;
-	dvd_playback.last_chapter = 99;
 	snprintf(dvd_player.config_dir, 20, "/.config/dvd_player");
 	memset(dvd_player.mpv_config_dir, '\0', sizeof(dvd_player.mpv_config_dir));
 	if(home_dir != NULL)
 		snprintf(dvd_player.mpv_config_dir, PATH_MAX - 1, "%s%s", home_dir, dvd_player.config_dir);
 
 	// DVD playback default options
+	dvd_playback.track = 1;
+	dvd_playback.first_chapter = 1;
+	dvd_playback.last_chapter = 99;
 	dvd_playback.fullscreen = false;
 	dvd_playback.deinterlace = false;
 	dvd_playback.subtitles = false;
