@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 	dvd_playback.fullscreen = false;
 	dvd_playback.deinterlace = false;
 	dvd_playback.subtitles = false;
-	snprintf(dvd_playback.mpv_chapters_range, 8, "%03u-%03u", 1, 99);
+	snprintf(dvd_playback.mpv_chapters_range, 8, "%u-%u", 1, 99);
 	memset(dvd_playback.audio_lang, '\0', sizeof(dvd_playback.audio_lang));
 	if(strlen(lang) >= 2)
 		snprintf(dvd_playback.audio_lang, 3, "%s", strndup(lang, 2));
@@ -467,7 +467,7 @@ int main(int argc, char **argv) {
 	}
 
 	// When choosing a chapter range, mpv will add 1 to the last one requested
-	snprintf(dvd_playback.mpv_chapters_range, 8, "%03u-%03u", dvd_playback.first_chapter, dvd_playback.last_chapter + 1);
+	snprintf(dvd_playback.mpv_chapters_range, 8, "%u-%u", dvd_playback.first_chapter, dvd_playback.last_chapter + 1);
 
 	// Playback options and default configuration
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
