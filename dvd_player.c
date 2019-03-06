@@ -61,6 +61,7 @@ int main(int argc, char **argv) {
 	 * Parse options
 	 */
 
+	bool verbose = false;
 	bool debug = false;
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
@@ -105,7 +106,7 @@ int main(int argc, char **argv) {
 	else
 		strcpy(dvd_playback.subtitles_lang, "en");
 
-	const char str_options[] = "A:c:dfhl:NnpS:st:Vwz";
+	const char str_options[] = "A:c:dfhl:NnpS:st:Vvwz";
 	struct option long_options[] = {
 
 		{ "track", required_argument, 0, 't' },
@@ -122,6 +123,7 @@ int main(int argc, char **argv) {
 		{ "no-video", no_argument, 0, 'n' },
 		{ "widescreen", no_argument, 0, 'w' },
 		{ "pan-scan", no_argument, 0, 'p' },
+		{ "verbose", no_argument, 0, 'v' },
 		{ "debug", no_argument, 0, 'z' },
 		{ 0, 0, 0, 0 }
 
@@ -214,11 +216,16 @@ int main(int argc, char **argv) {
 				print_version("dvd_player");
 				return 0;
 
+			case 'v':
+				verbose = true;
+				break;
+
 			case 'w':
 				opt_widescreen = true;
 				break;
 
 			case 'z':
+				verbose = true;
 				debug = true;
 				break;
 
@@ -448,10 +455,15 @@ int main(int argc, char **argv) {
 	// DVD playback using libmpv
 	dvd_mpv = mpv_create();
 
-	mpv_request_log_messages(dvd_mpv, "v");
-
+	// Terminal output
+	mpv_set_option_string(dvd_mpv, "terminal", "yes");
+	mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
 	if(debug)
 		mpv_request_log_messages(dvd_mpv, "debug");
+	else if(verbose)
+		mpv_request_log_messages(dvd_mpv, "v");
+	else
+		mpv_request_log_messages(dvd_mpv, "none");
 
 	// mpv zero-indexes tracks
 	sprintf(dvd_mpv_args, "dvdread://%02u", dvd_playback.track - 1);
@@ -493,6 +505,7 @@ int main(int argc, char **argv) {
 	if(opt_no_audio)
 		mpv_set_option_string(dvd_mpv, "audio", "no");
 
+	// start mpv
 	mpv_initialize(dvd_mpv);
 	mpv_command(dvd_mpv, dvd_mpv_commands);
 
@@ -500,21 +513,17 @@ int main(int argc, char **argv) {
 
 		dvd_mpv_event = mpv_wait_event(dvd_mpv, -1);
 
-		if(debug && dvd_mpv_event->event_id != MPV_EVENT_LOG_MESSAGE)
-			printf("dvd_player [mpv_event_name]: %s\n", mpv_event_name(dvd_mpv_event->event_id));
-
+		// Goodbye :)
 		if(dvd_mpv_event->event_id == MPV_EVENT_SHUTDOWN || dvd_mpv_event->event_id == MPV_EVENT_END_FILE)
 			break;
 
 		if(debug && dvd_mpv_event->event_id != MPV_EVENT_LOG_MESSAGE)
-			printf("dvd_player [mpv event id]: %d\n", dvd_mpv_event->event_id);
+			printf("dvd_player [mpv_event_name]: %s\n", mpv_event_name(dvd_mpv_event->event_id));
 
-		if(dvd_mpv_event->event_id == MPV_EVENT_LOG_MESSAGE) {
-
+		// Logging output
+		if((verbose || debug) && dvd_mpv_event->event_id == MPV_EVENT_LOG_MESSAGE) {
 			dvd_mpv_log_message = (struct mpv_event_log_message *)dvd_mpv_event->data;
-
 			printf("mpv [%s]: %s", dvd_mpv_log_message->level, dvd_mpv_log_message->text);
-
 		}
 
 	}
