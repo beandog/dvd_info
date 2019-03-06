@@ -458,12 +458,15 @@ int main(int argc, char **argv) {
 	// Terminal output
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
 	mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
-	if(debug)
+	if(debug) {
 		mpv_request_log_messages(dvd_mpv, "debug");
-	else if(verbose)
+	} else if(verbose) {
 		mpv_request_log_messages(dvd_mpv, "v");
-	else
+	} else {
 		mpv_request_log_messages(dvd_mpv, "none");
+		// Skip "[ffmpeg/audio] ac3: frame sync error" which are normal when seeking on DVDs
+		mpv_set_option_string(dvd_mpv, "msg-level", "ffmpeg/audio=none");
+	}
 
 	// mpv zero-indexes tracks
 	sprintf(dvd_mpv_args, "dvdread://%02u", dvd_playback.track - 1);
