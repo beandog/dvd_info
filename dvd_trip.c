@@ -785,8 +785,6 @@ void print_usage(char *binary) {
 	printf("Executable options:\n");
 	printf("  -h, --help			Show this help text and exit\n");
 	printf("  -V, --version			Show version info and exit\n");
-	printf("\n");
-	printf("See man page for more details, or documentation at http://dvds.beandog.org/\n");
 
 }
 

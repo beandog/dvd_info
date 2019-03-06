@@ -561,31 +561,42 @@ void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, co
 
 void print_usage(char *binary) {
 
-	printf("%s %s\n", binary, DVD_INFO_VERSION);
+	printf("%s - a DVD player using libmpv\n", binary);
 	printf("\n");
-	printf("Usage: %s [-t track] [-c chapter[-chapter]] [dvd path] [options]\n", binary);
+	printf("Usage:\n");
+	printf("  dvd_player [dvd path] [options]\n");
 	printf("\n");
-	printf("Options:\n");
-	printf(" -s, --subtitles\n");
-	printf(" -f, --fullscreen\n");
-	printf(" -d, --deinterlace\n");
+	printf("Display options:\n");
+	printf("  -f, --fullscreen		Display in fullscreen mode\n");
+	printf("  -d, --deinterlace		Deinterlace video\n");
 	printf("\n");
 	printf("Track selection:\n");
-	printf(" -w, --widescreen		# Play longest widescreen track (default: longest track)\n");
-	printf(" -p, --pan-scan			# Play longest pan & scan track (default: longest track)\n");
+	printf("  -t, --track <#>		Select DVD track number (default: longest)\n");
+	printf("  -w, --widescreen		Select longest widescreen track\n");
+	printf("  -p, --pan-scan		Select longest pan & scan track\n");
+	printf("  -c, --chapters		Select chapter(s) range (default: all)\n");
+	printf("        {start|start-end|-end}\n");
+	printf("  -a, --alang <language>	Select audio language, two character code (default: first audio track)\n");
+	printf("  -A, --aid <##>		Select audio track ID\n");
+	printf("  -s, --slang <language>	Select subtitles language, two character code (default: no subtitles)\n");
+	printf("  -S, --sid <##>		Select subtitles track ID\n");
 	printf("\n");
-	printf("Languages - ISO 639-1 two-letter language codes (en, es, fr, pt, ..):\n");
-	printf(" -a, --alang <language>		# audio language only\n");
-	printf(" -s, --slang <language>		# subtitles language only\n");
+	printf("Extra information:\n");
+	printf("  -v, --verbose			Verbose output\n");
+	printf("  -z, --debug			Debugging output\n");
 	printf("\n");
-	printf("DVD path can be a device name, a single file, or directory.\n");
+	printf("Executable options:\n");
+	printf("  -h, --help			Show this help text and exit\n");
+	printf("  -V, --version			Show version info and exit\n");
 	printf("\n");
-	printf("Examples:\n");
-	printf("  dvd_player			# Read default DVD device (%s)\n", DEFAULT_DVD_DEVICE);
-	printf("  dvd_player /dev/dvd		# Read a specific DVD device\n");
-	printf("  dvd_player video.iso    	# Read an image file\n");
-	printf("  dvd_player ~/Videos/DVD	# Read a directory that contains VIDEO_TS\n");
+	printf("DVD Path Examples:\n");
+	printf("  dvd_player			Play back default DVD device - %s\n", DEFAULT_DVD_DEVICE);
+	printf("  dvd_player /dev/dvd		Play back a device name\n");
+	printf("  dvd_player DVD.iso    	Play back a DVD image file\n");
+	printf("  dvd_player DVD/		Play back a DVD directory containing VIDEO_TS/ subdirectory\n");
 	printf("\n");
+	printf("dvd_player reads a configuration file from ~/.config/dvd_player/mpv.conf\n");
+	printf("See mpv man page for syntax or dvd_player man page for examples.\n");
 
 }
 
