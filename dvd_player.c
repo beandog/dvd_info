@@ -469,14 +469,10 @@ int main(int argc, char **argv) {
 	}
 
 	// mpv zero-indexes tracks
-	sprintf(dvd_mpv_args, "dvdread://%02u", dvd_playback.track - 1);
+	snprintf(dvd_mpv_args, 13, "dvdread://%u", dvd_playback.track - 1);
 
 	// MPV uses zero-indexing for tracks, dvd_info uses one instead
-	const char *dvd_mpv_commands[] = {
-		"loadfile",
-		dvd_mpv_args,
-		NULL
-	};
+	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 
 	// Load user's mpv configuration in ~/.config/dvd_player/mpv.conf (and friends)
 	if(strlen(dvd_player.mpv_config_dir) > 0) {
