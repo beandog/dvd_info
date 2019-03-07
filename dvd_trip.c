@@ -576,7 +576,7 @@ int main(int argc, char **argv) {
 			dvd_trip.crf = 20;
 		}
 
-		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
+		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%u,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m,x265-params=log-level=%s", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
 
 	}
 
@@ -607,7 +607,7 @@ int main(int argc, char **argv) {
 		}
 
 		// x264 doesn't allow passing log level (that I can see)
-		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%u,x264opts=colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf);
+		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%u,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf);
 
 	}
 
