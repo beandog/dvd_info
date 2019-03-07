@@ -537,7 +537,8 @@ int main(int argc, char **argv) {
 
 	// Terminal output
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
-	mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
+	if(!debug)
+		mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
 
 	if (debug) {
 		mpv_request_log_messages(dvd_mpv, "debug");
@@ -747,6 +748,12 @@ int main(int argc, char **argv) {
 				mpv_terminate_destroy(dvd_mpv);
 				goto pass_two;
 			}
+		}
+
+		// Logging output
+		if((verbose || debug) && dvd_mpv_event->event_id == MPV_EVENT_LOG_MESSAGE) {
+			dvd_mpv_log_message = (struct mpv_event_log_message *)dvd_mpv_event->data;
+			printf("mpv [%s]: %s", dvd_mpv_log_message->level, dvd_mpv_log_message->text);
 		}
 
 	}
