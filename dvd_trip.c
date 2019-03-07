@@ -98,7 +98,7 @@ struct dvd_trip {
 	uint8_t last_chapter;
 	ssize_t filesize;
 	char filename[PATH_MAX - 1];
-	char preset[5];
+	char container[5];
 	char quality[7];
 	char vcodec[256];
 	char vcodec_preset[11];
@@ -186,8 +186,8 @@ int main(int argc, char **argv) {
 	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
 
 	memset(dvd_trip.filename, '\0', sizeof(dvd_trip.filename));
-	memset(dvd_trip.preset, '\0', sizeof(dvd_trip.preset));
-	strcpy(dvd_trip.preset, "mkv");
+	memset(dvd_trip.container, '\0', sizeof(dvd_trip.container));
+	strcpy(dvd_trip.container, "mkv");
 	memset(dvd_trip.quality, '\0', sizeof(dvd_trip.quality));
 	strcpy(dvd_trip.quality, "medium");
 	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
@@ -284,13 +284,13 @@ int main(int argc, char **argv) {
 					token_filename = strtok(NULL, ".");
 
 					if(token_filename == NULL && strlen(tmp_filename) == 3 && strncmp(tmp_filename, "mkv", 3) == 0) {
-						strncpy(dvd_trip.preset, "mkv", 4);
+						strncpy(dvd_trip.container, "mkv", 4);
 						valid_preset = true;
 					} else if(token_filename == NULL && strlen(tmp_filename) == 3 && strncmp(tmp_filename, "mp4", 3) == 0) {
-						strncpy(dvd_trip.preset, "mp4", 4);
+						strncpy(dvd_trip.container, "mp4", 4);
 						valid_preset = true;
 					} else if(token_filename == NULL && strlen(tmp_filename) == 4 && strncmp(tmp_filename, "webm", 4) == 0) {
-						strncpy(dvd_trip.preset, "webm", 5);
+						strncpy(dvd_trip.container, "webm", 5);
 						valid_preset = true;
 					}
 
@@ -552,7 +552,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Set preset defaults
-	if(strncmp(dvd_trip.preset, "mkv", 3) == 0) {
+	if(strncmp(dvd_trip.container, "mkv", 3) == 0) {
 
 		if(!opt_filename)
 			strcpy(dvd_trip.filename, "trip_encode.mkv");
@@ -581,7 +581,7 @@ int main(int argc, char **argv) {
 
 	}
 
-	if(strncmp(dvd_trip.preset, "mp4", 3) == 0) {
+	if(strncmp(dvd_trip.container, "mp4", 3) == 0) {
 
 		if(!opt_filename)
 			strcpy(dvd_trip.filename, "trip_encode.mp4");
@@ -612,7 +612,7 @@ int main(int argc, char **argv) {
 
 	}
 
-	if(strncmp(dvd_trip.preset, "webm", 4) == 0) {
+	if(strncmp(dvd_trip.container, "webm", 4) == 0) {
 
 		dvd_trip.two_pass = true;
 
