@@ -778,7 +778,7 @@ void print_usage(char *binary) {
 	printf("  dvd_trip [options] [dvd path]\n");
 	printf("\n");
 	printf("Default:\n");
-	printf("  dvd_trip --preset preset --output trip_encode.mkv %s\n", DEFAULT_DVD_DEVICE);
+	printf("  dvd_trip --preset medium --output trip_encode.mkv %s\n", DEFAULT_DVD_DEVICE);
 	printf("\n");
 	printf("Output options:\n");
 	printf("  -o, --output <filename>	Encode DVD track to filename (default: trip_encode.mkv)\n");
@@ -808,6 +808,7 @@ void print_usage(char *binary) {
 	printf("\n");
 	printf("dvd_trip reads a configuration file from ~/.config/dvd_trip/mpv.conf\n");
 	printf("See mpv man page for syntax or dvd_trip man page for examples.\n");
+	printf("\n");
 
 }
 
