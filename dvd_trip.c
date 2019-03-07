@@ -526,6 +526,17 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
 	mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
 
+	if (debug) {
+		mpv_request_log_messages(dvd_mpv, "debug");
+		strcpy(dvd_trip.vcodec_log_level, "full");
+	} else if(verbose) {
+		mpv_request_log_messages(dvd_mpv, "v");
+		strcpy(dvd_trip.vcodec_log_level, "info");
+	} else {
+		mpv_request_log_messages(dvd_mpv, "info");
+		strcpy(dvd_trip.vcodec_log_level, "info");
+	}
+
 	// Set preset defaults
 	if(strncmp(dvd_trip.preset, "mkv", 3) == 0) {
 
@@ -665,17 +676,6 @@ int main(int argc, char **argv) {
 	} else {
 		sprintf(dvd_trip.vf_opts, "%s,fps:%s", dvd_trip.vf_opts, dvd_trip.fps);
 		mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
-	}
-
-	if (debug) {
-		mpv_request_log_messages(dvd_mpv, "debug");
-		strcpy(dvd_trip.vcodec_log_level, "full");
-	} else if(verbose) {
-		mpv_request_log_messages(dvd_mpv, "v");
-		strcpy(dvd_trip.vcodec_log_level, "info");
-	} else {
-		mpv_request_log_messages(dvd_mpv, "info");
-		strcpy(dvd_trip.vcodec_log_level, "info");
 	}
 
 	if(dvd_trip.pass == 1) {
