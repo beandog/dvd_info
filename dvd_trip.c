@@ -785,7 +785,6 @@ void print_usage(char *binary) {
 	printf("\n");
 	printf("Display options:\n");
 	printf("  -v, --verbose			Verbose output\n");
-	printf("  -z, --debug			Debugging output\n");
 	printf("\n");
 	printf("Executable options:\n");
 	printf("  -h, --help			Show this help text and exit\n");
