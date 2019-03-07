@@ -782,7 +782,10 @@ void print_usage(char *binary) {
 	printf("  dvd_trip --quality medium --output trip_encode.mkv %s\n", DEFAULT_DVD_DEVICE);
 	printf("\n");
 	printf("Output options:\n");
-	printf("  -o, --output <filename>	Encode to filename (default: trip_encode.mkv)\n");
+	printf("  -o, --output <filename>	Encode DVD track to filename (default: trip_encode.mkv)\n");
+	printf("        		        - mkv - Matroska container H.265 video AAC audio\n");
+	printf("				- mp4 - MPEG4 container H.264 video AAC audio\n");
+	printf("				- webm - WebM container VPX9 video Opus audio\n");
 	printf("\n");
 	printf("Input options:\n");
 	printf("  -t, --track <#>		Select DVD track (default: longest)\n");
@@ -792,10 +795,6 @@ void print_usage(char *binary) {
 	printf("  -A, --aid <#> 		Select audio track ID\n");
 	printf("\n");
 	printf("Encoding options:\n");
-	printf("  -p, --preset			Select encoding preset:\n");
-	printf("        {mkv|mp4|webm}	        - mkv - Matroska container H.265 video AAC audio (default)\n");
-	printf("				- mp4 - MPEG4 container H.264 video AAC audio\n");
-	printf("				- webm - WebM container VPX9 video Opus audio\n");
 	printf("  -q, --quality			Video quality (default: medium)\n");
 	printf("        {low|medium|high|insane}\n");
 	printf("  -d, --deinterlace		Deinterlace using yadif video filter\n");
@@ -807,6 +806,9 @@ void print_usage(char *binary) {
 	printf("Executable options:\n");
 	printf("  -h, --help			Show this help text and exit\n");
 	printf("  -V, --version			Show version info and exit\n");
+	printf("\n");
+	printf("dvd_trip reads a configuration file from ~/.config/dvd_trip/mpv.conf\n");
+	printf("See mpv man page for syntax or dvd_trip man page for examples.\n");
 
 }
 
