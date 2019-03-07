@@ -682,18 +682,19 @@ int main(int argc, char **argv) {
 	else if(strlen(dvd_trip.audio_lang) > 0)
 		mpv_set_option_string(dvd_mpv, "alang", dvd_trip.audio_lang);
 	if(dvd_trip.detelecine && dvd_trip.deinterlace)
-		sprintf(dvd_trip.vf_opts, "lavfi=yadif,pullup,dejudder");
+		sprintf(dvd_trip.vf_opts, "lavfi=yadif,lavfi=pullup,lavfi=dejudder");
 	else if(dvd_trip.deinterlace)
 		sprintf(dvd_trip.vf_opts, "lavfi=yadif");
 	else if(dvd_trip.detelecine)
-		sprintf(dvd_trip.vf_opts, "lavfi=pullup,dejudder");
+		sprintf(dvd_trip.vf_opts, "lavfi=pullup,lavfi=dejudder");
 
 	if(mpv_client_api_version() <= MPV_MAKE_VERSION(1, 25)) {
 		mpv_set_option_string(dvd_mpv, "ofps", dvd_trip.fps);
 	} else {
 		sprintf(dvd_trip.vf_opts, "%s,fps:%s", dvd_trip.vf_opts, dvd_trip.fps);
-		mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
 	}
+
+	mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
 
 	if(dvd_trip.pass == 1) {
 		fprintf(stderr, "dvd_trip [info]: dvd track %u\n", dvd_trip.track);
