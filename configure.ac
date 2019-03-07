@@ -12,7 +12,7 @@ PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.4.1])
 
 dnl Build player and ripper if libmpv is installed
 AC_ARG_ENABLE([libmpv], AS_HELP_STRING([--disable-libmpv], [Do not compile DVD player and ripper]), enable_libmpv=no, enable_libmpv=yes)
-AS_IF([test "x$enable_libmpv" = xyes], [PKG_CHECK_MODULES([MPV], [mpv >= 1.25.0])])
+AS_IF([test "x$enable_libmpv" = xyes], [PKG_CHECK_MODULES([MPV], [mpv >= 1.25.0], enable_libmv=yes, enable_libmpv=no)])
 AM_CONDITIONAL([DVD_MPV_SUPPORT], [test "x$enable_libmpv" = xyes])
 
 dnl The DVD drive tools are OS-specific
