@@ -106,6 +106,7 @@ struct dvd_trip {
 	char vcodec_log_level[6];
 	char acodec[256];
 	char acodec_opts[256];
+	char vf_opts[256];
 	uint8_t crf;
 	char fps[11];
 	bool deinterlace;
@@ -189,6 +190,7 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
 	memset(dvd_trip.acodec, '\0', sizeof(dvd_trip.acodec));
 	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
+	memset(dvd_trip.vf_opts, '\0', sizeof(dvd_trip.vf_opts));
 	dvd_trip.crf = 28;
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
 	dvd_trip.deinterlace = false;
@@ -613,18 +615,7 @@ int main(int argc, char **argv) {
 
 	}
 
-	// Set output frames per second based on source (NTSC or PAL)
-	if(dvd_track_ntsc_video(vts_ifo))
-		strcpy(dvd_trip.fps, "30000/1001");
-	else if(dvd_track_pal_video(vts_ifo))
-		strcpy(dvd_trip.fps, "25");
-	else
-		strcpy(dvd_trip.fps, "30000/1001");
 
-	// MPV's chapter range starts at the first one, and ends at the last one plus one
-	// fex: to play chapter 1 only, mpv --start '#1' --end '#2'
-	sprintf(dvd_mpv_first_chapter, "#%03u", dvd_trip.first_chapter);
-	sprintf(dvd_mpv_last_chapter, "#%03u", dvd_trip.last_chapter + 1);
 
 	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
 	mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
@@ -637,16 +628,35 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "input-default-bindings", "yes");
 	mpv_set_option_string(dvd_mpv, "input-vo-keyboard", "yes");
 	mpv_set_option_string(dvd_mpv, "resume-playback", "no");
+
+	// MPV's chapter range starts at the first one, and ends at the last one plus one
+	// fex: to play chapter 1 only, mpv --start '#1' --end '#2'
+	sprintf(dvd_mpv_first_chapter, "#%03u", dvd_trip.first_chapter);
+	sprintf(dvd_mpv_last_chapter, "#%03u", dvd_trip.last_chapter + 1);
 	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
-	mpv_set_option_string(dvd_mpv, "ofps", dvd_trip.fps);
 
-	if(dvd_trip.deinterlace && dvd_trip.detelecine)
-		mpv_set_option_string(dvd_mpv, "vf", "lavfi=yadif,pullup,dejudder");
+	// Set output frames per second based on source (NTSC or PAL)
+	if(dvd_track_ntsc_video(vts_ifo))
+		strcpy(dvd_trip.fps, "30000/1001");
+	else if(dvd_track_pal_video(vts_ifo))
+		strcpy(dvd_trip.fps, "25");
+	else
+		strcpy(dvd_trip.fps, "30000/1001");
+
+	if(dvd_trip.detelecine && dvd_trip.deinterlace)
+		sprintf(dvd_trip.vf_opts, "lavfi=yadif,pullup,dejudder");
 	else if(dvd_trip.deinterlace)
-		mpv_set_option_string(dvd_mpv, "vf", "lavfi=yadif");
+		sprintf(dvd_trip.vf_opts, "lavfi=yadif");
 	else if(dvd_trip.detelecine)
-		mpv_set_option_string(dvd_mpv, "vf", "lavfi=pullup,dejudder");
+		sprintf(dvd_trip.vf_opts, "lavfi=pullup,dejudder");
+
+	if(mpv_client_api_version() <= MPV_MAKE_VERSION(1, 25)) {
+		mpv_set_option_string(dvd_mpv, "ofps", dvd_trip.fps);
+	} else {
+		sprintf(dvd_trip.vf_opts, "%s,fps:%s", dvd_trip.vf_opts, dvd_trip.fps);
+		mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
+	}
 
 	if(quiet) {
 		strcpy(dvd_trip.vcodec_log_level, "none");
@@ -670,7 +680,9 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "dvd_trip [info]: acodec %s\n", dvd_trip.acodec);
 		fprintf(stderr, "dvd_trip [info]: ovcopts %s\n", dvd_trip.vcodec_opts);
 		fprintf(stderr, "dvd_trip [info]: oacopts %s\n", dvd_trip.acodec_opts);
-		fprintf(stderr, "dvd_trip [info]: fps %s\n", dvd_trip.fps);
+		if(strlen(dvd_trip.vf_opts))
+			fprintf(stderr, "dvd_trip [info]: vf %s\n", dvd_trip.vf_opts);
+		fprintf(stderr, "dvd_trip [info]: output fps %s\n", dvd_trip.fps);
 		if(dvd_trip.deinterlace)
 			fprintf(stderr, "dvd_trip [info]: deinterlacing video\n");
 		if(dvd_trip.detelecine)
