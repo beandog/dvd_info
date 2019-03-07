@@ -123,7 +123,6 @@ int main(int argc, char **argv) {
 
 	bool verbose = false;
 	bool debug = false;
-	bool quiet = false;
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
@@ -259,12 +258,6 @@ int main(int argc, char **argv) {
 				}
 				break;
 
-			case 'Q':
-				quiet = true;
-				verbose = false;
-				debug = false;
-				break;
-
 			case 'o':
 				opt_filename = true;
 				strncpy(dvd_trip.filename, optarg, PATH_MAX - 1);
@@ -396,8 +389,7 @@ int main(int argc, char **argv) {
 	dvd_info.longest_track = 1;
 
 	dvd_title(dvd_info.title, device_filename);
-	if(!quiet)
-		printf("Disc title: %s\n", dvd_info.title);
+	printf("Disc title: %s\n", dvd_info.title);
 
 	uint16_t num_ifos = 1;
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
@@ -518,8 +510,7 @@ int main(int argc, char **argv) {
 	// Open the VTS VOB
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
-	if(!quiet)
-		printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
+	printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
 
 	// MPV zero-indexes tracks
 	sprintf(dvd_mpv_args, "dvdread://%u", dvd_trip.track - 1);
@@ -676,10 +667,7 @@ int main(int argc, char **argv) {
 		mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
 	}
 
-	if(quiet) {
-		strcpy(dvd_trip.vcodec_log_level, "none");
-		mpv_request_log_messages(dvd_mpv, "no");
-	} else if (debug) {
+	if (debug) {
 		mpv_request_log_messages(dvd_mpv, "debug");
 		strcpy(dvd_trip.vcodec_log_level, "full");
 	} else if(verbose) {
@@ -690,7 +678,7 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.vcodec_log_level, "info");
 	}
 
-	if(!quiet && dvd_trip.pass == 1) {
+	if(dvd_trip.pass == 1) {
 		fprintf(stderr, "dvd_trip [info]: dvd track %u\n", dvd_trip.track);
 		fprintf(stderr, "dvd_trip [info]: chapters %u to %u\n", dvd_trip.first_chapter, dvd_trip.last_chapter);
 		fprintf(stderr, "dvd_trip [info]: saving to %s\n", dvd_trip.filename);
