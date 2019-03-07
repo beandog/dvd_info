@@ -705,6 +705,8 @@ int main(int argc, char **argv) {
 			sprintf(dvd_trip.vf_opts, "lavfi-yadif,fps=%s", dvd_trip.fps);
 		else if(dvd_trip.detelecine)
 			sprintf(dvd_trip.vf_opts, "lavfi-pullup,lavfi-dejudder,fps=%s", dvd_trip.fps);
+		else
+			sprintf(dvd_trip.vf_opts, "fps=%s", dvd_trip.fps);
 
 	}
 
