@@ -99,7 +99,7 @@ struct dvd_trip {
 	ssize_t filesize;
 	char filename[PATH_MAX - 1];
 	char container[5];
-	char quality[7];
+	char preset[7];
 	char vcodec[256];
 	char vcodec_preset[11];
 	char vcodec_opts[256];
@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
-	bool opt_quality = false;
+	bool opt_preset = false;
 	bool opt_vpx8 = false;
 	bool opt_vpx9 = false;
 	bool opt_x264 = false;
@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
 	mpv_event *dvd_mpv_event = NULL;
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
 
-	const char str_options[] = "Aac:deho:p:q:t:Vvz";
+	const char str_options[] = "Aac:deho:p:t:Vvz";
 	struct option long_options[] = {
 
 		{ "chapters", required_argument, 0, 'c' },
@@ -163,7 +163,6 @@ int main(int argc, char **argv) {
 		{ "deinterlace", no_argument, 0, 'd' },
 		{ "detelecine", no_argument, 0, 'e' },
 		{ "preset", required_argument, 0, 'p' },
-		{ "quality", required_argument, 0, 'q' },
 
 		{ "output", required_argument, 0, 'o' },
 
@@ -188,8 +187,8 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.filename, '\0', sizeof(dvd_trip.filename));
 	memset(dvd_trip.container, '\0', sizeof(dvd_trip.container));
 	strcpy(dvd_trip.container, "mkv");
-	memset(dvd_trip.quality, '\0', sizeof(dvd_trip.quality));
-	strcpy(dvd_trip.quality, "medium");
+	memset(dvd_trip.preset, '\0', sizeof(dvd_trip.preset));
+	strcpy(dvd_trip.preset, "medium");
 	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
 	memset(dvd_trip.vcodec_preset, '\0', sizeof(dvd_trip.vcodec_preset));
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
@@ -256,16 +255,16 @@ int main(int argc, char **argv) {
 				print_usage(DVD_INFO_PROGRAM);
 				return 0;
 
-			case 'q':
-				opt_quality = true;
+			case 'p':
+				opt_preset = true;
 				if(strncmp(optarg, "low", 3) == 0) {
-					strcpy(dvd_trip.quality, "low");
+					strcpy(dvd_trip.preset, "low");
 				} else if(strncmp(optarg, "medium", 6) == 0) {
-					strcpy(dvd_trip.quality, "medium");
+					strcpy(dvd_trip.preset, "medium");
 				} else if(strncmp(optarg, "high", 4) == 0) {
-					strcpy(dvd_trip.quality, "high");
+					strcpy(dvd_trip.preset, "high");
 				} else if(strncmp(optarg, "insane", 6) == 0) {
-					strcpy(dvd_trip.quality, "insane");
+					strcpy(dvd_trip.preset, "insane");
 				} else {
 					printf("dvd_trip [error]: valid presets - low medium high insane\n");
 					return 1;
@@ -563,15 +562,15 @@ int main(int argc, char **argv) {
 
 		dvd_trip.crf = 28;
 
-		if(strncmp(dvd_trip.quality, "low", 3) == 0) {
+		if(strncmp(dvd_trip.preset, "low", 3) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "fast");
-		} else if(strncmp(dvd_trip.quality, "medium", 6) == 0) {
+		} else if(strncmp(dvd_trip.preset, "medium", 6) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "medium");
-		} else if(strncmp(dvd_trip.quality, "high", 4) == 0) {
+		} else if(strncmp(dvd_trip.preset, "high", 4) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "slow");
 			strcpy(dvd_trip.acodec_opts, "b=192k");
 			dvd_trip.crf = 26;
-		} else if(strncmp(dvd_trip.quality, "insane", 6) == 0) {
+		} else if(strncmp(dvd_trip.preset, "insane", 6) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "slower");
 			strcpy(dvd_trip.acodec_opts, "b=256k");
 			dvd_trip.crf = 20;
@@ -593,15 +592,15 @@ int main(int argc, char **argv) {
 
 		dvd_trip.crf = 23;
 
-		if(strncmp(dvd_trip.quality, "low", 3) == 0) {
+		if(strncmp(dvd_trip.preset, "low", 3) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "fast");
-		} else if(strncmp(dvd_trip.quality, "medium", 6) == 0) {
+		} else if(strncmp(dvd_trip.preset, "medium", 6) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "medium");
-		} else if(strncmp(dvd_trip.quality, "high", 4) == 0) {
+		} else if(strncmp(dvd_trip.preset, "high", 4) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "slow");
 			strcpy(dvd_trip.acodec_opts, "b=192k");
 			dvd_trip.crf = 20;
-		} else if(strncmp(dvd_trip.quality, "insane", 6) == 0) {
+		} else if(strncmp(dvd_trip.preset, "insane", 6) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "slower");
 			strcpy(dvd_trip.acodec_opts, "b=256k");
 			dvd_trip.crf = 14;
@@ -626,25 +625,25 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.acodec_opts, "application=audio");
 
 		// Low - default options + setting color space
-		if(strncmp(dvd_trip.quality, "low", 3) == 0) {
+		if(strncmp(dvd_trip.preset, "low", 3) == 0) {
 			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
 		}
 
 		// Medium - see https://www.webmproject.org/docs/encoder-parameters/
 		// '2-Pass Faster VBR Encoding'
-		if(strncmp(dvd_trip.quality, "medium", 6) == 0) {
+		if(strncmp(dvd_trip.preset, "medium", 6) == 0) {
 			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,threads=4,quality=good,cpu-used=1,b=2000000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
 		}
 
 		// High - cpu-used from 1 to 0, increase video and audio bitrate
-		if(strncmp(dvd_trip.quality, "high", 4) == 0) {
+		if(strncmp(dvd_trip.preset, "high", 4) == 0) {
 			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,threads=4,quality=good,cpu-used=0,b=2160000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
 			strcpy(dvd_trip.acodec_opts, "application=audio,b=128000");
 		}
 
 		// Insane - upgrade quality from 'good' to 'best, enable automatic alt reference frames,
 		// set lag-in-frames (lookahead) to 16, increase video bitrate and max opus audio bitrate
-		if(strncmp(dvd_trip.quality, "insane", 6) == 0) {
+		if(strncmp(dvd_trip.preset, "insane", 6) == 0) {
 			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,auto-alt-ref=1,lag-in-frames=16,quality=best,cpu-used=0,b=2440000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
 			strcpy(dvd_trip.acodec_opts, "application=audio,b=256000");
 		}
@@ -779,7 +778,7 @@ void print_usage(char *binary) {
 	printf("  dvd_trip [options] [dvd path]\n");
 	printf("\n");
 	printf("Default:\n");
-	printf("  dvd_trip --quality medium --output trip_encode.mkv %s\n", DEFAULT_DVD_DEVICE);
+	printf("  dvd_trip --preset preset --output trip_encode.mkv %s\n", DEFAULT_DVD_DEVICE);
 	printf("\n");
 	printf("Output options:\n");
 	printf("  -o, --output <filename>	Encode DVD track to filename (default: trip_encode.mkv)\n");
@@ -795,7 +794,7 @@ void print_usage(char *binary) {
 	printf("  -A, --aid <#> 		Select audio track ID\n");
 	printf("\n");
 	printf("Encoding options:\n");
-	printf("  -q, --quality			Video quality (default: medium)\n");
+	printf("  -p, --preset			Encoding preset (default: medium)\n");
 	printf("        {low|medium|high|insane}\n");
 	printf("  -d, --deinterlace		Deinterlace using yadif video filter\n");
 	printf("  -e, --detelecine		Detelecine using pullup video filter\n");
