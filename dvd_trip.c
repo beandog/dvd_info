@@ -522,7 +522,7 @@ int main(int argc, char **argv) {
 		printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
 
 	// MPV zero-indexes tracks
-	sprintf(dvd_mpv_args, "dvdread://%02u", dvd_trip.track - 1);
+	sprintf(dvd_mpv_args, "dvdread://%u", dvd_trip.track - 1);
 
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 
@@ -561,7 +561,7 @@ int main(int argc, char **argv) {
 			dvd_trip.crf = 20;
 		}
 
-		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
+		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%u,x265-params=log-level=%s:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
 
 	}
 
@@ -592,7 +592,7 @@ int main(int argc, char **argv) {
 		}
 
 		// x264 doesn't allow passing log level (that I can see)
-		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%02u,x264opts=colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf);
+		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%u,x264opts=colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf);
 
 	}
 
@@ -649,8 +649,8 @@ int main(int argc, char **argv) {
 
 	// MPV's chapter range starts at the first one, and ends at the last one plus one
 	// fex: to play chapter 1 only, mpv --start '#1' --end '#2'
-	sprintf(dvd_mpv_first_chapter, "#%03u", dvd_trip.first_chapter);
-	sprintf(dvd_mpv_last_chapter, "#%03u", dvd_trip.last_chapter + 1);
+	sprintf(dvd_mpv_first_chapter, "#%u", dvd_trip.first_chapter);
+	sprintf(dvd_mpv_last_chapter, "#%u", dvd_trip.last_chapter + 1);
 	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 
