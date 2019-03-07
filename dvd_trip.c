@@ -831,10 +831,10 @@ void print_usage(char *binary) {
 	printf("  -V, --version			Show version info and exit\n");
 	printf("\n");
 	printf("DVD Path Examples:\n");
-	printf("  dvd_player			Play back default DVD device - %s\n", DEFAULT_DVD_DEVICE);
-	printf("  dvd_player /dev/dvd		Play back a device name\n");
-	printf("  dvd_player DVD.iso    	Play back a DVD image file\n");
-	printf("  dvd_player DVD/		Play back a DVD directory containing VIDEO_TS/ subdirectory\n");
+	printf("  dvd_trip			Use default DVD device - %s\n", DEFAULT_DVD_DEVICE);
+	printf("  dvd_trip /dev/dvd		Specify a device name\n");
+	printf("  dvd_trip DVD.iso	    	Specify a DVD image filename\n");
+	printf("  dvd_trip DVD/			Use a directory containing VIDEO_TS/\n");
 	printf("\n");
 	printf("dvd_trip reads a configuration file from ~/.config/dvd_trip/mpv.conf\n");
 	printf("See mpv man page for syntax or dvd_trip man page for examples.\n");
