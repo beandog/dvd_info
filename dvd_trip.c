@@ -682,8 +682,11 @@ int main(int argc, char **argv) {
 	else if(strlen(dvd_trip.audio_lang) > 0)
 		mpv_set_option_string(dvd_mpv, "alang", dvd_trip.audio_lang);
 
+	/** Video Filters **/
+
 	if(mpv_client_api_version() <= MPV_MAKE_VERSION(1, 25)) {
 
+		// Syntax up to 0.27.2
 		mpv_set_option_string(dvd_mpv, "ofps", dvd_trip.fps);
 
 		if(dvd_trip.detelecine && dvd_trip.deinterlace)
@@ -695,12 +698,13 @@ int main(int argc, char **argv) {
 
 	} else {
 
+		// Syntax starting in 0.29.1
 		if(dvd_trip.detelecine && dvd_trip.deinterlace)
-			sprintf(dvd_trip.vf_opts, "lavfi=yadif,lavfi=pullup,lavfi=dejudder,fps=%s", dvd_trip.fps);
+			sprintf(dvd_trip.vf_opts, "lavfi-yadif,lavfi-pullup,lavfi-dejudder,fps=%s", dvd_trip.fps);
 		else if(dvd_trip.deinterlace)
-			sprintf(dvd_trip.vf_opts, "lavfi=yadif,fps=%s", dvd_trip.fps);
+			sprintf(dvd_trip.vf_opts, "lavfi-yadif,fps=%s", dvd_trip.fps);
 		else if(dvd_trip.detelecine)
-			sprintf(dvd_trip.vf_opts, "lavfi=pullup,lavfi=dejudder,fps%s", dvd_trip.fps);
+			sprintf(dvd_trip.vf_opts, "lavfi-pullup,lavfi-dejudder,fps=%s", dvd_trip.fps);
 
 	}
 
