@@ -134,6 +134,7 @@ int main(int argc, char **argv) {
 	bool opt_x265 = false;
 	bool opt_mpeg4 = false;
 	bool opt_matroska = false;
+	bool valid_preset = false;
 	uint16_t arg_track_number = 0;
 	int long_index = 0;
 	int opt = 0;
@@ -141,6 +142,8 @@ int main(int argc, char **argv) {
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
 	char *token = NULL;
+	char *token_filename = NULL;
+	char tmp_filename[5] = {'\0'};
 	char dvd_mpv_args[13] = {'\0'};
 	char dvd_mpv_first_chapter[5] = {'\0'};
 	char dvd_mpv_last_chapter[5] = {'\0'};
@@ -240,19 +243,6 @@ int main(int argc, char **argv) {
 				print_usage(DVD_INFO_PROGRAM);
 				return 0;
 
-			case 'p':
-				if(strncmp(optarg, "mkv", 3) == 0) {
-					strcpy(dvd_trip.preset, "mkv");
-				} else if(strncmp(optarg, "mp4", 3) == 0) {
-					strcpy(dvd_trip.preset, "mp4");
-				} else if(strncmp(optarg, "webm", 4) == 0) {
-					strcpy(dvd_trip.preset, "webm");
-				} else {
-					printf("dvd_trip [error]: valid presets - mkv mp4 webm\n");
-					return 1;
-				}
-				break;
-
 			case 'q':
 				opt_quality = true;
 				if(strncmp(optarg, "low", 3) == 0) {
@@ -278,6 +268,32 @@ int main(int argc, char **argv) {
 			case 'o':
 				opt_filename = true;
 				strncpy(dvd_trip.filename, optarg, PATH_MAX - 1);
+				token_filename = strtok(optarg, ".");
+
+				// Choose preset from file extension
+				while(token_filename != NULL) {
+
+					snprintf(tmp_filename, 5, "%s", token_filename);
+					token_filename = strtok(NULL, ".");
+
+					if(token_filename == NULL && strlen(tmp_filename) == 3 && strncmp(tmp_filename, "mkv", 3) == 0) {
+						strncpy(dvd_trip.preset, "mkv", 4);
+						valid_preset = true;
+					} else if(token_filename == NULL && strlen(tmp_filename) == 3 && strncmp(tmp_filename, "mp4", 3) == 0) {
+						strncpy(dvd_trip.preset, "mp4", 4);
+						valid_preset = true;
+					} else if(token_filename == NULL && strlen(tmp_filename) == 4 && strncmp(tmp_filename, "webm", 4) == 0) {
+						strncpy(dvd_trip.preset, "webm", 5);
+						valid_preset = true;
+					}
+
+				}
+
+				if(!valid_preset) {
+					printf("dvd_trip [error]: output filename extension must be one of: .mkv, .mp4, .webm\n");
+					return 1;
+				}
+
 				break;
 
 			case 't':
@@ -618,8 +634,6 @@ int main(int argc, char **argv) {
 		}
 
 	}
-
-
 
 	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
 	mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
