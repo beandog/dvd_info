@@ -608,25 +608,23 @@ int main(int argc, char **argv) {
 
 		if(dvd_track.subtitles && dvd_track.dvd_subtitles != NULL) {
 
-			for(c = 0; c < dvd_track.subtitles; c++) {
+			for(subtitle_track_ix = 0; subtitle_track_ix < dvd_track.subtitles; subtitle_track_ix++) {
 
 				memset(&dvd_subtitle, 0, sizeof(dvd_subtitle));
 				memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
 
-				dvd_subtitle.track = c + 1;
+				dvd_subtitle.track = subtitle_track_ix + 1;
 				dvd_subtitle.active = dvd_subtitle_active(vmg_ifo, vts_ifo, dvd_track.track, dvd_subtitle.track);
 				if(dvd_subtitle.active)
 					dvd_track.active_subs++;
 
-
 				memset(dvd_subtitle.stream_id, 0, sizeof(dvd_subtitle.stream_id));
-				dvd_subtitle_stream_id(dvd_subtitle.stream_id, c);
-
+				dvd_subtitle_stream_id(dvd_subtitle.stream_id, subtitle_track_ix);
 
 				memset(dvd_subtitle.lang_code, 0, sizeof(dvd_subtitle.lang_code));
-				dvd_subtitle_lang_code(dvd_subtitle.lang_code, vts_ifo, c);
+				dvd_subtitle_lang_code(dvd_subtitle.lang_code, vts_ifo, subtitle_track_ix);
 
-				dvd_track.dvd_subtitles[c] = dvd_subtitle;
+				dvd_track.dvd_subtitles[subtitle_track_ix] = dvd_subtitle;
 
 			}
 
