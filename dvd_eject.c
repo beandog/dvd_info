@@ -95,6 +95,7 @@ bool is_open(const int dvd_fd);
 bool is_ready(const int dvd_fd);
 int open_tray(const int dvd_fd);
 int close_tray(const int dvd_fd);
+int lock_door(const int dvd_fd);
 int unlock_door(const int dvd_fd);
 int8_t is_mounted(const char *device_filename);
 
