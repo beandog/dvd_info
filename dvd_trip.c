@@ -811,6 +811,10 @@ void print_usage(char *binary) {
 	printf("				- webm - WebM container VPX9 video Opus audio\n");
 	printf("  -p, --preset			Output quality preset (default: medium)\n");
 	printf("        {low|medium|high|insane}\n");
+	printf("  -a, --audio			Select audio codec (default: autoselect based on filename)\n");
+	printf("        {aac|ac3|dts|flac|mp3|opus|vorbis}\n");
+	printf("  -v, --video			Select video codec (default: autoselect based on filename)\n");
+	printf("	{x264|x265|vpx|vpx8|vpx9}\n");
 	printf("\n");
 	printf("Input options:\n");
 	printf("  -t, --track <#>		Select DVD track (default: longest)\n");
@@ -822,9 +826,6 @@ void print_usage(char *binary) {
 	printf("Video filters:\n");
 	printf("  -d, --deinterlace		Deinterlace video\n");
 	printf("  -e, --detelecine		Detelecine video\n");
-	printf("\n");
-	printf("Display options:\n");
-	printf("  -v, --verbose			Verbose output\n");
 	printf("\n");
 	printf("Executable options:\n");
 	printf("  -h, --help			Show this help text and exit\n");
