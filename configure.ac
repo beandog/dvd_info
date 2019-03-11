@@ -8,48 +8,21 @@ AC_PROG_CC_C99
 
 dnl Use pkg-config to check for libdvdread, libdvdcss
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
+
+PKG_CHECK_MODULES([DVDCSS], [libdvdcss > 1.4.1], [
+	has_libdvdcss=yes
+dnl	enable_eject=yes
+], [has_libmpv=no])
+
 AC_ARG_ENABLE([eject], AS_HELP_STRING([--enable-eject], [build DVD eject tool, requires libdvdcss],), [PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.4.1], [enable_eject=yes])],[enable_eject=no])
 
-PKG_CHECK_MODULES([MPV], [mpv >= 1.25.0], [has_libmpv=yes], [has_libmpv=no])
-AC_ARG_ENABLE([player], [AS_HELP_STRING([--enable-player], [build DVD player, requires libmpv])], [AS_IF([test "x$has_libmpv" != xyes], [AC_MSG_ERROR([DVD player requires libmpv support])])])
-AC_ARG_ENABLE([ripper], [AS_HELP_STRING([--enable-ripper], [build DVD ripper, requires libmpv, audio and video codecs])], [AS_IF([test "x$has_libmpv" != xyes], [AC_MSG_ERROR([DVD ripper requires libmpv support])])])
-
-dnl check for supported video codecs
-AC_ARG_WITH([x264], [AS_HELP_STRING([--with-x264], [with x264 video codec])], [PKG_CHECK_MODULES([X264], [x264], [
-	with_video_codecs=yes
-	AC_DEFINE(HAVE_X264, [], [libx264])
-])])
-AC_ARG_WITH([x265], [AS_HELP_STRING([--with-x265], [with x265 video codec])], [PKG_CHECK_MODULES([X265], [x265], [
-	with_video_codecs=yes
-	AC_DEFINE(HAVE_X265, [], [libx265])
-])])
-AC_ARG_WITH([vpx], [AS_HELP_STRING([--with-vpx], [with vpx video codec])], [PKG_CHECK_MODULES([VPX], [vpx], [
-	with_video_codecs=yes
-	AC_DEFINE(HAVE_VPX, [], [libvpx])
-])])
-AC_ARG_WITH([theora], [AS_HELP_STRING([--with-theora], [with theora video codec])],[PKG_CHECK_MODULES([THEORA], [theora], [
-	with_video_codecs=yes
-	AC_DEFINE(HAVE_THEORA, [], [libtheora])
-])])
-
-dnl check for supported audio codecs
-AC_ARG_WITH([vorbis], [AS_HELP_STRING([--with-vorbis], [with vorbis audio codec])], [PKG_CHECK_MODULES([VORBIS], [vorbis], [
-	with_audio_codecs=yes
-	AC_DEFINE(HAVE_VORBIS, [], [libvorbis])
-])])
-AC_ARG_WITH([opus], [AS_HELP_STRING([--with-opus], [with opus video codec])], [PKG_CHECK_MODULES([OPUS], [opus], [
-	with_audio_codecs=yes
-	AC_DEFINE(HAVE_OPUS, [], [opus])
-])])
-AC_ARG_WITH([fdk-aac], [AS_HELP_STRING([--with-fdk-aac], [with fdk-aac video codec])], [PKG_CHECK_MODULES([FDK_AAC], [fdk-aac], [
-	with_audio_codecs=yes
-	AC_DEFINE(HAVE_FDK_AAC, [], [libfdk-aac])
-])])
-
-AS_IF([test "x$enable_ripper" = xyes],
-	[AS_IF([test "x$with_video_codecs" != xyes], [AC_MSG_ERROR(Need at least one video and one audio codec enabled for DVD ripper)])
-	AS_IF([test "x$with_audio_codecs" != xyes], [AC_MSG_ERROR(Need at least one video and one audio codec enabled for DVD ripper)])]
-)
+PKG_CHECK_MODULES([MPV], [mpv >= 1.25.0], [
+	has_libmpv=yes
+dnl	enable_player=yes
+dnl	enable_ripper=yes
+], [has_libmpv=no])
+AC_ARG_ENABLE([player], [AS_HELP_STRING([--enable-player], [build DVD player, requires libmpv])], [AS_IF([test "x$has_libmpv" = xyes], [enable_player=yes], [AC_MSG_ERROR([DVD player requires libmpv support])])])
+AC_ARG_ENABLE([ripper], [AS_HELP_STRING([--enable-ripper], [build DVD ripper, requires libmpv, audio and video codecs])], [AS_IF([test "x$has_libmpv" = xyes], [enable_ripper=yes], [AC_MSG_ERROR([DVD ripper requires libmpv support])])])
 
 dnl The DVD drive tools are OS-specific
 AC_CANONICAL_HOST
