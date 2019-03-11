@@ -8,7 +8,7 @@ AC_PROG_CC_C99
 
 dnl Use pkg-config to check for libdvdread, libdvdcss
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
-PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.4.1])
+AC_ARG_ENABLE([eject], AS_HELP_STRING([--enable-eject], [build DVD eject tool, requires libdvdcss],), [PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.4.1], [enable_eject=yes])],[enable_eject=no])
 
 PKG_CHECK_MODULES([MPV], [mpv >= 1.25.0], [has_libmpv=yes], [has_libmpv=no])
 AC_ARG_ENABLE([player], [AS_HELP_STRING([--enable-player], [build DVD player, requires libmpv])], AS_IF([test "x$has_libmpv" != xyes], AC_MSG_ERROR([DVD player requires libmpv support])))
