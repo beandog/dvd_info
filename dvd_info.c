@@ -63,6 +63,7 @@ int main(int argc, char **argv) {
 	uint8_t c = 0;
 	uint8_t audio_track_ix = 0;
 	uint8_t subtitle_track_ix = 0;
+	uint8_t chapter_ix = 0;
 	uint8_t d_stream_num = 0;
 
 	// Device hardware
@@ -636,9 +637,9 @@ int main(int argc, char **argv) {
 
 		if(dvd_track.chapters && dvd_track.dvd_chapters != NULL) {
 
-			for(c = 0; c < dvd_track.chapters; c++) {
+			for(chapter_ix = 0; chapter_ix < dvd_track.chapters; chapter_ix++) {
 
-				dvd_chapter.chapter = c + 1;
+				dvd_chapter.chapter = chapter_ix + 1;
 
 				snprintf(dvd_chapter.length, DVD_CHAPTER_LENGTH + 1, "00:00:00.000");
 				dvd_chapter_length(dvd_chapter.length, vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
@@ -647,7 +648,7 @@ int main(int argc, char **argv) {
 				dvd_chapter.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 				dvd_chapter.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 
-				dvd_track.dvd_chapters[c] = dvd_chapter;
+				dvd_track.dvd_chapters[chapter_ix] = dvd_chapter;
 
 			};
 
