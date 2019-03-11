@@ -106,9 +106,7 @@ int main(int argc, char **argv) {
 	opterr = 1;
 	uint32_t sleepy_time = 1000000;
 	int dvd_fd = -1;
-	char display_filename[PATH_MAX] = {'\0'};
-	char device_filename[PATH_MAX] = {'\0'};
-	char *path;
+	const char *device_filename = NULL;
 	bool p_dvd_eject = true;
 	bool p_dvd_close = false;
 	bool dvd_drive_opened = false;
@@ -164,13 +162,10 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
-	if(argv[optind]) {
-		snprintf(display_filename, PATH_MAX, "%s", argv[optind]);
-		path = realpath(argv[optind], device_filename);
-	} else {
-		snprintf(display_filename, PATH_MAX, "%s", DEFAULT_DVD_DEVICE);
-		path = realpath(display_filename, device_filename);
-	}
+	if (argv[optind])
+		device_filename = argv[optind];
+	else
+		device_filename = DEFAULT_DVD_DEVICE;
 
 	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
 
@@ -192,7 +187,7 @@ int main(int argc, char **argv) {
 		printf("[Open Drive Tray]\n");
 	if(p_dvd_close)
 		printf("[Close Drive Tray]\n");
-	printf("* Device: %s\n", display_filename);
+	printf("* Device: %s\n", device_filename);
 
 	if(opt_wait == false && is_ready(dvd_fd) == false) {
 		printf("* No waiting requested, and device is not ready. Exiting\n");
