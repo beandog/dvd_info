@@ -283,7 +283,7 @@ int main(int argc, char **argv) {
 
 			// Try unmounting it using a system call
 			if(device_mounted) {
-				sprintf(umount_str, "umount %s", device_filename);
+				snprintf(umount_str, PATH_MAX - 1, "umount %s", device_filename);
 				retval = system(umount_str);
 
 				// Ignore the system retval, check ourselves if it passed
