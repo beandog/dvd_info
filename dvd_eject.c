@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <limits.h>
-#include <stdlib.h>
 #include <linux/cdrom.h>
 #include <sys/ioctl.h>
 #include <sys/mount.h>
