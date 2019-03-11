@@ -11,15 +11,15 @@ PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
 AC_ARG_ENABLE([eject], AS_HELP_STRING([--enable-eject], [build DVD eject tool, requires libdvdcss],), [PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.4.1], [enable_eject=yes])],[enable_eject=no])
 
 PKG_CHECK_MODULES([MPV], [mpv >= 1.25.0], [has_libmpv=yes], [has_libmpv=no])
-AC_ARG_ENABLE([player], [AS_HELP_STRING([--enable-player], [build DVD player, requires libmpv])], AS_IF([test "x$has_libmpv" != xyes], AC_MSG_ERROR([DVD player requires libmpv support])))
-AC_ARG_ENABLE([ripper], [AS_HELP_STRING([--enable-ripper], [build DVD ripper, requires libmpv, audio and video codecs])], AS_IF([test "x$has_libmpv" != xyes], AC_MSG_ERROR([DVD ripper requires libmpv support])))
+AC_ARG_ENABLE([player], [AS_HELP_STRING([--enable-player], [build DVD player, requires libmpv])], [AS_IF([test "x$has_libmpv" != xyes], [AC_MSG_ERROR([DVD player requires libmpv support])])])
+AC_ARG_ENABLE([ripper], [AS_HELP_STRING([--enable-ripper], [build DVD ripper, requires libmpv, audio and video codecs])], [AS_IF([test "x$has_libmpv" != xyes], [AC_MSG_ERROR([DVD ripper requires libmpv support])])])
 
 dnl check for supported video codecs
 AC_ARG_WITH([x264], [AS_HELP_STRING([--with-x264], [with x264 video codec])], [PKG_CHECK_MODULES([X264], [x264], [
 	with_video_codecs=yes
 	AC_DEFINE(HAVE_X264, [], [libx264])
 ])])
-AC_ARG_WITH([x265], [AS_HELP_STRING([--with-x265], [with x265 video codec])], [	PKG_CHECK_MODULES([X265], [x265], [
+AC_ARG_WITH([x265], [AS_HELP_STRING([--with-x265], [with x265 video codec])], [PKG_CHECK_MODULES([X265], [x265], [
 	with_video_codecs=yes
 	AC_DEFINE(HAVE_X265, [], [libx265])
 ])])
@@ -47,8 +47,8 @@ AC_ARG_WITH([fdk-aac], [AS_HELP_STRING([--with-fdk-aac], [with fdk-aac video cod
 ])])
 
 AS_IF([test "x$enable_ripper" = xyes],
-	AS_IF([test "x$with_video_codecs" != xyes], AC_MSG_ERROR(Need at least one video and one audio codec enabled for DVD ripper))
-	AS_IF([test "x$with_audio_codecs" != xyes], AC_MSG_ERROR(Need at least one video and one audio codec enabled for DVD ripper))
+	[AS_IF([test "x$with_video_codecs" != xyes], [AC_MSG_ERROR(Need at least one video and one audio codec enabled for DVD ripper)])
+	AS_IF([test "x$with_audio_codecs" != xyes], [AC_MSG_ERROR(Need at least one video and one audio codec enabled for DVD ripper)])]
 )
 
 dnl The DVD drive tools are OS-specific
