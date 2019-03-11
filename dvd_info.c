@@ -60,7 +60,6 @@ int main(int argc, char **argv) {
 	uint16_t track_number = 1;
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
-	uint8_t c = 0;
 	uint8_t audio_track_ix = 0;
 	uint8_t subtitle_track_ix = 0;
 	uint8_t chapter_ix = 0;
@@ -775,9 +774,9 @@ int main(int argc, char **argv) {
 
 			d_stream_num = 1;
 
-			for(c = 0; c < dvd_track.audio_tracks; c++) {
+			for(audio_track_ix = 0; audio_track_ix < dvd_track.audio_tracks; audio_track_ix++) {
 
-				dvd_audio = dvd_track.dvd_audio_tracks[c];
+				dvd_audio = dvd_track.dvd_audio_tracks[audio_track_ix];
 
 				if(dvd_audio.active == false && d_quiet == true && debug == false)
 					continue;
@@ -792,9 +791,9 @@ int main(int argc, char **argv) {
 		// Display chapters
 		if(d_chapters && dvd_track.chapters) {
 
-			for(c = 0; c < dvd_track.chapters; c++) {
+			for(chapter_ix = 0; chapter_ix < dvd_track.chapters; chapter_ix++) {
 
-				dvd_chapter = dvd_track.dvd_chapters[c];
+				dvd_chapter = dvd_track.dvd_chapters[chapter_ix];
 				printf("        Chapter: %02u, Length: %s\n", dvd_chapter.chapter, dvd_chapter.length);
 
 			}
@@ -804,9 +803,9 @@ int main(int argc, char **argv) {
 		// Display track cells
 		if(d_cells && dvd_track.cells) {
 
-			for(c = 0; c < dvd_track.cells; c++) {
+			for(cell_ix = 0; cell_ix < dvd_track.cells; cell_ix++) {
 
-				dvd_cell = dvd_track.dvd_cells[c];
+				dvd_cell = dvd_track.dvd_cells[cell_ix];
 				printf("	Cell: %02u, Length: %s, First sector: %u, Last sector: %u\n", dvd_cell.cell, dvd_cell.length, dvd_cell.first_sector, dvd_cell.last_sector);
 
 			}
@@ -818,9 +817,9 @@ int main(int argc, char **argv) {
 
 			d_stream_num = 1;
 
-			for(c = 0; c < dvd_track.subtitles; c++) {
+			for(subtitle_track_ix = 0; subtitle_track_ix < dvd_track.subtitles; subtitle_track_ix++) {
 
-				dvd_subtitle = dvd_track.dvd_subtitles[c];
+				dvd_subtitle = dvd_track.dvd_subtitles[subtitle_track_ix];
 
 				if(dvd_subtitle.active == false && d_quiet == true && debug == false)
 					continue;
