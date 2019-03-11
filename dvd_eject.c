@@ -107,6 +107,7 @@ int main(int argc, char **argv) {
 	uint32_t sleepy_time = 1000000;
 	int dvd_fd = -1;
 	const char *device_filename = NULL;
+	char umount_str[PATH_MAX - 1];
 	bool p_dvd_eject = true;
 	bool p_dvd_close = false;
 	bool dvd_drive_opened = false;
@@ -119,6 +120,8 @@ int main(int argc, char **argv) {
 	bool d_help = false;
 	// dvdcss_t *dvdcss;
 	// dvd_reader_t *dvdread_dvd;
+
+	memset(umount_str, '\0', sizeof(umount_str));
 
 	struct option long_options[] = {
 		{ "close", no_argument, 0, 't' },
@@ -280,8 +283,7 @@ int main(int argc, char **argv) {
 
 			// Try unmounting it using a system call
 			if(device_mounted) {
-				char umount_str[PATH_MAX + 8] = {'\0'};
-				snprintf(umount_str, PATH_MAX + 8, "%s%s", "umount ", device_filename);
+				sprintf(umount_str, "umount %s", device_filename);
 				retval = system(umount_str);
 
 				// Ignore the system retval, check ourselves if it passed
