@@ -118,7 +118,6 @@ int main(int argc, char **argv) {
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
-	bool opt_preset = false;
 	bool valid_preset = false;
 	uint16_t arg_track_number = 0;
 	int long_index = 0;
@@ -240,7 +239,6 @@ int main(int argc, char **argv) {
 				return 0;
 
 			case 'p':
-				opt_preset = true;
 				if(strncmp(optarg, "low", 3) == 0) {
 					strcpy(dvd_trip.preset, "low");
 				} else if(strncmp(optarg, "medium", 6) == 0) {
