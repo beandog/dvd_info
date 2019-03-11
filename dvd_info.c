@@ -52,7 +52,6 @@ int main(int argc, char **argv) {
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
-	bool d_all_info = false;
 	bool d_all_tracks = true;
 	bool debug = false;
 	uint16_t d_first_track = 1;
@@ -256,7 +255,6 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'x':
-				d_all_info = true;
 				d_audio = true;
 				d_video = true;
 				d_chapters = true;
