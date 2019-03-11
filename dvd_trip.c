@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <getopt.h>
+#include "config.h"
 #ifdef __linux__
 #include <linux/cdrom.h>
 #include "dvd_drive.h"
@@ -778,6 +779,41 @@ void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, co
 
 void print_usage(char *binary) {
 
+	char video_codecs[256];
+	char audio_codecs[256];
+
+	memset(video_codecs, '\0', sizeof(video_codecs));
+	memset(audio_codecs, '\0', sizeof(audio_codecs));
+
+#ifdef HAVE_X264
+	strcat(video_codecs, "x264");
+#endif
+#ifdef HAVE_X265
+	if(strlen(video_codecs) > 1 && video_codecs[strlen(video_codecs) - 1] != '|')
+		strcat(video_codecs, "|");
+	strcat(video_codecs, "x265");
+#endif
+#ifdef HAVE_VPX
+#if defined(HAVE_VORBIS) || defined(HAVE_OPUS)
+	if(strlen(video_codecs) > 1 && video_codecs[strlen(video_codecs) - 1] != '|')
+		strcat(video_codecs, "|");
+	strcat(video_codecs, "vpx|vpx8|vpx9");
+#endif
+#endif
+#ifdef HAVE_FDK_AAC
+	strcat(audio_codecs, "aac");
+#endif
+#ifdef HAVE_VORBIS
+	if(audio_codecs[strlen(audio_codecs) - 1] != '|')
+		strcat(audio_codecs, "|");
+	strcat(audio_codecs, "vorbis");
+#endif
+#ifdef HAVE_OPUS
+	if(audio_codecs[strlen(audio_codecs) - 1] != '|')
+		strcat(audio_codecs, "|");
+	strcat(audio_codecs, "opus");
+#endif
+
 	printf("%s - a tiny DVD ripper\n", binary);
 	printf("\n");
 	printf("Usage:\n");
@@ -793,10 +829,10 @@ void print_usage(char *binary) {
 	printf("				- webm - WebM container VPX9 video Opus audio\n");
 	printf("  -p, --preset			Output quality preset (default: medium)\n");
 	printf("        {low|medium|high|insane}\n");
-	printf("  -a, --audio			Select audio codec (default: autoselect based on filename)\n");
-	printf("        {aac|ac3|dts|flac|mp3|opus|vorbis}\n");
 	printf("  -v, --video			Select video codec (default: autoselect based on filename)\n");
-	printf("	{x264|x265|vpx|vpx8|vpx9}\n");
+	printf("	{%s}\n", video_codecs);
+	printf("  -a, --audio			Select audio codec (default: autoselect based on filename)\n");
+	printf("        {%s}\n", audio_codecs);
 	printf("\n");
 	printf("Input options:\n");
 	printf("  -t, --track <#>		Select DVD track (default: longest)\n");
