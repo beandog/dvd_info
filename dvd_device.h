@@ -15,6 +15,8 @@
 #define DEFAULT_DVD_DEVICE "/dev/rcd0c"
 #elif defined (__APPLE__) && defined (__MACH__)
 #define DEFAULT_DVD_DEVICE "/dev/disk1"
+#elif defined (__CYGWIN__)
+#define DEFAULT_DVD_DEVICE "D:\\"
 #else
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
 #endif
