@@ -136,12 +136,12 @@ int main(int argc, char **argv) {
 	mpv_event *dvd_mpv_event = NULL;
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
 
-	const char str_options[] = "Aac:deho:p:t:Vvz";
+	const char str_options[] = "Ac:dehl:o:p:t:Vvz";
 	struct option long_options[] = {
 
 		{ "chapters", required_argument, 0, 'c' },
 		{ "track", required_argument, 0, 't' },
-		{ "alang", required_argument, 0, 'a' },
+		{ "alang", required_argument, 0, 'l' },
 		{ "aid", required_argument, 0, 'A' },
 
 		{ "deinterlace", no_argument, 0, 'd' },
@@ -197,10 +197,6 @@ int main(int argc, char **argv) {
 				strncpy(dvd_trip.audio_aid, optarg, 3);
 				break;
 
-			case 'a':
-				strncpy(dvd_trip.audio_lang, optarg, 2);
-				break;
-
 			case 'c':
 				opt_chapter_number = true;
 				token = strtok(optarg, "-"); {
@@ -238,6 +234,10 @@ int main(int argc, char **argv) {
 			case 'h':
 				print_usage(DVD_INFO_PROGRAM);
 				return 0;
+
+			case 'l':
+				strncpy(dvd_trip.audio_lang, optarg, 2);
+				break;
 
 			case 'p':
 				if(strncmp(optarg, "low", 3) == 0) {
@@ -838,7 +838,7 @@ void print_usage(char *binary) {
 	printf("  -t, --track <#>		Select DVD track (default: longest)\n");
 	printf("  -c, --chapters		Select chapter(s) range (default: all)\n");
 	printf("        {start|start-end|-end}\n");
-	printf("  -a, --alang <language>	Select audio language, two character code (default: first audio track)\n");
+	printf("  -l, --alang <language>	Select audio language, two character code (default: first audio track)\n");
 	printf("  -A, --aid <#> 		Select audio track ID\n");
 	printf("\n");
 	printf("Video filters:\n");
