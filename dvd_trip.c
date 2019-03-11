@@ -32,16 +32,6 @@
 #endif
 
 #define DVD_INFO_PROGRAM "dvd_trip"
-#define DVD_TRIP_VCODEC_NONE	0
-#define DVD_TRIP_VCODEC_X264 	1
-#define DVD_TRIP_VCODEC_X265	2
-#define DVD_TRIP_VCODEC_VPX8	3
-#define DVD_TRIP_VCODEC_VPX9	4
-
-#define DVD_TRIP_ACODEC_NONE	0
-#define DVD_TRIP_ACODEC_AAC	1
-#define DVD_TRIP_ACODEC_VORBIS	2
-#define DVD_TRIP_ACODEC_OPUS	3
 
 	/**
 	 *      _          _    _        _
@@ -129,12 +119,6 @@ int main(int argc, char **argv) {
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
 	bool opt_preset = false;
-	bool opt_vpx8 = false;
-	bool opt_vpx9 = false;
-	bool opt_x264 = false;
-	bool opt_x265 = false;
-	bool opt_mpeg4 = false;
-	bool opt_matroska = false;
 	bool valid_preset = false;
 	uint16_t arg_track_number = 0;
 	int long_index = 0;
