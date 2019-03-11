@@ -109,7 +109,6 @@ int main(int argc, char **argv) {
 	char display_filename[PATH_MAX] = {'\0'};
 	char device_filename[PATH_MAX] = {'\0'};
 	char *path;
-	int starbase = 51;
 	bool p_dvd_eject = true;
 	bool p_dvd_close = false;
 	bool dvd_drive_opened = false;
@@ -171,10 +170,6 @@ int main(int argc, char **argv) {
 	} else {
 		snprintf(display_filename, PATH_MAX, "%s", DEFAULT_DVD_DEVICE);
 		path = realpath(display_filename, device_filename);
-	}
-
-	if(strlen(device_filename) == 11 && strcmp("/dev/bluray", device_filename) == 0) {
-		starbase = 71;
 	}
 
 	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
