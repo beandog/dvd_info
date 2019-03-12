@@ -94,6 +94,7 @@ struct dvd_trip {
 	char vcodec_preset[11];
 	char vcodec_opts[256];
 	char vcodec_log_level[6];
+	char color_opts[256];
 	char audio_lang[3];
 	char audio_aid[4];
 	char acodec[256];
@@ -176,6 +177,7 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.vcodec_preset, '\0', sizeof(dvd_trip.vcodec_preset));
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
 	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
+	memset(dvd_trip.color_opts, '\0', sizeof(dvd_trip.color_opts));
 	memset(dvd_trip.acodec, '\0', sizeof(dvd_trip.acodec));
 	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
 	memset(dvd_trip.audio_lang, '\0', sizeof(dvd_trip.audio_lang));
@@ -533,6 +535,19 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.vcodec_log_level, "info");
 	}
 
+	/** Video **/
+
+	// Set output frames per second and color spaces based on source (NTSC or PAL)
+	if(dvd_track_pal_video(vts_ifo)) {
+		strcpy(dvd_trip.fps, "25");
+		sprintf(dvd_trip.color_opts, "color_primaries=bt470bg,color_trc=gamma28,colorspace=bt470bg");
+	} else {
+		strcpy(dvd_trip.fps, "30000/1001");
+		sprintf(dvd_trip.color_opts, "color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m");
+	}
+
+	/** Containers and Presets **/
+
 	// Set preset defaults
 	if(strncmp(dvd_trip.container, "mkv", 3) == 0) {
 
@@ -559,7 +574,7 @@ int main(int argc, char **argv) {
 			dvd_trip.crf = 20;
 		}
 
-		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%u,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m,x265-params=log-level=%s", dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
+		sprintf(dvd_trip.vcodec_opts, "%s,preset=%s,crf=%u,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
 
 	}
 
@@ -590,7 +605,7 @@ int main(int argc, char **argv) {
 		}
 
 		// x264 doesn't allow passing log level (that I can see)
-		sprintf(dvd_trip.vcodec_opts, "preset=%s,crf=%u,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.vcodec_preset, dvd_trip.crf);
+		sprintf(dvd_trip.vcodec_opts, "%s,preset=%s,crf=%u", dvd_trip.color_opts, dvd_trip.vcodec_preset, dvd_trip.crf);
 
 	}
 
@@ -609,25 +624,25 @@ int main(int argc, char **argv) {
 
 		// Low - default options + setting color space
 		if(strncmp(dvd_trip.preset, "low", 3) == 0) {
-			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
+			sprintf(dvd_trip.vcodec_opts, "%s,flags=+pass%u", dvd_trip.color_opts, dvd_trip.pass);
 		}
 
 		// Medium - see https://www.webmproject.org/docs/encoder-parameters/
 		// '2-Pass Faster VBR Encoding'
 		if(strncmp(dvd_trip.preset, "medium", 6) == 0) {
-			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,threads=4,quality=good,cpu-used=1,b=2000000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
+			sprintf(dvd_trip.vcodec_opts, "%s,flags=+pass%u,threads=4,quality=good,cpu-used=1,b=2000000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63", dvd_trip.color_opts, dvd_trip.pass);
 		}
 
 		// High - cpu-used from 1 to 0, increase video and audio bitrate
 		if(strncmp(dvd_trip.preset, "high", 4) == 0) {
-			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,threads=4,quality=good,cpu-used=0,b=2160000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
+			sprintf(dvd_trip.vcodec_opts, "%s,flags=+pass%u,threads=4,quality=good,cpu-used=0,b=2160000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63", dvd_trip.color_opts, dvd_trip.pass);
 			strcpy(dvd_trip.acodec_opts, "application=audio,b=128000");
 		}
 
 		// Insane - upgrade quality from 'good' to 'best, enable automatic alt reference frames,
 		// set lag-in-frames (lookahead) to 16, increase video bitrate and max opus audio bitrate
 		if(strncmp(dvd_trip.preset, "insane", 6) == 0) {
-			sprintf(dvd_trip.vcodec_opts, "flags=+pass%u,auto-alt-ref=1,lag-in-frames=16,quality=best,cpu-used=0,b=2440000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63,color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m", dvd_trip.pass);
+			sprintf(dvd_trip.vcodec_opts, "%s,flags=+pass%u,auto-alt-ref=1,lag-in-frames=16,quality=best,cpu-used=0,b=2440000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63", dvd_trip.color_opts, dvd_trip.pass);
 			strcpy(dvd_trip.acodec_opts, "application=audio,b=256000");
 		}
 
@@ -651,14 +666,6 @@ int main(int argc, char **argv) {
 	sprintf(dvd_mpv_last_chapter, "#%u", dvd_trip.last_chapter + 1);
 	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
-
-	// Set output frames per second based on source (NTSC or PAL)
-	if(dvd_track_ntsc_video(vts_ifo))
-		strcpy(dvd_trip.fps, "30000/1001");
-	else if(dvd_track_pal_video(vts_ifo))
-		strcpy(dvd_trip.fps, "25");
-	else
-		strcpy(dvd_trip.fps, "30000/1001");
 
 	if(strlen(dvd_trip.audio_aid) > 0)
 		mpv_set_option_string(dvd_mpv, "aid", dvd_trip.audio_aid);
