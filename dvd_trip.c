@@ -540,10 +540,10 @@ int main(int argc, char **argv) {
 	// Set output frames per second and color spaces based on source (NTSC or PAL)
 	if(dvd_track_pal_video(vts_ifo)) {
 		strcpy(dvd_trip.fps, "25");
-		sprintf(dvd_trip.color_opts, "color_primaries=bt470bg,color_trc=gamma28,colorspace=bt470bg");
+		strcpy(dvd_trip.color_opts, "color_primaries=bt470bg,color_trc=gamma28,colorspace=bt470bg");
 	} else {
 		strcpy(dvd_trip.fps, "30000/1001");
-		sprintf(dvd_trip.color_opts, "color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m");
+		strcpy(dvd_trip.color_opts, "color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m");
 	}
 
 	/** Containers and Presets **/
