@@ -619,25 +619,25 @@ int main(int argc, char **argv) {
 
 		if(strncmp(dvd_trip.preset, "low", 3) == 0) {
 			dvd_trip.crf = 34;
-			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u", dvd_trip.color_opts, dvd_trip.crf);
+			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u,keyint_min=0,g=360", dvd_trip.color_opts, dvd_trip.crf);
 			strcpy(dvd_trip.acodec_opts, "application=audio,b=96000");
 		}
 
 		if(strncmp(dvd_trip.preset, "medium", 6) == 0) {
 			dvd_trip.crf = 32;
-			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u", dvd_trip.color_opts, dvd_trip.crf);
+			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u,keyint_min=0,g=360", dvd_trip.color_opts, dvd_trip.crf);
 			strcpy(dvd_trip.acodec_opts, "application=audio,b=144000");
 		}
 
 		if(strncmp(dvd_trip.preset, "high", 4) == 0) {
 			dvd_trip.crf = 22;
-			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u", dvd_trip.color_opts, dvd_trip.crf);
+			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u,keyint_min=0,g=360", dvd_trip.color_opts, dvd_trip.crf);
 			strcpy(dvd_trip.acodec_opts, "application=audio,b=192000");
 		}
 
 		if(strncmp(dvd_trip.preset, "insane", 6) == 0) {
 			dvd_trip.crf = 16;
-			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u", dvd_trip.color_opts, dvd_trip.crf);
+			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u,keyint_min=0,g=360", dvd_trip.color_opts, dvd_trip.crf);
 			strcpy(dvd_trip.acodec_opts, "application=audio,b=256000");
 		}
 
