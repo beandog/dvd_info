@@ -104,7 +104,6 @@ struct dvd_trip {
 	char fps[11];
 	bool deinterlace;
 	bool detelecine;
-	bool two_pass;
 	uint8_t pass;
 };
 
@@ -187,7 +186,6 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
 	dvd_trip.deinterlace = false;
 	dvd_trip.detelecine = false;
-	dvd_trip.two_pass = false;
 	dvd_trip.pass = 1;
 
 	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
@@ -514,7 +512,6 @@ int main(int argc, char **argv) {
 
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 
-	pass_two:
 
 	// DVD playback using libmpv
 	dvd_mpv = mpv_create();
@@ -558,20 +555,21 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.vcodec_preset, "medium");
 		strcpy(dvd_trip.acodec, "libfdk_aac");
 
-		dvd_trip.crf = 28;
 
 		if(strncmp(dvd_trip.preset, "low", 3) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "fast");
+			dvd_trip.crf = 28;
 		} else if(strncmp(dvd_trip.preset, "medium", 6) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "medium");
+			dvd_trip.crf = 24;
 		} else if(strncmp(dvd_trip.preset, "high", 4) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "slow");
 			strcpy(dvd_trip.acodec_opts, "b=192k");
-			dvd_trip.crf = 26;
+			dvd_trip.crf = 20;
 		} else if(strncmp(dvd_trip.preset, "insane", 6) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "slower");
 			strcpy(dvd_trip.acodec_opts, "b=256k");
-			dvd_trip.crf = 20;
+			dvd_trip.crf = 14;
 		}
 
 		sprintf(dvd_trip.vcodec_opts, "%s,preset=%s,crf=%u,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
@@ -588,12 +586,13 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.acodec, "libfdk_aac");
 		strcpy(dvd_trip.acodec_opts, "");
 
-		dvd_trip.crf = 23;
 
 		if(strncmp(dvd_trip.preset, "low", 3) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "fast");
+			dvd_trip.crf = 28;
 		} else if(strncmp(dvd_trip.preset, "medium", 6) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "medium");
+			dvd_trip.crf = 22;
 		} else if(strncmp(dvd_trip.preset, "high", 4) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "slow");
 			strcpy(dvd_trip.acodec_opts, "b=192k");
@@ -601,7 +600,7 @@ int main(int argc, char **argv) {
 		} else if(strncmp(dvd_trip.preset, "insane", 6) == 0) {
 			strcpy(dvd_trip.vcodec_preset, "slower");
 			strcpy(dvd_trip.acodec_opts, "b=256k");
-			dvd_trip.crf = 14;
+			dvd_trip.crf = 16;
 		}
 
 		// x264 doesn't allow passing log level (that I can see)
@@ -611,10 +610,6 @@ int main(int argc, char **argv) {
 
 	if(strncmp(dvd_trip.container, "webm", 4) == 0) {
 
-		dvd_trip.two_pass = true;
-
-		fprintf(stderr, "dvd_trip [info]: starting pass %u\n", dvd_trip.pass);
-
 		if(!opt_filename)
 			strcpy(dvd_trip.filename, "trip_encode.webm");
 
@@ -622,27 +617,27 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.acodec, "libopus");
 		strcpy(dvd_trip.acodec_opts, "application=audio");
 
-		// Low - default options + setting color space
 		if(strncmp(dvd_trip.preset, "low", 3) == 0) {
-			sprintf(dvd_trip.vcodec_opts, "%s,flags=+pass%u", dvd_trip.color_opts, dvd_trip.pass);
+			dvd_trip.crf = 34;
+			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u", dvd_trip.color_opts, dvd_trip.crf);
+			strcpy(dvd_trip.acodec_opts, "application=audio,b=96000");
 		}
 
-		// Medium - see https://www.webmproject.org/docs/encoder-parameters/
-		// '2-Pass Faster VBR Encoding'
 		if(strncmp(dvd_trip.preset, "medium", 6) == 0) {
-			sprintf(dvd_trip.vcodec_opts, "%s,flags=+pass%u,threads=4,quality=good,cpu-used=1,b=2000000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63", dvd_trip.color_opts, dvd_trip.pass);
+			dvd_trip.crf = 32;
+			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u", dvd_trip.color_opts, dvd_trip.crf);
+			strcpy(dvd_trip.acodec_opts, "application=audio,b=144000");
 		}
 
-		// High - cpu-used from 1 to 0, increase video and audio bitrate
 		if(strncmp(dvd_trip.preset, "high", 4) == 0) {
-			sprintf(dvd_trip.vcodec_opts, "%s,flags=+pass%u,threads=4,quality=good,cpu-used=0,b=2160000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63", dvd_trip.color_opts, dvd_trip.pass);
-			strcpy(dvd_trip.acodec_opts, "application=audio,b=128000");
+			dvd_trip.crf = 22;
+			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u", dvd_trip.color_opts, dvd_trip.crf);
+			strcpy(dvd_trip.acodec_opts, "application=audio,b=192000");
 		}
 
-		// Insane - upgrade quality from 'good' to 'best, enable automatic alt reference frames,
-		// set lag-in-frames (lookahead) to 16, increase video bitrate and max opus audio bitrate
 		if(strncmp(dvd_trip.preset, "insane", 6) == 0) {
-			sprintf(dvd_trip.vcodec_opts, "%s,flags=+pass%u,auto-alt-ref=1,lag-in-frames=16,quality=best,cpu-used=0,b=2440000,keyint_min=0,g=360,slices=2,nr=0,qmin=0,qmax=63", dvd_trip.color_opts, dvd_trip.pass);
+			dvd_trip.crf = 16;
+			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u", dvd_trip.color_opts, dvd_trip.crf);
 			strcpy(dvd_trip.acodec_opts, "application=audio,b=256000");
 		}
 
@@ -726,18 +721,8 @@ int main(int argc, char **argv) {
 
 		dvd_mpv_event = mpv_wait_event(dvd_mpv, -1);
 
-		if(dvd_mpv_event->event_id == MPV_EVENT_SHUTDOWN)
+		if(dvd_mpv_event->event_id == MPV_EVENT_SHUTDOWN || dvd_mpv_event->event_id == MPV_EVENT_END_FILE)
 			break;
-
-		if(dvd_mpv_event->event_id == MPV_EVENT_END_FILE) {
-			if(dvd_trip.two_pass == false || (dvd_trip.two_pass == true && dvd_trip.pass == 2)) {
-				break;
-			} else if(dvd_trip.two_pass == true && dvd_trip.pass == 1) {
-				dvd_trip.pass = 2;
-				mpv_terminate_destroy(dvd_mpv);
-				goto pass_two;
-			}
-		}
 
 		// Logging output
 		if((verbose || debug) && dvd_mpv_event->event_id == MPV_EVENT_LOG_MESSAGE) {
