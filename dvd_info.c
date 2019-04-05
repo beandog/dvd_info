@@ -50,6 +50,9 @@ int main(int argc, char **argv) {
 	bool d_cells = false;
 	bool d_quiet = false;
 
+	// limit results
+	bool d_has_audio = false;
+
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
 	bool d_all_tracks = true;
@@ -171,11 +174,12 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	// Send 'invalid argument' to stderr
 	opterr = 1;
-	const char p_short_opts[] = "acdhijoqsTt:Vvxz";
+	const char p_short_opts[] = "aAcdhijoqsTt:Vvxz";
 
 	struct option p_long_opts[] = {
 
 		{ "audio", no_argument, NULL, 'a' },
+		{ "has-audio", no_argument, NULL, 'A' },
 		{ "video", no_argument, NULL, 'v' },
 		{ "chapters", no_argument, NULL, 'c' },
 		{ "subtitles", no_argument, NULL, 's' },
@@ -211,6 +215,10 @@ int main(int argc, char **argv) {
 
 			case 'a':
 				d_audio = true;
+				break;
+
+			case 'A':
+				d_has_audio = true;
 				break;
 
 			case 'c':
@@ -733,6 +741,10 @@ int main(int argc, char **argv) {
 		if(dvd_track.valid == false && d_quiet == true && debug == false)
 			continue;
 
+		// Skip if limiting to tracks with audio only
+		if(d_has_audio && dvd_track.active_audio_streams == 0)
+			continue;
+
 		// Display track information
 		printf("Track: %02u, ", dvd_track.track);
 		printf("Length: %s, ", dvd_track.length);
@@ -879,6 +891,9 @@ void print_usage(char *binary) {
 	printf("  -o, --ogm		Display OGM chapter format for track (default: longest)\n");
 	printf("  -i, --id		Display DVD id only (from libdvdread)\n");
 	printf("  -T, --title		Display DVD title only (path must be device or file)\n");
+	printf("\n");
+	printf("Narrow results:\n");
+	printf("  -A, --has-audio	Track has audio streams\n");
 	printf("\n");
 	printf("Other:\n");
 	printf("  -q, --quiet		Don't display DVD title, longest track, invalid tracks, and inactive streams\n");
