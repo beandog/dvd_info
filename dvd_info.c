@@ -561,8 +561,12 @@ int main(int argc, char **argv) {
 		// FIXME at some point I'd like to output what the DVD claims the data is,
 		// but for now, for visibility's sake, it's simpler to leave it all at zeroes.
 
+		// NEEDS RESEARCH if a track is marked as invalid, does that mean the VTS
+		// is invalid as well? I originally had this toggled as yes, probably for
+		// some reason ... took it out, now.
+
 		if(dvd_track.valid == false) {
-			dvd_vts[dvd_track.vts].valid = false;
+			// dvd_vts[dvd_track.vts].valid = false; // not necessarily true
 			dvd_vts[dvd_track.vts].invalid_tracks++;
 			dvd_tracks[track_number - 1] = dvd_track;
 			dvd_info.invalid_tracks++;
