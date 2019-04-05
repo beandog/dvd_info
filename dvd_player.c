@@ -443,6 +443,43 @@ int main(int argc, char **argv) {
 
 	printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
 
+	// Check for track issues
+	dvd_track.valid = true;
+
+	if(dvd_track.msecs == 0) {
+		printf("	Error: track has zero length\n");
+		dvd_track.valid = false;
+	}
+
+	if(dvd_track.chapters == 0) {
+		printf("	Error: track has zero chapters\n");
+		dvd_track.valid = false;
+	}
+
+	if(dvd_track.cells == 0) {
+		printf("	Error: track has zero cells\n");
+		dvd_track.valid = false;
+	}
+
+	if(dvd_track.valid == false) {
+
+		printf("Track has been marked as invalid, quitting\n");
+
+		DVDCloseFile(dvdread_vts_file);
+
+		if(vts_ifo)
+			ifoClose(vts_ifo);
+
+		if(vmg_ifo)
+			ifoClose(vmg_ifo);
+
+		if(dvdread_dvd)
+			DVDClose(dvdread_dvd);
+
+		return 1;
+
+	}
+
 	// DVD playback using libmpv
 	dvd_mpv = mpv_create();
 
