@@ -18,6 +18,7 @@
 #include "dvd_info.h"
 #include "dvd_device.h"
 #include "dvd_drive.h"
+#include "dvd_vts.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
 #include "dvd_chapter.h"
@@ -134,6 +135,9 @@ int main(int argc, char **argv) {
 	mpv_handle *dvd_mpv = NULL;
 	mpv_event *dvd_mpv_event = NULL;
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
+
+	// Video Title Set
+	struct dvd_vts dvd_vts[99];
 
 	const char str_options[] = "Ac:dehl:o:p:t:Vvz";
 	struct option long_options[] = {
@@ -430,13 +434,26 @@ int main(int argc, char **argv) {
 
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
+		dvd_vts[vts].vts = vts;
+		dvd_vts[vts].valid = false;
+		dvd_vts[vts].blocks = 0;
+		dvd_vts[vts].filesize = 0;
+		dvd_vts[vts].vobs = 0;
+		dvd_vts[vts].tracks = 0;
+		dvd_vts[vts].valid_tracks = 0;
+		dvd_vts[vts].invalid_tracks = 0;
+
 		vts_ifos[vts] = ifoOpen(dvdread_dvd, vts);
 
-		if(!vts_ifos[vts]) {
+		if(vts_ifos[vts] == NULL) {
+			dvd_vts[vts].valid = false;
 			vts_ifos[vts] = NULL;
 		} else if(!ifo_is_vts(vts_ifos[vts])) {
+			dvd_vts[vts].valid = false;
 			ifoClose(vts_ifos[vts]);
 			vts_ifos[vts] = NULL;
+		} else {
+			dvd_vts[vts].valid = true;
 		}
 
 	}
@@ -462,6 +479,7 @@ int main(int argc, char **argv) {
 		vts = dvd_vts_ifo_number(vmg_ifo, ix + 1);
 		vts_ifo = vts_ifos[vts];
 		dvd_track_info(&dvd_tracks[ix], track, vmg_ifo, vts_ifo);
+		dvd_tracks[ix].valid = true;
 
 		if(dvd_tracks[ix].msecs > longest_msecs) {
 			dvd_info.longest_track = track;
@@ -506,6 +524,47 @@ int main(int argc, char **argv) {
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
 	printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
+
+	// Check for track issues
+	dvd_track.valid = true;
+
+	if(dvd_vts[vts].valid == false) {
+		dvd_track.valid = false;
+	}
+
+	if(dvd_track.msecs == 0) {
+		printf("	Error: track has zero length\n");
+		dvd_track.valid = false;
+	}
+
+	if(dvd_track.chapters == 0) {
+		printf("	Error: track has zero chapters\n");
+		dvd_track.valid = false;
+	}
+
+	if(dvd_track.cells == 0) {
+		printf("	Error: track has zero cells\n");
+		dvd_track.valid = false;
+	}
+
+	if(dvd_track.valid == false) {
+
+		printf("Track has been marked as invalid, quitting\n");
+
+		DVDCloseFile(dvdread_vts_file);
+
+		if(vts_ifo)
+			ifoClose(vts_ifo);
+
+		if(vmg_ifo)
+			ifoClose(vmg_ifo);
+
+		if(dvdread_dvd)
+			DVDClose(dvdread_dvd);
+
+		return 1;
+
+	}
 
 	// MPV zero-indexes tracks
 	sprintf(dvd_mpv_args, "dvdread://%u", dvd_trip.track - 1);
