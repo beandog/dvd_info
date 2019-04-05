@@ -52,6 +52,7 @@ int main(int argc, char **argv) {
 
 	// limit results
 	bool d_has_audio = false;
+	bool d_has_subtitles = false;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -174,7 +175,7 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	// Send 'invalid argument' to stderr
 	opterr = 1;
-	const char p_short_opts[] = "aAcdhijoqsTt:Vvxz";
+	const char p_short_opts[] = "aAcdhijoqsSTt:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -183,6 +184,7 @@ int main(int argc, char **argv) {
 		{ "video", no_argument, NULL, 'v' },
 		{ "chapters", no_argument, NULL, 'c' },
 		{ "subtitles", no_argument, NULL, 's' },
+		{ "has-subtitles", no_argument, NULL, 'S' },
 		{ "cells", no_argument, NULL, 'd' },
 		{ "all", no_argument, NULL, 'x' },
 		{ "json", no_argument, NULL, 'j' },
@@ -243,6 +245,10 @@ int main(int argc, char **argv) {
 
 			case 's':
 				d_subtitles = true;
+				break;
+
+			case 'S':
+				d_has_subtitles = true;
 				break;
 
 			case 't':
@@ -745,6 +751,10 @@ int main(int argc, char **argv) {
 		if(d_has_audio && dvd_track.active_audio_streams == 0)
 			continue;
 
+		// Skip if limiting tracks to one with VOBSUB subtitles only (cc not supported)
+		if(d_has_subtitles && dvd_track.active_subs == 0)
+			continue;
+
 		// Display track information
 		printf("Track: %02u, ", dvd_track.track);
 		printf("Length: %s, ", dvd_track.length);
@@ -894,6 +904,7 @@ void print_usage(char *binary) {
 	printf("\n");
 	printf("Narrow results:\n");
 	printf("  -A, --has-audio	Track has audio streams\n");
+	printf("  -S, --has-subtitles	Track has VOBSUB subtitles\n");
 	printf("\n");
 	printf("Other:\n");
 	printf("  -q, --quiet		Don't display DVD title, longest track, invalid tracks, and inactive streams\n");
