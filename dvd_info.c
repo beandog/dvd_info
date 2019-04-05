@@ -917,6 +917,7 @@ void print_usage(char *binary) {
 	printf("Narrow results:\n");
 	printf("  -A, --has-audio	Track has audio streams\n");
 	printf("  -S, --has-subtitles	Track has VOBSUB subtitles\n");
+	printf("  -E, --seconds <secs>	Track has minimum number of seconds\n");
 	printf("\n");
 	printf("Other:\n");
 	printf("  -q, --quiet		Don't display DVD title, longest track, invalid tracks, and inactive streams\n");
