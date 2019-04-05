@@ -19,6 +19,7 @@
 #include "dvd_device.h"
 #include "dvd_drive.h"
 #include "dvd_vmg_ifo.h"
+#include "dvd_vts.h"
 #include "dvd_track.h"
 #include "dvd_chapter.h"
 #include "dvd_cell.h"
@@ -82,6 +83,9 @@ int main(int argc, char **argv) {
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
 	const char *home_dir = getenv("HOME");
 	const char *lang = getenv("LANG");
+
+	// Video Title Set
+	struct dvd_vts dvd_vts[99];
 
 	// DVD player default options
 	snprintf(dvd_player.config_dir, 20, "/.config/dvd_player");
@@ -344,13 +348,26 @@ int main(int argc, char **argv) {
 
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
+		dvd_vts[vts].vts = vts;
+		dvd_vts[vts].valid = false;
+		dvd_vts[vts].blocks = 0;
+		dvd_vts[vts].filesize = 0;
+		dvd_vts[vts].vobs = 0;
+		dvd_vts[vts].tracks = 0;
+		dvd_vts[vts].valid_tracks = 0;
+		dvd_vts[vts].invalid_tracks = 0;
+
 		vts_ifos[vts] = ifoOpen(dvdread_dvd, vts);
 
-		if(!vts_ifos[vts]) {
+		if(vts_ifos[vts] == NULL) {
+			dvd_vts[vts].valid = false;
 			vts_ifos[vts] = NULL;
 		} else if(!ifo_is_vts(vts_ifos[vts])) {
+			dvd_vts[vts].valid = false;
 			ifoClose(vts_ifos[vts]);
 			vts_ifos[vts] = NULL;
+		} else {
+			dvd_vts[vts].valid = true;
 		}
 
 	}
@@ -445,6 +462,10 @@ int main(int argc, char **argv) {
 
 	// Check for track issues
 	dvd_track.valid = true;
+
+	if(dvd_vts[vts].valid == false) {
+		dvd_track.valid = false;
+	}
 
 	if(dvd_track.msecs == 0) {
 		printf("	Error: track has zero length\n");
