@@ -668,6 +668,8 @@ int main(int argc, char **argv) {
 				dvd_cell.msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 				dvd_cell.first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 				dvd_cell.last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+				dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+				dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 
 				dvd_track.dvd_cells[cell_ix] = dvd_cell;
 
@@ -804,7 +806,11 @@ int main(int argc, char **argv) {
 			for(cell_ix = 0; cell_ix < dvd_track.cells; cell_ix++) {
 
 				dvd_cell = dvd_track.dvd_cells[cell_ix];
-				printf("	Cell: %02u, Length: %s, First sector: %u, Last sector: %u\n", dvd_cell.cell, dvd_cell.length, dvd_cell.first_sector, dvd_cell.last_sector);
+				if(debug) {
+					printf("	Cell: %02u, Length: %s\n", dvd_cell.cell, dvd_cell.length);
+					printf("	Cell: %02u, VTS: %02i, VOB: %02i, Blocks: %6lu, Filesize: %9lu, First sector: %7u, Last sector: %7u\n", dvd_cell.cell, dvd_track.vts, (int)(dvd_cell.first_sector / 524288) + 1, dvd_cell.blocks, dvd_cell.filesize, dvd_cell.first_sector, dvd_cell.last_sector);
+				} else
+					printf("	Cell: %02u, Length: %s, First sector: %u, Last sector: %u\n", dvd_cell.cell, dvd_cell.length, dvd_cell.first_sector, dvd_cell.last_sector);
 
 			}
 
