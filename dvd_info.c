@@ -53,6 +53,8 @@ int main(int argc, char **argv) {
 	// limit results
 	bool d_has_audio = false;
 	bool d_has_subtitles = false;
+	bool opt_min_seconds = true;
+	unsigned int arg_min_seconds = 0;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -175,7 +177,7 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	// Send 'invalid argument' to stderr
 	opterr = 1;
-	const char p_short_opts[] = "aAcdhijoqsSTt:Vvxz";
+	const char p_short_opts[] = "aAcdE:hijoqsSTt:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -193,6 +195,7 @@ int main(int argc, char **argv) {
 		{ "id", no_argument, NULL, 'i' },
 		{ "title", no_argument, NULL, 'T' },
 		{ "ogm", no_argument, NULL, 'o' },
+		{ "min-seconds", required_argument, NULL, 'E' },
 		{ "help", no_argument, NULL, 'h' },
 		{ "version", no_argument, NULL, 'V' },
 		{ "debug", no_argument, NULL, 'z' },
@@ -229,6 +232,11 @@ int main(int argc, char **argv) {
 
 			case 'd':
 				d_cells = true;
+				break;
+
+			case 'E':
+				opt_min_seconds = true;
+				arg_min_seconds = (unsigned int)strtoumax(optarg, NULL, 0);
 				break;
 
 			case 'i':
@@ -753,6 +761,10 @@ int main(int argc, char **argv) {
 
 		// Skip if limiting tracks to one with VOBSUB subtitles only (cc not supported)
 		if(d_has_subtitles && dvd_track.active_subs == 0)
+			continue;
+
+		// Skip if limiting to a minimum # of seconds which the length doesn't meet
+		if(opt_min_seconds && dvd_track.msecs < (arg_min_seconds * 1000))
 			continue;
 
 		// Display track information
