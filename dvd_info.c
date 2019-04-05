@@ -55,6 +55,8 @@ int main(int argc, char **argv) {
 	bool d_has_subtitles = false;
 	bool opt_min_seconds = true;
 	unsigned int arg_min_seconds = 0;
+	bool opt_min_minutes = true;
+	unsigned int arg_min_minutes = 0;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -177,7 +179,7 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	// Send 'invalid argument' to stderr
 	opterr = 1;
-	const char p_short_opts[] = "aAcdE:hijoqsSTt:Vvxz";
+	const char p_short_opts[] = "aAcdE:hijM:oqsSTt:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -196,6 +198,7 @@ int main(int argc, char **argv) {
 		{ "title", no_argument, NULL, 'T' },
 		{ "ogm", no_argument, NULL, 'o' },
 		{ "min-seconds", required_argument, NULL, 'E' },
+		{ "min-minutes", required_argument, NULL, 'M' },
 		{ "help", no_argument, NULL, 'h' },
 		{ "version", no_argument, NULL, 'V' },
 		{ "debug", no_argument, NULL, 'z' },
@@ -249,6 +252,11 @@ int main(int argc, char **argv) {
 
 			case 'q':
 				d_quiet = true;
+				break;
+
+			case 'M':
+				opt_min_minutes = true;
+				arg_min_minutes = (unsigned int)strtoumax(optarg, NULL, 0);
 				break;
 
 			case 's':
@@ -767,6 +775,10 @@ int main(int argc, char **argv) {
 		if(opt_min_seconds && dvd_track.msecs < (arg_min_seconds * 1000))
 			continue;
 
+		// Skip if limiting to a minimum # of minutes which the length doesn't meet
+		if(opt_min_minutes && dvd_track.msecs < (arg_min_minutes * 1000 * 60))
+			continue;
+
 		// Display track information
 		printf("Track: %02u, ", dvd_track.track);
 		printf("Length: %s, ", dvd_track.length);
@@ -918,6 +930,7 @@ void print_usage(char *binary) {
 	printf("  -A, --has-audio	Track has audio streams\n");
 	printf("  -S, --has-subtitles	Track has VOBSUB subtitles\n");
 	printf("  -E, --seconds <secs>	Track has minimum number of seconds\n");
+	printf("  -M, --minutes <mins>	Track has minimum number of minutes\n");
 	printf("\n");
 	printf("Other:\n");
 	printf("  -q, --quiet		Don't display DVD title, longest track, invalid tracks, and inactive streams\n");
