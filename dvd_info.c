@@ -57,6 +57,8 @@ int main(int argc, char **argv) {
 	unsigned int arg_min_seconds = 0;
 	bool opt_min_minutes = true;
 	unsigned int arg_min_minutes = 0;
+	bool d_skip_broken = false;
+	bool d_broken = false;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -179,7 +181,7 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	// Send 'invalid argument' to stderr
 	opterr = 1;
-	const char p_short_opts[] = "aAcdE:hijM:oqsSTt:Vvxz";
+	const char p_short_opts[] = "aABcdDE:hijM:oqsSTt:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -195,6 +197,8 @@ int main(int argc, char **argv) {
 		{ "track", required_argument, NULL, 't' },
 		{ "quiet", no_argument, NULL, 'q' },
 		{ "id", no_argument, NULL, 'i' },
+		{ "skip-broken", no_argument, NULL, 'B' },
+		{ "display-broken", no_argument, NULL, 'D' },
 		{ "title", no_argument, NULL, 'T' },
 		{ "ogm", no_argument, NULL, 'o' },
 		{ "min-seconds", required_argument, NULL, 'E' },
@@ -229,12 +233,20 @@ int main(int argc, char **argv) {
 				d_has_audio = true;
 				break;
 
+			case 'B':
+				d_skip_broken = true;
+				break;
+
 			case 'c':
 				d_chapters = true;
 				break;
 
 			case 'd':
 				d_cells = true;
+				break;
+
+			case 'D':
+				d_broken = true;
 				break;
 
 			case 'E':
@@ -763,6 +775,14 @@ int main(int argc, char **argv) {
 		if(dvd_track.valid == false && d_quiet == true && debug == false)
 			continue;
 
+		// Display only broken tracks if specified to
+		if(d_broken && dvd_track.valid == true)
+			continue;
+
+		// Skip broken tracks if specified to
+		if(d_skip_broken && dvd_track.valid == false)
+			continue;
+
 		// Skip if limiting to tracks with audio only
 		if(d_has_audio && dvd_track.active_audio_streams == 0)
 			continue;
@@ -931,6 +951,8 @@ void print_usage(char *binary) {
 	printf("  -S, --has-subtitles	Track has VOBSUB subtitles\n");
 	printf("  -E, --seconds <secs>	Track has minimum number of seconds\n");
 	printf("  -M, --minutes <mins>	Track has minimum number of minutes\n");
+	printf("  -B, --skip-broken	Skip broken tracks, marked invalid for some reason\n");
+	printf("  -D, --display-broken	Display only broken tracks, marked as invalid\n");
 	printf("\n");
 	printf("Other:\n");
 	printf("  -q, --quiet		Don't display DVD title, longest track, invalid tracks, and inactive streams\n");
