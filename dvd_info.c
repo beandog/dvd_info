@@ -59,6 +59,8 @@ int main(int argc, char **argv) {
 	unsigned int arg_min_minutes = 0;
 	bool d_skip_broken = false;
 	bool d_broken = false;
+	bool opt_vts = false;
+	uint16_t arg_vts = 0;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -181,7 +183,7 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	// Send 'invalid argument' to stderr
 	opterr = 1;
-	const char p_short_opts[] = "aABcdDE:hijM:oqsSTt:Vvxz";
+	const char p_short_opts[] = "aABcdDE:hiIjM:oqsSTt:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -203,6 +205,7 @@ int main(int argc, char **argv) {
 		{ "ogm", no_argument, NULL, 'o' },
 		{ "min-seconds", required_argument, NULL, 'E' },
 		{ "min-minutes", required_argument, NULL, 'M' },
+		{ "vts", required_argument, NULL, 'I' },
 		{ "help", no_argument, NULL, 'h' },
 		{ "version", no_argument, NULL, 'V' },
 		{ "debug", no_argument, NULL, 'z' },
@@ -256,6 +259,11 @@ int main(int argc, char **argv) {
 
 			case 'i':
 				p_dvd_id = true;
+				break;
+
+			case 'I':
+				opt_vts = true;
+				arg_vts = (uint16_t)strtoumax(optarg, NULL, 0);
 				break;
 
 			case 'j':
@@ -801,6 +809,10 @@ int main(int argc, char **argv) {
 
 		// Skip if limiting to a minimum # of minutes which the length doesn't meet
 		if(opt_min_minutes && dvd_track.msecs < (arg_min_minutes * 1000 * 60))
+			continue;
+
+		// Skip if limiting to one title set
+		if(opt_vts && dvd_track.vts != arg_vts)
 			continue;
 
 		// Display track information
