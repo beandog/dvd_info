@@ -69,6 +69,7 @@ int main(int argc, char **argv) {
 
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
+	bool opt_cell_number = false;
 	bool p_dvd_copy = true;
 	bool p_dvd_cat = false;
 	bool opt_filename = false;
@@ -77,15 +78,18 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	opterr = 1;
 	const char *str_options;
-	str_options = "c:ho:t:V";
+	str_options = "c:d:ho:t:V";
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
+	uint8_t arg_first_cell = 1;
+	uint8_t arg_last_cell = 99;
 	char *token = NULL;
 	struct dvd_copy dvd_copy;
 
 	struct option long_options[] = {
 
 		{ "chapters", required_argument, 0, 'c' },
+		{ "cells", required_argument, 0, 'd' },
 		{ "dvd_copy.filename", required_argument, 0, 'o' },
 		{ "track", required_argument, 0, 't' },
 		{ "help", no_argument, 0, 'h' },
@@ -136,6 +140,34 @@ int main(int argc, char **argv) {
 
 				break;
 
+			case 'd':
+				opt_cell_number = true;
+				token = strtok(optarg, "-"); {
+					if(strlen(token) > 2) {
+						fprintf(stderr, "Cell range must be between 1 and 99\n");
+						return 1;
+					}
+					arg_first_cell = (uint8_t)strtoumax(token, NULL, 0);
+				}
+
+				token = strtok(NULL, "-");
+				if(token != NULL) {
+					if(strlen(token) > 2) {
+						fprintf(stderr, "Cell range must be between 1 and 99\n");
+						return 1;
+					}
+					arg_last_cell = (uint8_t)strtoumax(token, NULL, 0);
+				}
+
+				if(arg_first_cell == 0)
+					arg_first_cell = 1;
+				if(arg_last_cell < arg_first_cell)
+					arg_last_cell = arg_first_cell;
+				if(arg_first_cell > arg_last_cell)
+					arg_first_cell = arg_last_cell;
+
+				break;
+
 			case 'h':
 				print_usage(DVD_INFO_PROGRAM);
 				return 0;
@@ -174,6 +206,13 @@ int main(int argc, char **argv) {
 
 		}
 
+	}
+
+	// Setting a cell range requires a chapter to be selected; If none is specified, use the first chapter only
+	if(opt_cell_number && !opt_chapter_number) {
+		opt_chapter_number = true;
+		arg_first_chapter = 1;
+		arg_last_chapter = 1;
 	}
 
 	const char *device_filename = DEFAULT_DVD_DEVICE;
@@ -354,6 +393,24 @@ int main(int argc, char **argv) {
 		dvd_copy.first_chapter = 1;
 		dvd_copy.last_chapter = dvd_track.chapters;
 	}
+
+	// Set the proper cell range
+	if(opt_cell_number) {
+		if(arg_first_cell > dvd_track.cells) {
+			dvd_copy.first_cell = dvd_track.cells;
+			fprintf(stderr, "Resetting first cell to %u\n", dvd_copy.first_cell);
+		} else
+			dvd_copy.first_cell = arg_first_cell;
+
+		if(arg_last_cell > dvd_track.cells) {
+			dvd_copy.last_cell = dvd_track.cells;
+			fprintf(stderr, "Resetting last cell to %u\n", dvd_copy.last_cell);
+		} else
+			dvd_copy.last_cell = arg_last_cell;
+	} else {
+		dvd_copy.first_cell = 1;
+		dvd_copy.last_cell = dvd_track.cells;
+	}
 	
 	// Set default filename
 	if(!opt_filename) {
@@ -438,9 +495,6 @@ int main(int argc, char **argv) {
 		dvd_copy.fd = 1;
 	}
 
-	dvd_copy.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_copy.first_chapter);
-	dvd_copy.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_copy.last_chapter);
-
 	// Get limits of copy
 	for(dvd_cell.cell = dvd_copy.first_cell; dvd_cell.cell < dvd_copy.last_cell + 1; dvd_cell.cell++) {
 		
@@ -453,11 +507,18 @@ int main(int argc, char **argv) {
 
 	for(dvd_chapter.chapter = dvd_copy.first_chapter; dvd_chapter.chapter < dvd_copy.last_chapter + 1; dvd_chapter.chapter++) {
 
+		// Use dvd_copy struct as the first and last cell
 		dvd_chapter.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
 		dvd_chapter.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
 		dvd_chapter_length(dvd_chapter.length, vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
 
-		for(dvd_cell.cell = dvd_chapter.first_cell; dvd_cell.cell < dvd_chapter.last_cell + 1; dvd_cell.cell++) {
+		if(opt_cell_number == false) {
+			dvd_copy.first_cell = dvd_chapter.first_cell;
+			dvd_copy.last_cell = dvd_chapter.last_cell;
+		}
+
+		// for(dvd_cell.cell = dvd_chapter.first_cell; dvd_cell.cell < dvd_chapter.last_cell + 1; dvd_cell.cell++) {
+		for(dvd_cell.cell = dvd_copy.first_cell; dvd_cell.cell < dvd_copy.last_cell + 1; dvd_cell.cell++) {
 
 			dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 			dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
