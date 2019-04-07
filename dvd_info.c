@@ -815,6 +815,10 @@ int main(int argc, char **argv) {
 		if(opt_vts && dvd_track.vts != arg_vts)
 			continue;
 
+		// Skip tracks less than one second in quiet mode
+		if(d_quiet && dvd_track.msecs < 1000)
+			continue;
+
 		// Display track information
 		printf("Track: %02u, ", dvd_track.track);
 		printf("Length: %s, ", dvd_track.length);
