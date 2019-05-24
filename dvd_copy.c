@@ -114,13 +114,12 @@ int main(int argc, char **argv) {
 
 			case 'c':
 				opt_chapter_number = true;
-				token = strtok(optarg, "-"); {
-					if(strlen(token) > 2) {
-						fprintf(stderr, "Chapter range must be between 1 and 99\n");
-						return 1;
-					}
-					arg_first_chapter = (uint8_t)strtoumax(token, NULL, 0);
+				token = strtok(optarg, "-");
+				if(strlen(token) > 2) {
+					fprintf(stderr, "Chapter range must be between 1 and 99\n");
+					return 1;
 				}
+				arg_first_chapter = (uint8_t)strtoumax(token, NULL, 0);
 
 				token = strtok(NULL, "-");
 				if(token != NULL) {
