@@ -28,7 +28,7 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-dvd_copy \- copy a track or playlist from a DVD to a file or stdout
+dvd_copy \- copy a track from a DVD to a file or stdout
 .SH "SYNOPSIS"
 .sp
 \fBdvd_copy\fR [\fIPATH\fR] [\fIOPTIONS\fR]
@@ -54,11 +54,6 @@ $ dvd_copy \-t 5 \-c 2\-2 \-o \- | ffmpeg \-i \- \-map 0:0 \-map 0:3 \-c copy vi
 \fB\-t, \-\-track\fR=\fITITLE\fR
 .RS 4
 Copy the selected track number\&.
-.RE
-.PP
-\fB\-p, \-\-playlist\fR=\fIPLAYLIST\fR
-.RS 4
-Copy the selected playlist\&.
 .RE
 .sp
 \fB\-c, \-\-chapter\fR=\fICHAPTER[\-[CHAPTER]]\fR Copy the selected chapter range\&. Default is to copy all chapters\&.
