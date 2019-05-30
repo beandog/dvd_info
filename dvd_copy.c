@@ -71,12 +71,13 @@ int main(int argc, char **argv) {
 	bool p_dvd_copy = true;
 	bool p_dvd_cat = false;
 	bool opt_filename = false;
-	uint16_t arg_track_number = 0;
+	uint16_t arg_track_number = 1;
 	int long_index = 0;
 	int opt = 0;
 	bool invalid_opt = false;
 	const char *str_options;
 	str_options = "c:d:ho:t:V";
+	long int arg_number = 0;
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
 	uint8_t arg_first_cell = 1;
@@ -117,7 +118,13 @@ int main(int argc, char **argv) {
 					fprintf(stderr, "Chapter range must be between 1 and 99\n");
 					return 1;
 				}
-				arg_first_chapter = (uint8_t)strtoumax(token, NULL, 0);
+				arg_number = strtoul(token, NULL, 10);
+				if(arg_number > 99)
+					arg_first_chapter = 99;
+				else if(arg_number == 0)
+					arg_first_chapter = 1;
+				else
+					arg_first_chapter = (uint8_t)arg_number;
 
 				token = strtok(NULL, "-");
 				if(token != NULL) {
@@ -125,13 +132,18 @@ int main(int argc, char **argv) {
 						fprintf(stderr, "Chapter range must be between 1 and 99\n");
 						return 1;
 					}
-					arg_last_chapter = (uint8_t)strtoumax(token, NULL, 0);
+					arg_number = strtoul(token, NULL, 10);
+					if(arg_number > 99)
+						arg_last_chapter = 99;
+					if(arg_number == 0)
+						arg_last_chapter = arg_first_chapter;
+					else
+						arg_last_chapter = (uint8_t)arg_number;
 				}
 
-				if(arg_first_chapter == 0)
-					arg_first_chapter = 1;
 				if(arg_last_chapter < arg_first_chapter)
 					arg_last_chapter = arg_first_chapter;
+
 				if(arg_first_chapter > arg_last_chapter)
 					arg_first_chapter = arg_last_chapter;
 
@@ -144,7 +156,13 @@ int main(int argc, char **argv) {
 						fprintf(stderr, "Cell range must be between 1 and 99\n");
 						return 1;
 					}
-					arg_first_cell = (uint8_t)strtoumax(token, NULL, 0);
+					arg_number = strtoul(token, NULL, 10);
+					if(arg_number > 99)
+						arg_first_cell = 99;
+					else if(arg_number == 0)
+						arg_first_cell = 1;
+					else
+						arg_first_cell = (uint8_t)arg_number;
 				}
 
 				token = strtok(NULL, "-");
@@ -153,11 +171,15 @@ int main(int argc, char **argv) {
 						fprintf(stderr, "Cell range must be between 1 and 99\n");
 						return 1;
 					}
-					arg_last_cell = (uint8_t)strtoumax(token, NULL, 0);
+					arg_number = strtoul(token, NULL, 10);
+					if(arg_number > 99)
+						arg_last_cell = 99;
+					else if(arg_number == 0)
+						arg_last_cell = arg_first_cell;
+					else
+						arg_last_cell = (uint8_t)arg_number;
 				}
 
-				if(arg_first_cell == 0)
-					arg_first_cell = 1;
 				if(arg_last_cell < arg_first_cell)
 					arg_last_cell = arg_first_cell;
 				if(arg_first_cell > arg_last_cell)
@@ -180,7 +202,13 @@ int main(int argc, char **argv) {
 
 			case 't':
 				opt_track_number = true;
-				arg_track_number = (uint16_t)strtoumax(optarg, NULL, 0);
+				arg_number = strtoul(optarg, NULL, 0);
+				if(arg_number > 99)
+					arg_track_number = 99;
+				else if(arg_number == 0)
+					arg_track_number = 1;
+				else
+					arg_track_number = (uint16_t)arg_number;
 				break;
 
 			case 'V':
