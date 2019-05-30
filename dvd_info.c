@@ -36,7 +36,6 @@ int main(int argc, char **argv) {
 	bool p_dvd_id = false;
 	bool p_dvd_title = false;
 	bool p_dvd_ogm = false;
-	char program_name[] = "dvd_info";
 
 	// lsdvd similar display output
 	bool d_audio = false;
@@ -396,14 +395,14 @@ int main(int argc, char **argv) {
 	
 	// Check to see if device can be accessed
 	if(!dvd_device_access(device_filename)) {
-		fprintf(stderr, "%s: cannot access %s\n", program_name, device_filename);
+		fprintf(stderr, "[dvd_info] cannot access %s\n", device_filename);
 		return 1;
 	}
 
 	// Check to see if device can be opened
 	dvd_fd = dvd_device_open(device_filename);
 	if(dvd_fd < 0) {
-		fprintf(stderr, "%s: error opening %s\n", program_name, device_filename);
+		fprintf(stderr, "[dvd_info] error opening %s\n", device_filename);
 		return 1;
 	}
 	dvd_device_close(dvd_fd);
@@ -416,7 +415,7 @@ int main(int argc, char **argv) {
 		// Wait for the drive to become ready
 		if(!dvd_drive_has_media(device_filename)) {
 
-			fprintf(stderr, "drive status: ");
+			fprintf(stderr, "[dvd_info] drive status: ");
 			dvd_drive_display_status(device_filename);
 
 			return 1;
@@ -432,14 +431,14 @@ int main(int argc, char **argv) {
 	// Open DVD device
 	dvdread_dvd = DVDOpen(device_filename);
 	if(!dvdread_dvd) {
-		fprintf(stderr, "%s: Opening DVD %s failed\n", program_name, device_filename);
+		fprintf(stderr, "[dvd_info] Opening DVD %s failed\n", device_filename);
 		return 1;
 	}
 
 	// Check if DVD has an identifier, fail otherwise
 	dvd_dvdread_id(dvdread_id, dvdread_dvd);
 	if(strlen(dvdread_id) == 0) {
-		fprintf(stderr, "%s: Opening DVD %s failed\n", program_name, device_filename);
+		fprintf(stderr, "[dvd_info] Opening DVD %s failed\n", device_filename);
 		return 1;
 	}
 
@@ -452,7 +451,7 @@ int main(int argc, char **argv) {
 	// Open VMG IFO -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo)) {
-		fprintf(stderr, "%s: Opening VMG IFO failed\n", program_name);
+		fprintf(stderr, "[dvd_info] Opening VMG IFO failed\n");
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
@@ -462,7 +461,7 @@ int main(int argc, char **argv) {
 
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks || arg_track_number < 1)) {
-		fprintf(stderr, "[%s] valid track numbers: 1 to %u\n", program_name, dvd_info.tracks);
+		fprintf(stderr, "[dvd_info] valid track numbers: 1 to %u\n", dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -511,7 +510,7 @@ int main(int argc, char **argv) {
 	}
 
 	if(has_invalid_ifos)
-		fprintf(stderr, "[NOTICE] %s: You can safely ignore \"Invalid IFOs\" warnings since we work around them :)\n", program_name);
+		fprintf(stderr, "[dvd_info] You can safely ignore \"Invalid IFOs\" warnings since we work around them :)\n");
 
 	// Exit if the track requested is on an invalid IFO
 	if(has_invalid_ifos && opt_track_number) {
