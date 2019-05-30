@@ -628,7 +628,7 @@ int main(int argc, char **argv) {
 				total_bytes_written += bytes_written;
 
 				// fprintf(p_dvd_copy ? stdout : stderr, "Progress: %lu%% - %lu/%lu MBs\r", track_blocks_written * 100 / dvd_copy.blocks, total_bytes_written / 1024 / 1024, dvd_copy.filesize / 1024 / 1024);
-				fprintf(p_dvd_copy ? stdout : stderr, "Progress: %" PRIu64 "/%" PRIu64 " MBs (%" PRIu64 "%%)\r", total_bytes_written / 1024 / 1024, dvd_copy.filesize / 1024 / 1024, track_blocks_written * 100 / dvd_copy.blocks);
+				fprintf(p_dvd_copy ? stdout : stderr, "Progress: %" PRIu64 "/%" PRIu64 " MBs (%" PRIu64 "%%)\r", (uint64_t)(total_bytes_written / 1048576), (uint64_t)(dvd_copy.filesize / 1048576), (uint64_t)(track_blocks_written * 100 / dvd_copy.blocks));
 				fflush(p_dvd_copy ? stdout : stderr);
 
 			}
