@@ -115,7 +115,7 @@ int main(int argc, char **argv) {
 				opt_chapter_number = true;
 				token = strtok(optarg, "-");
 				if(strlen(token) > 2) {
-					fprintf(stderr, "Chapter range must be between 1 and 99\n");
+					fprintf(stderr, "[dvd_copy] Chapter range must be between 1 and 99\n");
 					return 1;
 				}
 				arg_number = strtoul(token, NULL, 10);
@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
 				token = strtok(NULL, "-");
 				if(token != NULL) {
 					if(strlen(token) > 2) {
-						fprintf(stderr, "Chapter range must be between 1 and 99\n");
+						fprintf(stderr, "[dvd_copy] Chapter range must be between 1 and 99\n");
 						return 1;
 					}
 					arg_number = strtoul(token, NULL, 10);
@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
 				opt_cell_number = true;
 				token = strtok(optarg, "-"); {
 					if(strlen(token) > 2) {
-						fprintf(stderr, "Cell range must be between 1 and 99\n");
+						fprintf(stderr, "[dvd_copy] Cell range must be between 1 and 99\n");
 						return 1;
 					}
 					arg_number = strtoul(token, NULL, 10);
@@ -168,7 +168,7 @@ int main(int argc, char **argv) {
 				token = strtok(NULL, "-");
 				if(token != NULL) {
 					if(strlen(token) > 2) {
-						fprintf(stderr, "Cell range must be between 1 and 99\n");
+						fprintf(stderr, "[dvd_copy] Cell range must be between 1 and 99\n");
 						return 1;
 					}
 					arg_number = strtoul(token, NULL, 10);
@@ -191,7 +191,7 @@ int main(int argc, char **argv) {
 				if(strlen(optarg) == 1 && strncmp("-", optarg, 1) == 0) {
 					p_dvd_copy = false;
 					p_dvd_cat = true;
-					fprintf(stderr, "[%s] outputting stream to stdout\n", DVD_INFO_PROGRAM);
+					fprintf(stderr, "[dvd_copy] outputting stream to stdout\n");
 				} else {
 					p_dvd_copy = true;
 					p_dvd_cat = false;
@@ -264,7 +264,7 @@ int main(int argc, char **argv) {
 		device_filename = argv[optind];
 
 	if(access(device_filename, F_OK) != 0) {
-		fprintf(stderr, "cannot access %s\n", device_filename);
+		fprintf(stderr, "[dvd_copy] Cannot access %s\n", device_filename);
 		return 1;
 	}
 
@@ -272,7 +272,7 @@ int main(int argc, char **argv) {
 	int dvd_fd = 0;
 	dvd_fd = dvd_device_open(device_filename);
 	if(dvd_fd < 0) {
-		fprintf(stderr, "dvd_copy: error opening %s\n", device_filename);
+		fprintf(stderr, "[dvd_copy] Error opening %s\n", device_filename);
 		return 1;
 	}
 	dvd_device_close(dvd_fd);
@@ -286,7 +286,7 @@ int main(int argc, char **argv) {
 		// Wait for the drive to become ready
 		if(!dvd_drive_has_media(device_filename)) {
 
-			fprintf(stderr, "drive status: ");
+			fprintf(stderr, "[dvd_copy] drive status: ");
 			dvd_drive_display_status(device_filename);
 
 			return 1;
@@ -301,7 +301,7 @@ int main(int argc, char **argv) {
 	dvdread_dvd = DVDOpen(device_filename);
 
 	if(!dvdread_dvd) {
-		fprintf(stderr, "* dvdread could not open %s\n", device_filename);
+		fprintf(stderr, "[dvd_copy] libdvdread could not open %s\n", device_filename);
 		return 1;
 	}
 
@@ -309,7 +309,7 @@ int main(int argc, char **argv) {
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
 	if(vmg_ifo == NULL) {
-		fprintf(stderr, "* Could not open IFO zero\n");
+		fprintf(stderr, "[dvd_copy] Could not open IFO zero\n");
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
@@ -333,8 +333,8 @@ int main(int argc, char **argv) {
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
 
 	if(num_ifos < 1) {
-		fprintf(stderr, "* DVD has no title IFOs?!\n");
-		fprintf(stderr, "* Most likely a bug in libdvdread or a bad master or problems reading the disc\n");
+		fprintf(stderr, "[dvd_copy] DVD has no title IFOs?!\n");
+		fprintf(stderr, "[dvd_copy] Most likely problems reading the disc, quitting\n");
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -361,7 +361,7 @@ int main(int argc, char **argv) {
 
 	vts_ifo = ifoOpen(dvdread_dvd, vts);
 	if(vts_ifo == NULL) {
-		fprintf(stderr, "* Could not open VTS_IFO for track %u\n", 1);
+		fprintf(stderr, "[dvd_copy] Could not open VTS_IFO for track %u\n", 1);
 		return 1;
 	}
 	ifoClose(vts_ifo);
@@ -386,8 +386,8 @@ int main(int argc, char **argv) {
 	
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks)) {
-		fprintf(stderr, "dvd_copy: Invalid track number %d\n", arg_track_number);
-		fprintf(stderr, "dvd_copy: Valid track numbers: 1 to %u\n", dvd_info.tracks);
+		fprintf(stderr, "[dvd_copy] Invalid track number %d\n", arg_track_number);
+		fprintf(stderr, "[dvd_copy] Valid track numbers: 1 to %u\n", dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -423,13 +423,13 @@ int main(int argc, char **argv) {
 	if(opt_chapter_number) {
 		if(arg_first_chapter > dvd_track.chapters) {
 			dvd_copy.first_chapter = dvd_track.chapters;
-			fprintf(stderr, "Resetting first chapter to %u\n", dvd_copy.first_chapter);
+			fprintf(stderr, "[dvd_copy] Resetting first chapter to %u\n", dvd_copy.first_chapter);
 		} else
 			dvd_copy.first_chapter = arg_first_chapter;
 		
 		if(arg_last_chapter > dvd_track.chapters) {
 			dvd_copy.last_chapter = dvd_track.chapters;
-			fprintf(stderr, "Resetting last chapter to %u\n", dvd_copy.last_chapter);
+			fprintf(stderr, "[dvd_copy] Resetting last chapter to %u\n", dvd_copy.last_chapter);
 		} else
 			dvd_copy.last_chapter = arg_last_chapter;
 	} else {
@@ -441,13 +441,13 @@ int main(int argc, char **argv) {
 	if(opt_cell_number) {
 		if(arg_first_cell > dvd_track.cells) {
 			dvd_copy.first_cell = dvd_track.cells;
-			fprintf(stderr, "Resetting first cell to %u\n", dvd_copy.first_cell);
+			fprintf(stderr, "[dvd_copy] Resetting first cell to %u\n", dvd_copy.first_cell);
 		} else
 			dvd_copy.first_cell = arg_first_cell;
 
 		if(arg_last_cell > dvd_track.cells) {
 			dvd_copy.last_cell = dvd_track.cells;
-			fprintf(stderr, "Resetting last cell to %u\n", dvd_copy.last_cell);
+			fprintf(stderr, "[dvd_copy] Resetting last cell to %u\n", dvd_copy.last_cell);
 		} else
 			dvd_copy.last_cell = arg_last_cell;
 	} else {
@@ -531,7 +531,7 @@ int main(int argc, char **argv) {
 	if(p_dvd_copy) {
 		dvd_copy.fd = open(dvd_copy.filename, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
 		if(dvd_copy.fd == -1) {
-			fprintf(stderr, "Couldn't create file %s\n", dvd_copy.filename);
+			fprintf(stderr, "[dvd_copy] Couldn't create file %s\n", dvd_copy.filename);
 			return 1;
 		}
 	} else if(p_dvd_cat) {
@@ -579,7 +579,7 @@ int main(int argc, char **argv) {
 				cell_sectors++;
 
 			if(dvd_cell.last_sector < dvd_cell.first_sector) {
-				fprintf(stderr, "* DEBUG Someone doing something nasty? The last sector is listed before the first; skipping cell\n");
+				fprintf(stderr, "[dvd_copy] DEBUG Someone doing something nasty? The last sector is listed before the first; skipping cell\n");
 				continue;
 			}
 			
@@ -597,13 +597,13 @@ int main(int argc, char **argv) {
 
 				dvdread_read_blocks = DVDReadBlocks(dvdread_vts_file, offset, (uint64_t)read_blocks, dvd_copy.buffer);
 				if(!dvdread_read_blocks) {
-					fprintf(stderr, "* Could not read data from cell %u\n", dvd_cell.cell);
+					fprintf(stderr, "[dvd_copy] Could not read data from cell %u\n", dvd_cell.cell);
 					return 1;
 				}
 
 				// Check to make sure the amount read was what we wanted
 				if(dvdread_read_blocks != read_blocks) {
-					fprintf(stderr, "*** Asked for %ld and only got %ld\n", read_blocks, dvdread_read_blocks);
+					fprintf(stderr, "[dvd_copy] *** Asked for %ld and only got %ld\n", read_blocks, dvdread_read_blocks);
 					return 1;
 				}
 
@@ -614,13 +614,13 @@ int main(int argc, char **argv) {
 				bytes_written = write(dvd_copy.fd, dvd_copy.buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
 
 				if(!bytes_written) {
-					fprintf(stderr, "* Could not write data from cell %u\n", dvd_cell.cell);
+					fprintf(stderr, "[dvd_copy] Could not write data from cell %u\n", dvd_cell.cell);
 					return 1;
 				}
 
 				// Check to make sure we wrote as much as we asked for
 				if(bytes_written != dvdread_read_blocks * DVD_VIDEO_LB_LEN) {
-					fprintf(stderr, "*** Tried to write %ld bytes and only wrote %ld instead\n", dvdread_read_blocks * DVD_VIDEO_LB_LEN, bytes_written);
+					fprintf(stderr, "[dvd_copy] *** Tried to write %ld bytes and only wrote %ld instead\n", dvdread_read_blocks * DVD_VIDEO_LB_LEN, bytes_written);
 					return 1;
 				}
 
