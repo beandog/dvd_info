@@ -31,7 +31,6 @@
 #define DVD_INFO_VERSION "1.4_beta1"
 #endif
 
-#define DVD_INFO_PROGRAM "dvd_copy"
 #define DVD_COPY_FILENAME 16
 
 #ifndef DVD_VIDEO_LB_LEN
