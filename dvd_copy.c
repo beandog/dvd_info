@@ -190,7 +190,6 @@ int main(int argc, char **argv) {
 				if(strlen(optarg) == 1 && strncmp("-", optarg, 1) == 0) {
 					p_dvd_copy = false;
 					p_dvd_cat = true;
-					fprintf(stderr, "[dvd_copy] outputting stream to stdout\n");
 				} else {
 					p_dvd_copy = true;
 					p_dvd_cat = false;
