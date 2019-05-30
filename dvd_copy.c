@@ -359,7 +359,7 @@ int main(int argc, char **argv) {
 
 	vts_ifo = ifoOpen(dvdread_dvd, vts);
 	if(vts_ifo == NULL) {
-		fprintf(stderr, "[dvd_copy] Could not open VTS_IFO for track %u\n", 1);
+		fprintf(stderr, "[dvd_copy] Could not open VTS_IFO for track %" PRIu16 "\n", 1);
 		return 1;
 	}
 	ifoClose(vts_ifo);
@@ -384,8 +384,8 @@ int main(int argc, char **argv) {
 	
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks)) {
-		fprintf(stderr, "[dvd_copy] Invalid track number %d\n", arg_track_number);
-		fprintf(stderr, "[dvd_copy] Valid track numbers: 1 to %u\n", dvd_info.tracks);
+		fprintf(stderr, "[dvd_copy] Invalid track number %" PRIu16 "\n", arg_track_number);
+		fprintf(stderr, "[dvd_copy] Valid track numbers: 1 to %" PRIu16 "\n", dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -421,13 +421,13 @@ int main(int argc, char **argv) {
 	if(opt_chapter_number) {
 		if(arg_first_chapter > dvd_track.chapters) {
 			dvd_copy.first_chapter = dvd_track.chapters;
-			fprintf(stderr, "[dvd_copy] Resetting first chapter to %u\n", dvd_copy.first_chapter);
+			fprintf(stderr, "[dvd_copy] Resetting first chapter to %" PRIu8 "\n", dvd_copy.first_chapter);
 		} else
 			dvd_copy.first_chapter = arg_first_chapter;
 		
 		if(arg_last_chapter > dvd_track.chapters) {
 			dvd_copy.last_chapter = dvd_track.chapters;
-			fprintf(stderr, "[dvd_copy] Resetting last chapter to %u\n", dvd_copy.last_chapter);
+			fprintf(stderr, "[dvd_copy] Resetting last chapter to %" PRIu8 "\n", dvd_copy.last_chapter);
 		} else
 			dvd_copy.last_chapter = arg_last_chapter;
 	} else {
@@ -439,13 +439,13 @@ int main(int argc, char **argv) {
 	if(opt_cell_number) {
 		if(arg_first_cell > dvd_track.cells) {
 			dvd_copy.first_cell = dvd_track.cells;
-			fprintf(stderr, "[dvd_copy] Resetting first cell to %u\n", dvd_copy.first_cell);
+			fprintf(stderr, "[dvd_copy] Resetting first cell to %" PRIu8 "\n", dvd_copy.first_cell);
 		} else
 			dvd_copy.first_cell = arg_first_cell;
 
 		if(arg_last_cell > dvd_track.cells) {
 			dvd_copy.last_cell = dvd_track.cells;
-			fprintf(stderr, "[dvd_copy] Resetting last cell to %u\n", dvd_copy.last_cell);
+			fprintf(stderr, "[dvd_copy] Resetting last cell to %" PRIu8 "\n", dvd_copy.last_cell);
 		} else
 			dvd_copy.last_cell = arg_last_cell;
 	} else {
@@ -456,7 +456,7 @@ int main(int argc, char **argv) {
 	// Set default filename
 	if(!opt_filename) {
 		dvd_copy.filename = calloc(DVD_COPY_FILENAME + 1, sizeof(unsigned char));
-		snprintf(dvd_copy.filename, DVD_COPY_FILENAME + 1, "dvd_track_%02u.mpg", dvd_copy.track);
+		snprintf(dvd_copy.filename, DVD_COPY_FILENAME + 1, "dvd_track_%02" PRIu16 ".mpg", dvd_copy.track);
 	}
 
 	/**
@@ -488,7 +488,7 @@ int main(int argc, char **argv) {
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
 	if(p_dvd_copy)
-		printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
+		printf("Track: %02" PRIu16 ", Length: %s, Chapters: %02" PRIu8 ", Cells: %02" PRIu8 ", Audio streams: %02" PRIu8 ", Subpictures: %02" PRIu8 ", Filesize: %zd, Blocks: %zd\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
 
 	// Check for track issues
 	dvd_track.valid = true;
@@ -569,7 +569,7 @@ int main(int argc, char **argv) {
 			cell_sectors = dvd_cell.last_sector - dvd_cell.first_sector;
 
 			if(p_dvd_copy)
-				printf("        Chapter: %02u, Cell: %02u, VTS: %u, Filesize: %lu, Blocks: %lu, Sectors: %i to %i\n", dvd_chapter.chapter, dvd_cell.cell, vts, dvd_cell.filesize, dvd_cell.blocks, dvd_cell.first_sector, dvd_cell.last_sector);
+				printf("        Chapter: %02" PRIu8 ", Cell: %02" PRIu8 ", VTS: %" PRIu16 ", Filesize: %zd, Blocks: %zd, Sectors: %" PRIu32 " to %" PRIu32 "\n", dvd_chapter.chapter, dvd_cell.cell, vts, dvd_cell.filesize, dvd_cell.blocks, dvd_cell.first_sector, dvd_cell.last_sector);
 
 			cell_blocks_written = 0;
 
@@ -595,13 +595,13 @@ int main(int argc, char **argv) {
 
 				dvdread_read_blocks = DVDReadBlocks(dvdread_vts_file, offset, (uint64_t)read_blocks, dvd_copy.buffer);
 				if(!dvdread_read_blocks) {
-					fprintf(stderr, "[dvd_copy] Could not read data from cell %u\n", dvd_cell.cell);
+					fprintf(stderr, "[dvd_copy] Could not read data from cell %" PRIu8 "\n", dvd_cell.cell);
 					return 1;
 				}
 
 				// Check to make sure the amount read was what we wanted
 				if(dvdread_read_blocks != read_blocks) {
-					fprintf(stderr, "[dvd_copy] *** Asked for %ld and only got %ld\n", read_blocks, dvdread_read_blocks);
+					fprintf(stderr, "[dvd_copy] *** Asked for %zd and only got %zd\n", read_blocks, dvdread_read_blocks);
 					return 1;
 				}
 
@@ -612,13 +612,13 @@ int main(int argc, char **argv) {
 				bytes_written = write(dvd_copy.fd, dvd_copy.buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
 
 				if(!bytes_written) {
-					fprintf(stderr, "[dvd_copy] Could not write data from cell %u\n", dvd_cell.cell);
+					fprintf(stderr, "[dvd_copy] Could not write data from cell %" PRIu8 "\n", dvd_cell.cell);
 					return 1;
 				}
 
 				// Check to make sure we wrote as much as we asked for
 				if(bytes_written != dvdread_read_blocks * DVD_VIDEO_LB_LEN) {
-					fprintf(stderr, "[dvd_copy] *** Tried to write %ld bytes and only wrote %ld instead\n", dvdread_read_blocks * DVD_VIDEO_LB_LEN, bytes_written);
+					fprintf(stderr, "[dvd_copy] *** Tried to write %zd bytes and only wrote %zd instead\n", dvdread_read_blocks * DVD_VIDEO_LB_LEN, bytes_written);
 					return 1;
 				}
 
@@ -628,7 +628,7 @@ int main(int argc, char **argv) {
 				total_bytes_written += bytes_written;
 
 				// fprintf(p_dvd_copy ? stdout : stderr, "Progress: %lu%% - %lu/%lu MBs\r", track_blocks_written * 100 / dvd_copy.blocks, total_bytes_written / 1024 / 1024, dvd_copy.filesize / 1024 / 1024);
-				fprintf(p_dvd_copy ? stdout : stderr, "Progress: %lu/%lu MBs (%lu%%)\r", total_bytes_written / 1024 / 1024, dvd_copy.filesize / 1024 / 1024, track_blocks_written * 100 / dvd_copy.blocks);
+				fprintf(p_dvd_copy ? stdout : stderr, "Progress: %" PRIu64 "/%" PRIu64 " MBs (%" PRIu64 "%%)\r", total_bytes_written / 1024 / 1024, dvd_copy.filesize / 1024 / 1024, track_blocks_written * 100 / dvd_copy.blocks);
 				fflush(p_dvd_copy ? stdout : stderr);
 
 			}
