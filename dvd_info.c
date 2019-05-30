@@ -51,8 +51,6 @@ int main(int argc, char **argv) {
 	uint32_t arg_min_seconds = 0;
 	bool opt_min_minutes = true;
 	uint32_t arg_min_minutes = 0;
-	bool d_skip_broken = false;
-	bool d_broken = false;
 	bool opt_vts = false;
 	uint16_t arg_vts = 0;
 
@@ -176,7 +174,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aABcdDE:ghIjM:qsSt:Vvxz";
+	const char p_short_opts[] = "aAcdE:ghIjM:qsSt:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -191,8 +189,6 @@ int main(int argc, char **argv) {
 		{ "json", no_argument, NULL, 'j' },
 		{ "track", required_argument, NULL, 't' },
 		{ "quiet", no_argument, NULL, 'q' },
-		{ "skip-broken", no_argument, NULL, 'B' },
-		{ "display-broken", no_argument, NULL, 'D' },
 		{ "xchap", no_argument, NULL, 'g' },
 		{ "min-seconds", required_argument, NULL, 'E' },
 		{ "min-minutes", required_argument, NULL, 'M' },
@@ -219,20 +215,12 @@ int main(int argc, char **argv) {
 				d_has_audio = true;
 				break;
 
-			case 'B':
-				d_skip_broken = true;
-				break;
-
 			case 'c':
 				d_chapters = true;
 				break;
 
 			case 'd':
 				d_cells = true;
-				break;
-
-			case 'D':
-				d_broken = true;
 				break;
 
 			case 'E':
@@ -333,8 +321,6 @@ int main(int argc, char **argv) {
 				printf("  -S, --has-subtitles	Track has VOBSUB subtitles\n");
 				printf("  -E, --seconds <secs>	Track has minimum number of seconds\n");
 				printf("  -M, --minutes <mins>	Track has minimum number of minutes\n");
-				printf("  -B, --skip-broken	Skip broken tracks, marked invalid for some reason\n");
-				printf("  -D, --display-broken	Display only broken tracks, marked as invalid\n");
 				printf("\n");
 				printf("Other:\n");
 				printf("  -q, --quiet		Don't display disc title header, invalid tracks, and inactive streams\n");
@@ -807,14 +793,6 @@ int main(int argc, char **argv) {
 		dvd_video = dvd_tracks[track_number - 1].dvd_video;
 
 		if(dvd_track.valid == false && d_quiet == true && debug == false)
-			continue;
-
-		// Display only broken tracks if specified to
-		if(d_broken && dvd_track.valid == true)
-			continue;
-
-		// Skip broken tracks if specified to
-		if(d_skip_broken && dvd_track.valid == false)
 			continue;
 
 		// Skip if limiting to tracks with audio only
