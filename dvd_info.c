@@ -29,10 +29,6 @@
 #define DVD_INFO_VERSION "1.4_beta1"
 #endif
 
-int main(int argc, char **argv);
-void print_usage(char *binary);
-void print_version(char *binary);
-
 int main(int argc, char **argv) {
 
 	// Program name
@@ -181,8 +177,7 @@ int main(int argc, char **argv) {
 	unsigned int arg_track_number = 0;
 	int ix = 0;
 	int opt = 0;
-	// Send 'invalid argument' to stderr
-	opterr = 1;
+	bool invalid_opt = false;
 	const char p_short_opts[] = "aABcdDE:hiIjM:oqsSTt:Vvxz";
 
 	struct option p_long_opts[] = {
@@ -219,14 +214,6 @@ int main(int argc, char **argv) {
 		// It's worth noting that if there are unknown options passed,
 		// I just ignore them, and continue printing requested data.
 		switch(opt) {
-
-			case 'h':
-				print_usage(program_name);
-				return 0;
-
-			case 'V':
-				print_version(program_name);
-				return 0;
 
 			case 'a':
 				d_audio = true;
@@ -300,6 +287,10 @@ int main(int argc, char **argv) {
 				d_video = true;
 				break;
 
+			case 'V':
+				printf("dvd_info %s\n", DVD_INFO_VERSION);
+				return 0;
+
 			case 'o':
 				p_dvd_ogm = true;
 				break;
@@ -318,8 +309,54 @@ int main(int argc, char **argv) {
 
 			// ignore unknown arguments
 			case '?':
-				print_usage(program_name);
-				return 0;
+				invalid_opt = true;
+			case 'h':
+				printf("dvd_info %s - display information about a DVD\n", DVD_INFO_VERSION);
+				printf("\n");
+				printf("Usage: dvd_info [options] [-t track number] [dvd path]\n");
+				printf("\n");
+				printf("Options:\n");
+				printf("  -t, --track #		Limit to one track number (default: all tracks)\n");
+				printf("\n");
+				printf("Detailed information:\n");
+				printf("  -v, --video		video stream\n");
+				printf("  -a, --audio		audio streams\n");
+				printf("  -s, --subtitles	VobSub subtitles\n");
+				printf("  -c, --chapters	chapters\n");
+				printf("  -d, --cells		cells\n");
+				printf("  -x, --all		display all\n");
+				printf("\n");
+				printf("Formatting:\n");
+				printf("  -j, --json		Display output in JSON format\n");
+				printf("  -o, --ogm		Display OGM chapter format for track (default: longest)\n");
+				printf("  -i, --id		Display DVD id only (from libdvdread)\n");
+				printf("  -T, --title		Display DVD title only (path must be device or file)\n");
+				printf("\n");
+				printf("Narrow results:\n");
+				printf("  -A, --has-audio	Track has audio streams\n");
+				printf("  -S, --has-subtitles	Track has VOBSUB subtitles\n");
+				printf("  -E, --seconds <secs>	Track has minimum number of seconds\n");
+				printf("  -M, --minutes <mins>	Track has minimum number of minutes\n");
+				printf("  -B, --skip-broken	Skip broken tracks, marked invalid for some reason\n");
+				printf("  -D, --display-broken	Display only broken tracks, marked as invalid\n");
+				printf("\n");
+				printf("Other:\n");
+				printf("  -q, --quiet		Don't display DVD title, longest track, invalid tracks, and inactive streams\n");
+				printf("  -h, --help		Display these help options\n");
+				printf("      --version		Version information\n");
+				printf("\n");
+				printf("DVD path can be a device name, a single file, or a directory.\n");
+				printf("\n");
+				printf("Examples:\n");
+				printf("  dvd_info		Read default DVD device (%s)\n", DEFAULT_DVD_DEVICE);
+				printf("  dvd_info /dev/dvd	Read a specific DVD device\n");
+				printf("  dvd_info movie.iso	Read an image file\n");
+				printf("  dvd_info ~/movie/	Read a directory that contains VIDEO_TS\n");
+				if(invalid_opt)
+					return 1;
+				else
+					return 0;
+				break;
 			// let getopt_long set the variable
 			case 0:
 			default:
@@ -940,57 +977,5 @@ int main(int argc, char **argv) {
 		DVDClose(dvdread_dvd);
 
 	return 0;
-
-}
-
-void print_usage(char *binary) {
-
-	printf("%s %s - display information about a DVD\n", binary, DVD_INFO_VERSION);
-	printf("\n");
-	printf("Usage: %s [options] [-t track number] [dvd path]\n", binary);
-	printf("\n");
-	printf("Options:\n");
-	printf("  -t, --track #		Limit to one track number (default: all tracks)\n");
-	printf("\n");
-	printf("Detailed information:\n");
-	printf("  -v, --video		video stream\n");
-	printf("  -a, --audio		audio streams\n");
-	printf("  -s, --subtitles	VobSub subtitles\n");
-	printf("  -c, --chapters	chapters\n");
-	printf("  -d, --cells		cells\n");
-	printf("  -x, --all		display all\n");
-	printf("\n");
-	printf("Formatting:\n");
-	printf("  -j, --json		Display output in JSON format\n");
-	printf("  -o, --ogm		Display OGM chapter format for track (default: longest)\n");
-	printf("  -i, --id		Display DVD id only (from libdvdread)\n");
-	printf("  -T, --title		Display DVD title only (path must be device or file)\n");
-	printf("\n");
-	printf("Narrow results:\n");
-	printf("  -A, --has-audio	Track has audio streams\n");
-	printf("  -S, --has-subtitles	Track has VOBSUB subtitles\n");
-	printf("  -E, --seconds <secs>	Track has minimum number of seconds\n");
-	printf("  -M, --minutes <mins>	Track has minimum number of minutes\n");
-	printf("  -B, --skip-broken	Skip broken tracks, marked invalid for some reason\n");
-	printf("  -D, --display-broken	Display only broken tracks, marked as invalid\n");
-	printf("\n");
-	printf("Other:\n");
-	printf("  -q, --quiet		Don't display DVD title, longest track, invalid tracks, and inactive streams\n");
-	printf("  -h, --help		Display these help options\n");
-	printf("  -V, --version		Version information\n");
-	printf("\n");
-	printf("DVD path can be a device name, a single file, or a directory.\n");
-	printf("\n");
-	printf("Examples:\n");
-	printf("  dvd_info		Read default DVD device (%s)\n", DEFAULT_DVD_DEVICE);
-	printf("  dvd_info /dev/dvd	Read a specific DVD device\n");
-	printf("  dvd_info movie.iso	Read an image file\n");
-	printf("  dvd_info ~/movie/	Read a directory that contains VIDEO_TS\n");
-
-}
-
-void print_version(char *binary) {
-
-	printf("%s %s - http://dvds.beandog.org/ - (c) 2014 Steve Dibb <steve.dibb@gmail.com>, licensed under GPL-2\n", binary, DVD_INFO_VERSION);
 
 }

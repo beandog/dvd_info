@@ -45,8 +45,6 @@
 
 int main(int, char **);
 void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo);
-void print_usage(char *binary);
-void print_version(char *binary);
 
 struct dvd_copy {
 	uint16_t track;
@@ -76,7 +74,7 @@ int main(int argc, char **argv) {
 	uint16_t arg_track_number = 0;
 	int long_index = 0;
 	int opt = 0;
-	opterr = 1;
+	bool invalid_opt = false;
 	const char *str_options;
 	str_options = "c:d:ho:t:V";
 	uint8_t arg_first_chapter = 1;
@@ -167,10 +165,6 @@ int main(int argc, char **argv) {
 
 				break;
 
-			case 'h':
-				print_usage(DVD_INFO_PROGRAM);
-				return 0;
-
 			case 'o':
 				if(strlen(optarg) == 1 && strncmp("-", optarg, 1) == 0) {
 					p_dvd_copy = false;
@@ -190,13 +184,35 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'V':
-				print_version("dvd_copy");
+				printf("dvd_copy %s\n", DVD_INFO_VERSION);
 				return 0;
 
 			// ignore unknown arguments
 			case '?':
-				print_usage("dvd_copy");
-				return 1;
+				invalid_opt = true;
+			case 'h':
+				printf("dvd_copy %s - copy a single DVD track to the filesystem\n", DVD_INFO_VERSION);
+				printf("\n");
+				printf("Usage: dvd_copy [-t track] [-c chapter[-chapter]] [-o filename] [dvd path]\n");
+				printf("\n");
+				printf("DVD path can be a device name, a single file, or directory.\n");
+				printf("\n");
+				printf("Examples:\n");
+				printf("  dvd_copy		# Read default DVD device (%s)\n", DEFAULT_DVD_DEVICE);
+				printf("  dvd_copy /dev/dvd	# Read a specific DVD device\n");
+				printf("  dvd_copy video.iso    # Read an image file\n");
+				printf("  dvd_copy ~/Videos/DVD	# Read a directory that contains VIDEO_TS\n");
+				printf("\n");
+				printf("Output filenames:\n");
+				printf("  dvd_copy		# Save to \"dvd_track_##.mpg\" where ## is longest track\n");
+				printf("  dvd_copy -t 1		# Save to \"dvd_track_01.mpg\"\n");
+				printf("  dvd_copy -o video.mpg	# Save to \"video.mpg\" (MPEG2 program stream)\n");
+				printf("  dvd_copy -o -		# Stream to console output (stdout)\n");
+				if(invalid_opt)
+					return 1;
+				else
+					return 0;
+				break;
 
 			// let getopt_long set the variable
 			case 0:
@@ -630,33 +646,5 @@ void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, co
 	dvd_track->cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 	dvd_track->blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
 	dvd_track->filesize = dvd_track_filesize(vmg_ifo, vts_ifo, track_number);
-
-}
-
-void print_usage(char *binary) {
-
-	printf("%s %s - copy a single DVD track to the filesystem\n", binary, DVD_INFO_VERSION);
-	printf("\n");
-	printf("Usage: %s [-t track] [-c chapter[-chapter]] [-o filename] [dvd path]\n", binary);
-	printf("\n");
-	printf("DVD path can be a device name, a single file, or directory.\n");
-	printf("\n");
-	printf("Examples:\n");
-	printf("  dvd_copy		# Read default DVD device (%s)\n", DEFAULT_DVD_DEVICE);
-	printf("  dvd_copy /dev/dvd	# Read a specific DVD device\n");
-	printf("  dvd_copy video.iso    # Read an image file\n");
-	printf("  dvd_copy ~/Videos/DVD	# Read a directory that contains VIDEO_TS\n");
-	printf("\n");
-	printf("Output filenames:\n");
-	printf("  dvd_copy		# Save to \"dvd_track_##.mpg\" where ## is longest track\n");
-	printf("  dvd_copy -t 1		# Save to \"dvd_track_01.mpg\"\n");
-	printf("  dvd_copy -o video.mpg	# Save to \"video.mpg\" (MPEG2 program stream)\n");
-	printf("  dvd_copy -o -		# Stream to console output (stdout)\n");
-
-}
-
-void print_version(char *binary) {
-
-	printf("%s %s - http://dvds.beandog.org/ - (c) 2018 Steve Dibb <steve.dibb@gmail.com>, licensed under GPL-2\n", binary, DVD_INFO_VERSION);
 
 }
