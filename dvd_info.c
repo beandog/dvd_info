@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
-	bool d_all_tracks = true;
+	bool d_disc_title_header = true;
 	bool debug = false;
 	uint16_t d_first_track = 1;
 	uint16_t d_last_track = 1;
@@ -230,6 +230,7 @@ int main(int argc, char **argv) {
 
 			case 'g':
 				p_dvd_xchap = true;
+				d_disc_title_header = false;
 				break;
 
 			/*
@@ -245,10 +246,12 @@ int main(int argc, char **argv) {
 
 			case 'j':
 				p_dvd_json = true;
+				d_disc_title_header = false;
 				break;
 
 			case 'q':
 				d_quiet = true;
+				d_disc_title_header = false;
 				break;
 
 			case 'M':
@@ -437,11 +440,9 @@ int main(int argc, char **argv) {
 		d_first_track = arg_track_number;
 		d_last_track = arg_track_number;
 		track_number = d_first_track;
-		d_all_tracks = false;
 	} else {
 		d_first_track = 1;
 		d_last_track = dvd_info.tracks;
-		d_all_tracks = true;
 	}
 
 	// Exit if all the IFOs cannot be opened
@@ -771,7 +772,7 @@ int main(int argc, char **argv) {
 	 *   shows all of them, but they are flagged as active or not.
 	 */
 
-	if(d_all_tracks && !d_quiet)
+	if(d_disc_title_header && !d_quiet)
 		printf("Disc title: '%s', ID: '%s', Num tracks: %" PRIu16 ", Longest track: %" PRIu16 "\n", dvd_info.title, dvd_info.dvdread_id, dvd_info.tracks, dvd_info.valid_tracks, dvd_info.longest_track);
 
 	// Print the valid and invalid VTSs
