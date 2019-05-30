@@ -50,9 +50,10 @@ int main(int argc, char **argv) {
 	bool d_has_audio = false;
 	bool d_has_subtitles = false;
 	bool opt_min_seconds = true;
-	unsigned int arg_min_seconds = 0;
+	unsigned long int arg_number = 0;
+	uint32_t arg_min_seconds = 0;
 	bool opt_min_minutes = true;
-	unsigned int arg_min_minutes = 0;
+	uint32_t arg_min_minutes = 0;
 	bool d_skip_broken = false;
 	bool d_broken = false;
 	bool opt_vts = false;
@@ -174,7 +175,7 @@ int main(int argc, char **argv) {
 	// getopt_long
 	bool valid_args = true;
 	bool opt_track_number = false;
-	unsigned int arg_track_number = 0;
+	uint16_t arg_track_number = 0;
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
@@ -241,7 +242,7 @@ int main(int argc, char **argv) {
 
 			case 'E':
 				opt_min_seconds = true;
-				arg_min_seconds = (unsigned int)strtoumax(optarg, NULL, 0);
+				arg_min_seconds = (uint32_t)strtoul(optarg, NULL, 10);
 				break;
 
 			case 'i':
@@ -250,7 +251,11 @@ int main(int argc, char **argv) {
 
 			case 'I':
 				opt_vts = true;
-				arg_vts = (uint16_t)strtoumax(optarg, NULL, 0);
+				arg_number = strtoul(optarg, NULL, 10);
+				if(arg_number > 99)
+					arg_vts = 99;
+				else
+					arg_vts = (uint16_t)arg_number;
 				break;
 
 			case 'j':
@@ -263,7 +268,7 @@ int main(int argc, char **argv) {
 
 			case 'M':
 				opt_min_minutes = true;
-				arg_min_minutes = (unsigned int)strtoumax(optarg, NULL, 0);
+				arg_min_minutes = (uint32_t)strtoul(optarg, NULL, 10);
 				break;
 
 			case 's':
@@ -276,7 +281,13 @@ int main(int argc, char **argv) {
 
 			case 't':
 				opt_track_number = true;
-				arg_track_number = (unsigned int)strtoumax(optarg, NULL, 0);
+				arg_number = strtoul(optarg, NULL, 10);
+				if(arg_number > 99)
+					arg_track_number = 99;
+				else if(arg_number == 0)
+					arg_track_number = 1;
+				else
+					arg_track_number = (uint16_t)arg_number;
 				break;
 
 			case 'T':
@@ -456,8 +467,8 @@ int main(int argc, char **argv) {
 		DVDClose(dvdread_dvd);
 		return 1;
 	} else if(opt_track_number) {
-		d_first_track = (uint16_t)arg_track_number;
-		d_last_track = (uint16_t)arg_track_number;
+		d_first_track = arg_track_number;
+		d_last_track = arg_track_number;
 		track_number = d_first_track;
 		d_all_tracks = false;
 	} else {
