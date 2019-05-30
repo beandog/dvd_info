@@ -33,8 +33,6 @@ int main(int argc, char **argv) {
 
 	// Program name
 	bool p_dvd_json = false;
-	bool p_dvd_id = false;
-	bool p_dvd_title = false;
 	bool p_dvd_ogm = false;
 
 	// lsdvd similar display output
@@ -178,7 +176,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aABcdDE:hiIjM:oqsSTt:Vvxz";
+	const char p_short_opts[] = "aABcdDE:hIjM:oqsSt:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -193,10 +191,8 @@ int main(int argc, char **argv) {
 		{ "json", no_argument, NULL, 'j' },
 		{ "track", required_argument, NULL, 't' },
 		{ "quiet", no_argument, NULL, 'q' },
-		{ "id", no_argument, NULL, 'i' },
 		{ "skip-broken", no_argument, NULL, 'B' },
 		{ "display-broken", no_argument, NULL, 'D' },
-		{ "title", no_argument, NULL, 'T' },
 		{ "ogm", no_argument, NULL, 'o' },
 		{ "min-seconds", required_argument, NULL, 'E' },
 		{ "min-minutes", required_argument, NULL, 'M' },
@@ -244,10 +240,6 @@ int main(int argc, char **argv) {
 				arg_min_seconds = (uint32_t)strtoul(optarg, NULL, 10);
 				break;
 
-			case 'i':
-				p_dvd_id = true;
-				break;
-
 			case 'I':
 				opt_vts = true;
 				arg_number = strtoul(optarg, NULL, 10);
@@ -287,10 +279,6 @@ int main(int argc, char **argv) {
 					arg_track_number = 1;
 				else
 					arg_track_number = (uint16_t)arg_number;
-				break;
-
-			case 'T':
-				p_dvd_title = true;
 				break;
 
 			case 'v':
@@ -339,8 +327,6 @@ int main(int argc, char **argv) {
 				printf("Formatting:\n");
 				printf("  -j, --json		Display output in JSON format\n");
 				printf("  -o, --ogm		Display OGM chapter format for track (default: longest)\n");
-				printf("  -i, --id		Display DVD id only (from libdvdread)\n");
-				printf("  -T, --title		Display DVD title only (path must be device or file)\n");
 				printf("\n");
 				printf("Narrow results:\n");
 				printf("  -A, --has-audio	Track has audio streams\n");
@@ -442,12 +428,6 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// dvd_id
-	if(p_dvd_id) {
-		printf("%s\n", dvdread_id);
-		return 0;
-	}
-	
 	// Open VMG IFO -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo)) {
@@ -523,11 +503,6 @@ int main(int argc, char **argv) {
 	dvd_provider_id(dvd_info.provider_id, vmg_ifo);
 	dvd_vmg_id(dvd_info.vmg_id, vmg_ifo);
 	strncpy(dvd_info.dvdread_id, dvdread_id, DVD_DVDREAD_ID);
-
-	if(p_dvd_title) {
-		printf("%s\n", dvd_info.title);
-		goto cleanup;
-	}
 
 	/**
 	 * Track information
