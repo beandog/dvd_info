@@ -941,7 +941,7 @@ int main(int argc, char **argv) {
 				dvd_cell = dvd_track.dvd_cells[cell_ix];
 				if(debug) {
 					printf("	Cell: %02" PRIu8 ", Length: %s\n", dvd_cell.cell, dvd_cell.length);
-					printf("	Cell: %02" PRIu8 ", VTS: %02" PRIu16 ", VOB: %02" PRIu64 ", Blocks: %6" PRIu64 ", Filesize: %9zu, First sector: %7" PRIu32 ", Last sector: %7" PRIu32 "\n", dvd_cell.cell, dvd_track.vts, (uint64_t)((dvd_cell.first_sector / 524288) + 1), dvd_cell.blocks, dvd_cell.filesize, dvd_cell.first_sector, dvd_cell.last_sector);
+					printf("	Cell: %02" PRIu8 ", VTS: %02" PRIu16 ", VOB: %02" PRIu64 ", Blocks: %6zd, Filesize: %9zd, First sector: %7" PRIu32 ", Last sector: %7" PRIu32 "\n", dvd_cell.cell, dvd_track.vts, (uint64_t)((dvd_cell.first_sector / 524288) + 1), dvd_cell.blocks, dvd_cell.filesize, dvd_cell.first_sector, dvd_cell.last_sector);
 				} else
 					printf("	Cell: %02" PRIu8 ", Length: %s, First sector: %" PRIu32 ", Last sector: %" PRIu32 "\n", dvd_cell.cell, dvd_cell.length, dvd_cell.first_sector, dvd_cell.last_sector);
 
