@@ -927,7 +927,7 @@ int main(int argc, char **argv) {
 			for(chapter_ix = 0; chapter_ix < dvd_track.chapters; chapter_ix++) {
 
 				dvd_chapter = dvd_track.dvd_chapters[chapter_ix];
-				printf("        Chapter: %02u, Length: %s\n", dvd_chapter.chapter, dvd_chapter.length);
+				printf("        Chapter: %02" PRIu8 ", Length: %s\n", dvd_chapter.chapter, dvd_chapter.length);
 
 			}
 
@@ -940,10 +940,10 @@ int main(int argc, char **argv) {
 
 				dvd_cell = dvd_track.dvd_cells[cell_ix];
 				if(debug) {
-					printf("	Cell: %02u, Length: %s\n", dvd_cell.cell, dvd_cell.length);
-					printf("	Cell: %02u, VTS: %02i, VOB: %02i, Blocks: %6lu, Filesize: %9lu, First sector: %7u, Last sector: %7u\n", dvd_cell.cell, dvd_track.vts, (int)(dvd_cell.first_sector / 524288) + 1, dvd_cell.blocks, dvd_cell.filesize, dvd_cell.first_sector, dvd_cell.last_sector);
+					printf("	Cell: %02" PRIu8 ", Length: %s\n", dvd_cell.cell, dvd_cell.length);
+					printf("	Cell: %02" PRIu8 ", VTS: %02" PRIu16 ", VOB: %02" PRIu64 ", Blocks: %6" PRIu64 ", Filesize: %9zu, First sector: %7" PRIu32 ", Last sector: %7" PRIu32 "\n", dvd_cell.cell, dvd_track.vts, (uint64_t)((dvd_cell.first_sector / 524288) + 1), dvd_cell.blocks, dvd_cell.filesize, dvd_cell.first_sector, dvd_cell.last_sector);
 				} else
-					printf("	Cell: %02u, Length: %s, First sector: %u, Last sector: %u\n", dvd_cell.cell, dvd_cell.length, dvd_cell.first_sector, dvd_cell.last_sector);
+					printf("	Cell: %02" PRIu8 ", Length: %s, First sector: %" PRIu32 ", Last sector: %" PRIu32 "\n", dvd_cell.cell, dvd_cell.length, dvd_cell.first_sector, dvd_cell.last_sector);
 
 			}
 
@@ -961,7 +961,7 @@ int main(int argc, char **argv) {
 				if(dvd_subtitle.active == false && d_quiet == true && debug == false)
 					continue;
 
-				printf("        Subtitle: %02u, Language: %s, Stream id: %s, Active: %s\n", d_stream_num, (strlen(dvd_subtitle.lang_code) ? dvd_subtitle.lang_code : "--"), dvd_subtitle.stream_id, (dvd_subtitle.active ? "yes" : "no"));
+				printf("        Subtitle: %02" PRIu8 ", Language: %s, Stream id: %s, Active: %s\n", d_stream_num, (strlen(dvd_subtitle.lang_code) ? dvd_subtitle.lang_code : "--"), dvd_subtitle.stream_id, (dvd_subtitle.active ? "yes" : "no"));
 				d_stream_num++;
 
 			}
@@ -971,7 +971,7 @@ int main(int argc, char **argv) {
 	}
 
 	if(d_all_tracks && !d_quiet)
-		printf("Longest track: %02u\n", dvd_info.longest_track);
+		printf("Longest track: %02" PRIu16 "\n", dvd_info.longest_track);
 
 	// Cleanup
 	
