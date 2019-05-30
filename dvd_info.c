@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 	uint32_t arg_min_seconds = 0;
 	bool opt_min_minutes = true;
 	uint32_t arg_min_minutes = 0;
-	bool opt_vts = false;
+	// bool opt_vts = false;
 	uint16_t arg_vts = 0;
 
 	// dvd_info
@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aAcdE:ghIjM:qsSt:Vvxz";
+	const char p_short_opts[] = "aAcdE:ghjM:qsSt:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -192,7 +192,7 @@ int main(int argc, char **argv) {
 		{ "xchap", no_argument, NULL, 'g' },
 		{ "min-seconds", required_argument, NULL, 'E' },
 		{ "min-minutes", required_argument, NULL, 'M' },
-		{ "vts", required_argument, NULL, 'I' },
+		// { "vts", required_argument, NULL, 'I' },
 		{ "help", no_argument, NULL, 'h' },
 		{ "version", no_argument, NULL, 'V' },
 		{ "debug", no_argument, NULL, 'z' },
@@ -232,6 +232,7 @@ int main(int argc, char **argv) {
 				p_dvd_xchap = true;
 				break;
 
+			/*
 			case 'I':
 				opt_vts = true;
 				arg_number = strtoul(optarg, NULL, 10);
@@ -240,6 +241,7 @@ int main(int argc, char **argv) {
 				else
 					arg_vts = (uint16_t)arg_number;
 				break;
+			*/
 
 			case 'j':
 				p_dvd_json = true;
@@ -812,8 +814,8 @@ int main(int argc, char **argv) {
 			continue;
 
 		// Skip if limiting to one title set
-		if(opt_vts && dvd_track.vts != arg_vts)
-			continue;
+		// if(opt_vts && dvd_track.vts != arg_vts)
+		//	continue;
 
 		// Skip tracks less than one second in quiet mode
 		if(d_quiet && dvd_track.msecs < 1000)
