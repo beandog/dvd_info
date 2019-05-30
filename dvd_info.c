@@ -19,7 +19,7 @@
 #include "dvd_subtitles.h"
 #include "dvd_time.h"
 #include "dvd_json.h"
-#include "dvd_ogm.h"
+#include "dvd_xchap.h"
 #include "dvd_vob.h"
 #ifdef __linux__
 #include <linux/cdrom.h>
@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
 	// Program name
 	bool p_dvd_json = false;
-	bool p_dvd_ogm = false;
+	bool p_dvd_xchap = false;
 
 	// lsdvd similar display output
 	bool d_audio = false;
@@ -176,7 +176,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aABcdDE:hIjM:oqsSt:Vvxz";
+	const char p_short_opts[] = "aABcdDE:ghIjM:qsSt:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -193,7 +193,7 @@ int main(int argc, char **argv) {
 		{ "quiet", no_argument, NULL, 'q' },
 		{ "skip-broken", no_argument, NULL, 'B' },
 		{ "display-broken", no_argument, NULL, 'D' },
-		{ "ogm", no_argument, NULL, 'o' },
+		{ "xchap", no_argument, NULL, 'g' },
 		{ "min-seconds", required_argument, NULL, 'E' },
 		{ "min-minutes", required_argument, NULL, 'M' },
 		{ "vts", required_argument, NULL, 'I' },
@@ -238,6 +238,10 @@ int main(int argc, char **argv) {
 			case 'E':
 				opt_min_seconds = true;
 				arg_min_seconds = (uint32_t)strtoul(optarg, NULL, 10);
+				break;
+
+			case 'g':
+				p_dvd_xchap = true;
 				break;
 
 			case 'I':
@@ -289,10 +293,6 @@ int main(int argc, char **argv) {
 				printf("dvd_info %s\n", DVD_INFO_VERSION);
 				return 0;
 
-			case 'o':
-				p_dvd_ogm = true;
-				break;
-
 			case 'x':
 				d_audio = true;
 				d_video = true;
@@ -326,7 +326,7 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("Formatting:\n");
 				printf("  -j, --json		Display output in JSON format\n");
-				printf("  -o, --ogm		Display OGM chapter format for track (default: longest)\n");
+				printf("  -g, --xchap		Display title's chapter format for mkvmerge\n");
 				printf("\n");
 				printf("Narrow results:\n");
 				printf("  -A, --has-audio	Track has audio streams\n");
@@ -765,11 +765,11 @@ int main(int argc, char **argv) {
 	}
 
 	/** dvdxchap display output **/
-	if(p_dvd_ogm) {
+	if(p_dvd_xchap) {
 		if(opt_track_number)
-			dvd_ogm(dvd_tracks[opt_track_number - 1]);
+			dvd_xchap(dvd_tracks[opt_track_number - 1]);
 		else
-			dvd_ogm(dvd_tracks[dvd_info.longest_track - 1]);
+			dvd_xchap(dvd_tracks[dvd_info.longest_track - 1]);
 		goto cleanup;
 	}
 

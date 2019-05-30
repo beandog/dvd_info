@@ -1,9 +1,9 @@
-#include "dvd_ogm.h"
+#include "dvd_xchap.h"
 
 /**
  * Clone of dvdxchap from ogmtools, but with bug fixes! :)
  */
-void dvd_ogm(struct dvd_track dvd_track) {
+void dvd_xchap(struct dvd_track dvd_track) {
 
 	// dvd_xchap format starts with a single chapter that begins
 	// at zero milliseconds. Next, the only chapters that are displayed
