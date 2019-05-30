@@ -351,7 +351,7 @@ int main(int argc, char **argv) {
 				printf("  -D, --display-broken	Display only broken tracks, marked as invalid\n");
 				printf("\n");
 				printf("Other:\n");
-				printf("  -q, --quiet		Don't display DVD title, longest track, invalid tracks, and inactive streams\n");
+				printf("  -q, --quiet		Don't display disc title header, invalid tracks, and inactive streams\n");
 				printf("  -h, --help		Display these help options\n");
 				printf("      --version		Version information\n");
 				printf("\n");
@@ -808,8 +808,8 @@ int main(int argc, char **argv) {
 	 *   shows all of them, but they are flagged as active or not.
 	 */
 
-	if(!d_quiet)
-		printf("Disc title: %s\n", dvd_info.title);
+	if(d_all_tracks && !d_quiet)
+		printf("Disc title: '%s', ID: '%s', Num tracks: %" PRIu16 ", Longest track: %" PRIu16 "\n", dvd_info.title, dvd_info.dvdread_id, dvd_info.tracks, dvd_info.valid_tracks, dvd_info.longest_track);
 
 	// Print the valid and invalid VTSs
 	if(debug) {
@@ -969,9 +969,6 @@ int main(int argc, char **argv) {
 		}
 
 	}
-
-	if(d_all_tracks && !d_quiet)
-		printf("Longest track: %02" PRIu16 "\n", dvd_info.longest_track);
 
 	// Cleanup
 	
