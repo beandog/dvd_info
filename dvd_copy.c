@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
 	bool invalid_opt = false;
 	const char *str_options;
 	str_options = "c:d:ho:t:V";
-	long int arg_number = 0;
+	unsigned long int arg_number = 0;
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
 	uint8_t arg_first_cell = 1;
