@@ -33,8 +33,8 @@ void dvd_ogm(struct dvd_track dvd_track) {
 			chapter_msecs += dvd_chapter.msecs;
 			milliseconds_length_format(chapter_start, chapter_msecs);
 
-			printf("CHAPTER%02u=%s\n", chapter_number, chapter_start);
-			printf("CHAPTER%02uNAME=Chapter %02u\n", chapter_number, chapter_number);
+			printf("CHAPTER%02" PRIu8 "=%s\n", chapter_number, chapter_start);
+			printf("CHAPTER%02" PRIu8 "NAME=Chapter %02" PRIu8 "\n", chapter_number, chapter_number);
 
 		}
 
