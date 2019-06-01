@@ -105,6 +105,7 @@ int main(int argc, char **argv) {
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
+	bool opt_force_encode = false;
 	uint16_t arg_track_number = 1;
 	int long_index = 0;
 	int opt = 0;
@@ -164,13 +165,14 @@ int main(int argc, char **argv) {
 		{ "help", no_argument, 0, 'h' },
 		{ "version", no_argument, 0, 'V' },
 
+		{ "force", no_argument, 0, 'f' },
 		{ "verbose", no_argument, 0, 'v' },
 		{ "debug", no_argument, 0, 'z' },
 		{ 0, 0, 0, 0 }
 
 	};
 
-	while((opt = getopt_long(argc, argv, "Ac:dhl:o:t:vz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "Ac:dfhl:o:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -284,7 +286,7 @@ int main(int argc, char **argv) {
 				printf("  -o, --output <filename>       Save to filename (default: dvd_track_##.mkv)\n");
 				printf("  -l, --alang <language>	Select audio language, two character code (default: first audio track)\n");
 				printf("  -A, --aid <#> 		Select audio track ID\n");
-				printf("\n");
+				printf("  -f, --force			Ignore invalid track warning\n");
 				printf("  -h, --help			Show this help text and exit\n");
 				printf("      --version			Show version info and exit\n");
 				printf("\n");
@@ -547,20 +549,26 @@ int main(int argc, char **argv) {
 
 	if(dvd_track.valid == false) {
 
-		printf("Track has been marked as invalid, quitting\n");
+		fprintf(stderr, "[dvd_trip] track has been flagged as invalid, and encoding it could cause strange problems\b");
 
-		DVDCloseFile(dvdread_vts_file);
+		if(!opt_force_encode) {
 
-		if(vts_ifo)
-			ifoClose(vts_ifo);
+			fprintf(stderr, "[dvd_trip] pass --force to options to ignore warnings and continue encoding\b");
 
-		if(vmg_ifo)
-			ifoClose(vmg_ifo);
+			DVDCloseFile(dvdread_vts_file);
 
-		if(dvdread_dvd)
-			DVDClose(dvdread_dvd);
+			if(vts_ifo)
+				ifoClose(vts_ifo);
 
-		return 1;
+			if(vmg_ifo)
+				ifoClose(vmg_ifo);
+
+			if(dvdread_dvd)
+				DVDClose(dvdread_dvd);
+
+			return 1;
+
+		}
 
 	}
 
