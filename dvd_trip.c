@@ -32,8 +32,6 @@
 #define DVD_INFO_VERSION "1.6_beta1"
 #endif
 
-#define DVD_INFO_PROGRAM "dvd_trip"
-
 	/**
 	 *      _          _    _        _
 	 *   __| |_   ____| |  | |_ _ __(_)_ __
@@ -80,8 +78,6 @@
 
 int main(int, char **);
 void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo);
-void print_usage(char *binary);
-void print_version(char *binary);
 
 struct dvd_trip {
 	uint16_t track;
@@ -116,6 +112,7 @@ int main(int argc, char **argv) {
 
 	bool verbose = false;
 	bool debug = false;
+	bool invalid_opts = false;
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
@@ -139,7 +136,7 @@ int main(int argc, char **argv) {
 	// Video Title Set
 	struct dvd_vts dvd_vts[99];
 
-	const char str_options[] = "Ac:dehl:o:p:t:Vvz";
+	const char str_options[] = "Ac:dehl:o:p:t:vz";
 	struct option long_options[] = {
 
 		{ "chapters", required_argument, 0, 'c' },
@@ -234,9 +231,6 @@ int main(int argc, char **argv) {
 				dvd_trip.detelecine = true;
 				break;
 
-			case 'h':
-				print_usage(DVD_INFO_PROGRAM);
-				return 0;
 
 			case 'l':
 				strncpy(dvd_trip.audio_lang, optarg, 2);
@@ -294,7 +288,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'V':
-				print_version("dvd_trip");
+				printf("dvd_trip %s\n", DVD_INFO_VERSION);
 				return 0;
 
 			case 'v':
@@ -306,10 +300,52 @@ int main(int argc, char **argv) {
 				debug = true;
 				break;
 
-			// ignore unknown arguments
 			case '?':
-				print_usage("dvd_trip");
-				return 1;
+				invalid_opts = true;
+			case 'h':
+				printf("dvd_trip - a tiny DVD ripper\n");
+				printf("\n");
+				printf("Usage:\n");
+				printf("  dvd_trip [options] [dvd path]\n");
+				printf("\n");
+				printf("Default:\n");
+				printf("  dvd_trip --preset medium --output trip_encode.mkv %s\n", DEFAULT_DVD_DEVICE);
+				printf("\n");
+				printf("Encoding options:\n");
+				printf("  -o, --output <filename>	Encode DVD track to filename (default: trip_encode.mkv)\n");
+				printf("        		        - mkv - Matroska container H.265 video AAC audio\n");
+				printf("				- mp4 - MPEG4 container H.264 video AAC audio\n");
+				printf("				- webm - WebM container VPX9 video Opus audio\n");
+				printf("  -p, --preset			Output quality preset (default: medium)\n");
+				printf("        {low|medium|high|insane}\n");
+				printf("\n");
+				printf("Input options:\n");
+				printf("  -t, --track <#>		Select DVD track (default: longest)\n");
+				printf("  -c, --chapters		Select chapter(s) range (default: all)\n");
+				printf("        {start|start-end|-end}\n");
+				printf("  -l, --alang <language>	Select audio language, two character code (default: first audio track)\n");
+				printf("  -A, --aid <#> 		Select audio track ID\n");
+				printf("\n");
+				printf("Video filters:\n");
+				printf("  -d, --deinterlace		Deinterlace video\n");
+				printf("  -e, --detelecine		Detelecine video\n");
+				printf("\n");
+				printf("Executable options:\n");
+				printf("  -h, --help			Show this help text and exit\n");
+				printf("      --version			Show version info and exit\n");
+				printf("\n");
+				printf("DVD Path Examples:\n");
+				printf("  dvd_trip			Use default DVD device - %s\n", DEFAULT_DVD_DEVICE);
+				printf("  dvd_trip /dev/dvd		Specify a device name\n");
+				printf("  dvd_trip DVD.iso	    	Specify a DVD image filename\n");
+				printf("  dvd_trip DVD/			Use a directory containing VIDEO_TS/\n");
+				printf("\n");
+				printf("dvd_trip reads a configuration file from ~/.config/dvd_trip/mpv.conf\n");
+				printf("See mpv man page for syntax or dvd_trip man page for examples.\n");
+				printf("\n");
+				if(invalid_opts)
+					return 1;
+				return 0;
 
 			// let getopt_long set the variable
 			case 0:
@@ -824,56 +860,5 @@ void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, co
 	dvd_track->cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 	dvd_track->blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
 	dvd_track->filesize = dvd_track_filesize(vmg_ifo, vts_ifo, track_number);
-
-}
-
-void print_usage(char *binary) {
-
-	printf("%s - a tiny DVD ripper\n", binary);
-	printf("\n");
-	printf("Usage:\n");
-	printf("  dvd_trip [options] [dvd path]\n");
-	printf("\n");
-	printf("Default:\n");
-	printf("  dvd_trip --preset medium --output trip_encode.mkv %s\n", DEFAULT_DVD_DEVICE);
-	printf("\n");
-	printf("Encoding options:\n");
-	printf("  -o, --output <filename>	Encode DVD track to filename (default: trip_encode.mkv)\n");
-	printf("        		        - mkv - Matroska container H.265 video AAC audio\n");
-	printf("				- mp4 - MPEG4 container H.264 video AAC audio\n");
-	printf("				- webm - WebM container VPX9 video Opus audio\n");
-	printf("  -p, --preset			Output quality preset (default: medium)\n");
-	printf("        {low|medium|high|insane}\n");
-	printf("\n");
-	printf("Input options:\n");
-	printf("  -t, --track <#>		Select DVD track (default: longest)\n");
-	printf("  -c, --chapters		Select chapter(s) range (default: all)\n");
-	printf("        {start|start-end|-end}\n");
-	printf("  -l, --alang <language>	Select audio language, two character code (default: first audio track)\n");
-	printf("  -A, --aid <#> 		Select audio track ID\n");
-	printf("\n");
-	printf("Video filters:\n");
-	printf("  -d, --deinterlace		Deinterlace video\n");
-	printf("  -e, --detelecine		Detelecine video\n");
-	printf("\n");
-	printf("Executable options:\n");
-	printf("  -h, --help			Show this help text and exit\n");
-	printf("  -V, --version			Show version info and exit\n");
-	printf("\n");
-	printf("DVD Path Examples:\n");
-	printf("  dvd_trip			Use default DVD device - %s\n", DEFAULT_DVD_DEVICE);
-	printf("  dvd_trip /dev/dvd		Specify a device name\n");
-	printf("  dvd_trip DVD.iso	    	Specify a DVD image filename\n");
-	printf("  dvd_trip DVD/			Use a directory containing VIDEO_TS/\n");
-	printf("\n");
-	printf("dvd_trip reads a configuration file from ~/.config/dvd_trip/mpv.conf\n");
-	printf("See mpv man page for syntax or dvd_trip man page for examples.\n");
-	printf("\n");
-
-}
-
-void print_version(char *binary) {
-
-	printf("%s %s\n", binary, DVD_INFO_VERSION);
 
 }
