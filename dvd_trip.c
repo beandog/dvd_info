@@ -66,14 +66,6 @@
 	 * To keep things simple, dvd_trip only has three presets which fit the most commonly used
 	 * codecs and formats when ripping DVDs: "mkv", "mp4", "webp".
 	 *
-	 * Quality Levels
-	 *
-	 * The quality levels of dvd_trip could partially be described as the time it takes to encode
-	 * them, rather than an intentional target towards a quality level. In the case of the "low"
-	 * presets, the focus is simply to go faster. The "medium" preset uses the default encoding
-	 * settings from the codecs themselves. The "high" and "insane" presets bump up the bitrates
-	 * from the defaults and will make the encoding slower, while also looking much nicer.
-	 *
 	 */
 
 int main(int, char **);
@@ -86,9 +78,7 @@ struct dvd_trip {
 	ssize_t filesize;
 	char filename[PATH_MAX - 1];
 	char container[5];
-	char preset[7];
 	char vcodec[256];
-	char vcodec_preset[11];
 	char vcodec_opts[256];
 	char vcodec_log_level[6];
 	char color_opts[256];
@@ -146,10 +136,7 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.filename, '\0', sizeof(dvd_trip.filename));
 	memset(dvd_trip.container, '\0', sizeof(dvd_trip.container));
 	strcpy(dvd_trip.container, "mkv");
-	memset(dvd_trip.preset, '\0', sizeof(dvd_trip.preset));
-	strcpy(dvd_trip.preset, "medium");
 	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
-	memset(dvd_trip.vcodec_preset, '\0', sizeof(dvd_trip.vcodec_preset));
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
 	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
 	memset(dvd_trip.color_opts, '\0', sizeof(dvd_trip.color_opts));
@@ -171,7 +158,6 @@ int main(int argc, char **argv) {
 		{ "aid", required_argument, 0, 'A' },
 
 		{ "deinterlace", no_argument, 0, 'd' },
-		{ "preset", required_argument, 0, 'p' },
 
 		{ "output", required_argument, 0, 'o' },
 
@@ -184,7 +170,7 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "Ac:dhl:o:p:t:vz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "Ac:dhl:o:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -238,27 +224,11 @@ int main(int argc, char **argv) {
 				strncpy(dvd_trip.audio_lang, optarg, 2);
 				break;
 
-			case 'p':
-				if(strncmp(optarg, "low", 3) == 0) {
-					strcpy(dvd_trip.preset, "low");
-				} else if(strncmp(optarg, "medium", 6) == 0) {
-					strcpy(dvd_trip.preset, "medium");
-				} else if(strncmp(optarg, "high", 4) == 0) {
-					strcpy(dvd_trip.preset, "high");
-				} else if(strncmp(optarg, "insane", 6) == 0) {
-					strcpy(dvd_trip.preset, "insane");
-				} else {
-					printf("dvd_trip [error]: valid presets - low medium high insane\n");
-					return 1;
-				}
-				break;
-
 			case 'o':
 				opt_filename = true;
 				strncpy(dvd_trip.filename, optarg, PATH_MAX - 1);
 				token_filename = strtok(optarg, ".");
 
-				// Choose preset from file extension
 				while(token_filename != NULL) {
 
 					snprintf(tmp_filename, 5, "%s", token_filename);
@@ -587,7 +557,6 @@ int main(int argc, char **argv) {
 
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 
-
 	// DVD playback using libmpv
 	dvd_mpv = mpv_create();
 
@@ -627,27 +596,11 @@ int main(int argc, char **argv) {
 			strcpy(dvd_trip.filename, "trip_encode.mkv");
 
 		strcpy(dvd_trip.vcodec, "libx265");
-		strcpy(dvd_trip.vcodec_preset, "medium");
+
 		strcpy(dvd_trip.acodec, "libfdk_aac");
+		strcpy(dvd_trip.acodec_opts, "b=192k");
 
-
-		if(strncmp(dvd_trip.preset, "low", 3) == 0) {
-			strcpy(dvd_trip.vcodec_preset, "fast");
-			dvd_trip.crf = 28;
-		} else if(strncmp(dvd_trip.preset, "medium", 6) == 0) {
-			strcpy(dvd_trip.vcodec_preset, "medium");
-			dvd_trip.crf = 24;
-		} else if(strncmp(dvd_trip.preset, "high", 4) == 0) {
-			strcpy(dvd_trip.vcodec_preset, "slow");
-			strcpy(dvd_trip.acodec_opts, "b=192k");
-			dvd_trip.crf = 20;
-		} else if(strncmp(dvd_trip.preset, "insane", 6) == 0) {
-			strcpy(dvd_trip.vcodec_preset, "slower");
-			strcpy(dvd_trip.acodec_opts, "b=256k");
-			dvd_trip.crf = 14;
-		}
-
-		sprintf(dvd_trip.vcodec_opts, "%s,preset=%s,crf=%u,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_preset, dvd_trip.crf, dvd_trip.vcodec_log_level);
+		sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=20,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_log_level);
 
 	}
 
@@ -657,29 +610,12 @@ int main(int argc, char **argv) {
 			strcpy(dvd_trip.filename, "trip_encode.mp4");
 
 		strcpy(dvd_trip.vcodec, "libx264");
-		strcpy(dvd_trip.vcodec_preset, "medium");
+
 		strcpy(dvd_trip.acodec, "libfdk_aac");
-		strcpy(dvd_trip.acodec_opts, "");
-
-
-		if(strncmp(dvd_trip.preset, "low", 3) == 0) {
-			strcpy(dvd_trip.vcodec_preset, "fast");
-			dvd_trip.crf = 28;
-		} else if(strncmp(dvd_trip.preset, "medium", 6) == 0) {
-			strcpy(dvd_trip.vcodec_preset, "medium");
-			dvd_trip.crf = 22;
-		} else if(strncmp(dvd_trip.preset, "high", 4) == 0) {
-			strcpy(dvd_trip.vcodec_preset, "slow");
-			strcpy(dvd_trip.acodec_opts, "b=192k");
-			dvd_trip.crf = 20;
-		} else if(strncmp(dvd_trip.preset, "insane", 6) == 0) {
-			strcpy(dvd_trip.vcodec_preset, "slower");
-			strcpy(dvd_trip.acodec_opts, "b=256k");
-			dvd_trip.crf = 16;
-		}
+		strcpy(dvd_trip.acodec_opts, "b=192k");
 
 		// x264 doesn't allow passing log level (that I can see)
-		sprintf(dvd_trip.vcodec_opts, "%s,preset=%s,crf=%u", dvd_trip.color_opts, dvd_trip.vcodec_preset, dvd_trip.crf);
+		sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=22", dvd_trip.color_opts);
 
 	}
 
@@ -689,9 +625,14 @@ int main(int argc, char **argv) {
 			strcpy(dvd_trip.filename, "trip_encode.webm");
 
 		strcpy(dvd_trip.vcodec, "libvpx-vp9");
+		sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=22,keyint_min=0,g=360", dvd_trip.color_opts);
+
 		strcpy(dvd_trip.acodec, "libopus");
 		strcpy(dvd_trip.acodec_opts, "application=audio");
+		strcpy(dvd_trip.acodec_opts, "application=audio,b=192000");
 
+		/*
+		 * keep these for reference because they were hard to decide on
 		if(strncmp(dvd_trip.preset, "low", 3) == 0) {
 			dvd_trip.crf = 34;
 			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u,keyint_min=0,g=360", dvd_trip.color_opts, dvd_trip.crf);
@@ -715,6 +656,7 @@ int main(int argc, char **argv) {
 			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u,keyint_min=0,g=360", dvd_trip.color_opts, dvd_trip.crf);
 			strcpy(dvd_trip.acodec_opts, "application=audio,b=256000");
 		}
+		*/
 
 	}
 
