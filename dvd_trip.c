@@ -75,7 +75,6 @@ struct dvd_trip {
 	uint16_t track;
 	uint8_t first_chapter;
 	uint8_t last_chapter;
-	ssize_t filesize;
 	char filename[PATH_MAX - 1];
 	char container[5];
 	char vcodec[256];
@@ -90,7 +89,6 @@ struct dvd_trip {
 	uint8_t crf;
 	char fps[11];
 	bool deinterlace;
-	uint8_t pass;
 };
 
 int main(int argc, char **argv) {
@@ -116,11 +114,8 @@ int main(int argc, char **argv) {
 	char *token_filename = NULL;
 	char tmp_filename[5] = {'\0'};
 	char dvd_mpv_args[13] = {'\0'};
-	char dvd_mpv_first_chapter[5] = {'\0'};
-	char dvd_mpv_last_chapter[5] = {'\0'};
-	mpv_handle *dvd_mpv = NULL;
-	mpv_event *dvd_mpv_event = NULL;
-	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
+	char dvd_mpv_first_chapter[4] = {'\0'};
+	char dvd_mpv_last_chapter[4] = {'\0'};
 
 	// Video Title Set
 	struct dvd_vts dvd_vts[99];
@@ -130,10 +125,6 @@ int main(int argc, char **argv) {
 	dvd_trip.track = 1;
 	dvd_trip.first_chapter = 1;
 	dvd_trip.last_chapter = 99;
-
-	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
-	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
-
 	memset(dvd_trip.filename, '\0', sizeof(dvd_trip.filename));
 	memset(dvd_trip.container, '\0', sizeof(dvd_trip.container));
 	strcpy(dvd_trip.container, "mkv");
@@ -146,10 +137,12 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.audio_lang, '\0', sizeof(dvd_trip.audio_lang));
 	memset(dvd_trip.audio_stream_id, '\0', sizeof(dvd_trip.audio_stream_id));
 	memset(dvd_trip.vf_opts, '\0', sizeof(dvd_trip.vf_opts));
-	dvd_trip.crf = 28;
+	dvd_trip.crf = 22;
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
 	dvd_trip.deinterlace = false;
-	dvd_trip.pass = 1;
+
+	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
+	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
 
 	struct option long_options[] = {
 
@@ -578,6 +571,7 @@ int main(int argc, char **argv) {
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 
 	// DVD playback using libmpv
+	mpv_handle *dvd_mpv = NULL;
 	dvd_mpv = mpv_create();
 
 	// Terminal output
@@ -726,23 +720,24 @@ int main(int argc, char **argv) {
 
 	mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
 
-	if(dvd_trip.pass == 1) {
-		fprintf(stderr, "[dvd_trip] [info]: dvd track %" PRIu16 "\n", dvd_trip.track);
-		fprintf(stderr, "[dvd_trip] [info]: chapters %" PRIu8 " to %" PRIu8 "\n", dvd_trip.first_chapter, dvd_trip.last_chapter);
-		fprintf(stderr, "[dvd_trip] [info]: saving to %s\n", dvd_trip.filename);
-		fprintf(stderr, "[dvd_trip] [info]: vcodec %s\n", dvd_trip.vcodec);
-		fprintf(stderr, "[dvd_trip] [info]: acodec %s\n", dvd_trip.acodec);
-		fprintf(stderr, "[dvd_trip] [info]: ovcopts %s\n", dvd_trip.vcodec_opts);
-		fprintf(stderr, "[dvd_trip] [info]: oacopts %s\n", dvd_trip.acodec_opts);
-		if(strlen(dvd_trip.vf_opts))
-			fprintf(stderr, "dvd_trip [info]: vf %s\n", dvd_trip.vf_opts);
-		fprintf(stderr, "[dvd_trip] [info]: output fps %s\n", dvd_trip.fps);
-		if(dvd_trip.deinterlace)
-			fprintf(stderr, "[dvd_trip] [info]: deinterlacing video\n");
-	}
+	fprintf(stderr, "[dvd_trip] [info]: dvd track %" PRIu16 "\n", dvd_trip.track);
+	fprintf(stderr, "[dvd_trip] [info]: chapters %" PRIu8 " to %" PRIu8 "\n", dvd_trip.first_chapter, dvd_trip.last_chapter);
+	fprintf(stderr, "[dvd_trip] [info]: saving to %s\n", dvd_trip.filename);
+	fprintf(stderr, "[dvd_trip] [info]: vcodec %s\n", dvd_trip.vcodec);
+	fprintf(stderr, "[dvd_trip] [info]: acodec %s\n", dvd_trip.acodec);
+	fprintf(stderr, "[dvd_trip] [info]: ovcopts %s\n", dvd_trip.vcodec_opts);
+	fprintf(stderr, "[dvd_trip] [info]: oacopts %s\n", dvd_trip.acodec_opts);
+	if(strlen(dvd_trip.vf_opts))
+		fprintf(stderr, "dvd_trip [info]: vf %s\n", dvd_trip.vf_opts);
+	fprintf(stderr, "[dvd_trip] [info]: output fps %s\n", dvd_trip.fps);
+	if(dvd_trip.deinterlace)
+		fprintf(stderr, "[dvd_trip] [info]: deinterlacing video\n");
 
 	mpv_initialize(dvd_mpv);
 	mpv_command(dvd_mpv, dvd_mpv_commands);
+
+	mpv_event *dvd_mpv_event = NULL;
+	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
 
 	while(true) {
 
