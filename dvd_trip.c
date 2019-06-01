@@ -29,7 +29,7 @@
 #include "dvd_time.h"
 #include <mpv/client.h>
 #ifndef DVD_INFO_VERSION
-#define DVD_INFO_VERSION "1.3"
+#define DVD_INFO_VERSION "1.6_beta1"
 #endif
 
 #define DVD_INFO_PROGRAM "dvd_trip"
