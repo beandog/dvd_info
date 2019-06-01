@@ -387,7 +387,7 @@ int main(int argc, char **argv) {
 	dvd_info.longest_track = 1;
 
 	dvd_title(dvd_info.title, device_filename);
-	printf("Disc title: %s\n", dvd_info.title);
+	printf("Disc title: '%s', ID: '%s', Num tracks: %" PRIu16 ", Longest track: %" PRIu16 "\n", dvd_info.title, dvdread_id, dvd_info.tracks, dvd_info.longest_track);
 
 	uint16_t num_ifos = 1;
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
@@ -417,9 +417,10 @@ int main(int argc, char **argv) {
 	uint16_t vts = 1;
 	ifo_handle_t *vts_ifo = NULL;
 
+	// ???
 	vts_ifo = ifoOpen(dvdread_dvd, vts);
 	if(vts_ifo == NULL) {
-		fprintf(stderr, "[dvd_trip] Could not open VTS_IFO for track %u\n", 1);
+		fprintf(stderr, "[dvd_trip] Could not open primary VTS_IFO\n");
 		return 1;
 	}
 	ifoClose(vts_ifo);
@@ -495,13 +496,13 @@ int main(int argc, char **argv) {
 	if(opt_chapter_number) {
 		if(arg_first_chapter > dvd_track.chapters) {
 			dvd_trip.first_chapter = dvd_track.chapters;
-			fprintf(stderr, "[dvd_trip] resetting first chapter to %u\n", dvd_trip.first_chapter);
+			fprintf(stderr, "[dvd_trip] resetting first chapter to %" PRIu8 "\n", dvd_trip.first_chapter);
 		} else
 			dvd_trip.first_chapter = arg_first_chapter;
 		
 		if(arg_last_chapter > dvd_track.chapters) {
 			dvd_trip.last_chapter = dvd_track.chapters;
-			fprintf(stderr, "[dvd_trip] resetting last chapter to %u\n", dvd_trip.last_chapter);
+			fprintf(stderr, "[dvd_trip] resetting last chapter to %" PRIu8 "\n", dvd_trip.last_chapter);
 		} else
 			dvd_trip.last_chapter = arg_last_chapter;
 	} else {
@@ -520,7 +521,7 @@ int main(int argc, char **argv) {
 	// Open the VTS VOB
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
-	printf("Track: %02u, Length: %s, Chapters: %02u, Cells: %02u, Audio streams: %02u, Subpictures: %02u, Filesize: %lu, Blocks: %lu\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
+	printf("Track: %02" PRIu16 ", Length: %s, Chapters: %02" PRIu8 ", Cells: %02" PRIu8 ", Audio streams: %02" PRIu8 ", Subpictures: %02" PRIu8 ", Blocks: %6zd, Filesize: %9zd\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.blocks, dvd_track.filesize);
 
 	// Check for track issues
 	dvd_track.valid = true;
@@ -564,7 +565,7 @@ int main(int argc, char **argv) {
 	}
 
 	// MPV zero-indexes tracks
-	sprintf(dvd_mpv_args, "dvdread://%u", dvd_trip.track - 1);
+	sprintf(dvd_mpv_args, "dvdread://%" PRIu16, dvd_trip.track - 1);
 
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 
@@ -685,8 +686,8 @@ int main(int argc, char **argv) {
 
 	// MPV's chapter range starts at the first one, and ends at the last one plus one
 	// fex: to play chapter 1 only, mpv --start '#1' --end '#2'
-	sprintf(dvd_mpv_first_chapter, "#%u", dvd_trip.first_chapter);
-	sprintf(dvd_mpv_last_chapter, "#%u", dvd_trip.last_chapter + 1);
+	sprintf(dvd_mpv_first_chapter, "#%" PRIu8, dvd_trip.first_chapter);
+	sprintf(dvd_mpv_last_chapter, "#%" PRIu8, dvd_trip.last_chapter + 1);
 	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 
@@ -718,8 +719,8 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
 
 	if(dvd_trip.pass == 1) {
-		fprintf(stderr, "[dvd_trip] [info]: dvd track %u\n", dvd_trip.track);
-		fprintf(stderr, "[dvd_trip] [info]: chapters %u to %u\n", dvd_trip.first_chapter, dvd_trip.last_chapter);
+		fprintf(stderr, "[dvd_trip] [info]: dvd track %" PRIu16 "\n", dvd_trip.track);
+		fprintf(stderr, "[dvd_trip] [info]: chapters %" PRIu8 " to %" PRIu8 "\n", dvd_trip.first_chapter, dvd_trip.last_chapter);
 		fprintf(stderr, "[dvd_trip] [info]: saving to %s\n", dvd_trip.filename);
 		fprintf(stderr, "[dvd_trip] [info]: vcodec %s\n", dvd_trip.vcodec);
 		fprintf(stderr, "[dvd_trip] [info]: acodec %s\n", dvd_trip.acodec);
