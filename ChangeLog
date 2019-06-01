@@ -1,6 +1,7 @@
-1.5
+1.5 - 2019-06-01
 
 * Fix displaying longest track
+* Fix build without man page error
 
 1.4 - 2019-05-30
 

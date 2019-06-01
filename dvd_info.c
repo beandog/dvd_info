@@ -26,7 +26,7 @@
 #include "dvd_drive.h"
 #endif
 #ifndef DVD_INFO_VERSION
-#define DVD_INFO_VERSION "1.5_beta1"
+#define DVD_INFO_VERSION "1.5"
 #endif
 
 int main(int argc, char **argv) {
