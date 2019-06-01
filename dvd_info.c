@@ -333,9 +333,7 @@ int main(int argc, char **argv) {
 				printf("DVD path can be a device name, a single file, or a directory (default: %s)\n", DEFAULT_DVD_DEVICE);
 				if(invalid_opt)
 					return 1;
-				else
-					return 0;
-				break;
+				return 0;
 			// let getopt_long set the variable
 			case 0:
 			default:
