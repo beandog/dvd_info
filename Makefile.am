@@ -13,7 +13,6 @@ if LINUX_DRIVE_TOOLS
 
 bin_PROGRAMS += dvd_drive_status
 dvd_drive_status_SOURCES = dvd_drive_status.c
-man1_MANS += docs/linux/dvd_eject.1
 
 if LINUX_DRIVE_EJECT
 
@@ -21,7 +20,6 @@ bin_PROGRAMS += dvd_eject
 dvd_eject_SOURCES = dvd_eject.c
 dvd_eject_CFLAGS = $(DVDCSS_CFLAGS)
 dvd_eject_LDADD = $(DVDCSS_LIBS)
-man1_MANS += docs/linux/dvd_drive_status.1
 
 endif
 
