@@ -115,7 +115,6 @@ int main(int argc, char **argv) {
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
-	bool valid_preset = false;
 	uint16_t arg_track_number = 0;
 	int long_index = 0;
 	int opt = 0;
@@ -256,20 +255,12 @@ int main(int argc, char **argv) {
 
 					if(token_filename == NULL && strlen(tmp_filename) == 3 && strncmp(tmp_filename, "mkv", 3) == 0) {
 						strncpy(dvd_trip.container, "mkv", 4);
-						valid_preset = true;
 					} else if(token_filename == NULL && strlen(tmp_filename) == 3 && strncmp(tmp_filename, "mp4", 3) == 0) {
 						strncpy(dvd_trip.container, "mp4", 4);
-						valid_preset = true;
 					} else if(token_filename == NULL && strlen(tmp_filename) == 4 && strncmp(tmp_filename, "webm", 4) == 0) {
 						strncpy(dvd_trip.container, "webm", 5);
-						valid_preset = true;
 					}
 
-				}
-
-				if(!valid_preset) {
-					printf("dvd_trip [error]: output filename extension must be one of: .mkv, .mp4, .webm\n");
-					return 1;
 				}
 
 				break;
