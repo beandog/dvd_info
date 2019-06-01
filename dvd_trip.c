@@ -100,7 +100,6 @@ struct dvd_trip {
 	uint8_t crf;
 	char fps[11];
 	bool deinterlace;
-	bool detelecine;
 	uint8_t pass;
 };
 
@@ -136,7 +135,7 @@ int main(int argc, char **argv) {
 	// Video Title Set
 	struct dvd_vts dvd_vts[99];
 
-	const char str_options[] = "Ac:dehl:o:p:t:vz";
+	const char str_options[] = "Ac:dhl:o:p:t:vz";
 	struct option long_options[] = {
 
 		{ "chapters", required_argument, 0, 'c' },
@@ -145,7 +144,6 @@ int main(int argc, char **argv) {
 		{ "aid", required_argument, 0, 'A' },
 
 		{ "deinterlace", no_argument, 0, 'd' },
-		{ "detelecine", no_argument, 0, 'e' },
 		{ "preset", required_argument, 0, 'p' },
 
 		{ "output", required_argument, 0, 'o' },
@@ -186,7 +184,6 @@ int main(int argc, char **argv) {
 	dvd_trip.crf = 28;
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
 	dvd_trip.deinterlace = false;
-	dvd_trip.detelecine = false;
 	dvd_trip.pass = 1;
 
 	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
@@ -226,11 +223,6 @@ int main(int argc, char **argv) {
 			case 'd':
 				dvd_trip.deinterlace = true;
 				break;
-
-			case 'e':
-				dvd_trip.detelecine = true;
-				break;
-
 
 			case 'l':
 				strncpy(dvd_trip.audio_lang, optarg, 2);
@@ -749,22 +741,14 @@ int main(int argc, char **argv) {
 		// Syntax up to 0.27.2
 		mpv_set_option_string(dvd_mpv, "ofps", dvd_trip.fps);
 
-		if(dvd_trip.detelecine && dvd_trip.deinterlace)
-			sprintf(dvd_trip.vf_opts, "lavfi=yadif,lavfi=pullup,lavfi=dejudder");
-		else if(dvd_trip.deinterlace)
+		if(dvd_trip.deinterlace)
 			sprintf(dvd_trip.vf_opts, "lavfi=yadif");
-		else if(dvd_trip.detelecine)
-			sprintf(dvd_trip.vf_opts, "lavfi=pullup,lavfi=dejudder");
 
 	} else {
 
 		// Syntax starting in 0.29.1
-		if(dvd_trip.detelecine && dvd_trip.deinterlace)
-			sprintf(dvd_trip.vf_opts, "lavfi-yadif,lavfi-pullup,lavfi-dejudder,fps=%s", dvd_trip.fps);
-		else if(dvd_trip.deinterlace)
+		if(dvd_trip.deinterlace)
 			sprintf(dvd_trip.vf_opts, "lavfi-yadif,fps=%s", dvd_trip.fps);
-		else if(dvd_trip.detelecine)
-			sprintf(dvd_trip.vf_opts, "lavfi-pullup,lavfi-dejudder,fps=%s", dvd_trip.fps);
 		else
 			sprintf(dvd_trip.vf_opts, "fps=%s", dvd_trip.fps);
 
@@ -785,8 +769,6 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "dvd_trip [info]: output fps %s\n", dvd_trip.fps);
 		if(dvd_trip.deinterlace)
 			fprintf(stderr, "dvd_trip [info]: deinterlacing video\n");
-		if(dvd_trip.detelecine)
-			fprintf(stderr, "dvd_trip [info]: detelecining video\n");
 	}
 
 	mpv_initialize(dvd_mpv);
