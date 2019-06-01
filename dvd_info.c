@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
 	bool opt_min_minutes = true;
 	uint32_t arg_min_minutes = 0;
 	// bool opt_vts = false;
-	uint16_t arg_vts = 0;
+	// uint16_t arg_vts = 0;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
