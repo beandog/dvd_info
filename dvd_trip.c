@@ -118,6 +118,7 @@ int main(int argc, char **argv) {
 	uint16_t arg_track_number = 0;
 	int long_index = 0;
 	int opt = 0;
+	unsigned long int arg_number = 0;
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
 	char *token = NULL;
@@ -193,27 +194,39 @@ int main(int argc, char **argv) {
 
 			case 'c':
 				opt_chapter_number = true;
-				token = strtok(optarg, "-"); {
-					if(strlen(token) > 2) {
-						fprintf(stderr, "Chapter range must be between 1 and 99\n");
-						return 1;
-					}
-					arg_first_chapter = (uint8_t)strtoumax(token, NULL, 0);
+				token = strtok(optarg, "-");
+				if(strlen(token) > 2) {
+					fprintf(stderr, "[dvd_trip] Chapter range must be between 1 and 99\n");
+					return 1;
 				}
+				arg_number = strtoul(token, NULL, 10);
+				if(arg_number > 99)
+					arg_first_chapter = 99;
+				else if(arg_number == 0)
+					arg_first_chapter = 1;
+				else
+					arg_first_chapter = (uint8_t)arg_number;
 
 				token = strtok(NULL, "-");
 				if(token != NULL) {
 					if(strlen(token) > 2) {
-						fprintf(stderr, "Chapter range must be between 1 and 99\n");
+						fprintf(stderr, "[dvd_trip] Chapter range must be between 1 and 99\n");
 						return 1;
 					}
-					arg_last_chapter = (uint8_t)strtoumax(token, NULL, 0);
+					arg_number = strtoul(token, NULL, 10);
+					if(arg_number > 99)
+						arg_last_chapter = 99;
+					if(arg_number == 0)
+						arg_last_chapter = arg_first_chapter;
+					else
+						arg_last_chapter = (uint8_t)arg_number;
 				}
 
-				if(arg_first_chapter == 0)
-					arg_first_chapter = 1;
 				if(arg_last_chapter < arg_first_chapter)
 					arg_last_chapter = arg_first_chapter;
+
+				if(arg_first_chapter > arg_last_chapter)
+					arg_first_chapter = arg_last_chapter;
 
 				break;
 
