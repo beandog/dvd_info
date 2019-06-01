@@ -765,7 +765,7 @@ int main(int argc, char **argv) {
 	 */
 
 	if(d_disc_title_header && !d_quiet)
-		printf("Disc title: '%s', ID: '%s', Num tracks: %" PRIu16 ", Longest track: %" PRIu16 "\n", dvd_info.title, dvd_info.dvdread_id, dvd_info.tracks, dvd_info.valid_tracks, dvd_info.longest_track);
+		printf("Disc title: '%s', ID: '%s', Num tracks: %" PRIu16 ", Longest track: %" PRIu16 "\n", dvd_info.title, dvd_info.dvdread_id, dvd_info.tracks, dvd_info.longest_track);
 
 	// Print the valid and invalid VTSs
 	if(debug) {
