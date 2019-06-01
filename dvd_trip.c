@@ -83,7 +83,7 @@ struct dvd_trip {
 	char vcodec_log_level[6];
 	char color_opts[256];
 	char audio_lang[3];
-	char audio_aid[4];
+	char audio_stream_id[4];
 	char acodec[256];
 	char acodec_opts[256];
 	char vf_opts[256];
@@ -143,7 +143,7 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.acodec, '\0', sizeof(dvd_trip.acodec));
 	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
 	memset(dvd_trip.audio_lang, '\0', sizeof(dvd_trip.audio_lang));
-	memset(dvd_trip.audio_aid, '\0', sizeof(dvd_trip.audio_aid));
+	memset(dvd_trip.audio_stream_id, '\0', sizeof(dvd_trip.audio_stream_id));
 	memset(dvd_trip.vf_opts, '\0', sizeof(dvd_trip.vf_opts));
 	dvd_trip.crf = 28;
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
@@ -175,7 +175,7 @@ int main(int argc, char **argv) {
 		switch(opt) {
 
 			case 'A':
-				strncpy(dvd_trip.audio_aid, optarg, 3);
+				strncpy(dvd_trip.audio_stream_id, optarg, 3);
 				break;
 
 			case 'c':
@@ -679,10 +679,10 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 
-	if(strlen(dvd_trip.audio_aid) > 0)
-		mpv_set_option_string(dvd_mpv, "aid", dvd_trip.audio_aid);
-	else if(strlen(dvd_trip.audio_lang) > 0)
+	if(strlen(dvd_trip.audio_lang) > 0)
 		mpv_set_option_string(dvd_mpv, "alang", dvd_trip.audio_lang);
+	else if(strlen(dvd_trip.audio_stream_id) > 0)
+		mpv_set_option_string(dvd_mpv, "aid", dvd_trip.audio_stream_id);
 
 	/** Video Filters **/
 
