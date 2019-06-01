@@ -118,7 +118,6 @@ int main(int argc, char **argv) {
 	uint16_t arg_track_number = 0;
 	int long_index = 0;
 	int opt = 0;
-	opterr = 1;
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
 	char *token = NULL;
@@ -133,28 +132,6 @@ int main(int argc, char **argv) {
 
 	// Video Title Set
 	struct dvd_vts dvd_vts[99];
-
-	const char str_options[] = "Ac:dhl:o:p:t:vz";
-	struct option long_options[] = {
-
-		{ "chapters", required_argument, 0, 'c' },
-		{ "track", required_argument, 0, 't' },
-		{ "alang", required_argument, 0, 'l' },
-		{ "aid", required_argument, 0, 'A' },
-
-		{ "deinterlace", no_argument, 0, 'd' },
-		{ "preset", required_argument, 0, 'p' },
-
-		{ "output", required_argument, 0, 'o' },
-
-		{ "help", no_argument, 0, 'h' },
-		{ "version", no_argument, 0, 'V' },
-
-		{ "verbose", no_argument, 0, 'v' },
-		{ "debug", no_argument, 0, 'z' },
-		{ 0, 0, 0, 0 }
-
-	};
 
 	struct dvd_trip dvd_trip;
 
@@ -185,7 +162,28 @@ int main(int argc, char **argv) {
 	dvd_trip.deinterlace = false;
 	dvd_trip.pass = 1;
 
-	while((opt = getopt_long(argc, argv, str_options, long_options, &long_index )) != -1) {
+	struct option long_options[] = {
+
+		{ "chapters", required_argument, 0, 'c' },
+		{ "track", required_argument, 0, 't' },
+		{ "alang", required_argument, 0, 'l' },
+		{ "aid", required_argument, 0, 'A' },
+
+		{ "deinterlace", no_argument, 0, 'd' },
+		{ "preset", required_argument, 0, 'p' },
+
+		{ "output", required_argument, 0, 'o' },
+
+		{ "help", no_argument, 0, 'h' },
+		{ "version", no_argument, 0, 'V' },
+
+		{ "verbose", no_argument, 0, 'v' },
+		{ "debug", no_argument, 0, 'z' },
+		{ 0, 0, 0, 0 }
+
+	};
+
+	while((opt = getopt_long(argc, argv, "Ac:dhl:o:p:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
