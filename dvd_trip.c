@@ -334,15 +334,9 @@ int main(int argc, char **argv) {
 				printf("  -h, --help			Show this help text and exit\n");
 				printf("      --version			Show version info and exit\n");
 				printf("\n");
-				printf("DVD Path Examples:\n");
-				printf("  dvd_trip			Use default DVD device - %s\n", DEFAULT_DVD_DEVICE);
-				printf("  dvd_trip /dev/dvd		Specify a device name\n");
-				printf("  dvd_trip DVD.iso	    	Specify a DVD image filename\n");
-				printf("  dvd_trip DVD/			Use a directory containing VIDEO_TS/\n");
-				printf("\n");
 				printf("dvd_trip reads a configuration file from ~/.config/dvd_trip/mpv.conf\n");
-				printf("See mpv man page for syntax or dvd_trip man page for examples.\n");
 				printf("\n");
+				printf("See mpv man page for syntax or dvd_trip man page for examples.\n");
 				if(invalid_opts)
 					return 1;
 				return 0;
