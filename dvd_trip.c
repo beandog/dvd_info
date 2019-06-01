@@ -311,8 +311,10 @@ int main(int argc, char **argv) {
 	if (argv[optind])
 		device_filename = argv[optind];
 
+	/** Begin dvd_trip :) */
+
 	if(access(device_filename, F_OK) != 0) {
-		fprintf(stderr, "cannot access %s\n", device_filename);
+		fprintf(stderr, "[dvd_trip] cannot access %s\n", device_filename);
 		return 1;
 	}
 
@@ -320,7 +322,7 @@ int main(int argc, char **argv) {
 	int dvd_fd = 0;
 	dvd_fd = dvd_device_open(device_filename);
 	if(dvd_fd < 0) {
-		fprintf(stderr, "dvd_trip: error opening %s\n", device_filename);
+		fprintf(stderr, "[dvd_trip] error opening %s\n", device_filename);
 		return 1;
 	}
 	dvd_device_close(dvd_fd);
@@ -334,7 +336,7 @@ int main(int argc, char **argv) {
 		// Wait for the drive to become ready
 		if(!dvd_drive_has_media(device_filename)) {
 
-			fprintf(stderr, "drive status: ");
+			fprintf(stderr, "[dvd_trip] drive status: ");
 			dvd_drive_display_status(device_filename);
 
 			return 1;
@@ -345,26 +347,37 @@ int main(int argc, char **argv) {
 
 #endif
 
+	// begin libdvdread usage
+
+	// Open DVD device
 	dvd_reader_t *dvdread_dvd = NULL;
 	dvdread_dvd = DVDOpen(device_filename);
 
 	if(!dvdread_dvd) {
-		fprintf(stderr, "* dvdread could not open %s\n", device_filename);
+		fprintf(stderr, "[dvd_trip] Opening DVD %s failed\n", device_filename);
+		return 1;
+	}
+
+	// Check if DVD has an identifier, fail otherwise
+	char dvdread_id[DVD_DVDREAD_ID + 1];
+	memset(dvdread_id, '\0', sizeof(dvdread_id));
+	dvd_dvdread_id(dvdread_id, dvdread_dvd);
+	if(strlen(dvdread_id) == 0) {
+		fprintf(stderr, "[dvd_trip] Opening DVD %s failed\n", device_filename);
 		return 1;
 	}
 
 	ifo_handle_t *vmg_ifo = NULL;
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
-	if(vmg_ifo == NULL) {
-		fprintf(stderr, "* Could not open IFO zero\n");
+	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo)) {
+		fprintf(stderr, "[dvd_trip] Opening VMG IFO failed\n");
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
 
 	// DVD
 	struct dvd_info dvd_info;
-	memset(dvd_info.dvdread_id, '\0', sizeof(dvd_info.dvdread_id));
 	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
 	dvd_info.side = 1;
 	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
@@ -380,13 +393,11 @@ int main(int argc, char **argv) {
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
 
 	if(num_ifos < 1) {
-		fprintf(stderr, "* DVD has no title IFOs?!\n");
-		fprintf(stderr, "* Most likely a bug in libdvdread or a bad master or problems reading the disc\n");
+		fprintf(stderr, "[dvd_trip] DVD has no title IFOs\n");
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
-
 
 	// Track
 	struct dvd_track dvd_track;
@@ -408,7 +419,7 @@ int main(int argc, char **argv) {
 
 	vts_ifo = ifoOpen(dvdread_dvd, vts);
 	if(vts_ifo == NULL) {
-		fprintf(stderr, "* Could not open VTS_IFO for track %u\n", 1);
+		fprintf(stderr, "[dvd_trip] Could not open VTS_IFO for track %u\n", 1);
 		return 1;
 	}
 	ifoClose(vts_ifo);
@@ -484,13 +495,13 @@ int main(int argc, char **argv) {
 	if(opt_chapter_number) {
 		if(arg_first_chapter > dvd_track.chapters) {
 			dvd_trip.first_chapter = dvd_track.chapters;
-			fprintf(stderr, "Resetting first chapter to %u\n", dvd_trip.first_chapter);
+			fprintf(stderr, "[dvd_trip] resetting first chapter to %u\n", dvd_trip.first_chapter);
 		} else
 			dvd_trip.first_chapter = arg_first_chapter;
 		
 		if(arg_last_chapter > dvd_track.chapters) {
 			dvd_trip.last_chapter = dvd_track.chapters;
-			fprintf(stderr, "Resetting last chapter to %u\n", dvd_trip.last_chapter);
+			fprintf(stderr, "[dvd_trip] resetting last chapter to %u\n", dvd_trip.last_chapter);
 		} else
 			dvd_trip.last_chapter = arg_last_chapter;
 	} else {
@@ -707,18 +718,18 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
 
 	if(dvd_trip.pass == 1) {
-		fprintf(stderr, "dvd_trip [info]: dvd track %u\n", dvd_trip.track);
-		fprintf(stderr, "dvd_trip [info]: chapters %u to %u\n", dvd_trip.first_chapter, dvd_trip.last_chapter);
-		fprintf(stderr, "dvd_trip [info]: saving to %s\n", dvd_trip.filename);
-		fprintf(stderr, "dvd_trip [info]: vcodec %s\n", dvd_trip.vcodec);
-		fprintf(stderr, "dvd_trip [info]: acodec %s\n", dvd_trip.acodec);
-		fprintf(stderr, "dvd_trip [info]: ovcopts %s\n", dvd_trip.vcodec_opts);
-		fprintf(stderr, "dvd_trip [info]: oacopts %s\n", dvd_trip.acodec_opts);
+		fprintf(stderr, "[dvd_trip] [info]: dvd track %u\n", dvd_trip.track);
+		fprintf(stderr, "[dvd_trip] [info]: chapters %u to %u\n", dvd_trip.first_chapter, dvd_trip.last_chapter);
+		fprintf(stderr, "[dvd_trip] [info]: saving to %s\n", dvd_trip.filename);
+		fprintf(stderr, "[dvd_trip] [info]: vcodec %s\n", dvd_trip.vcodec);
+		fprintf(stderr, "[dvd_trip] [info]: acodec %s\n", dvd_trip.acodec);
+		fprintf(stderr, "[dvd_trip] [info]: ovcopts %s\n", dvd_trip.vcodec_opts);
+		fprintf(stderr, "[dvd_trip] [info]: oacopts %s\n", dvd_trip.acodec_opts);
 		if(strlen(dvd_trip.vf_opts))
 			fprintf(stderr, "dvd_trip [info]: vf %s\n", dvd_trip.vf_opts);
-		fprintf(stderr, "dvd_trip [info]: output fps %s\n", dvd_trip.fps);
+		fprintf(stderr, "[dvd_trip] [info]: output fps %s\n", dvd_trip.fps);
 		if(dvd_trip.deinterlace)
-			fprintf(stderr, "dvd_trip [info]: deinterlacing video\n");
+			fprintf(stderr, "[dvd_trip] [info]: deinterlacing video\n");
 	}
 
 	mpv_initialize(dvd_mpv);
