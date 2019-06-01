@@ -115,7 +115,7 @@ int main(int argc, char **argv) {
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
-	uint16_t arg_track_number = 0;
+	uint16_t arg_track_number = 1;
 	int long_index = 0;
 	int opt = 0;
 	unsigned long int arg_number = 0;
@@ -278,7 +278,13 @@ int main(int argc, char **argv) {
 
 			case 't':
 				opt_track_number = true;
-				arg_track_number = (uint16_t)strtoumax(optarg, NULL, 0);
+				arg_number = strtoul(optarg, NULL, 0);
+				if(arg_number > 99)
+					arg_track_number = 99;
+				else if(arg_number == 0)
+					arg_track_number = 1;
+				else
+					arg_track_number = (uint16_t)arg_number;
 				break;
 
 			case 'V':
@@ -470,8 +476,8 @@ int main(int argc, char **argv) {
 	
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks)) {
-		fprintf(stderr, "dvd_trip: Invalid track number %d\n", arg_track_number);
-		fprintf(stderr, "dvd_trip: Valid track numbers: 1 to %u\n", dvd_info.tracks);
+		fprintf(stderr, "[dvd_trip] Invalid track number %" PRIu16 "\n", arg_track_number);
+		fprintf(stderr, "[dvd_trip] Valid track numbers: 1 to %" PRIu16 "\n", dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
