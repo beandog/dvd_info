@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
 	bool debug = false;
 	bool invalid_opts = false;
 	bool opt_track_number = false;
-	bool opt_audio_track = false;
+	// bool opt_audio_track = false;
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
 	bool opt_force_encode = false;
@@ -116,7 +116,6 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
 	memset(dvd_trip.color_opts, '\0', sizeof(dvd_trip.color_opts));
 	dvd_trip.encode_audio = true;
-	dvd_trip.audio_track = 0;
 	memset(dvd_trip.acodec, '\0', sizeof(dvd_trip.acodec));
 	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
 	memset(dvd_trip.audio_lang, '\0', sizeof(dvd_trip.audio_lang));
@@ -158,10 +157,11 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "a:AB:c:dD:E:fho:t:vz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "AB:c:dD:E:fho:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
+			/*
 			case 'a':
 				arg_number = strtoul(optarg, NULL, 10);
 				if(arg_number < 100) {
@@ -169,6 +169,7 @@ int main(int argc, char **argv) {
 					opt_audio_track = true;
 				}
 				break;
+			*/
 
 			case 'B':
 				strncpy(dvd_trip.audio_stream_id, optarg, 3);
@@ -586,6 +587,12 @@ int main(int argc, char **argv) {
 	}
 
 	// Map the audio track passed as an argument to the audio stream ID
+	// Selecting the audio track ID from dvd_info indexes is a long-term dream.
+	// Unfortunately, it'd require a lot of work and testing to see if I can
+	// match up what it parsed by the decoder, and if it matches the indexes I have
+	// dvd_trip.audio_track = 0;
+
+	/*
 	if(dvd_trip.encode_audio && opt_audio_track) {
 
 		// Get the audio stream ID
@@ -608,6 +615,7 @@ int main(int argc, char **argv) {
 		}
 
 	}
+	*/
 
 	// MPV zero-indexes tracks
 	sprintf(dvd_mpv_args, "dvdread://%" PRIu16, dvd_trip.track - 1);
