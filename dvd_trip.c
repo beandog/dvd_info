@@ -490,6 +490,7 @@ int main(int argc, char **argv) {
 	dvd_track.track = dvd_trip.track;
 	dvd_track.valid = true;
 	dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, dvd_trip.track);
+	vts_ifo = vts_ifos[dvd_track.vts];
 	dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_trip.track);
 	dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_trip.track);
 	dvd_track.msecs = dvd_track_msecs(vmg_ifo, vts_ifo, dvd_trip.track);
