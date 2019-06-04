@@ -27,6 +27,7 @@
 #include "dvd_audio.h"
 #include "dvd_subtitles.h"
 #include "dvd_time.h"
+#include "dvd_mpv.h"
 #include <mpv/client.h>
 #ifndef DVD_INFO_VERSION
 #define DVD_INFO_VERSION "1.6_beta1"
@@ -70,26 +71,6 @@
 
 int main(int, char **);
 void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo);
-
-struct dvd_trip {
-	uint16_t track;
-	uint8_t first_chapter;
-	uint8_t last_chapter;
-	char filename[PATH_MAX - 1];
-	char container[5];
-	char vcodec[256];
-	char vcodec_opts[256];
-	char vcodec_log_level[6];
-	char color_opts[256];
-	char audio_lang[3];
-	char audio_stream_id[4];
-	char acodec[256];
-	char acodec_opts[256];
-	char vf_opts[256];
-	uint8_t crf;
-	char fps[11];
-	bool deinterlace;
-};
 
 int main(int argc, char **argv) {
 
