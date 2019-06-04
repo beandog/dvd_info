@@ -79,7 +79,6 @@ int main(int argc, char **argv) {
 	bool debug = false;
 	bool invalid_opts = false;
 	bool opt_track_number = false;
-	// bool opt_audio_track = false;
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
 	bool opt_force_encode = false;
