@@ -473,13 +473,15 @@ int main(int argc, char **argv) {
 
 		for(ix = 0, track = 1; ix < dvd_info.tracks; ix++, track++) {
 
-			vts = dvd_vts_ifo_number(vmg_ifo, ix + 1);
+			vts = dvd_vts_ifo_number(vmg_ifo, track);
 			vts_ifo = vts_ifos[vts];
 
 			msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track);
 
-			if(msecs > longest_msecs)
+			if(msecs > longest_msecs) {
+				longest_msecs = msecs;
 				dvd_trip.track = track;
+			}
 
 		}
 	
