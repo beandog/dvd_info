@@ -228,11 +228,11 @@ int main(int argc, char **argv) {
 					token_filename = strtok(NULL, ".");
 
 					if(token_filename == NULL && strlen(tmp_filename) == 3 && strncmp(tmp_filename, "mkv", 3) == 0) {
-						strncpy(dvd_trip.container, "mkv", 4);
+						strcpy(dvd_trip.container, "mkv");
 					} else if(token_filename == NULL && strlen(tmp_filename) == 3 && strncmp(tmp_filename, "mp4", 3) == 0) {
-						strncpy(dvd_trip.container, "mp4", 4);
+						strcpy(dvd_trip.container, "mp4");
 					} else if(token_filename == NULL && strlen(tmp_filename) == 4 && strncmp(tmp_filename, "webm", 4) == 0) {
-						strncpy(dvd_trip.container, "webm", 5);
+						strcpy(dvd_trip.container, "webm");
 					}
 
 				}
