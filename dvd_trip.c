@@ -390,9 +390,7 @@ int main(int argc, char **argv) {
 	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
 	dvd_info.tracks = dvd_tracks(vmg_ifo);
 	dvd_info.longest_track = 1;
-
 	dvd_title(dvd_info.title, device_filename);
-	printf("Disc title: '%s', ID: '%s', Num tracks: %" PRIu16 ", Longest track: %" PRIu16 "\n", dvd_info.title, dvdread_id, dvd_info.tracks, dvd_info.longest_track);
 
 	uint16_t num_ifos = 1;
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
@@ -536,7 +534,11 @@ int main(int argc, char **argv) {
 	// Open the VTS VOB
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
-	printf("Track: %02" PRIu16 ", Length: %s, Chapters: %02" PRIu8 ", Cells: %02" PRIu8 ", Audio streams: %02" PRIu8 ", Subpictures: %02" PRIu8 ", Blocks: %6zd, Filesize: %9zd\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.blocks, dvd_track.filesize);
+	if(strlen(dvd_info.title))
+		fprintf(stderr, "[dvd_trip] disc title: %s\n", dvd_info.title);
+	if(strlen(dvdread_id))
+		fprintf(stderr, "[dvd_trip] disc id: %s\n", dvdread_id);
+	fprintf(stderr, "[dvd_info] track: %02" PRIu16 ", length: %s, chapters: %02" PRIu8 ", cells: %02" PRIu8 ", audio streams: %02" PRIu8 ", subpictures: %02" PRIu8 ", blocks: %6zd, filesize: %9zd\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.blocks, dvd_track.filesize);
 
 	// Check for track issues
 	if(dvd_vts[vts].valid == false) {
