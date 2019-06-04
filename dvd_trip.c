@@ -112,6 +112,7 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.config_dir, '\0', sizeof(dvd_trip.config_dir));
 	memset(dvd_trip.mpv_config_dir, '\0', sizeof(dvd_trip.mpv_config_dir));
 	memset(dvd_trip.container, '\0', sizeof(dvd_trip.container));
+	dvd_trip.encode_video = true;
 	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
 	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
