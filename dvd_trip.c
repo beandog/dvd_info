@@ -615,7 +615,7 @@ int main(int argc, char **argv) {
 	/** Containers and Presets **/
 
 	// Set preset defaults
-	if(strncmp(dvd_trip.container, "mkv", 3) == 0) {
+	if(strncmp(dvd_trip.container, "mkv", 3) == 0 || !opt_filename) {
 
 		if(!opt_filename)
 			strcpy(dvd_trip.filename, "trip_encode.mkv");
