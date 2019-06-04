@@ -97,6 +97,8 @@ int main(int argc, char **argv) {
 	char dvd_mpv_args[13] = {'\0'};
 	char dvd_mpv_first_chapter[4] = {'\0'};
 	char dvd_mpv_last_chapter[4] = {'\0'};
+	const char *home_dir = getenv("HOME");
+	int retval = 0;
 
 	// Video Title Set
 	struct dvd_vts dvd_vts[99];
@@ -123,6 +125,10 @@ int main(int argc, char **argv) {
 	dvd_trip.crf = 22;
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
 	dvd_trip.deinterlace = false;
+	snprintf(dvd_trip.config_dir, PATH_MAX - 1, "/.config/dvd_trip");
+	memset(dvd_trip.mpv_config_dir, '\0', sizeof(dvd_trip.mpv_config_dir));
+	if(home_dir != NULL)
+		snprintf(dvd_trip.mpv_config_dir, PATH_MAX - 1, "%s%s", home_dir, dvd_trip.config_dir);
 
 	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
 	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
@@ -557,10 +563,33 @@ int main(int argc, char **argv) {
 	mpv_handle *dvd_mpv = NULL;
 	dvd_mpv = mpv_create();
 
+	if(dvd_mpv == NULL) {
+		fprintf(stderr, "[dvd_trip] could not create an mpv instance\n");
+		return 1;
+	}
+
+	// Load user's mpv configuration in ~/.config/dvd_trip/mpv.conf (and friends)
+	if(strlen(dvd_trip.mpv_config_dir) > 0) {
+
+		fprintf(stderr, "[dvd_trip] using mpv config dir: %s\n", dvd_trip.mpv_config_dir);
+		retval = mpv_set_option_string(dvd_mpv, "config-dir", dvd_trip.mpv_config_dir);
+
+		if(retval) {
+			fprintf(stderr, "[dvd_trip] could not set mpv option 'config-dir' %s\n", dvd_trip.mpv_config_dir);
+		}
+
+		retval = mpv_set_option_string(dvd_mpv, "config", "yes");
+
+		if(retval) {
+			fprintf(stderr, "[dvd_trip] could not set mpv option 'config'\n");
+		}
+
+	}
+
 	// Terminal output
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
 	if(!debug)
-		mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
+		retval = mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
 
 	if (debug) {
 		mpv_request_log_messages(dvd_mpv, "debug");
@@ -716,8 +745,22 @@ int main(int argc, char **argv) {
 	if(dvd_trip.deinterlace)
 		fprintf(stderr, "[dvd_trip] [info]: deinterlacing video\n");
 
-	mpv_initialize(dvd_mpv);
-	mpv_command(dvd_mpv, dvd_mpv_commands);
+	fprintf(stderr, "[dvd_trip] [info]: mpv: %s\n", dvd_mpv_args);
+
+	// ** All encoding options must be set before initialize **
+	retval = mpv_initialize(dvd_mpv);
+
+	if(retval) {
+		fprintf(stderr, "[dvd_trip] mpv_initialize() failed\n");
+		return 1;
+	}
+
+	retval = mpv_command(dvd_mpv, dvd_mpv_commands);
+
+	if(retval) {
+		fprintf(stderr, "[dvd_trip] mpv_command() failed\n");
+		return 1;
+	}
 
 	mpv_event *dvd_mpv_event = NULL;
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
