@@ -138,6 +138,7 @@ int main(int argc, char **argv) {
 		{ "track", required_argument, 0, 't' },
 		{ "alang", required_argument, 0, 'l' },
 		{ "aid", required_argument, 0, 'A' },
+		{ "vid", required_argument, 0, 'E' },
 
 		{ "deinterlace", no_argument, 0, 'd' },
 
@@ -153,7 +154,7 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "Ac:dfhl:o:t:vz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "Ac:dE:fhl:o:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -201,6 +202,11 @@ int main(int argc, char **argv) {
 
 			case 'd':
 				dvd_trip.deinterlace = true;
+				break;
+
+			case 'E':
+				if(strncmp(optarg, "no", 2) == 0)
+					dvd_trip.encode_video = false;
 				break;
 
 			case 'l':
@@ -620,12 +626,13 @@ int main(int argc, char **argv) {
 		if(!opt_filename)
 			strcpy(dvd_trip.filename, "trip_encode.mkv");
 
-		strcpy(dvd_trip.vcodec, "libx265");
+		if(dvd_trip.encode_video) {
+			strcpy(dvd_trip.vcodec, "libx265");
+			sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=20,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_log_level);
+		}
 
 		strcpy(dvd_trip.acodec, "libfdk_aac,aac");
 		strcpy(dvd_trip.acodec_opts, "b=192k");
-
-		sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=20,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_log_level);
 
 	}
 
@@ -634,13 +641,14 @@ int main(int argc, char **argv) {
 		if(!opt_filename)
 			strcpy(dvd_trip.filename, "trip_encode.mp4");
 
-		strcpy(dvd_trip.vcodec, "libx264");
+		if(dvd_trip.encode_video) {
+			strcpy(dvd_trip.vcodec, "libx264");
+			// x264 doesn't allow passing log level (that I can see)
+			sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=22", dvd_trip.color_opts);
+		}
 
 		strcpy(dvd_trip.acodec, "libfdk_aac,aac");
 		strcpy(dvd_trip.acodec_opts, "b=192k");
-
-		// x264 doesn't allow passing log level (that I can see)
-		sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=22", dvd_trip.color_opts);
 
 	}
 
@@ -649,8 +657,10 @@ int main(int argc, char **argv) {
 		if(!opt_filename)
 			strcpy(dvd_trip.filename, "trip_encode.webm");
 
-		strcpy(dvd_trip.vcodec, "libvpx-vp9");
-		sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=22,keyint_min=0,g=360", dvd_trip.color_opts);
+		if(dvd_trip.encode_video) {
+			strcpy(dvd_trip.vcodec, "libvpx-vp9");
+			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=22,keyint_min=0,g=360", dvd_trip.color_opts);
+		}
 
 		strcpy(dvd_trip.acodec, "libopus,opus,libvorbis,vorbis");
 		strcpy(dvd_trip.acodec_opts, "application=audio");
@@ -707,6 +717,11 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 
+	// User can pass "--vid no" to disable encoding any video
+	if(!dvd_trip.encode_video)
+		mpv_set_option_string(dvd_mpv, "vid", "no");
+
+	// User can pass "--aid no" to disable encoding any sound
 	if(strlen(dvd_trip.audio_lang) > 0)
 		mpv_set_option_string(dvd_mpv, "alang", dvd_trip.audio_lang);
 	else if(strlen(dvd_trip.audio_stream_id) > 0)
@@ -737,9 +752,11 @@ int main(int argc, char **argv) {
 	fprintf(stderr, "[dvd_trip] [info]: dvd track %" PRIu16 "\n", dvd_trip.track);
 	fprintf(stderr, "[dvd_trip] [info]: chapters %" PRIu8 " to %" PRIu8 "\n", dvd_trip.first_chapter, dvd_trip.last_chapter);
 	fprintf(stderr, "[dvd_trip] [info]: saving to %s\n", dvd_trip.filename);
-	fprintf(stderr, "[dvd_trip] [info]: vcodec %s\n", dvd_trip.vcodec);
+	if(dvd_trip.encode_video)
+		fprintf(stderr, "[dvd_trip] [info]: vcodec %s\n", dvd_trip.vcodec);
 	fprintf(stderr, "[dvd_trip] [info]: acodec %s\n", dvd_trip.acodec);
-	fprintf(stderr, "[dvd_trip] [info]: ovcopts %s\n", dvd_trip.vcodec_opts);
+	if(dvd_trip.encode_video)
+		fprintf(stderr, "[dvd_trip] [info]: ovcopts %s\n", dvd_trip.vcodec_opts);
 	fprintf(stderr, "[dvd_trip] [info]: oacopts %s\n", dvd_trip.acodec_opts);
 	if(strlen(dvd_trip.vf_opts))
 		fprintf(stderr, "dvd_trip [info]: vf %s\n", dvd_trip.vf_opts);

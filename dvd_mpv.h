@@ -9,6 +9,7 @@ struct dvd_trip {
 	char config_dir[PATH_MAX - 1];
 	char mpv_config_dir[PATH_MAX - 1];
 	char container[5];
+	bool encode_video;
 	char vcodec[256];
 	char vcodec_opts[256];
 	char vcodec_log_level[6];
