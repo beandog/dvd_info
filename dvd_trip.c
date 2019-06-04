@@ -117,6 +117,7 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
 	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
 	memset(dvd_trip.color_opts, '\0', sizeof(dvd_trip.color_opts));
+	dvd_trip.encode_audio = true;
 	memset(dvd_trip.acodec, '\0', sizeof(dvd_trip.acodec));
 	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
 	memset(dvd_trip.audio_lang, '\0', sizeof(dvd_trip.audio_lang));
@@ -161,6 +162,8 @@ int main(int argc, char **argv) {
 
 			case 'A':
 				strncpy(dvd_trip.audio_stream_id, optarg, 3);
+				if(strncmp(optarg, "no", 2) == 0)
+					dvd_trip.encode_audio = false;
 				break;
 
 			case 'c':
@@ -632,8 +635,10 @@ int main(int argc, char **argv) {
 			sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=20,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_log_level);
 		}
 
-		strcpy(dvd_trip.acodec, "libfdk_aac,aac");
-		strcpy(dvd_trip.acodec_opts, "b=192k");
+		if(dvd_trip.encode_audio) {
+			strcpy(dvd_trip.acodec, "libfdk_aac,aac");
+			strcpy(dvd_trip.acodec_opts, "b=192k");
+		}
 
 	}
 
@@ -648,8 +653,10 @@ int main(int argc, char **argv) {
 			sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=22", dvd_trip.color_opts);
 		}
 
-		strcpy(dvd_trip.acodec, "libfdk_aac,aac");
-		strcpy(dvd_trip.acodec_opts, "b=192k");
+		if(dvd_trip.encode_audio) {
+			strcpy(dvd_trip.acodec, "libfdk_aac,aac");
+			strcpy(dvd_trip.acodec_opts, "b=192k");
+		}
 
 	}
 
@@ -663,9 +670,11 @@ int main(int argc, char **argv) {
 			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=22,keyint_min=0,g=360", dvd_trip.color_opts);
 		}
 
-		strcpy(dvd_trip.acodec, "libopus,opus,libvorbis,vorbis");
-		strcpy(dvd_trip.acodec_opts, "application=audio");
-		strcpy(dvd_trip.acodec_opts, "application=audio,b=192000");
+		if(dvd_trip.encode_audio) {
+			strcpy(dvd_trip.acodec, "libopus,opus,libvorbis,vorbis");
+			strcpy(dvd_trip.acodec_opts, "application=audio");
+			strcpy(dvd_trip.acodec_opts, "application=audio,b=192000");
+		}
 
 		/*
 		 * keep these for reference because they were hard to decide on
@@ -705,8 +714,9 @@ int main(int argc, char **argv) {
 		mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
 	if(strlen(dvd_trip.acodec_opts) > 0)
 		mpv_set_option_string(dvd_mpv, "oacopts", dvd_trip.acodec_opts);
+	if(dvd_trip.encode_audio)
+		mpv_set_option_string(dvd_mpv, "track-auto-selection", "yes");
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
-	mpv_set_option_string(dvd_mpv, "track-auto-selection", "yes");
 	mpv_set_option_string(dvd_mpv, "input-default-bindings", "yes");
 	mpv_set_option_string(dvd_mpv, "input-vo-keyboard", "yes");
 	mpv_set_option_string(dvd_mpv, "resume-playback", "no");
@@ -755,14 +765,16 @@ int main(int argc, char **argv) {
 	fprintf(stderr, "[dvd_trip] [info]: saving to %s\n", dvd_trip.filename);
 	if(dvd_trip.encode_video)
 		fprintf(stderr, "[dvd_trip] [info]: vcodec %s\n", dvd_trip.vcodec);
-	fprintf(stderr, "[dvd_trip] [info]: acodec %s\n", dvd_trip.acodec);
+	if(dvd_trip.encode_audio)
+		fprintf(stderr, "[dvd_trip] [info]: acodec %s\n", dvd_trip.acodec);
 	if(dvd_trip.encode_video)
 		fprintf(stderr, "[dvd_trip] [info]: ovcopts %s\n", dvd_trip.vcodec_opts);
-	fprintf(stderr, "[dvd_trip] [info]: oacopts %s\n", dvd_trip.acodec_opts);
+	if(dvd_trip.encode_audio)
+		fprintf(stderr, "[dvd_trip] [info]: oacopts %s\n", dvd_trip.acodec_opts);
 	if(strlen(dvd_trip.vf_opts))
 		fprintf(stderr, "dvd_trip [info]: vf %s\n", dvd_trip.vf_opts);
 	fprintf(stderr, "[dvd_trip] [info]: output fps %s\n", dvd_trip.fps);
-	if(dvd_trip.deinterlace)
+	if(dvd_trip.deinterlace && dvd_trip.encode_video)
 		fprintf(stderr, "[dvd_trip] [info]: deinterlacing video\n");
 
 	fprintf(stderr, "[dvd_trip] [info]: mpv: %s\n", dvd_mpv_args);
