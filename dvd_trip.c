@@ -82,6 +82,7 @@ int main(int argc, char **argv) {
 	bool debug = false;
 	bool invalid_opts = false;
 	bool opt_track_number = false;
+	bool opt_audio_track = false;
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
 	bool opt_force_encode = false;
@@ -118,10 +119,12 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
 	memset(dvd_trip.color_opts, '\0', sizeof(dvd_trip.color_opts));
 	dvd_trip.encode_audio = true;
+	dvd_trip.audio_track = 0;
 	memset(dvd_trip.acodec, '\0', sizeof(dvd_trip.acodec));
 	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
 	memset(dvd_trip.audio_lang, '\0', sizeof(dvd_trip.audio_lang));
 	memset(dvd_trip.audio_stream_id, '\0', sizeof(dvd_trip.audio_stream_id));
+	memset(dvd_trip.audio_ff_aid, '\0', sizeof(dvd_trip.audio_ff_aid));
 	memset(dvd_trip.vf_opts, '\0', sizeof(dvd_trip.vf_opts));
 	dvd_trip.crf = 22;
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
@@ -136,10 +139,12 @@ int main(int argc, char **argv) {
 
 	struct option long_options[] = {
 
-		{ "alang", required_argument, 0, 'a' },
+		{ "audio", required_argument, 0, 'a' },
+		{ "alang", required_argument, 0, 'D' },
+		{ "aid", required_argument, 0, 'B' },
+
 		{ "chapters", required_argument, 0, 'c' },
 		{ "track", required_argument, 0, 't' },
-		{ "aid", required_argument, 0, 'A' },
 		{ "vid", required_argument, 0, 'E' },
 
 		{ "deinterlace", no_argument, 0, 'd' },
@@ -156,15 +161,19 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "a:Ac:dE:fho:t:vz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "a:AB:c:dD:E:fho:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
 			case 'a':
-				strncpy(dvd_trip.audio_lang, optarg, 2);
+				arg_number = strtoul(optarg, NULL, 10);
+				if(arg_number < 100) {
+					dvd_trip.audio_track = (uint8_t)arg_number;
+					opt_audio_track = true;
+				}
 				break;
 
-			case 'A':
+			case 'B':
 				strncpy(dvd_trip.audio_stream_id, optarg, 3);
 				if(strncmp(optarg, "no", 2) == 0)
 					dvd_trip.encode_audio = false;
@@ -210,6 +219,10 @@ int main(int argc, char **argv) {
 
 			case 'd':
 				dvd_trip.deinterlace = true;
+				break;
+
+			case 'D':
+				strncpy(dvd_trip.audio_lang, optarg, 2);
 				break;
 
 			case 'E':
@@ -275,8 +288,8 @@ int main(int argc, char **argv) {
 				printf("  -t, --track <number>          Encode selected track (default: longest)\n");
 				printf("  -c, --chapter <#>[-#]         Encode chapter number or range (default: all)\n");
 				printf("  -o, --output <filename>       Save to filename (default: dvd_track_##.mkv)\n");
-				printf("  -a, --alang <language>	Select audio language, two character code (default: first audio track)\n");
-				printf("  -A, --aid <#> 		Select audio track ID\n");
+				printf("      --alang <language>	Select audio language, two character code (default: first audio track)\n");
+				printf("      --aid <#> 		Select audio track ID\n");
 				printf("  -f, --force			Ignore invalid track warning\n");
 				printf("  -h, --help			Show this help text and exit\n");
 				printf("      --version			Show version info and exit\n");
@@ -558,6 +571,30 @@ int main(int argc, char **argv) {
 				DVDClose(dvdread_dvd);
 
 			return 1;
+
+		}
+
+	}
+
+	// Map the audio track passed as an argument to the audio stream ID
+	if(dvd_trip.encode_audio && opt_audio_track) {
+
+		// Get the audio stream ID
+		char audio_stream_id[12] = {'\0'};
+		uint8_t audio_tracks = dvd_track_audio_tracks(vts_ifo);
+		uint8_t audio_track_ix = 0;
+		bool audio_active = false;
+		for(audio_track_ix = 0; audio_track_ix < audio_tracks + 1; audio_track_ix++) {
+
+			audio_active = dvd_audio_active(vmg_ifo, vts_ifo, dvd_trip.track, audio_track_ix);
+			if(audio_active && (dvd_trip.audio_track == audio_track_ix + 1)) {
+
+				dvd_audio_stream_id(audio_stream_id, vts_ifo, audio_track_ix);
+				strcpy(dvd_trip.audio_ff_aid, audio_stream_id);
+
+				break;
+
+			}
 
 		}
 
