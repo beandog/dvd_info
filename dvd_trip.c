@@ -136,9 +136,9 @@ int main(int argc, char **argv) {
 
 	struct option long_options[] = {
 
+		{ "alang", required_argument, 0, 'a' },
 		{ "chapters", required_argument, 0, 'c' },
 		{ "track", required_argument, 0, 't' },
-		{ "alang", required_argument, 0, 'l' },
 		{ "aid", required_argument, 0, 'A' },
 		{ "vid", required_argument, 0, 'E' },
 
@@ -156,9 +156,13 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "Ac:dE:fhl:o:t:vz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "a:Ac:dE:fho:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
+
+			case 'a':
+				strncpy(dvd_trip.audio_lang, optarg, 2);
+				break;
 
 			case 'A':
 				strncpy(dvd_trip.audio_stream_id, optarg, 3);
@@ -211,10 +215,6 @@ int main(int argc, char **argv) {
 			case 'E':
 				if(strncmp(optarg, "no", 2) == 0)
 					dvd_trip.encode_video = false;
-				break;
-
-			case 'l':
-				strncpy(dvd_trip.audio_lang, optarg, 2);
 				break;
 
 			case 'o':
@@ -275,7 +275,7 @@ int main(int argc, char **argv) {
 				printf("  -t, --track <number>          Encode selected track (default: longest)\n");
 				printf("  -c, --chapter <#>[-#]         Encode chapter number or range (default: all)\n");
 				printf("  -o, --output <filename>       Save to filename (default: dvd_track_##.mkv)\n");
-				printf("  -l, --alang <language>	Select audio language, two character code (default: first audio track)\n");
+				printf("  -a, --alang <language>	Select audio language, two character code (default: first audio track)\n");
 				printf("  -A, --aid <#> 		Select audio track ID\n");
 				printf("  -f, --force			Ignore invalid track warning\n");
 				printf("  -h, --help			Show this help text and exit\n");
