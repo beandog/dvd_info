@@ -641,8 +641,12 @@ int main(int argc, char **argv) {
 
 	// Terminal output
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
-	if(!debug)
-		retval = mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
+
+	// Debug output and progress bar flood output, making a big mess
+	if(!debug) {
+		mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
+		mpv_set_option_string(dvd_mpv, "term-osd-bar-chars", "[=+-]");
+	}
 
 	if (debug) {
 		mpv_request_log_messages(dvd_mpv, "debug");
