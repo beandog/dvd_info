@@ -119,6 +119,9 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
 	memset(dvd_trip.audio_lang, '\0', sizeof(dvd_trip.audio_lang));
 	memset(dvd_trip.audio_stream_id, '\0', sizeof(dvd_trip.audio_stream_id));
+	dvd_trip.encode_subtitles = false;
+	memset(dvd_trip.subtitles_lang, '\0', sizeof(dvd_trip.subtitles_lang));
+	memset(dvd_trip.subtitles_stream_id, '\0', sizeof(dvd_trip.subtitles_stream_id));
 	memset(dvd_trip.vf_opts, '\0', sizeof(dvd_trip.vf_opts));
 	dvd_trip.crf = 22;
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
@@ -136,6 +139,9 @@ int main(int argc, char **argv) {
 		{ "audio", required_argument, 0, 'a' },
 		{ "alang", required_argument, 0, 'D' },
 		{ "aid", required_argument, 0, 'B' },
+
+		{ "slang", required_argument, 0, 's' },
+		{ "sid", required_argument, 0, 'S' },
 
 		{ "chapters", required_argument, 0, 'c' },
 		{ "track", required_argument, 0, 't' },
@@ -155,7 +161,7 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "AB:c:dD:E:fho:t:vz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "AB:c:dD:E:fho:s:S:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -238,6 +244,14 @@ int main(int argc, char **argv) {
 
 				break;
 
+			case 's':
+				strncpy(dvd_trip.subtitles_lang, optarg, 2);
+				break;
+
+			case 'S':
+				strncpy(dvd_trip.subtitles_stream_id, optarg, 3);
+				break;
+
 			case 't':
 				opt_track_number = true;
 				arg_number = strtoul(optarg, NULL, 0);
@@ -276,6 +290,8 @@ int main(int argc, char **argv) {
 				printf("  -o, --output <filename>       Save to filename (default: dvd_track_##.mkv)\n");
 				printf("      --alang <language>	Select audio language, two character code (default: first audio track)\n");
 				printf("      --aid <#> 		Select audio track ID\n");
+				printf("      --slang <language>	Select subtitles language, two character code (default: none)\n");
+				printf("      --sid <#> 		Select subtitles track ID\n");
 				printf("  -f, --force			Ignore invalid track warning\n");
 				printf("  -h, --help			Show this help text and exit\n");
 				printf("      --version			Show version info and exit\n");
@@ -787,6 +803,12 @@ int main(int argc, char **argv) {
 	else if(strlen(dvd_trip.audio_stream_id) > 0)
 		mpv_set_option_string(dvd_mpv, "aid", dvd_trip.audio_stream_id);
 
+	// Burn-in subtitles
+	if(strlen(dvd_trip.subtitles_lang))
+		mpv_set_option_string(dvd_mpv, "slang", dvd_trip.subtitles_lang);
+	else if(strlen(dvd_trip.subtitles_stream_id) > 0)
+		mpv_set_option_string(dvd_mpv, "sid", dvd_trip.subtitles_stream_id);
+
 	// MPV will error out on its own if there's no video && no audio selected.
 	// Don't quit out here though, because there could be other reasons MPV
 	// fails to initialize -- let it process errors in its own way
@@ -828,6 +850,10 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "[dvd_trip] [info]: oacopts %s\n", dvd_trip.acodec_opts);
 	if(strlen(dvd_trip.vf_opts))
 		fprintf(stderr, "dvd_trip [info]: vf %s\n", dvd_trip.vf_opts);
+	if(strlen(dvd_trip.subtitles_lang))
+		fprintf(stderr, "dvd_trip [info]: burn-in subtitles lang %s\n", dvd_trip.subtitles_lang);
+	else if(strlen(dvd_trip.subtitles_stream_id))
+		fprintf(stderr, "dvd_trip [info]: burn-in subtitles stream %s\n", dvd_trip.subtitles_stream_id);
 	fprintf(stderr, "[dvd_trip] [info]: output fps %s\n", dvd_trip.fps);
 	if(dvd_trip.deinterlace && dvd_trip.encode_video)
 		fprintf(stderr, "[dvd_trip] [info]: deinterlacing video\n");

@@ -20,6 +20,9 @@ struct dvd_trip {
 	char audio_ff_aid[12];
 	char acodec[256];
 	char acodec_opts[256];
+	bool encode_subtitles;
+	char subtitles_lang[3];
+	char subtitles_stream_id[4];
 	char vf_opts[256];
 	uint8_t crf;
 	char fps[11];
