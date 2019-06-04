@@ -69,9 +69,6 @@
 	 *
 	 */
 
-int main(int, char **);
-void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo);
-
 int main(int argc, char **argv) {
 
 	/**
@@ -405,13 +402,6 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// Track
-	struct dvd_track dvd_track;
-	memset(&dvd_track, 0, sizeof(dvd_track));
-
-	struct dvd_track dvd_tracks[DVD_MAX_TRACKS];
-	memset(&dvd_tracks, 0, sizeof(dvd_track) * dvd_info.tracks);
-
 	// Cells
 	struct dvd_cell dvd_cell;
 	dvd_cell.cell = 1;
@@ -472,31 +462,45 @@ int main(int argc, char **argv) {
 	} else if(opt_track_number) {
 		dvd_trip.track = arg_track_number;
 	}
-
-	uint16_t ix = 0;
-	uint16_t track = 1;
 	
-	uint32_t longest_msecs = 0;
-	
-	for(ix = 0, track = 1; ix < dvd_info.tracks; ix++, track++) {
- 
-		vts = dvd_vts_ifo_number(vmg_ifo, ix + 1);
-		vts_ifo = vts_ifos[vts];
-		dvd_track_info(&dvd_tracks[ix], track, vmg_ifo, vts_ifo);
-		dvd_tracks[ix].valid = true;
+	// Set the track number to the longest if none is passed as an argument
+	if(!opt_track_number) {
 
-		if(dvd_tracks[ix].msecs > longest_msecs) {
-			dvd_info.longest_track = track;
-			longest_msecs = dvd_tracks[ix].msecs;
+		uint16_t ix = 0;
+		uint16_t track = 1;
+		uint32_t msecs = 0;
+		uint32_t longest_msecs = 0;
+
+		for(ix = 0, track = 1; ix < dvd_info.tracks; ix++, track++) {
+
+			vts = dvd_vts_ifo_number(vmg_ifo, ix + 1);
+			vts_ifo = vts_ifos[vts];
+
+			msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track);
+
+			if(msecs > longest_msecs)
+				dvd_trip.track = track;
+
 		}
-
+	
 	}
 
-	// Set the track number to rip if none is passed as an argument
-	if(!opt_track_number)
-		dvd_trip.track = dvd_info.longest_track;
-	
-	dvd_track = dvd_tracks[dvd_trip.track - 1];
+	// Track
+	struct dvd_track dvd_track;
+	dvd_track.track = dvd_trip.track;
+	dvd_track.valid = true;
+	dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, dvd_trip.track);
+	dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_trip.track);
+	dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_trip.track);
+	dvd_track.msecs = dvd_track_msecs(vmg_ifo, vts_ifo, dvd_trip.track);
+	dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_trip.track);
+	dvd_track.audio_tracks = dvd_track_audio_tracks(vts_ifo);
+	dvd_track.subtitles = dvd_track_subtitles(vts_ifo);
+	dvd_track.active_audio_streams = dvd_audio_active_tracks(vmg_ifo, vts_ifo, dvd_trip.track);
+	dvd_track.active_subs = dvd_track_active_subtitles(vmg_ifo, vts_ifo, dvd_trip.track);
+	dvd_track.cells = dvd_track_cells(vmg_ifo, vts_ifo, dvd_trip.track);
+	dvd_track.blocks = dvd_track_blocks(vmg_ifo, vts_ifo, dvd_trip.track);
+	dvd_track.filesize = dvd_track_filesize(vmg_ifo, vts_ifo, dvd_trip.track);
 
 	// Set the proper chapter range
 	if(opt_chapter_number) {
@@ -530,8 +534,6 @@ int main(int argc, char **argv) {
 	printf("Track: %02" PRIu16 ", Length: %s, Chapters: %02" PRIu8 ", Cells: %02" PRIu8 ", Audio streams: %02" PRIu8 ", Subpictures: %02" PRIu8 ", Blocks: %6zd, Filesize: %9zd\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.blocks, dvd_track.filesize);
 
 	// Check for track issues
-	dvd_track.valid = true;
-
 	if(dvd_vts[vts].valid == false) {
 		dvd_track.valid = false;
 	}
@@ -551,9 +553,9 @@ int main(int argc, char **argv) {
 		dvd_track.valid = false;
 	}
 
-	if(dvd_track.valid == false) {
+	if(!dvd_track.valid) {
 
-		fprintf(stderr, "[dvd_trip] track has been flagged as invalid, and encoding it could cause strange problems\b");
+		fprintf(stderr, "[dvd_trip] track %" PRIu16 "has been flagged as invalid, and encoding it could cause strange problems\b", dvd_trip.track);
 
 		if(!opt_force_encode) {
 
@@ -571,6 +573,10 @@ int main(int argc, char **argv) {
 				DVDClose(dvdread_dvd);
 
 			return 1;
+
+		} else {
+
+			fprintf(stderr, "[dvd_trip] forcing encode on invalid track %" PRIu16 "\n", dvd_trip.track);
 
 		}
 
@@ -869,24 +875,5 @@ int main(int argc, char **argv) {
 		DVDClose(dvdread_dvd);
 	
 	return 0;
-
-}
-
-void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo) {
-
-	dvd_track->track = track_number;
-	dvd_track->valid = 1;
-	dvd_track->vts = dvd_vts_ifo_number(vmg_ifo, track_number);
-	dvd_track->ttn = dvd_track_ttn(vmg_ifo, track_number);
-	dvd_track_length(dvd_track->length, vmg_ifo, vts_ifo, track_number);
-	dvd_track->msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track_number);
-	dvd_track->chapters = dvd_track_chapters(vmg_ifo, vts_ifo, track_number);
-	dvd_track->audio_tracks = dvd_track_audio_tracks(vts_ifo);
-	dvd_track->subtitles = dvd_track_subtitles(vts_ifo);
-	dvd_track->active_audio_streams = dvd_audio_active_tracks(vmg_ifo, vts_ifo, track_number);
-	dvd_track->active_subs = dvd_track_active_subtitles(vmg_ifo, vts_ifo, track_number);
-	dvd_track->cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
-	dvd_track->blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
-	dvd_track->filesize = dvd_track_filesize(vmg_ifo, vts_ifo, track_number);
 
 }
