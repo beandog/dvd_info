@@ -335,7 +335,6 @@ int main(int argc, char **argv) {
 	}
 	dvd_device_close(dvd_fd);
 
-
 #ifdef __linux__
 
 	// Poll drive status if it is hardware
@@ -413,7 +412,6 @@ int main(int argc, char **argv) {
 	uint16_t vts = 1;
 	ifo_handle_t *vts_ifo = NULL;
 
-	// ???
 	vts_ifo = ifoOpen(dvdread_dvd, vts);
 	if(vts_ifo == NULL) {
 		fprintf(stderr, "[dvd_trip] Could not open primary VTS_IFO\n");
