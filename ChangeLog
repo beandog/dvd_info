@@ -1,3 +1,7 @@
+1.6_beta1
+
+* dvd_info: quiet mode skips tracks less than one second long
+
 1.5 - 2019-06-01
 
 * Fix displaying longest track

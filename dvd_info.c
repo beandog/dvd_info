@@ -788,6 +788,10 @@ int main(int argc, char **argv) {
 		if(dvd_track.valid == false && d_quiet == true && debug == false)
 			continue;
 
+		// Skip tracks less than a second long
+		if((dvd_track.msecs < 1000) && d_quiet)
+			continue;
+
 		// Skip if limiting to tracks with audio only
 		if(d_has_audio && dvd_track.active_audio_streams == 0)
 			continue;
