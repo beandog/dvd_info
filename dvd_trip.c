@@ -653,7 +653,7 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.vcodec, "libvpx-vp9");
 		sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=22,keyint_min=0,g=360", dvd_trip.color_opts);
 
-		strcpy(dvd_trip.acodec, "libopus,opus");
+		strcpy(dvd_trip.acodec, "libopus,opus,libvorbis,vorbis");
 		strcpy(dvd_trip.acodec_opts, "application=audio");
 		strcpy(dvd_trip.acodec_opts, "application=audio,b=192000");
 
