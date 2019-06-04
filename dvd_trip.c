@@ -119,7 +119,6 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
 	memset(dvd_trip.audio_lang, '\0', sizeof(dvd_trip.audio_lang));
 	memset(dvd_trip.audio_stream_id, '\0', sizeof(dvd_trip.audio_stream_id));
-	memset(dvd_trip.audio_ff_aid, '\0', sizeof(dvd_trip.audio_ff_aid));
 	memset(dvd_trip.vf_opts, '\0', sizeof(dvd_trip.vf_opts));
 	dvd_trip.crf = 22;
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
@@ -159,16 +158,6 @@ int main(int argc, char **argv) {
 	while((opt = getopt_long(argc, argv, "AB:c:dD:E:fho:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
-
-			/*
-			case 'a':
-				arg_number = strtoul(optarg, NULL, 10);
-				if(arg_number < 100) {
-					dvd_trip.audio_track = (uint8_t)arg_number;
-					opt_audio_track = true;
-				}
-				break;
-			*/
 
 			case 'B':
 				strncpy(dvd_trip.audio_stream_id, optarg, 3);
@@ -592,7 +581,9 @@ int main(int argc, char **argv) {
 	// dvd_trip.audio_track = 0;
 
 	/*
+	bool opt_audio_track = false;
 	char audio_ff_aid[12];
+	memset(audio_ff_aid, '\0', sizeof(audio_ff_aid));
 	if(dvd_trip.encode_audio && opt_audio_track) {
 
 		// Get the audio stream ID
