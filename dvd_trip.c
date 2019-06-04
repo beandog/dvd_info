@@ -738,6 +738,12 @@ int main(int argc, char **argv) {
 	else if(strlen(dvd_trip.audio_stream_id) > 0)
 		mpv_set_option_string(dvd_mpv, "aid", dvd_trip.audio_stream_id);
 
+	// MPV will error out on its own if there's no video && no audio selected.
+	// Don't quit out here though, because there could be other reasons MPV
+	// fails to initialize -- let it process errors in its own way
+	if(!dvd_trip.encode_video && !dvd_trip.encode_audio)
+		fprintf(stderr, "[dvd_trip] no video or audio streams selected\n");
+
 	/** Video Filters **/
 
 	if(mpv_client_api_version() <= MPV_MAKE_VERSION(1, 25)) {
