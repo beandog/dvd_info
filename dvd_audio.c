@@ -37,6 +37,9 @@ uint8_t dvd_track_audio_tracks(const ifo_handle_t *vts_ifo) {
  */
 uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track) {
 
+	if(title_track == 0)
+		return 0;
+
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
 		return 0;
 
@@ -75,6 +78,9 @@ uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
  * @return boolean
  */
 bool dvd_audio_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, const uint8_t audio_track) {
+
+	if(title_track == 0)
+		return false;
 
 	uint8_t audio_tracks = dvd_track_audio_tracks(vts_ifo);
 
