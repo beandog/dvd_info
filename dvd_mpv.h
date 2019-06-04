@@ -5,9 +5,9 @@ struct dvd_trip {
 	uint16_t track;
 	uint8_t first_chapter;
 	uint8_t last_chapter;
-	char filename[PATH_MAX - 1];
-	char config_dir[PATH_MAX - 1];
-	char mpv_config_dir[PATH_MAX - 1];
+	char filename[PATH_MAX];
+	char config_dir[PATH_MAX];
+	char mpv_config_dir[PATH_MAX];
 	char container[5];
 	bool encode_video;
 	char vcodec[256];
