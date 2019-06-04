@@ -593,6 +593,7 @@ int main(int argc, char **argv) {
 	// dvd_trip.audio_track = 0;
 
 	/*
+	char audio_ff_aid[12];
 	if(dvd_trip.encode_audio && opt_audio_track) {
 
 		// Get the audio stream ID
@@ -606,7 +607,7 @@ int main(int argc, char **argv) {
 			if(audio_active && (dvd_trip.audio_track == audio_track_ix + 1)) {
 
 				dvd_audio_stream_id(audio_stream_id, vts_ifo, audio_track_ix);
-				strcpy(dvd_trip.audio_ff_aid, audio_stream_id);
+				strcpy(audio_ff_aid, audio_stream_id);
 
 				break;
 
