@@ -623,7 +623,7 @@ int main(int argc, char **argv) {
 
 		strcpy(dvd_trip.vcodec, "libx265");
 
-		strcpy(dvd_trip.acodec, "libfdk_aac");
+		strcpy(dvd_trip.acodec, "libfdk_aac,aac");
 		strcpy(dvd_trip.acodec_opts, "b=192k");
 
 		sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=20,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_log_level);
@@ -637,7 +637,7 @@ int main(int argc, char **argv) {
 
 		strcpy(dvd_trip.vcodec, "libx264");
 
-		strcpy(dvd_trip.acodec, "libfdk_aac");
+		strcpy(dvd_trip.acodec, "libfdk_aac,aac");
 		strcpy(dvd_trip.acodec_opts, "b=192k");
 
 		// x264 doesn't allow passing log level (that I can see)
@@ -653,7 +653,7 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.vcodec, "libvpx-vp9");
 		sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=22,keyint_min=0,g=360", dvd_trip.color_opts);
 
-		strcpy(dvd_trip.acodec, "libopus");
+		strcpy(dvd_trip.acodec, "libopus,opus");
 		strcpy(dvd_trip.acodec_opts, "application=audio");
 		strcpy(dvd_trip.acodec_opts, "application=audio,b=192000");
 
