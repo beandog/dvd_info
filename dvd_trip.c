@@ -387,10 +387,7 @@ int main(int argc, char **argv) {
 	// DVD
 	struct dvd_info dvd_info;
 	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
-	dvd_info.side = 1;
 	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
-	memset(dvd_info.provider_id, '\0', sizeof(dvd_info.provider_id));
-	memset(dvd_info.vmg_id, '\0', sizeof(dvd_info.vmg_id));
 	dvd_info.tracks = dvd_tracks(vmg_ifo);
 	dvd_info.longest_track = 1;
 
