@@ -17,7 +17,6 @@ struct dvd_trip {
 	bool encode_audio;
 	char audio_lang[3];
 	char audio_stream_id[4];
-	char audio_ff_aid[12];
 	char acodec[256];
 	char acodec_opts[256];
 	bool encode_subtitles;
