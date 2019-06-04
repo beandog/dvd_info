@@ -107,6 +107,8 @@ int main(int argc, char **argv) {
 	dvd_trip.first_chapter = 1;
 	dvd_trip.last_chapter = 99;
 	memset(dvd_trip.filename, '\0', sizeof(dvd_trip.filename));
+	memset(dvd_trip.config_dir, '\0', sizeof(dvd_trip.config_dir));
+	memset(dvd_trip.mpv_config_dir, '\0', sizeof(dvd_trip.mpv_config_dir));
 	memset(dvd_trip.container, '\0', sizeof(dvd_trip.container));
 	strcpy(dvd_trip.container, "mkv");
 	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
