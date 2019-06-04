@@ -112,7 +112,6 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.config_dir, '\0', sizeof(dvd_trip.config_dir));
 	memset(dvd_trip.mpv_config_dir, '\0', sizeof(dvd_trip.mpv_config_dir));
 	memset(dvd_trip.container, '\0', sizeof(dvd_trip.container));
-	strcpy(dvd_trip.container, "mkv");
 	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
 	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
@@ -687,9 +686,12 @@ int main(int argc, char **argv) {
 	}
 
 	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
-	mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
-	mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
-	mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
+	if(strlen(dvd_trip.vcodec) > 0)
+		mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
+	if(strlen(dvd_trip.vcodec_opts) > 0)
+		mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
+	if(strlen(dvd_trip.acodec) > 0)
+		mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
 	if(strlen(dvd_trip.acodec_opts) > 0)
 		mpv_set_option_string(dvd_mpv, "oacopts", dvd_trip.acodec_opts);
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
