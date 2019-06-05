@@ -698,7 +698,7 @@ int main(int argc, char **argv) {
 	/** dvdxchap display output **/
 	if(p_dvd_xchap) {
 		if(opt_track_number)
-			dvd_xchap(dvd_tracks[opt_track_number - 1]);
+			dvd_xchap(dvd_tracks[arg_track_number - 1]);
 		else
 			dvd_xchap(dvd_tracks[dvd_info.longest_track - 1]);
 		goto cleanup;
