@@ -110,10 +110,6 @@ int main(int argc, char **argv) {
 	dvd_track.subtitles = 0;
 	dvd_track.active_subs = 0;
 	dvd_track.cells = 0;
-	dvd_track.min_sector_error = false;
-	dvd_track.max_sector_error = false;
-	dvd_track.repeat_first_sector_error = false;
-	dvd_track.repeat_last_sector_error = false;
 
 	// Video
 	struct dvd_video dvd_video;
@@ -438,7 +434,10 @@ int main(int argc, char **argv) {
 	// Exit if all the IFOs cannot be opened
 	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
 	ifo_handle_t *vts_ifos[DVD_MAX_VTS_IFOS];
-	vts_ifos[0] = NULL;
+
+	uint8_t vts_ifo_ix;
+	for(vts_ifo_ix = 0; vts_ifo_ix < 100; vts_ifo_ix++)
+		vts_ifos[vts_ifo_ix] = NULL;
 
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
@@ -456,7 +455,6 @@ int main(int argc, char **argv) {
 		if(vts_ifos[vts] == NULL) {
 			dvd_vts[vts].valid = false;
 			has_invalid_ifos = true;
-			vts_ifos[vts] = NULL;
 		} else if(!ifo_is_vts(vts_ifos[vts])) {
 			dvd_vts[vts].valid = false;
 			has_invalid_ifos = true;
@@ -466,14 +464,6 @@ int main(int argc, char **argv) {
 			dvd_vts[vts].valid = true;
 		}
 
-	}
-
-	if(has_invalid_ifos)
-		fprintf(stderr, "[dvd_info] You can safely ignore \"Invalid IFOs\" warnings since we work around them :)\n");
-
-	// Exit if the track requested is on an invalid IFO
-	if(has_invalid_ifos && opt_track_number) {
-		vts = dvd_vts_ifo_number(vmg_ifo, track_number);
 	}
 
 	// GRAB ALL THE THINGS
@@ -493,11 +483,6 @@ int main(int argc, char **argv) {
 
 		dvd_track.track = track_number;
 
-		dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, track_number);
-		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
-
-		dvd_vts[dvd_track.vts].tracks++;
-
 		// Initialize track to default values
 		dvd_track.valid = true;
 		snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
@@ -508,10 +493,6 @@ int main(int argc, char **argv) {
 		dvd_track.subtitles = 0;
 		dvd_track.active_subs = 0;
 		dvd_track.cells = 0;
-		dvd_track.min_sector_error = false;
-		dvd_track.max_sector_error = false;
-		dvd_track.repeat_first_sector_error = false;
-		dvd_track.repeat_last_sector_error = false;
 
 		// There are two ways a track can be marked as invalid - either the VTS
 		// is bad, or the track has an empty length. The first one, it could be
@@ -520,74 +501,36 @@ int main(int argc, char **argv) {
 		// dvd_info's output.
 
 		// If the IFO is invalid, skip the residing track
-		// Note to self: I know I've seen some where there are invalid IFOs, but I need
-		// to document which ones they are.
+		// These are hard to find, so an example DVD is '4b4d78c077ea78576a7de09aee7715d4'
+		dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, track_number);
 		if(dvd_vts[dvd_track.vts].valid == false) {
 			dvd_track.valid = false;
 			dvd_tracks[track_number - 1] = dvd_track;
+			dvd_vts[dvd_track.vts].invalid_tracks++;
+			dvd_info.invalid_tracks++;
+			continue;
 		}
 
+		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
+		dvd_vts[dvd_track.vts].tracks++;
 		vts_ifo = vts_ifos[dvd_track.vts];
 
-		// If the length is empty, disregard all other data attached to it.
-		// While this does mean that it inaccurately reports all the information
-		// about the track, it does mean that something else using this will
-		// not choke on it. That being the case, this is a FIXME.
-
+		// If the length is empty, disregard all other data attached to it, and mark as invalid
 		dvd_track.msecs = dvd_track_msecs(vmg_ifo, vts_ifo, dvd_track.track);
 
 		if(dvd_track.msecs == 0) {
 			dvd_track.valid = false;
-		}
-
-		// Misordering the cells is one way to break a DVD. Check for
-		// this misbehavior and flag the track as invalid if present.
-
-		// FIXME the checks here are pretty aggressive, and not always
-		// accurate. A track could jump back to previous cells, for example,
-		// if it wanted to replay something from earlier. That is not harmless.
-		// Needs more research.
-
-		/*
-		if(dvd_track_min_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
-			dvd_track.valid = false;
-			dvd_track.min_sector_error = true;
-		}
-		if(dvd_track_max_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
-			dvd_track.valid = false;
-			dvd_track.max_sector_error = true;
-		}
-		if(dvd_track_repeat_first_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
-			dvd_track.valid = false;
-			dvd_track.repeat_first_sector_error = true;
-		}
-		if(dvd_track_repeat_last_sector_error(vmg_ifo, vts_ifo, dvd_track.track)) {
-			dvd_track.valid = false;
-			dvd_track.repeat_last_sector_error = true;
-		}
-		*/
-
-		// FIXME at some point I'd like to output what the DVD claims the data is,
-		// but for now, for visibility's sake, it's simpler to leave it all at zeroes.
-
-		// NEEDS RESEARCH if a track is marked as invalid, does that mean the VTS
-		// is invalid as well? I originally had this toggled as yes, probably for
-		// some reason ... took it out, now.
-
-		if(dvd_track.valid == false) {
-			// dvd_vts[dvd_track.vts].valid = false; // not necessarily true
 			dvd_vts[dvd_track.vts].invalid_tracks++;
 			dvd_tracks[track_number - 1] = dvd_track;
 			dvd_info.invalid_tracks++;
+			continue;
 		}
 
 		dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
 
-		if(dvd_track.valid == true) {
-			dvd_vts[dvd_track.vts].valid_tracks++;
-			dvd_info.valid_tracks++;
-		}
+		dvd_vts[dvd_track.vts].valid_tracks++;
+		dvd_info.valid_tracks++;
 
 		if(dvd_track.msecs > longest_msecs) {
 			dvd_info.longest_track = dvd_track.track;
@@ -743,6 +686,15 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
+	if(d_disc_title_header && !d_quiet && !p_dvd_xchap)
+		printf("Disc title: '%s', ID: '%s', Num tracks: %" PRIu16 ", Longest track: %" PRIu16 "\n", dvd_info.title, dvd_info.dvdread_id, dvd_info.tracks, dvd_info.longest_track);
+
+	// Exit if the track requested invalid
+	if(opt_track_number && dvd_tracks[arg_track_number - 1].valid == false) {
+		fprintf(stderr, "[dvd_info] Track %" PRIu16 " is marked as invalid, cannot open\n", arg_track_number);
+		return 1;
+	}
+
 	/** dvdxchap display output **/
 	if(p_dvd_xchap) {
 		if(opt_track_number)
@@ -762,9 +714,6 @@ int main(int argc, char **argv) {
 	 *   shows all of them, but they are flagged as active or not.
 	 */
 
-	if(d_disc_title_header && !d_quiet)
-		printf("Disc title: '%s', ID: '%s', Num tracks: %" PRIu16 ", Longest track: %" PRIu16 "\n", dvd_info.title, dvd_info.dvdread_id, dvd_info.tracks, dvd_info.longest_track);
-
 	// Print the valid and invalid VTSs
 	if(debug) {
 		printf("	Tracks: %02" PRIu16 ", Valid: %02" PRIu16 ", Invalid: %02" PRIu16 "\n", dvd_info.tracks, dvd_info.valid_tracks, dvd_info.invalid_tracks);
@@ -782,11 +731,12 @@ int main(int argc, char **argv) {
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
+		// Skip invalid tracks
+		if(dvd_tracks[track_number - 1].valid == false && !p_dvd_json && !debug)
+			continue;
+
 		dvd_track = dvd_tracks[track_number - 1];
 		dvd_video = dvd_tracks[track_number - 1].dvd_video;
-
-		if(dvd_track.valid == false && d_quiet == true && debug == false)
-			continue;
 
 		// Skip tracks less than a second long
 		if((dvd_track.msecs < 1000) && d_quiet)
@@ -822,30 +772,11 @@ int main(int argc, char **argv) {
 		printf("Chapters: %02" PRIu8 ", ", dvd_track.chapters);
 		printf("Cells: %02" PRIu8 ", ", dvd_track.cells);
 		printf("Audio streams: %02" PRIu8 ", ", dvd_track.active_audio_streams);
-		printf("Subpictures: %02" PRIu8 "\n", dvd_track.active_subs);
-
+		printf("Subpictures: %02" PRIu8, dvd_track.active_subs);
 		if(debug) {
-			printf("	VTS: %02" PRIu16 ", TTN: %02" PRIu8 "\n", dvd_track.vts, dvd_track.ttn);
+			printf(", VTS: %02" PRIu16 ", Valid VTS: %s, TTN: %02" PRIu8 ", Valid track: %s", dvd_track.vts, (dvd_vts[dvd_track.vts].valid ? "yes" : " no"), dvd_track.ttn, (dvd_track.valid ? "yes" : " no"));
 		}
-
-		if(dvd_track.valid == false && debug == true) {
-
-			printf("        Warning: track flagged as invalid\n");
-
-			if(dvd_vts[dvd_track.vts].valid == false)
-				printf("	Error: IFO is marked as invalid\n");
-			if(dvd_track.msecs == 0)
-				printf("	Warning: track has zero playback length\n");
-			if(dvd_track.min_sector_error)
-				printf("	Warning: cell sectors are out of order, minimum cell boundaries broken\n");
-			if(dvd_track.max_sector_error)
-				printf("	Warning: cell sectors are out of order, maximum cell boundaries broken\n");
-			if(dvd_track.repeat_first_sector_error)
-				printf("	Warning: first cell sector is reused\n");
-			if(dvd_track.repeat_last_sector_error)
-				printf("	Warning: last cell sector is reused\n");
-
-		}
+		printf("\n");
 
 		// Display video information
 		if(d_video) {

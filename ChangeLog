@@ -1,6 +1,7 @@
 1.6_beta1
 
 * dvd_info: quiet mode skips tracks less than one second long
+* dvd_info: additional checks for invalid tracks
 
 1.5 - 2019-06-01
 
