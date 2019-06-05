@@ -41,7 +41,11 @@ int main(int argc, char **argv) {
 	bool d_chapters = false;
 	bool d_subtitles = false;
 	bool d_cells = false;
-	bool d_quiet = false;
+
+	// How much output
+	bool quiet = false;
+	bool verbose = false;
+	bool debug = false;
 
 	// limit results
 	bool d_has_audio = false;
@@ -57,7 +61,6 @@ int main(int argc, char **argv) {
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
 	bool d_disc_title_header = true;
-	bool debug = false;
 	uint16_t d_first_track = 1;
 	uint16_t d_last_track = 1;
 	uint16_t track_number = 1;
@@ -170,7 +173,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aAcdE:ghjM:qsSt:Vvxz";
+	const char p_short_opts[] = "aAcdeE:ghjM:qsSt:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -190,6 +193,7 @@ int main(int argc, char **argv) {
 		{ "min-minutes", required_argument, NULL, 'M' },
 		// { "vts", required_argument, NULL, 'I' },
 		{ "help", no_argument, NULL, 'h' },
+		{ "verbose", no_argument, NULL, 'e' },
 		{ "version", no_argument, NULL, 'V' },
 		{ "debug", no_argument, NULL, 'z' },
 		{ 0, 0, 0, 0 }
@@ -219,6 +223,10 @@ int main(int argc, char **argv) {
 				d_cells = true;
 				break;
 
+			case 'e':
+				verbose = true;
+				break;
+
 			case 'E':
 				opt_min_seconds = true;
 				arg_min_seconds = (uint32_t)strtoul(optarg, NULL, 10);
@@ -246,8 +254,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'q':
-				d_quiet = true;
-				d_disc_title_header = false;
+				quiet = true;
 				break;
 
 			case 'M':
@@ -322,7 +329,8 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("Other:\n");
 				printf("  -g, --xchap		Display title's chapter format for mkvmerge\n");
-				printf("  -q, --quiet		Don't display disc title header, invalid tracks, and inactive streams\n");
+				printf("  -e, --verbose         Display short tracks, invalid tracks, and empty streams\n");
+				printf("  -q, --quiet		Don't display disc title header\n");
 				printf("  -h, --help		Display these help options\n");
 				printf("      --version		Version information\n");
 				printf("\n");
@@ -339,8 +347,14 @@ int main(int argc, char **argv) {
 
 	}
 
-	if(debug && d_quiet)
-		d_quiet = false;
+	if(quiet && (verbose || debug))
+		quiet = false;
+
+	if(debug)
+		verbose = true;
+
+	if(quiet)
+		d_disc_title_header = false;
 
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
@@ -686,11 +700,11 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
-	if(d_disc_title_header && !d_quiet && !p_dvd_xchap)
+	if(d_disc_title_header && !quiet && !p_dvd_xchap)
 		printf("Disc title: '%s', ID: '%s', Num tracks: %" PRIu16 ", Longest track: %" PRIu16 "\n", dvd_info.title, dvd_info.dvdread_id, dvd_info.tracks, dvd_info.longest_track);
 
 	// Exit if the track requested invalid
-	if(opt_track_number && dvd_tracks[arg_track_number - 1].valid == false) {
+	if(opt_track_number && dvd_tracks[arg_track_number - 1].valid == false && !debug) {
 		fprintf(stderr, "[dvd_info] Track %" PRIu16 " is marked as invalid, cannot open\n", arg_track_number);
 		return 1;
 	}
@@ -732,14 +746,14 @@ int main(int argc, char **argv) {
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
 		// Skip invalid tracks
-		if(dvd_tracks[track_number - 1].valid == false && !p_dvd_json && !debug)
+		if(dvd_tracks[track_number - 1].valid == false && !p_dvd_json && !verbose && !(opt_track_number && track_number == arg_track_number))
 			continue;
 
 		dvd_track = dvd_tracks[track_number - 1];
 		dvd_video = dvd_tracks[track_number - 1].dvd_video;
 
 		// Skip tracks less than a second long
-		if((dvd_track.msecs < 1000) && d_quiet)
+		if((dvd_track.msecs < 1000) && !verbose && !(opt_track_number && track_number == arg_track_number))
 			continue;
 
 		// Skip if limiting to tracks with audio only
@@ -762,10 +776,6 @@ int main(int argc, char **argv) {
 		// if(opt_vts && dvd_track.vts != arg_vts)
 		//	continue;
 
-		// Skip tracks less than one second in quiet mode
-		if(d_quiet && dvd_track.msecs < 1000)
-			continue;
-
 		// Display track information
 		printf("Track: %02" PRIu16 ", ", dvd_track.track);
 		printf("Length: %s, ", dvd_track.length);
@@ -773,7 +783,7 @@ int main(int argc, char **argv) {
 		printf("Cells: %02" PRIu8 ", ", dvd_track.cells);
 		printf("Audio streams: %02" PRIu8 ", ", dvd_track.active_audio_streams);
 		printf("Subpictures: %02" PRIu8, dvd_track.active_subs);
-		if(debug) {
+		if(verbose) {
 			printf(", VTS: %02" PRIu16 ", Valid VTS: %s, TTN: %02" PRIu8 ", Valid track: %s", dvd_track.vts, (dvd_vts[dvd_track.vts].valid ? "yes" : " no"), dvd_track.ttn, (dvd_track.valid ? "yes" : " no"));
 		}
 		printf("\n");
@@ -792,7 +802,7 @@ int main(int argc, char **argv) {
 
 				dvd_audio = dvd_track.dvd_audio_tracks[audio_track_ix];
 
-				if(dvd_audio.active == false && d_quiet == true && debug == false)
+				if(dvd_audio.active == false && !verbose)
 					continue;
 
 				printf("        Audio: %02" PRIu8 ", Language: %s, Codec: %s, Channels: %" PRIu8 ", Stream id: %s, Active: %s\n", d_stream_num, (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"), dvd_audio.codec, dvd_audio.channels, dvd_audio.stream_id, (dvd_audio.active ? "yes" : "no"));
@@ -839,7 +849,7 @@ int main(int argc, char **argv) {
 
 				dvd_subtitle = dvd_track.dvd_subtitles[subtitle_track_ix];
 
-				if(dvd_subtitle.active == false && d_quiet == true && debug == false)
+				if(dvd_subtitle.active == false && !verbose)
 					continue;
 
 				printf("        Subtitle: %02" PRIu8 ", Language: %s, Stream id: %s, Active: %s\n", d_stream_num, (strlen(dvd_subtitle.lang_code) ? dvd_subtitle.lang_code : "--"), dvd_subtitle.stream_id, (dvd_subtitle.active ? "yes" : "no"));
