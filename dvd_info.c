@@ -65,7 +65,6 @@ int main(int argc, char **argv) {
 	uint16_t d_last_track = 1;
 	uint16_t track_number = 1;
 	uint16_t vts = 1;
-	bool has_invalid_ifos = false;
 	uint8_t audio_track_ix = 0;
 	uint8_t subtitle_track_ix = 0;
 	uint8_t chapter_ix = 0;
@@ -474,10 +473,8 @@ int main(int argc, char **argv) {
 
 		if(vts_ifos[vts] == NULL) {
 			dvd_vts[vts].valid = false;
-			has_invalid_ifos = true;
 		} else if(!ifo_is_vts(vts_ifos[vts])) {
 			dvd_vts[vts].valid = false;
-			has_invalid_ifos = true;
 			ifoClose(vts_ifos[vts]);
 			vts_ifos[vts] = NULL;
 		} else {
