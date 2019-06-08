@@ -326,6 +326,7 @@ int main(int argc, char **argv) {
 				printf("  -S, --has-subtitles	Track has VobSub subtitles\n");
 				printf("  -E, --seconds <secs>	Track has minimum number of seconds\n");
 				printf("  -M, --minutes <mins>	Track has minimum number of minutes\n");
+				printf("  -T, --vts <number>	Track is in video title set number\n");
 				printf("\n");
 				printf("Other:\n");
 				printf("  -g, --xchap		Display title's chapter format for mkvmerge\n");
