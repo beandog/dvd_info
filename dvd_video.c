@@ -323,10 +323,10 @@ bool dvd_video_codec(char *dest_str, const ifo_handle_t *vts_ifo) {
 	if(vts_ifo->vtsi_mat == NULL)
 		return false;
 	else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 0) {
-		strncpy(dest_str, "MPEG1", DVD_VIDEO_CODEC);
+		strncpy(dest_str, "MPEG1", DVD_VIDEO_CODEC + 1);
 		return true;
 	} else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1) {
-		strncpy(dest_str, "MPEG2", DVD_VIDEO_CODEC);
+		strncpy(dest_str, "MPEG2", DVD_VIDEO_CODEC + 1);
 		return true;
 	}
 
@@ -345,9 +345,9 @@ bool dvd_track_video_format(char *dest_str, const ifo_handle_t *vts_ifo) {
 	if(vts_ifo->vtsi_mat == NULL)
 		return false;
 	else if(vts_ifo->vtsi_mat->vts_video_attr.video_format == 0)
-		strncpy(dest_str, "NTSC", DVD_VIDEO_FORMAT);
+		strncpy(dest_str, "NTSC", DVD_VIDEO_FORMAT + 1);
 	else if(vts_ifo->vtsi_mat->vts_video_attr.mpeg_version == 1)
-		strncpy(dest_str, "PAL", DVD_VIDEO_FORMAT);
+		strncpy(dest_str, "PAL", DVD_VIDEO_FORMAT + 1);
 
 	return true;
 
@@ -364,9 +364,9 @@ bool dvd_video_aspect_ratio(char *dest_str, const ifo_handle_t *vts_ifo) {
 	if(vts_ifo->vtsi_mat == NULL)
 		return false;
 	else if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 0)
-		strncpy(dest_str, "4:3", DVD_VIDEO_ASPECT_RATIO);
+		strncpy(dest_str, "4:3", DVD_VIDEO_ASPECT_RATIO + 1);
 	else if(vts_ifo->vtsi_mat->vts_video_attr.display_aspect_ratio == 3)
-		strncpy(dest_str, "16:9", DVD_VIDEO_ASPECT_RATIO);
+		strncpy(dest_str, "16:9", DVD_VIDEO_ASPECT_RATIO + 1);
 
 	return true;
 
