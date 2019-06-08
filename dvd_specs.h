@@ -7,7 +7,6 @@
 #define DVD_SPECIFICATION_VERSION 3
 #define DVD_DVDREAD_ID 32
 #define DVD_VTS_ID 12
-#define DVD_MAX_VTS_IFOS 99
 #define DVD_MAX_TRACKS 99
 #define DVD_TRACK_LENGTH 12
 #define DVD_VIDEO_CODEC 5
@@ -23,5 +22,9 @@
 #define DVD_SUBTITLE_STREAM_LIMIT 32
 #define DVD_CHAPTER_LENGTH 12
 #define DVD_CELL_LENGTH 12
+
+// Max VTS IFOs is one-indexed, and the first is always skipped
+// Actual total is 99
+#define DVD_MAX_VTS_IFOS 100
 
 #endif
