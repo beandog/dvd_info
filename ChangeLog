@@ -1,10 +1,11 @@
-1.6_beta1
+1.6 - 2019-06-08
 
 * dvd_info: additional checks for invalid tracks
 * dvd_info: fix dvd xchap output always returning the same track
 * dvd_info: add verbose output option
 * dvd_info: don't display invalid tracks, invalid streams, or tracks with
   length under one second by default
+* dvd_info: add option to display tracks in video title set
 
 1.5 - 2019-06-01
 
