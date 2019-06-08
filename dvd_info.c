@@ -55,8 +55,8 @@ int main(int argc, char **argv) {
 	uint32_t arg_min_seconds = 0;
 	bool opt_min_minutes = true;
 	uint32_t arg_min_minutes = 0;
-	// bool opt_vts = false;
-	// uint16_t arg_vts = 0;
+	bool opt_vts = false;
+	uint16_t arg_vts = 0;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aAcdeE:ghjM:qsSt:Vvxz";
+	const char p_short_opts[] = "aAcdeE:ghjM:qsST:t:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -191,7 +191,7 @@ int main(int argc, char **argv) {
 		{ "xchap", no_argument, NULL, 'g' },
 		{ "min-seconds", required_argument, NULL, 'E' },
 		{ "min-minutes", required_argument, NULL, 'M' },
-		// { "vts", required_argument, NULL, 'I' },
+		{ "vts", required_argument, NULL, 'T' },
 		{ "help", no_argument, NULL, 'h' },
 		{ "verbose", no_argument, NULL, 'e' },
 		{ "version", no_argument, NULL, 'V' },
@@ -237,17 +237,6 @@ int main(int argc, char **argv) {
 				d_disc_title_header = false;
 				break;
 
-			/*
-			case 'I':
-				opt_vts = true;
-				arg_number = strtoul(optarg, NULL, 10);
-				if(arg_number > 99)
-					arg_vts = 99;
-				else
-					arg_vts = (uint16_t)arg_number;
-				break;
-			*/
-
 			case 'j':
 				p_dvd_json = true;
 				d_disc_title_header = false;
@@ -269,6 +258,17 @@ int main(int argc, char **argv) {
 			case 'S':
 				d_has_subtitles = true;
 				break;
+
+			case 'T':
+				opt_vts = true;
+				verbose = true;
+				arg_number = strtoul(optarg, NULL, 10);
+				if(arg_number > 99)
+					arg_vts = 99;
+				else
+					arg_vts = (uint16_t)arg_number;
+				break;
+
 
 			case 't':
 				opt_track_number = true;
@@ -445,14 +445,19 @@ int main(int argc, char **argv) {
 		d_last_track = dvd_info.tracks;
 	}
 
-	// Exit if all the IFOs cannot be opened
 	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
 	ifo_handle_t *vts_ifos[DVD_MAX_VTS_IFOS];
+
+	if(opt_vts && (arg_vts == 0 || arg_vts > dvd_info.video_title_sets)) {
+		fprintf(stderr, "[dvd_info] Video Title Set must be between 1 and %" PRIu16 "\n", dvd_info.video_title_sets);
+		return 1;
+	}
 
 	uint8_t vts_ifo_ix;
 	for(vts_ifo_ix = 0; vts_ifo_ix < 100; vts_ifo_ix++)
 		vts_ifos[vts_ifo_ix] = NULL;
 
+	// FIXME: Exit if all the IFOs cannot be opened
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
 		dvd_vts[vts].vts = vts;
@@ -700,8 +705,12 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
-	if(d_disc_title_header && !quiet && !p_dvd_xchap)
-		printf("Disc title: '%s', ID: '%s', Num tracks: %" PRIu16 ", Longest track: %" PRIu16 "\n", dvd_info.title, dvd_info.dvdread_id, dvd_info.tracks, dvd_info.longest_track);
+	if(d_disc_title_header && !quiet && !p_dvd_xchap) {
+		printf("Disc title: '%s', ID: '%s', Num tracks: %" PRIu16 ", Longest track: %" PRIu16, dvd_info.title, dvd_info.dvdread_id, dvd_info.tracks, dvd_info.longest_track);
+		if(opt_vts || verbose)
+			printf(" Video Title Sets: %" PRIu16, dvd_info.video_title_sets);
+		printf("\n");
+	}
 
 	// Exit if the track requested invalid
 	if(opt_track_number && dvd_tracks[arg_track_number - 1].valid == false && !debug) {
@@ -743,10 +752,15 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	// Display more specific Video Title Set information
+	if(opt_vts) {
+		printf("	Video Title Set: %02" PRIu16 ", Tracks: %02" PRIu16 ", Valid tracks: %02" PRIu16 ", Invalid tracks: %02" PRIu16 "\n", arg_vts, dvd_vts[arg_vts].tracks, dvd_vts[arg_vts].valid_tracks, dvd_vts[arg_vts].invalid_tracks);
+	}
+
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
 		// Skip invalid tracks
-		if(dvd_tracks[track_number - 1].valid == false && !p_dvd_json && !verbose && !(opt_track_number && track_number == arg_track_number))
+		if(dvd_tracks[track_number - 1].valid == false && !p_dvd_json && !verbose && !opt_vts && !(opt_track_number && track_number == arg_track_number))
 			continue;
 
 		dvd_track = dvd_tracks[track_number - 1];
@@ -773,8 +787,8 @@ int main(int argc, char **argv) {
 			continue;
 
 		// Skip if limiting to one title set
-		// if(opt_vts && dvd_track.vts != arg_vts)
-		//	continue;
+		if(opt_vts && dvd_track.vts != arg_vts)
+			continue;
 
 		// Display track information
 		printf("Track: %02" PRIu16 ", ", dvd_track.track);
@@ -783,7 +797,7 @@ int main(int argc, char **argv) {
 		printf("Cells: %02" PRIu8 ", ", dvd_track.cells);
 		printf("Audio streams: %02" PRIu8 ", ", dvd_track.active_audio_streams);
 		printf("Subpictures: %02" PRIu8, dvd_track.active_subs);
-		if(verbose) {
+		if(verbose || opt_vts) {
 			printf(", VTS: %02" PRIu16 ", Valid VTS: %s, TTN: %02" PRIu8 ", Valid track: %s", dvd_track.vts, (dvd_vts[dvd_track.vts].valid ? "yes" : " no"), dvd_track.ttn, (dvd_track.valid ? "yes" : " no"));
 		}
 		printf("\n");
