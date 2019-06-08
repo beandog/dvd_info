@@ -706,7 +706,7 @@ int main(int argc, char **argv) {
 	if(d_disc_title_header && !quiet && !p_dvd_xchap) {
 		printf("Disc title: '%s', ID: '%s', Num tracks: %" PRIu16 ", Longest track: %" PRIu16, dvd_info.title, dvd_info.dvdread_id, dvd_info.tracks, dvd_info.longest_track);
 		if(opt_vts || verbose)
-			printf(" Video Title Sets: %" PRIu16, dvd_info.video_title_sets);
+			printf(", Video Title Sets: %" PRIu16, dvd_info.video_title_sets);
 		printf("\n");
 	}
 
@@ -796,7 +796,7 @@ int main(int argc, char **argv) {
 		printf("Audio streams: %02" PRIu8 ", ", dvd_track.active_audio_streams);
 		printf("Subpictures: %02" PRIu8, dvd_track.active_subs);
 		if(verbose || opt_vts) {
-			printf(", VTS: %02" PRIu16 ", Valid VTS: %s, TTN: %02" PRIu8 ", Valid track: %s", dvd_track.vts, (dvd_vts[dvd_track.vts].valid ? "yes" : " no"), dvd_track.ttn, (dvd_track.valid ? "yes" : " no"));
+			printf(", VTS: %02" PRIu16 ", Valid VTS: %s, Valid track: %s", dvd_track.vts, (dvd_vts[dvd_track.vts].valid ? "yes" : " no"), (dvd_track.valid ? "yes" : " no"));
 		}
 		printf("\n");
 
