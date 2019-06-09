@@ -254,7 +254,7 @@ int main(int argc, char **argv) {
 
 			case 't':
 				opt_track_number = true;
-				arg_number = strtoul(optarg, NULL, 0);
+				arg_number = strtoul(optarg, NULL, 10);
 				if(arg_number > 99)
 					arg_track_number = 99;
 				else if(arg_number == 0)
