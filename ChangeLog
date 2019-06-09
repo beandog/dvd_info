@@ -1,3 +1,7 @@
+1.7_beta1
+
+* Add dvd_player - a tiny little DVD player using libmpv
+
 1.6 - 2019-06-08
 
 * dvd_info: additional checks for invalid tracks
