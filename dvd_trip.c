@@ -39,7 +39,7 @@
 	 *  / _` \ \ / / _` |  | __| '__| | '_ \
 	 * | (_| |\ V / (_| |  | |_| |  | | |_) |
 	 *  \__,_| \_/ \__,_|___\__|_|  |_| .__/
-	 * 	           |_____|        |_|
+	 *                 |_____|        |_|
 	 *
 	 * ** the tiniest little dvd ripper you'll ever see :) **
 	 *
@@ -288,13 +288,13 @@ int main(int argc, char **argv) {
 				printf("  -t, --track <number>          Encode selected track (default: longest)\n");
 				printf("  -c, --chapter <#>[-#]         Encode chapter number or range (default: all)\n");
 				printf("  -o, --output <filename>       Save to filename (default: dvd_track_##.mkv)\n");
-				printf("      --alang <language>	Select audio language, two character code (default: first audio track)\n");
-				printf("      --aid <#> 		Select audio track ID\n");
+				printf("      --alang <language>        Select audio language, two character code (default: first audio track)\n");
+				printf("      --aid <#>                 Select audio track ID\n");
 				printf("      --slang <language>	Select subtitles language, two character code (default: none)\n");
-				printf("      --sid <#> 		Select subtitles track ID\n");
-				printf("  -f, --force			Ignore invalid track warning\n");
-				printf("  -h, --help			Show this help text and exit\n");
-				printf("      --version			Show version info and exit\n");
+				printf("      --sid <#>                 Select subtitles track ID\n");
+				printf("  -f, --force                   Ignore invalid track warning\n");
+				printf("  -h, --help                    Show this help text and exit\n");
+				printf("      --version                 Show version info and exit\n");
 				printf("\n");
 				printf("DVD path can be a device name, a single file, or directory (default: %s)\n", DEFAULT_DVD_DEVICE);
 				printf("\n");
@@ -544,17 +544,17 @@ int main(int argc, char **argv) {
 	}
 
 	if(dvd_track.msecs == 0) {
-		printf("	Error: track has zero length\n");
+		printf("        Error: track has zero length\n");
 		dvd_track.valid = false;
 	}
 
 	if(dvd_track.chapters == 0) {
-		printf("	Error: track has zero chapters\n");
+		printf("        Error: track has zero chapters\n");
 		dvd_track.valid = false;
 	}
 
 	if(dvd_track.cells == 0) {
-		printf("	Error: track has zero cells\n");
+		printf("        Error: track has zero cells\n");
 		dvd_track.valid = false;
 	}
 

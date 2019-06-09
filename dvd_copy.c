@@ -221,7 +221,7 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("Options:\n");
 				printf("  -t, --track <number>     Copy selected track (default: longest)\n");
-				printf("  -c, --chapter <#>[-#]   Copy chapter number or range (default: all)\n");
+				printf("  -c, --chapter <#>[-#]    Copy chapter number or range (default: all)\n");
 				printf("  -o, --output <filename>  Save to filename (default: dvd_track_##.mpg)\n");
 				printf("      --output -           Write to stdout\n");
 				printf("\n");
@@ -484,17 +484,17 @@ int main(int argc, char **argv) {
 	dvd_track.valid = true;
 
 	if(dvd_track.msecs == 0) {
-		printf("	Error: track has zero length\n");
+		printf("        Error: track has zero length\n");
 		dvd_track.valid = false;
 	}
 
 	if(dvd_track.chapters == 0) {
-		printf("	Error: track has zero chapters\n");
+		printf("        Error: track has zero chapters\n");
 		dvd_track.valid = false;
 	}
 
 	if(dvd_track.cells == 0) {
-		printf("	Error: track has zero cells\n");
+		printf("        Error: track has zero cells\n");
 		dvd_track.valid = false;
 	}
 

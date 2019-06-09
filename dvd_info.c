@@ -309,30 +309,30 @@ int main(int argc, char **argv) {
 				printf("Usage: dvd_info [path] [options]\n");
 				printf("\n");
 				printf("Options:\n");
-				printf("  -t, --track <number>	Limit to selected track (default: all tracks)\n");
-				printf("  -j, --json		Display output in JSON format\n");
+				printf("  -t, --track <number>  Limit to selected track (default: all tracks)\n");
+				printf("  -j, --json            Display output in JSON format\n");
 				printf("\n");
 				printf("Detailed information:\n");
-				printf("  -v, --video		Display video streams\n");
-				printf("  -a, --audio		Display audio streams\n");
-				printf("  -s, --subtitles	Display VobSub subtitles\n");
-				printf("  -c, --chapters	Display chapters\n");
-				printf("  -d, --cells		Display cells\n");
-				printf("  -x, --all		Display all\n");
+				printf("  -v, --video           Display video streams\n");
+				printf("  -a, --audio           Display audio streams\n");
+				printf("  -s, --subtitles       Display VobSub subtitles\n");
+				printf("  -c, --chapters        Display chapters\n");
+				printf("  -d, --cells           Display cells\n");
+				printf("  -x, --all             Display all\n");
 				printf("\n");
 				printf("Narrow results:\n");
-				printf("  -A, --has-audio	Track has audio streams\n");
-				printf("  -S, --has-subtitles	Track has VobSub subtitles\n");
-				printf("  -E, --seconds <secs>	Track has minimum number of seconds\n");
-				printf("  -M, --minutes <mins>	Track has minimum number of minutes\n");
-				printf("  -T, --vts <number>	Track is in video title set number\n");
+				printf("  -A, --has-audio       Track has audio streams\n");
+				printf("  -S, --has-subtitles   Track has VobSub subtitles\n");
+				printf("  -E, --seconds <secs>  Track has minimum number of seconds\n");
+				printf("  -M, --minutes <mins>  Track has minimum number of minutes\n");
+				printf("  -T, --vts <number>    Track is in video title set number\n");
 				printf("\n");
 				printf("Other:\n");
-				printf("  -g, --xchap		Display title's chapter format for mkvmerge\n");
+				printf("  -g, --xchap           Display title's chapter format for mkvmerge\n");
 				printf("  -e, --verbose         Display short tracks, invalid tracks, and empty streams\n");
-				printf("  -q, --quiet		Don't display disc title header\n");
-				printf("  -h, --help		Display these help options\n");
-				printf("      --version		Version information\n");
+				printf("  -q, --quiet           Don't display disc title header\n");
+				printf("  -h, --help            Display these help options\n");
+				printf("      --version         Version information\n");
 				printf("\n");
 				printf("DVD path can be a device name, a single file, or a directory (default: %s)\n", DEFAULT_DVD_DEVICE);
 				if(invalid_opt)
@@ -737,22 +737,22 @@ int main(int argc, char **argv) {
 
 	// Print the valid and invalid VTSs
 	if(debug) {
-		printf("	Tracks: %02" PRIu16 ", Valid: %02" PRIu16 ", Invalid: %02" PRIu16 "\n", dvd_info.tracks, dvd_info.valid_tracks, dvd_info.invalid_tracks);
+		printf("        Tracks: %02" PRIu16 ", Valid: %02" PRIu16 ", Invalid: %02" PRIu16 "\n", dvd_info.tracks, dvd_info.valid_tracks, dvd_info.invalid_tracks);
 		for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 			if(dvd_vts[vts].valid == true)
 				dvd_info.valid_video_title_sets++;
 			else
 				dvd_info.invalid_video_title_sets++;
 		}
-		printf("	Video Title Sets: %02" PRIu16 ", Valid: %02" PRIu16 ", Invalid: %02" PRIu16 "\n", dvd_info.video_title_sets, dvd_info.valid_video_title_sets, dvd_info.invalid_video_title_sets);
+		printf("        Video Title Sets: %02" PRIu16 ", Valid: %02" PRIu16 ", Invalid: %02" PRIu16 "\n", dvd_info.video_title_sets, dvd_info.valid_video_title_sets, dvd_info.invalid_video_title_sets);
 		for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
-			printf("	VTS: %02" PRIu16 ", Tracks: %02" PRIu16 ", Valid: %02" PRIu16 ", Invalid: %02" PRIu16 "\n", vts, dvd_vts[vts].tracks, dvd_vts[vts].valid_tracks, dvd_vts[vts].invalid_tracks);
+			printf("        VTS: %02" PRIu16 ", Tracks: %02" PRIu16 ", Valid: %02" PRIu16 ", Invalid: %02" PRIu16 "\n", vts, dvd_vts[vts].tracks, dvd_vts[vts].valid_tracks, dvd_vts[vts].invalid_tracks);
 		}
 	}
 
 	// Display more specific Video Title Set information
 	if(opt_vts) {
-		printf("	Video Title Set: %02" PRIu16 ", Tracks: %02" PRIu16 ", Valid tracks: %02" PRIu16 ", Invalid tracks: %02" PRIu16 "\n", arg_vts, dvd_vts[arg_vts].tracks, dvd_vts[arg_vts].valid_tracks, dvd_vts[arg_vts].invalid_tracks);
+		printf("        Video Title Set: %02" PRIu16 ", Tracks: %02" PRIu16 ", Valid tracks: %02" PRIu16 ", Invalid tracks: %02" PRIu16 "\n", arg_vts, dvd_vts[arg_vts].tracks, dvd_vts[arg_vts].valid_tracks, dvd_vts[arg_vts].invalid_tracks);
 	}
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
@@ -802,7 +802,7 @@ int main(int argc, char **argv) {
 
 		// Display video information
 		if(d_video) {
-			printf("	Video format: %s, Aspect ratio: %s, Width: %" PRIu16 ", Height: %" PRIu16 ", FPS: %s, Display format: %s\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, dvd_video.fps, display_formats[dvd_video.df]);
+			printf("        Video format: %s, Aspect ratio: %s, Width: %" PRIu16 ", Height: %" PRIu16 ", FPS: %s, Display format: %s\n", dvd_video.format, dvd_video.aspect_ratio, dvd_video.width, dvd_video.height, dvd_video.fps, display_formats[dvd_video.df]);
 		}
 
 		// Display audio tracks
@@ -843,10 +843,10 @@ int main(int argc, char **argv) {
 
 				dvd_cell = dvd_track.dvd_cells[cell_ix];
 				if(debug) {
-					printf("	Cell: %02" PRIu8 ", Length: %s\n", dvd_cell.cell, dvd_cell.length);
-					printf("	Cell: %02" PRIu8 ", VTS: %02" PRIu16 ", VOB: %02" PRIu64 ", Blocks: %6zd, Filesize: %9zd, First sector: %7" PRIu32 ", Last sector: %7" PRIu32 "\n", dvd_cell.cell, dvd_track.vts, (uint64_t)((dvd_cell.first_sector / 524288) + 1), dvd_cell.blocks, dvd_cell.filesize, dvd_cell.first_sector, dvd_cell.last_sector);
+					printf("        Cell: %02" PRIu8 ", Length: %s\n", dvd_cell.cell, dvd_cell.length);
+					printf("        Cell: %02" PRIu8 ", VTS: %02" PRIu16 ", VOB: %02" PRIu64 ", Blocks: %6zd, Filesize: %9zd, First sector: %7" PRIu32 ", Last sector: %7" PRIu32 "\n", dvd_cell.cell, dvd_track.vts, (uint64_t)((dvd_cell.first_sector / 524288) + 1), dvd_cell.blocks, dvd_cell.filesize, dvd_cell.first_sector, dvd_cell.last_sector);
 				} else
-					printf("	Cell: %02" PRIu8 ", Length: %s, First sector: %" PRIu32 ", Last sector: %" PRIu32 "\n", dvd_cell.cell, dvd_cell.length, dvd_cell.first_sector, dvd_cell.last_sector);
+					printf("        Cell: %02" PRIu8 ", Length: %s, First sector: %" PRIu32 ", Last sector: %" PRIu32 "\n", dvd_cell.cell, dvd_cell.length, dvd_cell.first_sector, dvd_cell.last_sector);
 
 			}
 

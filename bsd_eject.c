@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 */
 #if defined(__DragonFly__) || defined(__FreeBSD__)
 	int i = -1;
- 	i = ioctl(cdrom, CDIOCALLOW);
+	i = ioctl(cdrom, CDIOCALLOW);
 #endif
 
 	int retval = -1;
@@ -120,8 +120,8 @@ int main(int argc, char **argv) {
 void print_usage(void) {
 
 	printf("dvd_eject [options] [device]\n");
-	printf("	-h	this help output\n");
-	printf("	-t	close tray instead of opening\n");
+	printf("  -h	this help output\n");
+	printf("  -t	close tray instead of opening\n");
 	printf("\n");
 	printf("Default DVD device is %s\n", DEFAULT_DVD_DEVICE);
 
