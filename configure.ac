@@ -32,6 +32,7 @@ AC_ARG_WITH([libmpv], [AS_HELP_STRING([--with-libmpv], [Enable libmpv support fo
 	with_libmpv=yes
 	AC_DEFINE(HAVE_LIBMPV, [], [libmpv])
 ])])
+AM_CONDITIONAL([DVD_PLAYER], [test "x$with_libmpv" = xyes])
 AM_CONDITIONAL([DVD_TRIP], [test "x$with_libmpv" = xyes])
 
 AC_CONFIG_FILES([Makefile])
