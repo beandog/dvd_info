@@ -1,4 +1,4 @@
-AC_INIT([dvd_info], [1.6], [https://github.com/beandog/dvd_info/issues], [], [http://dvds.beandog.org/])
+AC_INIT([dvd_info], [1.7_beta1], [https://github.com/beandog/dvd_info/issues], [], [http://dvds.beandog.org/])
 
 dnl This is not a GNU package, so ignore required files / format
 AM_INIT_AUTOMAKE([foreign])
