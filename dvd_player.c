@@ -49,7 +49,6 @@ int main(int argc, char **argv) {
 	struct dvd_playback dvd_playback;
 	char dvd_mpv_args[64] = {'\0'};
 	const char *home_dir = getenv("HOME");
-	const char *lang = getenv("LANG");
 
 	// Video Title Set
 	struct dvd_vts dvd_vts[DVD_MAX_VTS_IFOS];
@@ -68,12 +67,8 @@ int main(int argc, char **argv) {
 	dvd_playback.deinterlace = false;
 	dvd_playback.subtitles = false;
 	memset(dvd_playback.audio_lang, '\0', sizeof(dvd_playback.audio_lang));
-	if(strlen(lang) >= 2)
-		snprintf(dvd_playback.audio_lang, 3, "%s", strndup(lang, 2));
 	memset(dvd_playback.audio_stream_id, '\0', sizeof(dvd_playback.audio_stream_id));
 	memset(dvd_playback.subtitles_lang, '\0', sizeof(dvd_playback.subtitles_lang));
-	if(strlen(lang) >= 2)
-		snprintf(dvd_playback.subtitles_lang, 3, "%s", strndup(lang, 2));
 	memset(dvd_playback.subtitles_stream_id, '\0', sizeof(dvd_playback.subtitles_stream_id));
 
 	int long_index = 0;
@@ -98,7 +93,7 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "Aa:c:dfhSs:t:Vvz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "Aa:c:dfhS:s:t:Vvz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -166,8 +161,14 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'S':
-				strncpy(dvd_playback.subtitles_stream_id, optarg, 3);
-				dvd_playback.subtitles = true;
+				arg_number = strtoul(optarg, NULL, 10);
+				if(arg_number > 0 && arg_number < 100) {
+					sprintf(dvd_playback.subtitles_stream_id, "%" PRIu8, (uint8_t)arg_number);
+					dvd_playback.subtitles = true;
+				} else {
+					fprintf(stderr, "[dvd_player] subtitle stream ID must be between 1 and 99\n");
+					return 1;
+				}
 				break;
 
 			case 't':
