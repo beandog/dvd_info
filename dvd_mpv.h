@@ -44,7 +44,8 @@ struct dvd_trip {
 	char vf_opts[256];
 	uint8_t crf;
 	char fps[11];
-	bool deinterlace;
+	bool detelecine;
+	bool decomb;
 };
 
 #endif

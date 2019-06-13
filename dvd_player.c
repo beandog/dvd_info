@@ -593,6 +593,8 @@ int main(int argc, char **argv) {
 	 *
 	 * dvd_trip also requires the FPS when 'encoding', but that's not needed here since
 	 * we're just doing playback.
+	 *
+	 * The yadif video filter should cover both detelecining and decombing just fine.
 	 */
 	if(dvd_playback.deinterlace) {
 

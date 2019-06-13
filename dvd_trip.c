@@ -125,7 +125,8 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.vf_opts, '\0', sizeof(dvd_trip.vf_opts));
 	dvd_trip.crf = 22;
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
-	dvd_trip.deinterlace = false;
+	dvd_trip.detelecine = false;
+	dvd_trip.decomb = false;
 	snprintf(dvd_trip.config_dir, PATH_MAX - 1, "/.config/dvd_trip");
 	memset(dvd_trip.mpv_config_dir, '\0', sizeof(dvd_trip.mpv_config_dir));
 	if(home_dir != NULL)
@@ -147,7 +148,8 @@ int main(int argc, char **argv) {
 		{ "track", required_argument, 0, 't' },
 		{ "vid", required_argument, 0, 'E' },
 
-		{ "deinterlace", no_argument, 0, 'd' },
+		{ "detelecine", no_argument, 0, 'd' },
+		{ "decomb", no_argument, 0, 'D' },
 
 		{ "output", required_argument, 0, 'o' },
 
@@ -161,7 +163,7 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "AB:c:dD:E:fho:s:S:t:vz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "AB:c:dDE:fhL:o:s:S:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -210,16 +212,20 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'd':
-				dvd_trip.deinterlace = true;
+				dvd_trip.detelecine = true;
 				break;
 
 			case 'D':
-				strncpy(dvd_trip.audio_lang, optarg, 2);
+				dvd_trip.decomb = true;
 				break;
 
 			case 'E':
 				if(strncmp(optarg, "no", 2) == 0)
 					dvd_trip.encode_video = false;
+				break;
+
+			case 'L':
+				strncpy(dvd_trip.audio_lang, optarg, 2);
 				break;
 
 			case 'o':
@@ -292,6 +298,8 @@ int main(int argc, char **argv) {
 				printf("      --aid <#>                 Select audio track ID\n");
 				printf("      --slang <language>	Select subtitles language, two character code (default: none)\n");
 				printf("      --sid <#>                 Select subtitles track ID\n");
+				printf("  -d, --detelecine              Detelecine video using pullup filter\n");
+				printf("  -D, --decomb                  Decomb video using yadif filter\n");
 				printf("  -f, --force                   Ignore invalid track warning\n");
 				printf("  -h, --help                    Show this help text and exit\n");
 				printf("      --version                 Show version info and exit\n");
@@ -312,6 +320,12 @@ int main(int argc, char **argv) {
 
 		}
 
+	}
+
+	// Check for invalid options or correct
+	if(dvd_trip.detelecine && dvd_trip.decomb) {
+		fprintf(stderr, "[dvd_trip] choose only one video filter: detelecine or decomb\n");
+		return 1;
 	}
 
 	const char *device_filename = DEFAULT_DVD_DEVICE;
@@ -676,12 +690,13 @@ int main(int argc, char **argv) {
 	/** Video **/
 
 	// Set output frames per second and color spaces based on source (NTSC or PAL)
-	if(dvd_track_pal_video(vts_ifo)) {
-		strcpy(dvd_trip.fps, "25");
-		strcpy(dvd_trip.color_opts, "color_primaries=bt470bg,color_trc=gamma28,colorspace=bt470bg");
-	} else {
+	bool ntsc = dvd_track_ntsc_video(vts_ifo);
+	if(ntsc) {
 		strcpy(dvd_trip.fps, "30000/1001");
 		strcpy(dvd_trip.color_opts, "color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m");
+	} else {
+		strcpy(dvd_trip.fps, "25");
+		strcpy(dvd_trip.color_opts, "color_primaries=bt470bg,color_trc=gamma28,colorspace=bt470bg");
 	}
 
 	/** Containers and Presets **/
@@ -814,6 +829,18 @@ int main(int argc, char **argv) {
 
 	/** Video Filters **/
 
+	// This assumes video is NTSC
+	// pullup needs fps=24000/1001
+
+	if(dvd_trip.detelecine) {
+		sprintf(dvd_trip.vf_opts, "lavfi=pullup,fps=24000/1001");
+	}
+
+	if(dvd_trip.decomb) {
+		sprintf(dvd_trip.vf_opts, "lavfi=yadif,fps=30000/1001");
+	}
+
+	/*
 	if(mpv_client_api_version() <= MPV_MAKE_VERSION(1, 25)) {
 
 		// Syntax up to 0.27.2
@@ -831,6 +858,7 @@ int main(int argc, char **argv) {
 			sprintf(dvd_trip.vf_opts, "fps=%s", dvd_trip.fps);
 
 	}
+	*/
 
 	mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
 
@@ -852,8 +880,10 @@ int main(int argc, char **argv) {
 	else if(strlen(dvd_trip.subtitles_stream_id))
 		fprintf(stderr, "dvd_trip [info]: burn-in subtitles stream %s\n", dvd_trip.subtitles_stream_id);
 	fprintf(stderr, "[dvd_trip] [info]: output fps %s\n", dvd_trip.fps);
-	if(dvd_trip.deinterlace && dvd_trip.encode_video)
-		fprintf(stderr, "[dvd_trip] [info]: deinterlacing video\n");
+	if(dvd_trip.detelecine && dvd_trip.encode_video)
+		fprintf(stderr, "[dvd_trip] [info]: detelecining video\n");
+	if(dvd_trip.decomb && dvd_trip.encode_video)
+		fprintf(stderr, "[dvd_trip] [info]: decombing video\n");
 
 	fprintf(stderr, "[dvd_trip] [info]: mpv: %s\n", dvd_mpv_args);
 
