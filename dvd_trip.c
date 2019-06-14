@@ -650,7 +650,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Load user's mpv configuration in ~/.config/dvd_trip/mpv.conf (and friends)
-	if(strlen(dvd_trip.mpv_config_dir) > 0) {
+	if(strlen(dvd_trip.mpv_config_dir)) {
 
 		fprintf(stderr, "[dvd_trip] using mpv config dir: %s\n", dvd_trip.mpv_config_dir);
 		retval = mpv_set_option_string(dvd_mpv, "config-dir", dvd_trip.mpv_config_dir);
@@ -670,12 +670,6 @@ int main(int argc, char **argv) {
 	// Terminal output
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
 
-	// Debug output and progress bar flood output, making a big mess
-	if(!debug) {
-		mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
-		mpv_set_option_string(dvd_mpv, "term-osd-bar-chars", "[=+-]");
-	}
-
 	if (debug) {
 		mpv_request_log_messages(dvd_mpv, "debug");
 		strcpy(dvd_trip.vcodec_log_level, "full");
@@ -685,6 +679,8 @@ int main(int argc, char **argv) {
 	} else {
 		mpv_request_log_messages(dvd_mpv, "info");
 		strcpy(dvd_trip.vcodec_log_level, "info");
+		// Debug output and progress bar flood output, making a big mess
+		mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
 	}
 
 	/** Video **/
@@ -783,13 +779,13 @@ int main(int argc, char **argv) {
 	}
 
 	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
-	if(strlen(dvd_trip.vcodec) > 0)
+	if(strlen(dvd_trip.vcodec))
 		mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
-	if(strlen(dvd_trip.vcodec_opts) > 0)
+	if(strlen(dvd_trip.vcodec_opts))
 		mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
-	if(strlen(dvd_trip.acodec) > 0)
+	if(strlen(dvd_trip.acodec))
 		mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
-	if(strlen(dvd_trip.acodec_opts) > 0)
+	if(strlen(dvd_trip.acodec_opts))
 		mpv_set_option_string(dvd_mpv, "oacopts", dvd_trip.acodec_opts);
 	if(dvd_trip.encode_audio)
 		mpv_set_option_string(dvd_mpv, "track-auto-selection", "yes");
@@ -809,15 +805,15 @@ int main(int argc, char **argv) {
 		mpv_set_option_string(dvd_mpv, "vid", "no");
 
 	// User can pass "--aid no" to disable encoding any sound
-	if(strlen(dvd_trip.audio_lang) > 0)
+	if(strlen(dvd_trip.audio_lang))
 		mpv_set_option_string(dvd_mpv, "alang", dvd_trip.audio_lang);
-	else if(strlen(dvd_trip.audio_stream_id) > 0)
+	else if(strlen(dvd_trip.audio_stream_id))
 		mpv_set_option_string(dvd_mpv, "aid", dvd_trip.audio_stream_id);
 
 	// Burn-in subtitles
 	if(strlen(dvd_trip.subtitles_lang))
 		mpv_set_option_string(dvd_mpv, "slang", dvd_trip.subtitles_lang);
-	else if(strlen(dvd_trip.subtitles_stream_id) > 0)
+	else if(strlen(dvd_trip.subtitles_stream_id))
 		mpv_set_option_string(dvd_mpv, "sid", dvd_trip.subtitles_stream_id);
 
 	// MPV will error out on its own if there's no video && no audio selected.
