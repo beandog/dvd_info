@@ -738,10 +738,14 @@ int main(int argc, char **argv) {
 		}
 
 		if(dvd_trip.encode_audio) {
-			mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
 			strcpy(dvd_trip.acodec, "libfdk_aac,aac");
 			strcpy(dvd_trip.acodec_opts, "b=192k");
 		}
+
+		// I haven't found a way to set metadata, and I don't know if it's even possible.
+		// However, libmpv will write the disc title into the metadata for a MKV and WEBM.
+		// This halts libmpv encoding:
+		// mpv_set_option_string(dvd_mpv, "oset-metadata", "comment=dvd_trip");
 
 	}
 
@@ -757,10 +761,11 @@ int main(int argc, char **argv) {
 		}
 
 		if(dvd_trip.encode_audio) {
-			mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
 			strcpy(dvd_trip.acodec, "libfdk_aac,aac");
 			strcpy(dvd_trip.acodec_opts, "b=192k");
 		}
+
+		mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
 
 	}
 
