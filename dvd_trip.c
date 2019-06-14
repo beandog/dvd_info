@@ -119,6 +119,7 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
 	memset(dvd_trip.audio_lang, '\0', sizeof(dvd_trip.audio_lang));
 	memset(dvd_trip.audio_stream_id, '\0', sizeof(dvd_trip.audio_stream_id));
+	dvd_trip.audio_bitrate = 0;
 	dvd_trip.encode_subtitles = false;
 	memset(dvd_trip.subtitles_lang, '\0', sizeof(dvd_trip.subtitles_lang));
 	memset(dvd_trip.subtitles_stream_id, '\0', sizeof(dvd_trip.subtitles_stream_id));
@@ -517,6 +518,32 @@ int main(int argc, char **argv) {
 	dvd_track.blocks = dvd_track_blocks(vmg_ifo, vts_ifo, dvd_trip.track);
 	dvd_track.filesize = dvd_track_filesize(vmg_ifo, vts_ifo, dvd_trip.track);
 
+	// Calculating the number of output chapters and bitrate
+	// It's a cheap workaround, but to guarantee that for lossless audio codecs (opus),
+	// all the channels are included. Since I can't accurately map ffmpeg, mpv and dvd_info
+	// audio indexes, simply loop through all of them and see what the highest value is.
+	uint8_t audio_track_ix;
+	uint8_t audio_max_channels = 1;
+	uint8_t audio_track_channels = 1;
+	for(audio_track_ix = 0; audio_track_ix < dvd_track.audio_tracks; audio_track_ix++) {
+
+		audio_track_channels = dvd_audio_channels(vts_ifo, audio_track_ix);
+
+		if(audio_track_channels > audio_max_channels)
+			audio_max_channels = audio_track_channels;
+
+	}
+
+	// Choose audio bitrates of DVDs based on num. of channels for Dolby Digital
+	// I've seen source audio bitrates of 384 to 448 for 4, 5, and 6 channels. Use
+	// 448k if higher than 3. Used as an array in case I change my mind in the future.
+	// I haven't found any DVDs with 3 channels of audio on valid tracks.
+	uint32_t dvd_bitrate[7] = { 0, 192, 192, 384, 448, 448, 448 };
+	dvd_trip.audio_bitrate = dvd_bitrate[audio_max_channels];
+
+	if(debug)
+		fprintf(stderr, "[dvd_trip] setting max audio channels to %" PRIu8 "\n", audio_max_channels);
+
 	// Set the proper chapter range
 	if(opt_chapter_number) {
 		if(arg_first_chapter > dvd_track.chapters) {
@@ -711,6 +738,7 @@ int main(int argc, char **argv) {
 		}
 
 		if(dvd_trip.encode_audio) {
+			mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
 			strcpy(dvd_trip.acodec, "libfdk_aac,aac");
 			strcpy(dvd_trip.acodec_opts, "b=192k");
 		}
@@ -729,6 +757,7 @@ int main(int argc, char **argv) {
 		}
 
 		if(dvd_trip.encode_audio) {
+			mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
 			strcpy(dvd_trip.acodec, "libfdk_aac,aac");
 			strcpy(dvd_trip.acodec_opts, "b=192k");
 		}
@@ -745,9 +774,18 @@ int main(int argc, char **argv) {
 			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=22,keyint_min=0,g=360", dvd_trip.color_opts);
 		}
 
+		// Opus audio codec can support surround sound. Arguments here would need to know how
+		// many channels to pass in. Opus encodes to stereo by default.
+		// Getting the number of channels of the requested stream would mean scanning the audio
+		// track selected, and then parsing its attributes. Mapping the audio track in ffmpeg / mpv
+		// and dvd_info isn't supported either, which makes this part of a bigger feature.
+		// If it were working, mpv 'audio-channels' option would be used here
 		if(dvd_trip.encode_audio) {
-			strcpy(dvd_trip.acodec, "libopus,opus,libvorbis,vorbis");
-			strcpy(dvd_trip.acodec_opts, "application=audio,b=192000");
+			char mpv_opus_channels[2] = "1";
+			snprintf(mpv_opus_channels, 2, "%" PRIu32, audio_max_channels);
+			strcpy(dvd_trip.acodec, "libopus");
+			sprintf(dvd_trip.acodec_opts, "application=audio,vbr=off,b=%" PRIu32"000", dvd_trip.audio_bitrate);
+			mpv_set_option_string(dvd_mpv, "audio-channels", mpv_opus_channels);
 		}
 
 		/*
