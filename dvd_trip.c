@@ -550,7 +550,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "[dvd_trip] disc title: %s\n", dvd_info.title);
 	if(strlen(dvdread_id))
 		fprintf(stderr, "[dvd_trip] disc id: %s\n", dvdread_id);
-	fprintf(stderr, "[dvd_info] track: %02" PRIu16 ", length: %s, chapters: %02" PRIu8 ", cells: %02" PRIu8 ", audio streams: %02" PRIu8 ", subpictures: %02" PRIu8 ", blocks: %6zd, filesize: %9zd\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.blocks, dvd_track.filesize);
+	fprintf(stderr, "[dvd_trip] track: %02" PRIu16 ", length: %s, chapters: %02" PRIu8 ", cells: %02" PRIu8 ", audio streams: %02" PRIu8 ", subpictures: %02" PRIu8 ", blocks: %6zd, filesize: %9zd\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.blocks, dvd_track.filesize);
 
 	// Check for track issues
 	if(dvd_vts[vts].valid == false) {
@@ -558,17 +558,17 @@ int main(int argc, char **argv) {
 	}
 
 	if(dvd_track.msecs == 0) {
-		printf("        Error: track has zero length\n");
+		fprintf(stderr, "[dvd_trip] invalid track - track has zero length\n");
 		dvd_track.valid = false;
 	}
 
 	if(dvd_track.chapters == 0) {
-		printf("        Error: track has zero chapters\n");
+		fprintf(stderr, "[dvd_trip] invalid track - zero chapters\n");
 		dvd_track.valid = false;
 	}
 
 	if(dvd_track.cells == 0) {
-		printf("        Error: track has zero cells\n");
+		fprintf(stderr, "[dvd_trip] invalid track - zero cells\n");
 		dvd_track.valid = false;
 	}
 
