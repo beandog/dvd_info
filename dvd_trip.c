@@ -650,6 +650,8 @@ int main(int argc, char **argv) {
 	}
 
 	// Load user's mpv configuration in ~/.config/dvd_trip/mpv.conf (and friends)
+	// ** Anything ** in mpv.conf will override all arguments and options passed to dvd_trip
+	// Profile settings must be in [encoding] section
 	if(strlen(dvd_trip.mpv_config_dir)) {
 
 		fprintf(stderr, "[dvd_trip] using mpv config dir: %s/\n", dvd_trip.mpv_config_dir);
@@ -873,7 +875,7 @@ int main(int argc, char **argv) {
 	else if(strlen(dvd_trip.subtitles_stream_id))
 		fprintf(stderr, "[dvd_trip] burn-in subtitles stream %s\n", dvd_trip.subtitles_stream_id);
 
-	// ** All encoding options must be set before initialize **
+	// ** All encoding and user config options must be set before initialize **
 	retval = mpv_initialize(dvd_mpv);
 
 	if(retval) {
