@@ -786,11 +786,7 @@ int main(int argc, char **argv) {
 		mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
 	if(strlen(dvd_trip.acodec_opts))
 		mpv_set_option_string(dvd_mpv, "oacopts", dvd_trip.acodec_opts);
-	if(dvd_trip.encode_audio)
-		mpv_set_option_string(dvd_mpv, "track-auto-selection", "yes");
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
-	mpv_set_option_string(dvd_mpv, "input-default-bindings", "yes");
-	mpv_set_option_string(dvd_mpv, "input-vo-keyboard", "yes");
 
 	// MPV's chapter range starts at the first one, and ends at the last one plus one
 	// fex: to play chapter 1 only, mpv --start '#1' --end '#2'
