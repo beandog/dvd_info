@@ -935,13 +935,42 @@ int main(int argc, char **argv) {
 
 	mpv_event *dvd_mpv_event = NULL;
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
+	struct mpv_event_end_file *dvd_mpv_eof = NULL;
+
+	retval = 0;
 
 	while(true) {
 
 		dvd_mpv_event = mpv_wait_event(dvd_mpv, -1);
 
-		if(dvd_mpv_event->event_id == MPV_EVENT_SHUTDOWN || dvd_mpv_event->event_id == MPV_EVENT_END_FILE)
+		if(dvd_mpv_event->event_id == MPV_EVENT_SHUTDOWN)
 			break;
+
+		if(dvd_mpv_event->event_id == MPV_EVENT_END_FILE) {
+
+			dvd_mpv_eof = dvd_mpv_event->data;
+
+			if(dvd_mpv_eof->reason == MPV_END_FILE_REASON_QUIT) {
+
+				fprintf(stderr, "[dvd_trip] stopping encode\n");
+				break;
+
+			}
+
+			if(dvd_mpv_eof->reason == MPV_END_FILE_REASON_ERROR) {
+
+				retval = 1;
+				fprintf(stderr, "[libmpv] end of file error\n");
+
+				if(dvd_mpv_eof->error == MPV_ERROR_NOTHING_TO_PLAY) {
+					fprintf(stderr, "[libmpv] no audio or video data to play\n");
+				}
+
+			}
+
+			break;
+
+		}
 
 		// Logging output
 		if((verbose || debug) && dvd_mpv_event->event_id == MPV_EVENT_LOG_MESSAGE) {
@@ -952,6 +981,13 @@ int main(int argc, char **argv) {
 	}
 
 	mpv_terminate_destroy(dvd_mpv);
+
+	if(retval == 0) {
+		fprintf(stderr, "[dvd_trip] encode finished\n");
+		fprintf(stderr, "[dvd_trip] file saved to '%s'\n", dvd_trip.filename);
+	} else {
+		fprintf(stderr, "[dvd_trip] encode failed, did not write to '%s'\n", dvd_trip.filename);
+	}
 
 	DVDCloseFile(dvdread_vts_file);
 
