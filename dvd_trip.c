@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
 	struct option long_options[] = {
 
 		{ "audio", required_argument, 0, 'a' },
-		{ "alang", required_argument, 0, 'D' },
+		{ "alang", required_argument, 0, 'L' },
 		{ "aid", required_argument, 0, 'B' },
 
 		{ "slang", required_argument, 0, 's' },
@@ -717,10 +717,10 @@ int main(int argc, char **argv) {
 	// Set output frames per second and color spaces based on source (NTSC or PAL)
 	bool ntsc = dvd_track_ntsc_video(vts_ifo);
 	if(ntsc) {
-		strcpy(dvd_trip.fps, "30000/1001");
+		// strcpy(dvd_trip.fps, "30000/1001");
 		strcpy(dvd_trip.color_opts, "color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m");
 	} else {
-		strcpy(dvd_trip.fps, "25");
+		// strcpy(dvd_trip.fps, "25");
 		strcpy(dvd_trip.color_opts, "color_primaries=bt470bg,color_trc=gamma28,colorspace=bt470bg");
 	}
 
@@ -895,24 +895,11 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
+	if(strlen(dvd_trip.vf_opts))
+		mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
 
 	fprintf(stderr, "[dvd_trip] encoding dvd track %" PRIu16 ", chapters %" PRIu8 " to %" PRIu8 "\n", dvd_trip.track, dvd_trip.first_chapter, dvd_trip.last_chapter);
 	fprintf(stderr, "[dvd_trip] saving to %s\n", dvd_trip.filename);
-	if(dvd_trip.encode_video) {
-		fprintf(stderr, "[dvd_trip] vcodec %s\n", dvd_trip.vcodec);
-		fprintf(stderr, "[dvd_trip] ovcopts %s\n", dvd_trip.vcodec_opts);
-		if(strlen(dvd_trip.vf_opts))
-			fprintf(stderr, "[dvd_trip] vf %s\n", dvd_trip.vf_opts);
-		if(dvd_trip.detelecine)
-			fprintf(stderr, "[dvd_trip] detelecining video\n");
-		if(dvd_trip.decomb)
-			fprintf(stderr, "[dvd_trip] decombing video\n");
-	}
-	if(dvd_trip.encode_audio) {
-		fprintf(stderr, "[dvd_trip] acodec %s\n", dvd_trip.acodec);
-		fprintf(stderr, "[dvd_trip] oacopts %s\n", dvd_trip.acodec_opts);
-	}
 	if(strlen(dvd_trip.subtitles_lang))
 		fprintf(stderr, "[dvd_trip] burn-in subtitles lang %s\n", dvd_trip.subtitles_lang);
 	else if(strlen(dvd_trip.subtitles_stream_id))
@@ -927,11 +914,31 @@ int main(int argc, char **argv) {
 	}
 
 	retval = mpv_command(dvd_mpv, dvd_mpv_commands);
-
 	if(retval) {
 		fprintf(stderr, "[dvd_trip] mpv_command() failed\n");
 		return 1;
 	}
+
+	// Print what settings are used at this point
+	if(dvd_trip.encode_video) {
+		fprintf(stderr, "[libmpv] ovc = %s\n", mpv_get_property_string(dvd_mpv, "ovc"));
+		fprintf(stderr, "[libmpv] ovcopts = %s\n", mpv_get_property_string(dvd_mpv, "ovcopts"));
+		if(dvd_trip.detelecine)
+			fprintf(stderr, "[dvd_trip] detelecining video\n");
+		if(dvd_trip.decomb)
+			fprintf(stderr, "[dvd_trip] decombing video\n");
+		if(strlen(dvd_trip.vf_opts))
+			fprintf(stderr, "[libmpv] vf = %s\n", mpv_get_property_string(dvd_mpv, "vf"));
+	}
+	if(dvd_trip.encode_audio) {
+		if(strlen(dvd_trip.audio_lang))
+			fprintf(stderr, "[libmpv] alang = %s\n", mpv_get_property_string(dvd_mpv, "alang"));
+		if(strlen(dvd_trip.audio_stream_id))
+			fprintf(stderr, "[libmpv] aid = %s\n", mpv_get_property_string(dvd_mpv, "aid"));
+		fprintf(stderr, "[libmpv] acodec = %s\n", mpv_get_property_string(dvd_mpv, "oac"));
+		fprintf(stderr, "[libmpv] oacopts = %s\n", mpv_get_property_string(dvd_mpv, "oacopts"));
+	}
+	printf("[dvd_trip] mpv dvdread://%" PRIu16 " # mpv zero-indexes tracks\n", dvd_trip.track - 1);
 
 	mpv_event *dvd_mpv_event = NULL;
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
