@@ -738,7 +738,7 @@ int main(int argc, char **argv) {
 		}
 
 		if(dvd_trip.encode_audio) {
-			strcpy(dvd_trip.acodec, "libfdk_aac");
+			strcpy(dvd_trip.acodec, "libfdk_aac,aac");
 			strcpy(dvd_trip.acodec_opts, "b=192k");
 		}
 
@@ -761,7 +761,7 @@ int main(int argc, char **argv) {
 		}
 
 		if(dvd_trip.encode_audio) {
-			strcpy(dvd_trip.acodec, "libfdk_aac");
+			strcpy(dvd_trip.acodec, "libfdk_aac,aac");
 			strcpy(dvd_trip.acodec_opts, "b=192k");
 		}
 
