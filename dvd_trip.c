@@ -734,7 +734,7 @@ int main(int argc, char **argv) {
 
 		if(dvd_trip.encode_video) {
 			strcpy(dvd_trip.vcodec, "libx265");
-			sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=20,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_log_level);
+			sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=18,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_log_level);
 		}
 
 		if(dvd_trip.encode_audio) {
@@ -757,7 +757,7 @@ int main(int argc, char **argv) {
 		if(dvd_trip.encode_video) {
 			strcpy(dvd_trip.vcodec, "libx264");
 			// x264 doesn't allow passing log level (that I can see)
-			sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=22", dvd_trip.color_opts);
+			sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=20", dvd_trip.color_opts);
 		}
 
 		if(dvd_trip.encode_audio) {
