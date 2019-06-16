@@ -504,7 +504,7 @@ int main(int argc, char **argv) {
 	dvd_track.filesize = dvd_track_filesize(vmg_ifo, vts_ifo, dvd_trip.track);
 
 	// Calculating the number of output chapters and bitrate
-	// It's a cheap workaround, but to guarantee that for lossless audio codecs (opus),
+	// It's a cheap workaround, but to guarantee that for lossless audio codecs
 	// all the channels are included. Since I can't accurately map ffmpeg, mpv and dvd_info
 	// audio indexes, simply loop through all of them and see what the highest value is.
 	uint8_t audio_track_ix;
@@ -650,10 +650,13 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 
 	/** Filename **/
-	if(!opt_filename || strncmp(dvd_trip.container, "mkv", 3) == 0) {
-		dvd_container = 1;
+	if(!opt_filename) {
+		strcpy(dvd_trip.container, "mkv");
 		strcpy(dvd_trip.filename, "trip_encode.mkv");
-	} else if(strncmp(dvd_trip.container, "mp4", 3) == 0)
+	}
+	if(strncmp(dvd_trip.container, "mkv", 3) == 0)
+		dvd_container = 1;
+	else if(strncmp(dvd_trip.container, "mp4", 3) == 0)
 		dvd_container = 2;
 	else if(strncmp(dvd_trip.container, "webm", 4) == 0)
 		dvd_container = 3;
@@ -673,6 +676,8 @@ int main(int argc, char **argv) {
 
 	// Video codecs and encoding options
 	switch(dvd_container) {
+		case 0:
+			break;
 		case 1:
 			strcpy(dvd_trip.vcodec, "libx265");
 			sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=18,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_log_level);
@@ -690,9 +695,7 @@ int main(int argc, char **argv) {
 			strcpy(dvd_trip.vcodec, "libvpx-vp9");
 			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=22,keyint_min=0,g=360", dvd_trip.color_opts);
 			mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
-			mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
-			break;
-		default:
+			// mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
 			break;
 	}
 
@@ -712,7 +715,15 @@ int main(int argc, char **argv) {
 	else if(strlen(dvd_trip.audio_stream_id))
 		mpv_set_option_string(dvd_mpv, "aid", dvd_trip.audio_stream_id);
 
-	if(dvd_container == 1 || dvd_container == 2) {
+	// For audio codecs that support surround sound, set the target audio channels count
+	char mpv_audio_channels[2] = "1";
+	snprintf(mpv_audio_channels, 2, "%" PRIu32, audio_max_channels);
+
+	if(dvd_container == 1) {
+		strcpy(dvd_trip.acodec, "eac3");
+		mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
+		mpv_set_option_string(dvd_mpv, "audio-channels", mpv_audio_channels);
+	} else if(dvd_container == 2) {
 		strcpy(dvd_trip.acodec, "libfdk_aac");
 		strcpy(dvd_trip.acodec_opts, "b=192k");
 		mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
@@ -726,11 +737,9 @@ int main(int argc, char **argv) {
 		// If it were working, mpv 'audio-channels' option would be used here
 		strcpy(dvd_trip.acodec, "libopus");
 		sprintf(dvd_trip.acodec_opts, "application=audio,vbr=off,b=%" PRIu32"000", dvd_trip.audio_bitrate);
-		char mpv_opus_channels[2] = "1";
-		snprintf(mpv_opus_channels, 2, "%" PRIu32, audio_max_channels);
-		mpv_set_option_string(dvd_mpv, "audio-channels", mpv_opus_channels);
 		mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
 		mpv_set_option_string(dvd_mpv, "oacopts", dvd_trip.acodec_opts);
+		mpv_set_option_string(dvd_mpv, "audio-channels", mpv_audio_channels);
 	}
 
 	/** Subtitles **/
@@ -772,7 +781,8 @@ int main(int argc, char **argv) {
 	else if(strlen(dvd_trip.audio_stream_id))
 		fprintf(stderr, "[libmpv] aid = %s\n", mpv_get_property_string(dvd_mpv, "aid"));
 	fprintf(stderr, "[libmpv] acodec = %s\n", mpv_get_property_string(dvd_mpv, "oac"));
-	fprintf(stderr, "[libmpv] oacopts = %s\n", mpv_get_property_string(dvd_mpv, "oacopts"));
+	if(dvd_container == 2 || dvd_container == 3)
+		fprintf(stderr, "[libmpv] oacopts = %s\n", mpv_get_property_string(dvd_mpv, "oacopts"));
 	printf("[dvd_trip] mpv dvdread://%" PRIu16 " # mpv zero-indexes tracks\n", dvd_trip.track - 1);
 
 	mpv_event *dvd_mpv_event = NULL;
