@@ -27,7 +27,7 @@
 #include "dvd_audio.h"
 #include "dvd_subtitles.h"
 #include "dvd_time.h"
-#include "dvd_mpv.h"
+#include "dvd_player.h"
 #include <mpv/client.h>
 #ifndef DVD_INFO_VERSION
 #define DVD_INFO_VERSION "1.7_beta1"
