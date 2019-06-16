@@ -91,7 +91,6 @@ int main(int argc, char **argv) {
 	char *token = NULL;
 	char *token_filename = NULL;
 	char tmp_filename[5] = {'\0'};
-	char dvd_mpv_args[13] = {'\0'};
 	char dvd_mpv_first_chapter[4] = {'\0'};
 	char dvd_mpv_last_chapter[4] = {'\0'};
 	const char *home_dir = getenv("HOME");
@@ -109,12 +108,9 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.config_dir, '\0', sizeof(dvd_trip.config_dir));
 	memset(dvd_trip.mpv_config_dir, '\0', sizeof(dvd_trip.mpv_config_dir));
 	memset(dvd_trip.container, '\0', sizeof(dvd_trip.container));
-	dvd_trip.encode_video = true;
 	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
 	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
-	memset(dvd_trip.color_opts, '\0', sizeof(dvd_trip.color_opts));
-	dvd_trip.encode_audio = true;
 	memset(dvd_trip.acodec, '\0', sizeof(dvd_trip.acodec));
 	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
 	memset(dvd_trip.audio_lang, '\0', sizeof(dvd_trip.audio_lang));
@@ -123,7 +119,6 @@ int main(int argc, char **argv) {
 	dvd_trip.encode_subtitles = false;
 	memset(dvd_trip.subtitles_lang, '\0', sizeof(dvd_trip.subtitles_lang));
 	memset(dvd_trip.subtitles_stream_id, '\0', sizeof(dvd_trip.subtitles_stream_id));
-	memset(dvd_trip.vf_opts, '\0', sizeof(dvd_trip.vf_opts));
 	dvd_trip.crf = 22;
 	memset(dvd_trip.fps, '\0', sizeof(dvd_trip.fps));
 	dvd_trip.detelecine = false;
@@ -132,9 +127,6 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.mpv_config_dir, '\0', sizeof(dvd_trip.mpv_config_dir));
 	if(home_dir != NULL)
 		snprintf(dvd_trip.mpv_config_dir, PATH_MAX - 1, "%s%s", home_dir, dvd_trip.config_dir);
-
-	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
-	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
 
 	struct option long_options[] = {
 
@@ -164,14 +156,12 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "AB:c:dDE:fhL:o:s:S:t:vz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "AB:c:dDfhL:o:s:S:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
 			case 'B':
 				strncpy(dvd_trip.audio_stream_id, optarg, 3);
-				if(strncmp(optarg, "no", 2) == 0)
-					dvd_trip.encode_audio = false;
 				break;
 
 			case 'c':
@@ -218,11 +208,6 @@ int main(int argc, char **argv) {
 
 			case 'D':
 				dvd_trip.decomb = true;
-				break;
-
-			case 'E':
-				if(strncmp(optarg, "no", 2) == 0)
-					dvd_trip.encode_video = false;
 				break;
 
 			case 'L':
@@ -574,10 +559,10 @@ int main(int argc, char **argv) {
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
 	if(strlen(dvd_info.title))
-		fprintf(stderr, "[dvd_trip] disc title: %s\n", dvd_info.title);
+		fprintf(stderr, "[dvd_trip] Disc title: '%s'\n", dvd_info.title);
 	if(strlen(dvdread_id))
-		fprintf(stderr, "[dvd_trip] disc id: %s\n", dvdread_id);
-	fprintf(stderr, "[dvd_trip] track: %02" PRIu16 ", length: %s, chapters: %02" PRIu8 ", cells: %02" PRIu8 ", audio streams: %02" PRIu8 ", subpictures: %02" PRIu8 ", blocks: %6zd, filesize: %9zd\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.blocks, dvd_track.filesize);
+		fprintf(stderr, "[dvd_trip] Disc ID: '%s'\n", dvdread_id);
+	fprintf(stderr, "[dvd_trip] Track: %02" PRIu16 ", Length: %s, Chapters: %02" PRIu8 ", Cells: %02" PRIu8 ", Audio streams: %02" PRIu8 ", Subpictures: %02" PRIu8 "\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles);
 
 	// Check for track issues
 	if(dvd_vts[vts].valid == false) {
@@ -628,286 +613,140 @@ int main(int argc, char **argv) {
 
 	}
 
-	// Map the audio track passed as an argument to the audio stream ID
-	// Selecting the audio track ID from dvd_info indexes is a long-term dream.
-	// Unfortunately, it'd require a lot of work and testing to see if I can
-	// match up what it parsed by the decoder, and if it matches the indexes I have
-	// dvd_trip.audio_track = 0;
-
-	/*
-	bool opt_audio_track = false;
-	char audio_ff_aid[12];
-	memset(audio_ff_aid, '\0', sizeof(audio_ff_aid));
-	if(dvd_trip.encode_audio && opt_audio_track) {
-
-		// Get the audio stream ID
-		char audio_stream_id[12] = {'\0'};
-		uint8_t audio_tracks = dvd_track_audio_tracks(vts_ifo);
-		uint8_t audio_track_ix = 0;
-		bool audio_active = false;
-		for(audio_track_ix = 0; audio_track_ix < audio_tracks + 1; audio_track_ix++) {
-
-			audio_active = dvd_audio_active(vmg_ifo, vts_ifo, dvd_trip.track, audio_track_ix);
-			if(audio_active && (dvd_trip.audio_track == audio_track_ix + 1)) {
-
-				dvd_audio_stream_id(audio_stream_id, vts_ifo, audio_track_ix);
-				strcpy(audio_ff_aid, audio_stream_id);
-
-				break;
-
-			}
-
-		}
-
-	}
-	*/
-
-	// MPV zero-indexes tracks
-	sprintf(dvd_mpv_args, "dvdread://%" PRIu16, dvd_trip.track - 1);
-
-	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
-
-	// DVD playback using libmpv
+	// MPV instance
 	mpv_handle *dvd_mpv = NULL;
 	dvd_mpv = mpv_create();
-
 	if(dvd_mpv == NULL) {
 		fprintf(stderr, "[dvd_trip] could not create an mpv instance\n");
 		return 1;
 	}
-
-	// Load user's mpv configuration in ~/.config/dvd_trip/mpv.conf (and friends)
-	// ** Anything ** in mpv.conf will override all arguments and options passed to dvd_trip
-	// Profile settings must be in [encoding] section
-	if(strlen(dvd_trip.mpv_config_dir)) {
-
-		fprintf(stderr, "[dvd_trip] using mpv config dir: %s/\n", dvd_trip.mpv_config_dir);
-		retval = mpv_set_option_string(dvd_mpv, "config-dir", dvd_trip.mpv_config_dir);
-
-		if(retval) {
-			fprintf(stderr, "[dvd_trip] could not set mpv option 'config-dir' %s\n", dvd_trip.mpv_config_dir);
-		}
-
-		retval = mpv_set_option_string(dvd_mpv, "config", "yes");
-
-		if(retval) {
-			fprintf(stderr, "[dvd_trip] could not set mpv option 'config'\n");
-		}
-
-	}
-
-	// Terminal output
+	mpv_set_option_string(dvd_mpv, "config-dir", dvd_trip.mpv_config_dir);
+	mpv_set_option_string(dvd_mpv, "config", "yes");
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
-
-	if (debug) {
+	if(debug) {
 		mpv_request_log_messages(dvd_mpv, "debug");
 		strcpy(dvd_trip.vcodec_log_level, "full");
-	} else if(verbose) {
+	} else if (verbose) {
 		mpv_request_log_messages(dvd_mpv, "v");
 		strcpy(dvd_trip.vcodec_log_level, "info");
 	} else {
 		mpv_request_log_messages(dvd_mpv, "info");
 		strcpy(dvd_trip.vcodec_log_level, "info");
-		// Debug output and progress bar flood output, making a big mess
 		mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
 	}
 
+	/** DVD **/
+	char dvd_mpv_args[13];
+	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
+	sprintf(dvd_mpv_args, "dvdread://%" PRIu16, dvd_trip.track - 1);
+	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
+	uint8_t dvd_container = 0; // 0. Unset, 1. MKV, 2. MP4, 3. WEBM
+	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
+	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
+	sprintf(dvd_mpv_first_chapter, "#%" PRIu8, dvd_trip.first_chapter);
+	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
+	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
+	sprintf(dvd_mpv_last_chapter, "#%" PRIu8, dvd_trip.last_chapter + 1);
+	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
+
+	/** Filename **/
+	if(!opt_filename || strncmp(dvd_trip.container, "mkv", 3) == 0) {
+		dvd_container = 1;
+		strcpy(dvd_trip.filename, "trip_encode.mkv");
+	} else if(strncmp(dvd_trip.container, "mp4", 3) == 0)
+		dvd_container = 2;
+	else if(strncmp(dvd_trip.container, "webm", 4) == 0)
+		dvd_container = 3;
+
+	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
+
 	/** Video **/
 
-	// Set output frames per second and color spaces based on source (NTSC or PAL)
+	// Color spaces
 	bool ntsc = dvd_track_ntsc_video(vts_ifo);
+	memset(dvd_trip.color_opts, '\0', sizeof(dvd_trip.color_opts));
 	if(ntsc) {
-		// strcpy(dvd_trip.fps, "30000/1001");
 		strcpy(dvd_trip.color_opts, "color_primaries=smpte170m,color_trc=smpte170m,colorspace=smpte170m");
 	} else {
-		// strcpy(dvd_trip.fps, "25");
 		strcpy(dvd_trip.color_opts, "color_primaries=bt470bg,color_trc=gamma28,colorspace=bt470bg");
 	}
 
-	/** Containers and Presets **/
-
-	// Set preset defaults
-	if(strncmp(dvd_trip.container, "mkv", 3) == 0 || !opt_filename) {
-
-		if(!opt_filename)
-			strcpy(dvd_trip.filename, "trip_encode.mkv");
-
-		if(dvd_trip.encode_video) {
+	// Video codecs and encoding options
+	switch(dvd_container) {
+		case 1:
 			strcpy(dvd_trip.vcodec, "libx265");
 			sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=18,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_log_level);
-		}
-
-		if(dvd_trip.encode_audio) {
-			strcpy(dvd_trip.acodec, "libfdk_aac");
-			strcpy(dvd_trip.acodec_opts, "b=192k");
-		}
-
-		// I haven't found a way to set metadata, and I don't know if it's even possible.
-		// However, libmpv will write the disc title into the metadata for a MKV and WEBM.
-		// This halts libmpv encoding:
-		// mpv_set_option_string(dvd_mpv, "oset-metadata", "comment=dvd_trip");
-
-	}
-
-	if(strncmp(dvd_trip.container, "mp4", 3) == 0) {
-
-		if(!opt_filename)
-			strcpy(dvd_trip.filename, "trip_encode.mp4");
-
-		if(dvd_trip.encode_video) {
+			mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
+			mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
+			break;
+		case 2:
 			strcpy(dvd_trip.vcodec, "libx264");
-			// x264 doesn't allow passing log level (that I can see)
 			sprintf(dvd_trip.vcodec_opts, "%s,preset=slow,crf=20", dvd_trip.color_opts);
-		}
-
-		if(dvd_trip.encode_audio) {
-			strcpy(dvd_trip.acodec, "libfdk_aac");
-			strcpy(dvd_trip.acodec_opts, "b=192k");
-		}
-
-		mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
-
-	}
-
-	if(strncmp(dvd_trip.container, "webm", 4) == 0) {
-
-		if(!opt_filename)
-			strcpy(dvd_trip.filename, "trip_encode.webm");
-
-		if(dvd_trip.encode_video) {
+			mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
+			mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
+			mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
+			break;
+		case 3:
 			strcpy(dvd_trip.vcodec, "libvpx-vp9");
 			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=22,keyint_min=0,g=360", dvd_trip.color_opts);
-		}
+			mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
+			mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
+			break;
+		default:
+			break;
+	}
 
+	// Deinterlacing
+	memset(dvd_trip.vf_opts, '\0', sizeof(dvd_trip.vf_opts));
+	if(dvd_trip.detelecine) {
+		strcpy(dvd_trip.vf_opts, "lavfi=pullup,fps=24000/1001");
+		mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
+	} else if(dvd_trip.decomb) {
+		strcpy(dvd_trip.vf_opts, "lavfi=yadif,fps=30000/1001");
+		mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
+	}
+
+	/** Audio **/
+	if(strlen(dvd_trip.audio_lang))
+		mpv_set_option_string(dvd_mpv, "alang", dvd_trip.audio_lang);
+	else if(strlen(dvd_trip.audio_stream_id))
+		mpv_set_option_string(dvd_mpv, "aid", dvd_trip.audio_stream_id);
+
+	if(dvd_container == 1 || dvd_container == 2) {
+		strcpy(dvd_trip.acodec, "libfdk_aac");
+		strcpy(dvd_trip.acodec_opts, "b=192k");
+		mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
+		mpv_set_option_string(dvd_mpv, "oacopts", dvd_trip.acodec_opts);
+	} else if (dvd_container == 3) {
 		// Opus audio codec can support surround sound. Arguments here would need to know how
 		// many channels to pass in. Opus encodes to stereo by default.
 		// Getting the number of channels of the requested stream would mean scanning the audio
 		// track selected, and then parsing its attributes. Mapping the audio track in ffmpeg / mpv
 		// and dvd_info isn't supported either, which makes this part of a bigger feature.
 		// If it were working, mpv 'audio-channels' option would be used here
-		if(dvd_trip.encode_audio) {
-			char mpv_opus_channels[2] = "1";
-			snprintf(mpv_opus_channels, 2, "%" PRIu32, audio_max_channels);
-			strcpy(dvd_trip.acodec, "libopus");
-			sprintf(dvd_trip.acodec_opts, "application=audio,vbr=off,b=%" PRIu32"000", dvd_trip.audio_bitrate);
-			mpv_set_option_string(dvd_mpv, "audio-channels", mpv_opus_channels);
-		}
-
-		/*
-		 * keep these for reference because they were hard to decide on
-		if(strncmp(dvd_trip.preset, "low", 3) == 0) {
-			dvd_trip.crf = 34;
-			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u,keyint_min=0,g=360", dvd_trip.color_opts, dvd_trip.crf);
-			strcpy(dvd_trip.acodec_opts, "application=audio,b=96000");
-		}
-
-		if(strncmp(dvd_trip.preset, "medium", 6) == 0) {
-			dvd_trip.crf = 32;
-			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u,keyint_min=0,g=360", dvd_trip.color_opts, dvd_trip.crf);
-			strcpy(dvd_trip.acodec_opts, "application=audio,b=144000");
-		}
-
-		if(strncmp(dvd_trip.preset, "high", 4) == 0) {
-			dvd_trip.crf = 22;
-			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u,keyint_min=0,g=360", dvd_trip.color_opts, dvd_trip.crf);
-			strcpy(dvd_trip.acodec_opts, "application=audio,b=192000");
-		}
-
-		if(strncmp(dvd_trip.preset, "insane", 6) == 0) {
-			dvd_trip.crf = 16;
-			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=%u,keyint_min=0,g=360", dvd_trip.color_opts, dvd_trip.crf);
-			strcpy(dvd_trip.acodec_opts, "application=audio,b=256000");
-		}
-		*/
-
-	}
-
-	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
-	if(strlen(dvd_trip.vcodec))
-		mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
-	if(strlen(dvd_trip.vcodec_opts))
-		mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
-	if(strlen(dvd_trip.acodec))
+		strcpy(dvd_trip.acodec, "libopus");
+		sprintf(dvd_trip.acodec_opts, "application=audio,vbr=off,b=%" PRIu32"000", dvd_trip.audio_bitrate);
+		char mpv_opus_channels[2] = "1";
+		snprintf(mpv_opus_channels, 2, "%" PRIu32, audio_max_channels);
+		mpv_set_option_string(dvd_mpv, "audio-channels", mpv_opus_channels);
 		mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
-	if(strlen(dvd_trip.acodec_opts))
 		mpv_set_option_string(dvd_mpv, "oacopts", dvd_trip.acodec_opts);
-	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
-
-	// MPV's chapter range starts at the first one, and ends at the last one plus one
-	// fex: to play chapter 1 only, mpv --start '#1' --end '#2'
-	sprintf(dvd_mpv_first_chapter, "#%" PRIu8, dvd_trip.first_chapter);
-	sprintf(dvd_mpv_last_chapter, "#%" PRIu8, dvd_trip.last_chapter + 1);
-	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
-	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
-
-	// User can pass "--vid no" to disable encoding any video
-	if(!dvd_trip.encode_video)
-		mpv_set_option_string(dvd_mpv, "vid", "no");
-
-	// User can pass "--aid no" to disable encoding any sound
-	if(strlen(dvd_trip.audio_lang))
-		mpv_set_option_string(dvd_mpv, "alang", dvd_trip.audio_lang);
-	else if(strlen(dvd_trip.audio_stream_id))
-		mpv_set_option_string(dvd_mpv, "aid", dvd_trip.audio_stream_id);
-
-	// Burn-in subtitles
-	if(strlen(dvd_trip.subtitles_lang))
-		mpv_set_option_string(dvd_mpv, "slang", dvd_trip.subtitles_lang);
-	else if(strlen(dvd_trip.subtitles_stream_id))
-		mpv_set_option_string(dvd_mpv, "sid", dvd_trip.subtitles_stream_id);
-
-	// MPV will error out on its own if there's no video && no audio selected.
-	// Don't quit out here though, because there could be other reasons MPV
-	// fails to initialize -- let it process errors in its own way
-	if(!dvd_trip.encode_video && !dvd_trip.encode_audio)
-		fprintf(stderr, "[dvd_trip] no video or audio streams selected\n");
-
-	/** Video Filters **/
-
-	// This assumes video is NTSC
-	// pullup needs fps=24000/1001
-
-	if(dvd_trip.detelecine) {
-		sprintf(dvd_trip.vf_opts, "lavfi=pullup,fps=24000/1001");
 	}
 
-	if(dvd_trip.decomb) {
-		sprintf(dvd_trip.vf_opts, "lavfi=yadif,fps=30000/1001");
-	}
-
-	/*
-	if(mpv_client_api_version() <= MPV_MAKE_VERSION(1, 25)) {
-
-		// Syntax up to 0.27.2
-		mpv_set_option_string(dvd_mpv, "ofps", dvd_trip.fps);
-
-		if(dvd_trip.deinterlace)
-			sprintf(dvd_trip.vf_opts, "lavfi=yadif");
-
-	} else {
-
-		// Syntax starting in 0.29.1
-		if(dvd_trip.deinterlace)
-			sprintf(dvd_trip.vf_opts, "lavfi-yadif,fps=%s", dvd_trip.fps);
-		else
-			sprintf(dvd_trip.vf_opts, "fps=%s", dvd_trip.fps);
-
-	}
-	*/
-
-	if(strlen(dvd_trip.vf_opts))
-		mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
-
-	fprintf(stderr, "[dvd_trip] encoding dvd track %" PRIu16 ", chapters %" PRIu8 " to %" PRIu8 "\n", dvd_trip.track, dvd_trip.first_chapter, dvd_trip.last_chapter);
-	fprintf(stderr, "[dvd_trip] saving to %s\n", dvd_trip.filename);
-	if(strlen(dvd_trip.subtitles_lang))
+	/** Subtitles **/
+	if(strlen(dvd_trip.subtitles_lang)) {
 		fprintf(stderr, "[dvd_trip] burn-in subtitles lang %s\n", dvd_trip.subtitles_lang);
-	else if(strlen(dvd_trip.subtitles_stream_id))
+		mpv_set_option_string(dvd_mpv, "slang", dvd_trip.subtitles_lang);
+	} else if(strlen(dvd_trip.subtitles_stream_id)) {
 		fprintf(stderr, "[dvd_trip] burn-in subtitles stream %s\n", dvd_trip.subtitles_stream_id);
+		mpv_set_option_string(dvd_mpv, "sid", dvd_trip.subtitles_stream_id);
+	}
+
+	fprintf(stderr, "[dvd_trip] encoding dvd track %" PRIu16 ", chapters %" PRIu8 "-%" PRIu8 " to %s\n", dvd_trip.track, dvd_trip.first_chapter, dvd_trip.last_chapter, dvd_trip.filename);
+	fprintf(stderr, "[libmpv] o = \"%s\"\n", dvd_trip.filename);
 
 	// ** All encoding and user config options must be set before initialize **
 	retval = mpv_initialize(dvd_mpv);
-
 	if(retval) {
 		fprintf(stderr, "[dvd_trip] mpv_initialize() failed\n");
 		return 1;
@@ -920,24 +759,20 @@ int main(int argc, char **argv) {
 	}
 
 	// Print what settings are used at this point
-	if(dvd_trip.encode_video) {
-		fprintf(stderr, "[libmpv] ovc = %s\n", mpv_get_property_string(dvd_mpv, "ovc"));
-		fprintf(stderr, "[libmpv] ovcopts = %s\n", mpv_get_property_string(dvd_mpv, "ovcopts"));
-		if(dvd_trip.detelecine)
-			fprintf(stderr, "[dvd_trip] detelecining video\n");
-		if(dvd_trip.decomb)
-			fprintf(stderr, "[dvd_trip] decombing video\n");
-		if(strlen(dvd_trip.vf_opts))
-			fprintf(stderr, "[libmpv] vf = %s\n", mpv_get_property_string(dvd_mpv, "vf"));
-	}
-	if(dvd_trip.encode_audio) {
-		if(strlen(dvd_trip.audio_lang))
-			fprintf(stderr, "[libmpv] alang = %s\n", mpv_get_property_string(dvd_mpv, "alang"));
-		if(strlen(dvd_trip.audio_stream_id))
-			fprintf(stderr, "[libmpv] aid = %s\n", mpv_get_property_string(dvd_mpv, "aid"));
-		fprintf(stderr, "[libmpv] acodec = %s\n", mpv_get_property_string(dvd_mpv, "oac"));
-		fprintf(stderr, "[libmpv] oacopts = %s\n", mpv_get_property_string(dvd_mpv, "oacopts"));
-	}
+	fprintf(stderr, "[libmpv] ovc = %s\n", mpv_get_property_string(dvd_mpv, "ovc"));
+	fprintf(stderr, "[libmpv] ovcopts = %s\n", mpv_get_property_string(dvd_mpv, "ovcopts"));
+	if(dvd_trip.detelecine)
+		fprintf(stderr, "[dvd_trip] detelecining video\n");
+	else if(dvd_trip.decomb)
+		fprintf(stderr, "[dvd_trip] decombing video\n");
+	if(strlen(dvd_trip.vf_opts))
+		fprintf(stderr, "[libmpv] vf = %s\n", mpv_get_property_string(dvd_mpv, "vf"));
+	if(strlen(dvd_trip.audio_lang))
+		fprintf(stderr, "[libmpv] alang = %s\n", mpv_get_property_string(dvd_mpv, "alang"));
+	else if(strlen(dvd_trip.audio_stream_id))
+		fprintf(stderr, "[libmpv] aid = %s\n", mpv_get_property_string(dvd_mpv, "aid"));
+	fprintf(stderr, "[libmpv] acodec = %s\n", mpv_get_property_string(dvd_mpv, "oac"));
+	fprintf(stderr, "[libmpv] oacopts = %s\n", mpv_get_property_string(dvd_mpv, "oacopts"));
 	printf("[dvd_trip] mpv dvdread://%" PRIu16 " # mpv zero-indexes tracks\n", dvd_trip.track - 1);
 
 	mpv_event *dvd_mpv_event = NULL;
