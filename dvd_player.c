@@ -204,20 +204,18 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("Options:\n");
 				printf("  -f, --fullscreen              Display in fullscreen mode\n");
-				printf("  -d, --deinterlace             Deinterlace video\n");
 				printf("  -t, --track <#>               Playback track number (default: longest valid)\n");
 				printf("  -c, --chapter <#>[-#]         Playback chapter number or range (default: all)\n");
 				printf("  -a, --alang <language>        Select audio language, two character code (default: first audio track)\n");
 				printf("  -A, --aid <#>                 Select audio track ID\n");
 				printf("  -s, --slang <language>        Select subtitles language, two character code (default: no subtitles)\n");
 				printf("  -S, --sid <#>                 Select subtitles track ID\n");
+				printf("  -d, --deinterlace             Deinterlace video\n");
 				printf("  -v, --verbose                 Verbose output\n");
 				printf("  -h, --help			Show this help text and exit\n");
 				printf("      --version                 Show version info and exit\n");
 				printf("\n");
 				printf("DVD path can be a device name, a single file, or directory (default: %s)\n", DEFAULT_DVD_DEVICE);
-				printf("\n");
-				printf("dvd_trip reads a configuration file from ~/.config/dvd_trip/mpv.conf\n");
 				printf("\n");
 				printf("dvd_player reads a configuration file from ~/.config/dvd_player/mpv.conf\n");
 				printf("See mpv man page for syntax and dvd_player man page for examples.\n");
@@ -302,7 +300,7 @@ int main(int argc, char **argv) {
 
 	dvd_title(dvd_info.title, device_filename);
 
-	uint16_t num_ifos = 1;
+	uint16_t num_ifos;
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
 
 	if(num_ifos < 1) {
@@ -315,7 +313,7 @@ int main(int argc, char **argv) {
 	struct dvd_track dvd_track;
 	memset(&dvd_track, 0, sizeof(dvd_track));
 
-	struct dvd_track dvd_tracks[DVD_MAX_TRACKS];
+	struct dvd_track dvd_tracks[100];
 	memset(&dvd_tracks, 0, sizeof(dvd_track) * dvd_info.tracks);
 
 	// Open first IFO
@@ -324,7 +322,7 @@ int main(int argc, char **argv) {
 
 	vts_ifo = ifoOpen(dvdread_dvd, vts);
 	if(vts_ifo == NULL) {
-		fprintf(stderr, "[dvd_player] Could not open primary VTS IFO\n");
+		fprintf(stderr, "[dvd_player] Could not open primary Video Title Set info\n");
 		return 1;
 	}
 	ifoClose(vts_ifo);
@@ -370,7 +368,8 @@ int main(int argc, char **argv) {
 	uint32_t msecs = 0;
 	uint32_t longest_msecs = 0;
 	
-	// If no track number is given, choose the longest one that is also valid
+	// If no track number is given, choose the longest one that is valid and also
+	// has active audio tracks.
 	if(!opt_track_number) {
 
 		for(ix = 0, track_number = 1; ix < dvd_info.tracks; ix++, track_number++) {
@@ -381,8 +380,7 @@ int main(int argc, char **argv) {
 			if(dvd_vts[vts].valid == false)
 				continue;
 
-			msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track_number);
-			if(msecs == 0)
+			if(dvd_audio_active_tracks(vmg_ifo, vts_ifo, track_number) == 0)
 				continue;
 
 			if(dvd_track_chapters(vmg_ifo, vts_ifo, track_number) == 0)
@@ -390,6 +388,8 @@ int main(int argc, char **argv) {
 
 			if(dvd_track_cells(vmg_ifo, vts_ifo, track_number) == 0)
 				continue;
+
+			msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track_number);
 
 			if(msecs > longest_msecs) {
 				longest_msecs = msecs;
@@ -400,7 +400,7 @@ int main(int argc, char **argv) {
 	
 	}
 
-	dvd_track = dvd_tracks[dvd_playback.track - 1];
+	dvd_track = dvd_tracks[dvd_playback.track];
 
 	if(vts_ifo)
 		ifoClose(vts_ifo);
@@ -432,6 +432,10 @@ int main(int argc, char **argv) {
 	// DVD playback using libmpv
 	mpv_handle *dvd_mpv = NULL;
 	dvd_mpv = mpv_create();
+	if(dvd_mpv == NULL) {
+		fprintf(stderr, "[dvd_player] could not create new MPV instance\n");
+		return 1;
+	}
 
 	// Terminal output
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
@@ -452,34 +456,33 @@ int main(int argc, char **argv) {
 	 * MPV supports playback through both libdvdread and libdvdnav. libdvdnav is the default
 	 * used if you pass 'dvd://' as the source input. To use libdvdread specifically, you
 	 * use 'dvdread://' instead, which is what I'm doing below.
-	 *
+	 */
+
+	/** DVD Track Selection */
+	/*
 	 * One thing I try to do with dvd_info (and friends) is closely check if a track is valid
 	 * or not. When no track is passed, I iterate through all of them to see which one is the
 	 * longest *and* valid. This is just an additional check. If no argument is passed, I could
 	 * hand it off to libdvdnav to follow the program chain.
 	 *
-	 * Different player do different things, not just based on their default playback library,
+	 * Different players do different things, not just based on their default playback library,
 	 * but also on what they support. VLC, for example, will use dvdnav to display the navigation
 	 * menus, and let the user select from there. MPlayer will also display the menus. MPV
 	 * doesn't have that option. In most cases, other DVD players will just choose the longest
-	 * track and play that one back. I do the same thing, setting it specifically instead of
-	 * letting the player do its own work. The outcome is the same.
+	 * track and play that one back, valid or not. This chooses the longest track that is also valid.
 	 *
 	 * There's always the chance of running into DVDs that have tracks marked as valid, but
-	 * are still garbage. Unfortunately, it's still going to choose those (and other players
-	 * will do the same thing as well, if it's the longest). The only way to choose the correct
-	 * track each time is to navigate through the tree, find the one that has your video on it,
+	 * are still garbage. Unfortunately, it's still going to choose those. Other players
+	 * will do the same thing as well, if it's the longest. The only way to choose the correct
+	 * track each time is to navigate through dvd_info output, find the correct track you want,
 	 * and then choose that one for playback.
-	 */
-
-	/** DVD Track Selection */
-	/*
-	 * The first thing to note is that MPV *zero* indexes its tracks, while dvd_info *one*
-	 * indexes them. So in dvd_info, track 12, is track 11. dvd_info -t 12 vs mpv dvd://10
-	 * Because of that, you'll see output from libmpv that it's playing that track, which
-	 * can be kind of confusing, obviously.
 	 *
-	 * HandBrake, VLC, mplayer, and lsdvd also index starting at 1.
+	 * MPV *zero* indexes its tracks, while dvd_info starts track indexes at 1.
+	 * For example, dvd_info's track 12 will be mpv's track 11. Because of that, you'll see output
+	 * from libmpv that it's playing that track, which can be kind of confusing, obviously.
+	 * By comparison, HandBrake, VLC, mplayer, and lsdvd also index tracks starting at 1.
+	 *
+	 * dvd_player takes the same track index as dvd_info, and gives libmpv its relevant track ID.
 	 *
 	 */
 	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
@@ -499,7 +502,7 @@ int main(int argc, char **argv) {
 	 *
 	 * MPV has a very smart and nice way to parse lots of start / stop options with the
 	 * '--start' option they have. When playing one chapter, it expects the end one to
-	 * be the starting one incremented by 1. Syntax for playing only chapter one would be:
+	 * be the starting one incremented by 1. Syntax for playing only chapter 1 would be:
 	 * 'mpv dvdread:// --start=#1 --end=#2'
 	 *
 	 * By default, MPV will just play all chapters of the selected track.
@@ -512,10 +515,7 @@ int main(int argc, char **argv) {
 
 	// Playback options and default configuration
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
-	if(strlen(dvd_info.title))
-		mpv_set_option_string(dvd_mpv, "title", dvd_info.title);
-	else
-		mpv_set_option_string(dvd_mpv, "title", "dvd_player");
+	mpv_set_option_string(dvd_mpv, "title", "DVD Player");
 	mpv_set_option_string(dvd_mpv, "input-default-bindings", "yes");
 	mpv_set_option_string(dvd_mpv, "input-vo-keyboard", "yes");
 	if(dvd_playback.fullscreen)
@@ -526,7 +526,7 @@ int main(int argc, char **argv) {
 	 * mpv does have the option of passing a video stream id, using '--vid', and also
 	 * allowing the argument of 'no' to display no video at all. I *could* add those
 	 * options to the program, but in the interest of keeping this tiny, I'm choosing
-	 * not to. dvd_trip, however, does allow it, in case you might want just audio.
+	 * not to.
 	 *
 	 * There is the option of adding it as a hidden feature, or document it in the man
 	 * page at some point, but as far as right now, I'm not interested. Mostly because
@@ -534,11 +534,6 @@ int main(int argc, char **argv) {
 	 *
 	 * If the user wants video always disabled, it can be set in 'mpv.conf'.
 	 */
-	/*
-	bool opt_no_video = false;
-	if(opt_no_video)
-		mpv_set_option_string(dvd_mpv, "video", "no");
-	*/
 
 	/** Audio Playback */
 	/*
@@ -554,24 +549,19 @@ int main(int argc, char **argv) {
 	 *
 	 * Same as video, I don't have the option right now to do no audio. Set it in 'mpv.conf'
 	 */
-	if(strlen(dvd_playback.audio_stream_id))
-		mpv_set_option_string(dvd_mpv, "aid", dvd_playback.audio_stream_id);
-	else if(strlen(dvd_playback.audio_lang))
+	if(strlen(dvd_playback.audio_lang))
 		mpv_set_option_string(dvd_mpv, "alang", dvd_playback.audio_lang);
-	/*
-	bool opt_no_audio = false;
-	if(opt_no_audio)
-		mpv_set_option_string(dvd_mpv, "audio", "no");
-	*/
+	else if(strlen(dvd_playback.audio_stream_id))
+		mpv_set_option_string(dvd_mpv, "aid", dvd_playback.audio_stream_id);
 
 	/** Displaying Subtitles */
 	/**
-	 * When doing normal playback using "mpv dvd://", the user has the option to cycle
+	 * When doing normal playback using "mpv dvdread://", the user has the option to cycle
 	 * through the available subtitles. With dvd_player, they can only be turned on,
 	 * and they will stay on. There's no option to cycle through other ones (hence, why
 	 * it's a tiny player).
 	 *
-	 * The language to display or stream id is first read from the user's mpv.conf file.
+	 * The language to playback or stream id is first read from the user's mpv.conf file.
 	 * After that, it looks at arguments passed to the player.
 	 *
 	 * Passing a stream id is usually considered to be more specific, so it will override
@@ -588,13 +578,7 @@ int main(int argc, char **argv) {
 	/*
 	 * MPV has a --deinterlace option, but I haven't seen it actually work.
 	 * Instead, I'm enabling the yadif (yet another deinterlacing filter) filter option,
-	 * with the same setting as in dvd_trip. It is version dependent, however, as the
-	 * API upstream changes.
-	 *
-	 * dvd_trip also requires the FPS when 'encoding', but that's not needed here since
-	 * we're just doing playback.
-	 *
-	 * The yadif video filter should cover both detelecining and decombing just fine.
+	 * The yadif video filter will cover both detelecining and decombing just fine.
 	 */
 	if(dvd_playback.deinterlace) {
 
@@ -624,12 +608,38 @@ int main(int argc, char **argv) {
 
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
 	mpv_event *dvd_mpv_event = NULL;
+	struct mpv_event_end_file *dvd_mpv_eof = NULL;
+	retval = 0;
 	while(true) {
 
 		dvd_mpv_event = mpv_wait_event(dvd_mpv, -1);
 
+		if(dvd_mpv_event->event_id == MPV_EVENT_END_FILE) {
+
+			dvd_mpv_eof = dvd_mpv_event->data;
+
+			if(dvd_mpv_eof->reason == MPV_END_FILE_REASON_QUIT) {
+				fprintf(stderr, "[dvd_player] quitting playback\n");
+				break;
+			}
+
+			if(dvd_mpv_eof->reason == MPV_END_FILE_REASON_ERROR) {
+
+				retval = 1;
+				fprintf(stderr, "[libmpv] end of file error\n");
+
+				if(dvd_mpv_eof->error == MPV_ERROR_NOTHING_TO_PLAY) {
+					fprintf(stderr, "[libmpv] no audio or video data to play\n");
+				}
+
+			}
+
+			break;
+
+		}
+
 		// Goodbye :)
-		if(dvd_mpv_event->event_id == MPV_EVENT_SHUTDOWN || dvd_mpv_event->event_id == MPV_EVENT_END_FILE)
+		if(dvd_mpv_event->event_id == MPV_EVENT_SHUTDOWN)
 			break;
 
 		// Logging output
@@ -642,6 +652,6 @@ int main(int argc, char **argv) {
 
 	mpv_terminate_destroy(dvd_mpv);
 
-	return 0;
+	return retval;
 
 }
