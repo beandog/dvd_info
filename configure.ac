@@ -6,6 +6,9 @@ AM_INIT_AUTOMAKE([foreign])
 dnl Check for C99 support
 AC_PROG_CC_C99
 
+dnl need math.h to do MBs calculations
+AC_CHECK_HEADERS([math.h])
+
 dnl Use pkg-config to check for libdvdread, libdvdcss
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
 

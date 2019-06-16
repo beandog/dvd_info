@@ -155,3 +155,16 @@ ssize_t dvd_track_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 	return track_filesize;
 
 }
+
+double dvd_track_filesize_mbs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+
+	ssize_t track_filesize = dvd_track_filesize(vmg_ifo, vts_ifo, track_number);
+
+	if(track_filesize == 0)
+		return 0;
+
+	double track_filesize_mbs = ceil(track_filesize / 1048576);
+
+	return track_filesize_mbs;
+
+}

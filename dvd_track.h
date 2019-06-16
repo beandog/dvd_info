@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
+#include <math.h>
 #include "dvd_cell.h"
 #include "dvd_vmg_ifo.h"
 
@@ -45,6 +46,7 @@ struct dvd_track {
 	struct dvd_cell *dvd_cells;
 	ssize_t blocks;
 	ssize_t filesize;
+	double filesize_mbs;
 };
 
 bool ifo_is_vts(const ifo_handle_t *ifo);
@@ -62,5 +64,7 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
 ssize_t dvd_track_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
 ssize_t dvd_track_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
+
+double dvd_track_filesize_mbs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
 
 #endif
