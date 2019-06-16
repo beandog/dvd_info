@@ -400,7 +400,16 @@ int main(int argc, char **argv) {
 	
 	}
 
+	if(vts_ifo)
+		ifoClose(vts_ifo);
+
 	dvd_track = dvd_tracks[dvd_playback.track];
+	dvd_track.track = dvd_playback.track;
+	dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, dvd_track.track);
+	vts_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
+	dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_track.track);
+	dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
+	dvd_track.filesize_mbs = dvd_track_filesize_mbs(vmg_ifo, vts_ifo, dvd_track.track);
 
 	if(vts_ifo)
 		ifoClose(vts_ifo);
@@ -427,8 +436,6 @@ int main(int argc, char **argv) {
 		dvd_playback.last_chapter = dvd_track.chapters;
 	}
 	
-	printf("[dvd_player] track: %02" PRIu16 ", length: %s, chapters: %" PRIu8 ", cells: %" PRIu8 ", audio streams: %" PRIu8 ", subpictures: %" PRIu8 ", blocks: %zd, filesize: %zd\n", dvd_playback.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.blocks, dvd_track.filesize);
-
 	// DVD playback using libmpv
 	mpv_handle *dvd_mpv = NULL;
 	dvd_mpv = mpv_create();
@@ -441,14 +448,13 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
 	mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
 
+	// [ffmpeg/audio] 'frame sync errors' which are normal when seeking on DVDs
 	if(debug) {
 		mpv_request_log_messages(dvd_mpv, "debug");
 	} else if(verbose) {
 		mpv_request_log_messages(dvd_mpv, "v");
 	} else {
 		mpv_request_log_messages(dvd_mpv, "none");
-		// Skip "[ffmpeg/audio] ac3: frame sync error" which are normal when seeking on DVDs
-		mpv_set_option_string(dvd_mpv, "msg-level", "ffmpeg/audio=none");
 	}
 
 	/** DVD Playback Engine */
@@ -606,6 +612,8 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	fprintf(stderr, "[dvd_player] Track: %" PRIu16 ", Length: %s, Chapters: %" PRIu8 ", Filesize: %.0lf MBs\n", dvd_playback.track, dvd_track.length, dvd_track.chapters, dvd_track.filesize_mbs);
+
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
 	mpv_event *dvd_mpv_event = NULL;
 	struct mpv_event_end_file *dvd_mpv_eof = NULL;
@@ -619,7 +627,6 @@ int main(int argc, char **argv) {
 			dvd_mpv_eof = dvd_mpv_event->data;
 
 			if(dvd_mpv_eof->reason == MPV_END_FILE_REASON_QUIT) {
-				fprintf(stderr, "[dvd_player] quitting playback\n");
 				break;
 			}
 
