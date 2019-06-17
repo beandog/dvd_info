@@ -29,7 +29,7 @@ bool dvd_title(char *dest_str, const char *device_filename) {
 	close(fd);
 
 	// Right trim the string
-	unsigned long dvd_title_length = 0;
+	size_t dvd_title_length = 0;
 	dvd_title_length = strlen(dvd_title);
 	while(dvd_title_length-- > 2) {
 		if(dvd_title[dvd_title_length] == ' ') {
