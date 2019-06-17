@@ -369,7 +369,7 @@ int main(int argc, char **argv) {
 		return 1;
 
 	/** Begin dvd_info :) */
-	
+
 	// Check to see if device can be accessed
 	if(!dvd_device_access(device_filename)) {
 		fprintf(stderr, "[dvd_info] cannot access %s\n", device_filename);
@@ -874,7 +874,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Cleanup
-	
+
 	cleanup:
 
 	if(vmg_ifo)
