@@ -601,7 +601,7 @@ int main(int argc, char **argv) {
 					read_blocks = dvd_cell.blocks - cell_blocks_written;
 				}
 
-				dvdread_read_blocks = DVDReadBlocks(dvdread_vts_file, offset, (uint64_t)read_blocks, dvd_copy.buffer);
+				dvdread_read_blocks = DVDReadBlocks(dvdread_vts_file, offset, (size_t)read_blocks, dvd_copy.buffer);
 				if(!dvdread_read_blocks) {
 					fprintf(stderr, "[dvd_copy] Could not read data from cell %" PRIu8 "\n", dvd_cell.cell);
 					return 1;
@@ -617,7 +617,7 @@ int main(int argc, char **argv) {
 				offset += dvdread_read_blocks;
 
 				// Write the buffer to the track file
-				bytes_written = write(dvd_copy.fd, dvd_copy.buffer, (uint64_t)(read_blocks * DVD_VIDEO_LB_LEN));
+				bytes_written = write(dvd_copy.fd, dvd_copy.buffer, (size_t)(read_blocks * DVD_VIDEO_LB_LEN));
 
 				if(!bytes_written) {
 					fprintf(stderr, "[dvd_copy] Could not write data from cell %" PRIu8 "\n", dvd_cell.cell);
@@ -640,7 +640,7 @@ int main(int argc, char **argv) {
 				if(cell_blocks_written == dvd_cell.blocks)
 					percent_complete = 100;
 				else
-					percent_complete = (track_blocks_written * 100 / dvd_copy.blocks);
+					percent_complete = (uint64_t)(track_blocks_written * 100 / dvd_copy.blocks);
 				fprintf(p_dvd_copy ? stdout : stderr, "Progress: %0.lf/%.0lf MBs (%" PRIu64 "%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
 				fflush(p_dvd_copy ? stdout : stderr);
 
