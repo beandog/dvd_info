@@ -371,7 +371,7 @@ int main(int argc, char **argv) {
 		}
 
 	}
-	
+
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks)) {
 		fprintf(stderr, "[dvd_copy] Invalid track number %" PRIu16 "\n", arg_track_number);
@@ -385,11 +385,11 @@ int main(int argc, char **argv) {
 
 	uint16_t ix = 0;
 	uint16_t track = 1;
-	
+
 	uint32_t longest_msecs = 0;
-	
+
 	for(ix = 0, track = 1; ix < dvd_info.tracks; ix++, track++) {
- 
+
 		vts = dvd_vts_ifo_number(vmg_ifo, ix + 1);
 		vts_ifo = vts_ifos[vts];
 		dvd_track_info(&dvd_tracks[ix], track, vmg_ifo, vts_ifo);
@@ -404,7 +404,7 @@ int main(int argc, char **argv) {
 	// Set the track number to rip if none is passed as an argument
 	if(!opt_track_number)
 		dvd_copy.track = dvd_info.longest_track;
-	
+
 	dvd_track = dvd_tracks[dvd_copy.track - 1];
 
 	// Set the proper chapter range
@@ -414,7 +414,7 @@ int main(int argc, char **argv) {
 			fprintf(stderr, "[dvd_copy] Resetting first chapter to %" PRIu8 "\n", dvd_copy.first_chapter);
 		} else
 			dvd_copy.first_chapter = arg_first_chapter;
-		
+
 		if(arg_last_chapter > dvd_track.chapters) {
 			dvd_copy.last_chapter = dvd_track.chapters;
 			fprintf(stderr, "[dvd_copy] Resetting last chapter to %" PRIu8 "\n", dvd_copy.last_chapter);
@@ -442,7 +442,7 @@ int main(int argc, char **argv) {
 		dvd_copy.first_cell = 1;
 		dvd_copy.last_cell = dvd_track.cells;
 	}
-	
+
 	// Set default filename
 	if(!opt_filename) {
 		dvd_copy.filename = calloc(17, sizeof(unsigned char));
@@ -591,7 +591,7 @@ int main(int argc, char **argv) {
 				fprintf(stderr, "[dvd_copy] DEBUG Someone doing something nasty? The last sector is listed before the first; skipping cell\n");
 				continue;
 			}
-			
+
 			offset = dvd_cell.first_sector;
 
 			// This is where you would change the boundaries -- are you dumping to a track file (no boundaries) or a VOB (boundaries)
@@ -660,16 +660,16 @@ int main(int argc, char **argv) {
 	DVDCloseFile(dvdread_vts_file);
 
 	fprintf(p_dvd_copy ? stdout : stderr, "\n");
-	
+
 	if(vts_ifo)
 		ifoClose(vts_ifo);
-	
+
 	if(vmg_ifo)
 		ifoClose(vmg_ifo);
 
 	if(dvdread_dvd)
 		DVDClose(dvdread_dvd);
-	
+
 	return 0;
 
 }
