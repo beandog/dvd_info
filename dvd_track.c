@@ -114,14 +114,14 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
 
 }
 
-ssize_t dvd_track_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+uint64_t dvd_track_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
 	uint8_t cells;
 	cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 
 	uint8_t cell;
-	ssize_t cell_blocks;
-	ssize_t track_blocks;
+	uint64_t cell_blocks;
+	uint64_t track_blocks;
 	track_blocks = 0;
 	for(cell = 1; cell < cells + 1; cell++) {
 
@@ -135,12 +135,12 @@ ssize_t dvd_track_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_if
 
 }
 
-ssize_t dvd_track_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+uint64_t dvd_track_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
-	ssize_t blocks;
+	uint64_t blocks;
 	blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
 
-	ssize_t filesize = 0;
+	uint64_t filesize = 0;
 	filesize = blocks * DVD_VIDEO_LB_LEN;
 
 	return filesize;
@@ -149,7 +149,7 @@ ssize_t dvd_track_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 
 double dvd_track_filesize_mbs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
 
-	ssize_t blocks;
+	uint64_t blocks;
 	blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
 
 	if(blocks == 0)

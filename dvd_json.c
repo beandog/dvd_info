@@ -164,8 +164,8 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 				printf(" \"cell\": %" PRIu8 ",", dvd_cell.cell);
 				printf(" \"length\": \"%s\",", dvd_cell.length);
 				printf(" \"msecs\": %" PRIu32 ",", dvd_cell.msecs);
-				printf(" \"first sector\": %" PRIu32 ",", dvd_cell.first_sector);
-				printf(" \"last sector\": %" PRIu32 "", dvd_cell.last_sector);
+				printf(" \"first sector\": %" PRIu64 ",", dvd_cell.first_sector);
+				printf(" \"last sector\": %" PRIu64 "", dvd_cell.last_sector);
 				printf(" }");
 
 				if(c  + 1 < dvd_track.cells)

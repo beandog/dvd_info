@@ -51,8 +51,8 @@ struct dvd_copy {
 	uint8_t last_chapter;
 	uint8_t first_cell;
 	uint8_t last_cell;
-	ssize_t blocks;
-	ssize_t filesize;
+	uint64_t blocks;
+	uint64_t filesize;
 	double filesize_mbs;
 	char *filename;
 	int fd;
@@ -452,23 +452,6 @@ int main(int argc, char **argv) {
 	}
 
 	/**
-	 * Integers for numbers of blocks read, copied, counters
-	 */
-	int offset = 0;
-	ssize_t dvdread_read_blocks = 0; // num blocks passed by dvdread function
-	ssize_t cell_blocks_written = 0;
-	ssize_t track_blocks_written = 0;
-	ssize_t bytes_written = 0;
-	ssize_t total_bytes_written = 0;
-	uint32_t cell_sectors = 0;
-
-	// Copy size
-	// For p_dvd_copy, the amount is variable, regarding the code
-	// For p_dvd_cat, limit the blocks to one so it is reading the minimum that
-	// dvdread will provide.
-	ssize_t read_blocks = DVD_COPY_BLOCK_LIMIT;
-
-	/**
 	 * File descriptors and filenames
 	 */
 	dvd_file_t *dvdread_vts_file = NULL;
@@ -542,8 +525,10 @@ int main(int argc, char **argv) {
 		}
 
 		for(dvd_cell.cell = dvd_copy.first_cell; dvd_cell.cell < dvd_copy.last_cell + 1; dvd_cell.cell++) {
-			dvd_copy.blocks += dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-			dvd_copy.filesize += dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+			dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+			dvd_copy.blocks += dvd_cell.blocks;
+			dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+			dvd_copy.filesize += dvd_cell.filesize;
 		}
 
 	}
@@ -551,9 +536,29 @@ int main(int argc, char **argv) {
 	// Get total filesize of copy
 	dvd_copy.filesize_mbs = ceil(dvd_copy.filesize / 1048576.0);
 
+	/**
+	 * Integers for numbers of blocks read, copied, counters
+	 */
+	uint64_t cell_blocks_written = 0;
+	uint64_t total_bytes_written = 0;
+	uint64_t offset = 0;
+	uint64_t cell_sectors = 0;
+
+	// Use the types returned by the two functions below, and cast everything else
+	// num blocks passed by dvdread function
+	ssize_t dvdread_read_blocks = 0;
+	// output of write()
+	ssize_t bytes_written = 0;
+
+	// Copy size
+	// For p_dvd_copy, the amount is variable, regarding the code
+	// For p_dvd_cat, limit the blocks to one so it is reading the minimum that
+	// dvdread will provide.
+	uint64_t read_blocks = DVD_COPY_BLOCK_LIMIT;
+
 	// Copying DVD track
 	double mbs_written = 0;
-	uint64_t percent_complete = 0;
+	double percent_complete = 0;
 	for(dvd_chapter.chapter = dvd_copy.first_chapter; dvd_chapter.chapter < dvd_copy.last_chapter + 1; dvd_chapter.chapter++) {
 
 		// Use dvd_copy struct as the first and last cell
@@ -589,7 +594,7 @@ int main(int argc, char **argv) {
 				continue;
 			}
 			
-			offset = (int)dvd_cell.first_sector;
+			offset = dvd_cell.first_sector;
 
 			// This is where you would change the boundaries -- are you dumping to a track file (no boundaries) or a VOB (boundaries)
 			while(cell_blocks_written < dvd_cell.blocks) {
@@ -601,24 +606,27 @@ int main(int argc, char **argv) {
 					read_blocks = dvd_cell.blocks - cell_blocks_written;
 				}
 
-				dvdread_read_blocks = DVDReadBlocks(dvdread_vts_file, offset, (size_t)read_blocks, dvd_copy.buffer);
-				if(!dvdread_read_blocks) {
+				dvdread_read_blocks = DVDReadBlocks(dvdread_vts_file, (int)offset, (size_t)read_blocks, dvd_copy.buffer);
+				// TODO work around broken reads, zero-pad writes
+				if(dvdread_read_blocks <= 0)  {
 					fprintf(stderr, "[dvd_copy] Could not read data from cell %" PRIu8 "\n", dvd_cell.cell);
 					return 1;
 				}
 
 				// Check to make sure the amount read was what we wanted
-				if(dvdread_read_blocks != read_blocks) {
-					fprintf(stderr, "[dvd_copy] *** Asked for %zd and only got %zd\n", read_blocks, dvdread_read_blocks);
+				if(dvdread_read_blocks != (ssize_t)read_blocks) {
+					fprintf(stderr, "[dvd_copy] *** Asked for %zu and only got %zd\n", (size_t)read_blocks, dvdread_read_blocks);
 					return 1;
 				}
 
 				// Increment the offsets
-				offset += dvdread_read_blocks;
+				offset += (uint64_t)dvdread_read_blocks;
 
 				// Write the buffer to the track file
-				bytes_written = write(dvd_copy.fd, dvd_copy.buffer, (size_t)(read_blocks * DVD_VIDEO_LB_LEN));
+				// TODO do checks on write failures
+				bytes_written = write(dvd_copy.fd, dvd_copy.buffer, (size_t)read_blocks * DVD_VIDEO_LB_LEN);
 
+				// TODO work around broken reads, zero-pad writes
 				if(!bytes_written) {
 					fprintf(stderr, "[dvd_copy] Could not write data from cell %" PRIu8 "\n", dvd_cell.cell);
 					return 1;
@@ -631,17 +639,16 @@ int main(int argc, char **argv) {
 				}
 
 				// Increment the amount of blocks written
-				cell_blocks_written += dvdread_read_blocks;
-				track_blocks_written += dvdread_read_blocks;
-				total_bytes_written += bytes_written;
+				cell_blocks_written += (uint64_t)dvdread_read_blocks;
+				total_bytes_written += (uint64_t)bytes_written;
 
 				// Display copy status, amount copied, amount remaining, percent complete
 				mbs_written = ceil(total_bytes_written / 1048576.0);
 				if(cell_blocks_written == dvd_cell.blocks)
 					percent_complete = 100;
 				else
-					percent_complete = (uint64_t)(track_blocks_written * 100 / dvd_copy.blocks);
-				fprintf(p_dvd_copy ? stdout : stderr, "Progress: %0.lf/%.0lf MBs (%" PRIu64 "%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
+					percent_complete = floor((mbs_written / dvd_copy.filesize_mbs) * 100.0);
+				fprintf(p_dvd_copy ? stdout : stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
 				fflush(p_dvd_copy ? stdout : stderr);
 
 			}
