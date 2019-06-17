@@ -131,22 +131,3 @@ bool dvd_specification_version(char *dest_str, const ifo_handle_t *vmg_ifo) {
 	return false;
 
 }
-
-// Requires libdvdnav
-// TODO add functionality to libdvdread, as well as alternate title
-/*
-void dvd_info_serial_id(dvdnav_t *dvdnav, char *p) {
-
-	const char *serial_id;
-	size_t n;
-
-	dvdnav_get_serial_string(dvdnav, &serial_id);
-
-	n = strlen(serial_id);
-	if(n > 0)
-		strncpy(p, serial_id, 16);
-	else
-		memset(p, '\0', 17);
-
-}
-*/
