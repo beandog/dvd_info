@@ -31,8 +31,6 @@
 #define DVD_INFO_VERSION "1.7_beta1"
 #endif
 
-#define DVD_COPY_FILENAME 16
-
 #ifndef DVD_VIDEO_LB_LEN
 #define DVD_VIDEO_LB_LEN 2048
 #endif
@@ -447,8 +445,8 @@ int main(int argc, char **argv) {
 	
 	// Set default filename
 	if(!opt_filename) {
-		dvd_copy.filename = calloc(DVD_COPY_FILENAME + 1, sizeof(unsigned char));
-		snprintf(dvd_copy.filename, DVD_COPY_FILENAME + 1, "dvd_track_%02" PRIu16 ".mpg", dvd_copy.track);
+		dvd_copy.filename = calloc(17, sizeof(unsigned char));
+		snprintf(dvd_copy.filename, 17, "dvd_track_%02" PRIu16 ".mpg", dvd_copy.track);
 	}
 
 	/**
