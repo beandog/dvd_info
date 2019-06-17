@@ -53,6 +53,7 @@ struct dvd_copy {
 	uint8_t last_cell;
 	ssize_t blocks;
 	ssize_t filesize;
+	double filesize_mbs;
 	char *filename;
 	int fd;
 	unsigned char buffer[DVD_COPY_BYTES_LIMIT];
@@ -101,6 +102,7 @@ int main(int argc, char **argv) {
 	dvd_copy.last_cell = 1;
 	dvd_copy.blocks = 0;
 	dvd_copy.filesize = 0;
+	dvd_copy.filesize_mbs = 0;
 	dvd_copy.fd = -1;
 	memset(dvd_copy.buffer, 0, sizeof(dvd_copy.buffer));
 
@@ -478,7 +480,7 @@ int main(int argc, char **argv) {
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
 	if(p_dvd_copy)
-		printf("Track: %02" PRIu16 ", Length: %s, Chapters: %02" PRIu8 ", Cells: %02" PRIu8 ", Audio streams: %02" PRIu8 ", Subpictures: %02" PRIu8 ", Filesize: %zd, Blocks: %zd\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize, dvd_track.blocks);
+		printf("Track: %02" PRIu16 ", Length: %s, Chapters: %02" PRIu8 ", Cells: %02" PRIu8 ", Audio streams: %02" PRIu8 ", Subpictures: %02" PRIu8 ", Filesize: %05.0lf MBs\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles, dvd_track.filesize_mbs);
 
 	// Check for track issues
 	dvd_track.valid = true;
@@ -526,16 +528,32 @@ int main(int argc, char **argv) {
 		dvd_copy.fd = 1;
 	}
 
+	struct dvd_chapter dvd_chapter;
+
 	// Get limits of copy
-	for(dvd_cell.cell = dvd_copy.first_cell; dvd_cell.cell < dvd_copy.last_cell + 1; dvd_cell.cell++) {
-		
-		dvd_copy.blocks += dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-		dvd_copy.filesize += dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+	for(dvd_chapter.chapter = dvd_copy.first_chapter; dvd_chapter.chapter < dvd_copy.last_chapter + 1; dvd_chapter.chapter++) {
+
+		dvd_chapter.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
+		dvd_chapter.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
+
+		if(opt_cell_number == false) {
+			dvd_copy.first_cell = dvd_chapter.first_cell;
+			dvd_copy.last_cell = dvd_chapter.last_cell;
+		}
+
+		for(dvd_cell.cell = dvd_copy.first_cell; dvd_cell.cell < dvd_copy.last_cell + 1; dvd_cell.cell++) {
+			dvd_copy.blocks += dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+			dvd_copy.filesize += dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+		}
 
 	}
 
-	struct dvd_chapter dvd_chapter;
+	// Get total filesize of copy
+	dvd_copy.filesize_mbs = ceil(dvd_copy.filesize / 1048576.0);
 
+	// Copying DVD track
+	double mbs_written = 0;
+	uint64_t percent_complete = 0;
 	for(dvd_chapter.chapter = dvd_copy.first_chapter; dvd_chapter.chapter < dvd_copy.last_chapter + 1; dvd_chapter.chapter++) {
 
 		// Use dvd_copy struct as the first and last cell
@@ -559,7 +577,7 @@ int main(int argc, char **argv) {
 			cell_sectors = dvd_cell.last_sector - dvd_cell.first_sector;
 
 			if(p_dvd_copy)
-				printf("        Chapter: %02" PRIu8 ", Cell: %02" PRIu8 ", VTS: %" PRIu16 ", Filesize: %zd, Blocks: %zd, Sectors: %" PRIu32 " to %" PRIu32 "\n", dvd_chapter.chapter, dvd_cell.cell, vts, dvd_cell.filesize, dvd_cell.blocks, dvd_cell.first_sector, dvd_cell.last_sector);
+				printf("        Chapter: %02" PRIu8 ", Cell: %02" PRIu8 ", VTS: %" PRIu16 ", Filesize: %05.0lf MBs\n", dvd_chapter.chapter, dvd_cell.cell, vts, ceil(dvd_cell.filesize / 1048576.0));
 
 			cell_blocks_written = 0;
 
@@ -617,8 +635,13 @@ int main(int argc, char **argv) {
 				track_blocks_written += dvdread_read_blocks;
 				total_bytes_written += bytes_written;
 
-				// fprintf(p_dvd_copy ? stdout : stderr, "Progress: %lu%% - %lu/%lu MBs\r", track_blocks_written * 100 / dvd_copy.blocks, total_bytes_written / 1024 / 1024, dvd_copy.filesize / 1024 / 1024);
-				fprintf(p_dvd_copy ? stdout : stderr, "Progress: %" PRIu64 "/%" PRIu64 " MBs (%" PRIu64 "%%)\r", (uint64_t)(total_bytes_written / 1048576), (uint64_t)(dvd_copy.filesize / 1048576), (uint64_t)(track_blocks_written * 100 / dvd_copy.blocks));
+				// Display copy status, amount copied, amount remaining, percent complete
+				mbs_written = ceil(total_bytes_written / 1048576.0);
+				if(cell_blocks_written == dvd_cell.blocks)
+					percent_complete = 100;
+				else
+					percent_complete = (track_blocks_written * 100 / dvd_copy.blocks);
+				fprintf(p_dvd_copy ? stdout : stderr, "Progress: %0.lf/%.0lf MBs (%" PRIu64 "%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
 				fflush(p_dvd_copy ? stdout : stderr);
 
 			}
@@ -662,5 +685,6 @@ void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, co
 	dvd_track->cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 	dvd_track->blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
 	dvd_track->filesize = dvd_track_filesize(vmg_ifo, vts_ifo, track_number);
+	dvd_track->filesize_mbs = dvd_track_filesize_mbs(vmg_ifo, vts_ifo, track_number);
 
 }
