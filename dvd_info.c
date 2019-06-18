@@ -823,8 +823,7 @@ int main(int argc, char **argv) {
 			printf("VTS: %02" PRIu16", ", dvd_track.vts);
 			printf("Valid VTS: %s, ", dvd_vts[dvd_track.vts].valid ? "yes" : " no");
 		}
-		if(verbose)
-			printf("Valid: %s, ", (dvd_track.valid ? "yes" : " no"));
+		printf("Valid: %s, ", (dvd_track.valid ? "yes" : " no"));
 		printf("Filesize: % 5.0lf MBs", dvd_track.filesize_mbs);
 		printf("\n");
 
