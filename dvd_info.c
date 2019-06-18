@@ -43,7 +43,6 @@ int main(int argc, char **argv) {
 	bool d_cells = false;
 
 	// How much output
-	bool quiet = false;
 	bool verbose = false;
 	bool debug = false;
 
@@ -188,7 +187,6 @@ int main(int argc, char **argv) {
 		{ "all", no_argument, NULL, 'x' },
 		{ "json", no_argument, NULL, 'j' },
 		{ "track", required_argument, NULL, 't' },
-		{ "quiet", no_argument, NULL, 'q' },
 		{ "xchap", no_argument, NULL, 'g' },
 		{ "min-seconds", required_argument, NULL, 'E' },
 		{ "min-minutes", required_argument, NULL, 'M' },
@@ -241,10 +239,6 @@ int main(int argc, char **argv) {
 			case 'j':
 				p_dvd_json = true;
 				d_disc_title_header = false;
-				break;
-
-			case 'q':
-				quiet = true;
 				break;
 
 			case 'M':
@@ -332,7 +326,6 @@ int main(int argc, char **argv) {
 				printf("Other:\n");
 				printf("  -g, --xchap           Display title's chapter format for mkvmerge\n");
 				printf("  -e, --verbose         Display short tracks, invalid tracks, and empty streams\n");
-				printf("  -q, --quiet           Don't display disc title header\n");
 				printf("  -h, --help            Display these help options\n");
 				printf("      --version         Version information\n");
 				printf("\n");
@@ -349,14 +342,8 @@ int main(int argc, char **argv) {
 
 	}
 
-	if(quiet && (verbose || debug))
-		quiet = false;
-
 	if(debug)
 		verbose = true;
-
-	if(quiet)
-		d_disc_title_header = false;
 
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
@@ -717,7 +704,7 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
-	if(d_disc_title_header && !quiet && !p_dvd_xchap) {
+	if(d_disc_title_header && !p_dvd_xchap) {
 		printf("Disc title: '%s', ", dvd_info.title);
 		printf("ID: '%s', ", dvd_info.dvdread_id);
 		printf("Num tracks: %" PRIu16 ", ", dvd_info.tracks);
