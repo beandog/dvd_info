@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
 	dvd_video.height = 0;
 	dvd_video.letterbox = false;
 	dvd_video.pan_and_scan = false;
-	dvd_video.df = 0;
+	dvd_video.df = 3;
 	memset(dvd_video.fps, '\0', sizeof(dvd_video.fps));
 	dvd_video.angles = 1;
 
@@ -518,7 +518,7 @@ int main(int argc, char **argv) {
 		dvd_video.height = 0;
 		dvd_video.letterbox = false;
 		dvd_video.pan_and_scan = false;
-		dvd_video.df = 0;
+		dvd_video.df = 3;
 		dvd_video.angles = 0;
 		dvd_track.dvd_video = dvd_video;
 
