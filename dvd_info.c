@@ -158,6 +158,8 @@ int main(int argc, char **argv) {
 	dvd_cell.msecs = 0;
 	dvd_cell.first_sector = 0;
 	dvd_cell.last_sector = 0;
+	dvd_cell.filesize = 0;
+	dvd_cell.filesize_mbs = 0;
 
 	// Display formats
 	const char *display_formats[4] = { "Pan and Scan or Letterbox", "Pan and Scan", "Letterbox", "Unset" };
@@ -696,6 +698,7 @@ int main(int argc, char **argv) {
 				dvd_cell.last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 				dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 				dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+				dvd_cell.filesize_mbs = dvd_cell_filesize_mbs(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
 
 				dvd_track.dvd_cells[cell_ix] = dvd_cell;
 
@@ -753,7 +756,7 @@ int main(int argc, char **argv) {
 	if(debug) {
 
 		printf("        Tracks: %02" PRIu16 ", ", dvd_info.tracks);
-		printf("Valid: %02" PRIu16 ", ", dvd_info.valid_tracks),
+		printf("Valid: %02" PRIu16 ", ", dvd_info.valid_tracks);
 		printf("Invalid: %02" PRIu16, dvd_info.invalid_tracks);
 		printf("\n");
 
@@ -893,9 +896,11 @@ int main(int argc, char **argv) {
 
 				printf("        Cell: %02" PRIu8 ", ", dvd_cell.cell);
 				printf("Length: %s, ", dvd_cell.length);
-				printf("First sector: %07" PRIu64 ", ", dvd_cell.first_sector);
-				printf("Last sector: %07" PRIu64", ", dvd_cell.last_sector);
-				printf("Filesize: %09" PRIu64, dvd_cell.filesize);
+				if(debug) {
+					printf("First sector: %07" PRIu64 ", ", dvd_cell.first_sector);
+					printf("Last sector: %07" PRIu64", ", dvd_cell.last_sector);
+				}
+				printf("Filesize: % 5.0lf MBs", dvd_cell.filesize_mbs);
 				printf("\n");
 
 			}
