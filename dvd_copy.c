@@ -20,6 +20,7 @@
 #include "dvd_device.h"
 #include "dvd_drive.h"
 #include "dvd_vmg_ifo.h"
+#include "dvd_vts.h"
 #include "dvd_track.h"
 #include "dvd_chapter.h"
 #include "dvd_cell.h"
@@ -355,19 +356,37 @@ int main(int argc, char **argv) {
 	ifoClose(vts_ifo);
 	vts_ifo = NULL;
 
+	uint16_t ix = 0;
+
 	// Create an array of all the IFOs
-	ifo_handle_t *vts_ifos[DVD_MAX_VTS_IFOS];
-	vts_ifos[0] = NULL;
+	ifo_handle_t *vts_ifos[100];
+	for(ix = 0; ix < 100; ix++)
+		vts_ifos[ix] = NULL;
+
+	// Video Title Set
+	struct dvd_vts dvd_vts[100];
 
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
+		dvd_vts[vts].vts = vts;
+		dvd_vts[vts].valid = false;
+		dvd_vts[vts].blocks = 0;
+		dvd_vts[vts].filesize = 0;
+		dvd_vts[vts].vobs = 0;
+		dvd_vts[vts].tracks = 0;
+		dvd_vts[vts].valid_tracks = 0;
+		dvd_vts[vts].invalid_tracks = 0;
+
 		vts_ifos[vts] = ifoOpen(dvdread_dvd, vts);
 
-		if(!vts_ifos[vts]) {
-			vts_ifos[vts] = NULL;
+		if(vts_ifos[vts] == NULL) {
+			dvd_vts[vts].valid = false;
 		} else if(!ifo_is_vts(vts_ifos[vts])) {
+			dvd_vts[vts].valid = false;
 			ifoClose(vts_ifos[vts]);
 			vts_ifos[vts] = NULL;
+		} else {
+			dvd_vts[vts].valid = true;
 		}
 
 	}
@@ -383,16 +402,23 @@ int main(int argc, char **argv) {
 		dvd_copy.track = arg_track_number;
 	}
 
-	uint16_t ix = 0;
 	uint16_t track = 1;
 
 	uint32_t longest_msecs = 0;
 
 	for(ix = 0, track = 1; ix < dvd_info.tracks; ix++, track++) {
 
-		vts = dvd_vts_ifo_number(vmg_ifo, ix + 1);
+		vts = dvd_vts_ifo_number(vmg_ifo, track);
+
+		if(dvd_vts[vts].valid == false)
+			continue;
+
 		vts_ifo = vts_ifos[vts];
+
 		dvd_track_info(&dvd_tracks[ix], track, vmg_ifo, vts_ifo);
+
+		if(dvd_tracks[ix].valid == false)
+			continue;
 
 		if(dvd_tracks[ix].msecs > longest_msecs) {
 			dvd_info.longest_track = track;
@@ -677,7 +703,7 @@ int main(int argc, char **argv) {
 void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo) {
 
 	dvd_track->track = track_number;
-	dvd_track->valid = 1;
+	dvd_track->valid = true;
 	dvd_track->vts = dvd_vts_ifo_number(vmg_ifo, track_number);
 	dvd_track->ttn = dvd_track_ttn(vmg_ifo, track_number);
 	dvd_track_length(dvd_track->length, vmg_ifo, vts_ifo, track_number);
@@ -691,5 +717,8 @@ void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, co
 	dvd_track->blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
 	dvd_track->filesize = dvd_track_filesize(vmg_ifo, vts_ifo, track_number);
 	dvd_track->filesize_mbs = dvd_track_filesize_mbs(vmg_ifo, vts_ifo, track_number);
+
+	if(dvd_track->msecs == 0 || dvd_track->cells == 0)
+		dvd_track->valid = false;
 
 }
