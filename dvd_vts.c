@@ -6,11 +6,20 @@
 
 uint64_t dvd_vts_blocks(dvd_reader_t *dvdread_dvd, const uint16_t vts_number) {
 
-	uint64_t vts_blocks = 0;
 	dvd_file_t *dvdread_vts_file;
-
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts_number, DVD_READ_TITLE_VOBS);
-	vts_blocks = (uint64_t)DVDFileSize(dvdread_vts_file);
+
+	if(dvdread_vts_file == 0)
+		return 0;
+
+	ssize_t vts_filesize = 0;
+	vts_filesize = DVDFileSize(dvdread_vts_file);
+
+	if(vts_filesize < 0)
+		return 0;
+
+	uint64_t vts_blocks = 0;
+	vts_blocks = (uint64_t)vts_filesize;
 
 	return vts_blocks;
 
@@ -38,5 +47,5 @@ int dvd_vts_vobs(dvd_reader_t *dvdread_dvd, const uint16_t vts_number) {
 	vts_vobs = dvdread_stat.nr_parts;
 
 	return vts_vobs;
-	
+
 }

@@ -457,7 +457,7 @@ int main(int argc, char **argv) {
 	for(vts_ifo_ix = 0; vts_ifo_ix < 100; vts_ifo_ix++)
 		vts_ifos[vts_ifo_ix] = NULL;
 
-	// FIXME: Exit if all the IFOs cannot be opened
+	// Do some checks to see if a VTS is ok or not
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
 		dvd_vts[vts].vts = vts;
@@ -473,13 +473,23 @@ int main(int argc, char **argv) {
 
 		if(vts_ifos[vts] == NULL) {
 			dvd_vts[vts].valid = false;
-		} else if(!ifo_is_vts(vts_ifos[vts])) {
+			continue;
+		}
+
+		if(!ifo_is_vts(vts_ifos[vts])) {
 			dvd_vts[vts].valid = false;
 			ifoClose(vts_ifos[vts]);
 			vts_ifos[vts] = NULL;
-		} else {
-			dvd_vts[vts].valid = true;
+			continue;
 		}
+
+		dvd_vts[vts].filesize = dvd_vts_filesize(dvdread_dvd, vts);
+		if(!dvd_vts[vts].filesize) {
+			dvd_vts[vts].valid = false;
+			continue;
+		}
+
+		dvd_vts[vts].valid = true;
 
 	}
 

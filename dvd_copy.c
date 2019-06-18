@@ -381,13 +381,24 @@ int main(int argc, char **argv) {
 
 		if(vts_ifos[vts] == NULL) {
 			dvd_vts[vts].valid = false;
-		} else if(!ifo_is_vts(vts_ifos[vts])) {
+			continue;
+		}
+
+		if(!ifo_is_vts(vts_ifos[vts])) {
 			dvd_vts[vts].valid = false;
 			ifoClose(vts_ifos[vts]);
 			vts_ifos[vts] = NULL;
-		} else {
-			dvd_vts[vts].valid = true;
+			continue;
 		}
+
+		dvd_vts[vts].filesize = dvd_vts_filesize(dvdread_dvd, vts);
+		if(!dvd_vts[vts].filesize) {
+			dvd_vts[vts].valid = false;
+			continue;
+		}
+
+		dvd_vts[vts].valid = true;
+
 
 	}
 
