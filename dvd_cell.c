@@ -15,7 +15,7 @@ uint64_t dvd_cell_first_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 
 	if(pgc == NULL || pgc->program_map == NULL)
 		return 0;
-	
+
 	uint64_t sector = 0;
 	sector = (uint64_t)pgc->cell_playback[cell_number - 1].first_sector;
 
@@ -34,7 +34,7 @@ uint64_t dvd_cell_last_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 
 	if(pgc == NULL || pgc->program_map == NULL)
 		return 0;
-	
+
 	uint64_t sector = 0;
 	sector = (uint64_t)pgc->cell_playback[cell_number - 1].last_sector;
 
@@ -70,6 +70,18 @@ uint64_t dvd_cell_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 	filesize = blocks * DVD_VIDEO_LB_LEN;
 
 	return filesize;
+
+}
+
+double dvd_cell_filesize_mbs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number) {
+
+	uint64_t blocks;
+	blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, track_number, cell_number);
+
+	double cell_filesize_mbs = 0;
+	cell_filesize_mbs = ceil((blocks * DVD_VIDEO_LB_LEN) / 1048576.0);
+
+	return cell_filesize_mbs;
 
 }
 
