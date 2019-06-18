@@ -36,7 +36,7 @@
 #define DVD_VIDEO_LB_LEN 2048
 #endif
 
-#define DVD_COPY_BLOCK_LIMIT 512
+#define DVD_COPY_BLOCK_LIMIT 1
 
 // 2048 * 512 = 1 MB
 #define DVD_COPY_BYTES_LIMIT ( DVD_COPY_BLOCK_LIMIT * DVD_VIDEO_LB_LEN )
@@ -631,16 +631,33 @@ int main(int argc, char **argv) {
 				}
 
 				dvdread_read_blocks = DVDReadBlocks(dvdread_vts_file, (int)offset, (size_t)read_blocks, dvd_copy.buffer);
-				// TODO work around broken reads, zero-pad writes
-				if(dvdread_read_blocks <= 0)  {
-					fprintf(stderr, "[dvd_copy] Could not read data from cell %" PRIu8 "\n", dvd_cell.cell);
-					return 1;
-				}
 
-				// Check to make sure the amount read was what we wanted
-				if(dvdread_read_blocks != (ssize_t)read_blocks) {
-					fprintf(stderr, "[dvd_copy] *** Asked for %zu and only got %zd\n", (size_t)read_blocks, dvdread_read_blocks);
-					return 1;
+				// The block limit is (currently) set to read one at a time. While this
+				// could be seen as pretty slow, it's also really safe, and makes error
+				// handling much simpler. I'd rather skip over one block than one meg,
+				// or 512 blocks. Plus it helps flush out DVD errors, if it is the disc
+				// itself, badly authored, etc. The dvdbackup program accepts arguments
+				// for what kind of error handling to do when hitting a bad read. It
+				// can pad the file with empty data, it can skip one block, or it can
+				// skip multiple blocks. For now, zeroing out the data is the only option.
+				//
+				// DVDReadBlocks will return a negative value if it couldn't do a read
+				// at all, which is going to be different based on the source. The function
+				// calls either DVDReadBlocksPath or DVDReadBlocksUDF.
+				//
+				// If the result is a postive integer, it is the amount of blocks it could
+				// read succesfully.
+				//
+				// When a bad block is found, *for now*, the design is to pad the copy with
+				// the variable amount of zeroes (one block = 2048 bytes). This way, the
+				// output file matches at least the filesize of the source, and the video
+				// decoder can handle the empty data. Most are pretty resilient, so it will
+				// probably be okay, but more testing is needed.
+				if(dvdread_read_blocks <= 0) {
+					memset(dvd_copy.buffer, 0, (size_t)read_blocks * DVD_VIDEO_LB_LEN);
+					dvdread_read_blocks = (ssize_t)read_blocks;
+
+					fprintf(stderr, "Could not read DVD block %" PRIu64 ", padding file with zeroes ...\n", offset);
 				}
 
 				// Increment the offsets
