@@ -360,14 +360,14 @@ int main(int argc, char **argv) {
 
 	// Check to see if device can be accessed
 	if(!dvd_device_access(device_filename)) {
-		fprintf(stderr, "[dvd_info] cannot access %s\n", device_filename);
+		fprintf(stderr, "Cannot access %s\n", device_filename);
 		return 1;
 	}
 
 	// Check to see if device can be opened
 	dvd_fd = dvd_device_open(device_filename);
 	if(dvd_fd < 0) {
-		fprintf(stderr, "[dvd_info] error opening %s\n", device_filename);
+		fprintf(stderr, "Could not open %s\n", device_filename);
 		return 1;
 	}
 	dvd_device_close(dvd_fd);
@@ -380,7 +380,7 @@ int main(int argc, char **argv) {
 		// Wait for the drive to become ready
 		if(!dvd_drive_has_media(device_filename)) {
 
-			fprintf(stderr, "[dvd_info] drive status: ");
+			fprintf(stderr, "DVD drive status: ");
 			dvd_drive_display_status(device_filename);
 
 			return 1;
@@ -396,21 +396,21 @@ int main(int argc, char **argv) {
 	// Open DVD device
 	dvdread_dvd = DVDOpen(device_filename);
 	if(!dvdread_dvd) {
-		fprintf(stderr, "[dvd_info] Opening DVD %s failed\n", device_filename);
+		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
 		return 1;
 	}
 
 	// Check if DVD has an identifier, fail otherwise
 	dvd_dvdread_id(dvdread_id, dvdread_dvd);
 	if(strlen(dvdread_id) == 0) {
-		fprintf(stderr, "[dvd_info] Opening DVD %s failed\n", device_filename);
+		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
 		return 1;
 	}
 
 	// Open VMG IFO -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo)) {
-		fprintf(stderr, "[dvd_info] Opening VMG IFO failed\n");
+		fprintf(stderr, "Opening VMG IFO failed\n");
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
@@ -420,7 +420,7 @@ int main(int argc, char **argv) {
 
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks || arg_track_number < 1)) {
-		fprintf(stderr, "[dvd_info] valid track numbers: 1 to %" PRIu16 "\n", dvd_info.tracks);
+		fprintf(stderr, "Valid track numbers: 1 to %" PRIu16 "\n", dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -437,7 +437,7 @@ int main(int argc, char **argv) {
 	ifo_handle_t *vts_ifos[DVD_MAX_VTS_IFOS];
 
 	if(opt_vts && (arg_vts == 0 || arg_vts > dvd_info.video_title_sets)) {
-		fprintf(stderr, "[dvd_info] Video Title Set must be between 1 and %" PRIu16 "\n", dvd_info.video_title_sets);
+		fprintf(stderr, "Video Title Set must be between 1 and %" PRIu16 "\n", dvd_info.video_title_sets);
 		return 1;
 	}
 
