@@ -12,6 +12,7 @@ struct dvd_cell {
 	uint64_t last_sector;
 	uint64_t blocks;
 	uint64_t filesize;
+	double filesize_mbs;
 };
 
 uint64_t dvd_cell_first_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number);
