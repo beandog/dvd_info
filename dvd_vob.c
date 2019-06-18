@@ -25,9 +25,14 @@ uint64_t dvd_vob_filesize(dvd_reader_t *dvdread_dvd, const uint16_t vts_number, 
 		return 0;
 
 	dvd_stat_t dvdread_stat;
-	uint64_t vob_filesize = 0;
 
-	DVDFileStat(dvdread_dvd, vts_number, DVD_READ_TITLE_VOBS, &dvdread_stat);
+	int retval;
+	retval = DVDFileStat(dvdread_dvd, vts_number, DVD_READ_TITLE_VOBS, &dvdread_stat);
+
+	if(retval < 0)
+		return 0;
+
+	uint64_t vob_filesize = 0;
 	vob_filesize = (uint64_t)dvdread_stat.parts_size[vob_number - 1];
 
 	return vob_filesize;
