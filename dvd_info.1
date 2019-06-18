@@ -34,13 +34,13 @@ dvd_info \- displays information about a DVD
 \fBdvd_info\fR [\fIPATH\fR] [\fIOPTIONS\fR]
 .SH "DESCRIPTION"
 .sp
-The dvd_info(1) program displays information about a DVD optical disc, image, or directory in human\-readable, JSON, or formatted chapter outputs\&.
+Displays information about a DVD optical disc, image, or directory in human\-readable, JSON, or formatted chapter outputs\&.
 .sp
 The default device is based on your operating system, and is the primary optical drive\&.
 .sp
 DVDs can store two kinds of subtitles \(em VOBSUB, which are images, and closed captioning, which are text\&. Only the VOBSUB subtitles are reported here\&. Getting access to the closed captioning ones would require demuxing the stream\&.
 .sp
-Some tracks are marked as \fIinvalid\fR\&. These are cases where it may have garbage data intentionally authored onto the disc to break applications\&. dvd_info does some checks on each track to look for properties that would flag it as invalid\&. These are hidden by default\&. Use verbose mode to show them plus more information about tracks\&.
+Some tracks are marked as \fIinvalid\fR\&. These are cases where it may have garbage data intentionally authored onto the disc to break applications\&. \fBdvd_info\fR does some checks on each track to look for properties that would flag it as invalid\&. These are hidden by default\&.
 .sp
 DVDs may also have audio and subtitle streams marked as inactive as well\&.
 .SH "OPTIONS"
@@ -103,7 +103,12 @@ Limit output to tracks with a minimum length of number of minutes\&. Cannot be u
 .PP
 \fB\-T, \-\-vts\fR=\fINUMBER\fR
 .RS 4
-Limit output to tracks in Video Title Set number\&. Enables verbose\&.
+Limit output to tracks in Video Title Set number\&.
+.RE
+.PP
+\fB\-e, \-\-verbose\fR
+.RS 4
+Display invalid tracks and inactive audio and subtitle streams\&.
 .RE
 .PP
 \fB\-g, \-\-xchap\fR
