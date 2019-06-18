@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aAcdeE:ghjM:qsST:t:Vvxz";
+	const char p_short_opts[] = "aAcdeE:ghjM:sST:t:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -256,7 +256,6 @@ int main(int argc, char **argv) {
 
 			case 'T':
 				opt_vts = true;
-				verbose = true;
 				arg_number = strtoul(optarg, NULL, 10);
 				if(arg_number > 99)
 					arg_vts = 99;
@@ -325,7 +324,7 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("Other:\n");
 				printf("  -g, --xchap           Display title's chapter format for mkvmerge\n");
-				printf("  -e, --verbose         Display short tracks, invalid tracks, and empty streams\n");
+				printf("  -e, --verbose         Display invalid tracks and inactive streams\n");
 				printf("  -h, --help            Display these help options\n");
 				printf("      --version         Version information\n");
 				printf("\n");
@@ -509,6 +508,19 @@ int main(int argc, char **argv) {
 		dvd_track.subtitles = 0;
 		dvd_track.active_subs = 0;
 		dvd_track.cells = 0;
+		dvd_track.filesize_mbs = 0;
+
+		memset(dvd_video.codec, '\0', sizeof(dvd_video.codec));
+		memset(dvd_video.format, '\0', sizeof(dvd_video.format));
+		memset(dvd_video.aspect_ratio, '\0', sizeof(dvd_video.aspect_ratio));
+		memset(dvd_video.fps, '\0', sizeof(dvd_video.fps));
+		dvd_video.width = 0;
+		dvd_video.height = 0;
+		dvd_video.letterbox = false;
+		dvd_video.pan_and_scan = false;
+		dvd_video.df = 0;
+		dvd_video.angles = 0;
+		dvd_track.dvd_video = dvd_video;
 
 		// There are two ways a track can be marked as invalid - either the VTS
 		// is bad, or the track has an empty length. The first one, it could be
@@ -555,18 +567,11 @@ int main(int argc, char **argv) {
 
 		/** Video **/
 
-		memset(dvd_video.codec, '\0', sizeof(dvd_video.codec));
 		dvd_video_codec(dvd_video.codec, vts_ifo);
-
-		memset(dvd_video.format, '\0', sizeof(dvd_video.format));
 		dvd_track_video_format(dvd_video.format, vts_ifo);
-
 		dvd_video.width = dvd_video_width(vts_ifo);
 		dvd_video.height = dvd_video_height(vts_ifo);
-
-		memset(dvd_video.aspect_ratio, '\0', sizeof(dvd_video.aspect_ratio));
 		dvd_video_aspect_ratio(dvd_video.aspect_ratio, vts_ifo);
-
 		dvd_video.letterbox = dvd_video_letterbox(vts_ifo);
 		dvd_video.pan_and_scan = dvd_video_pan_scan(vts_ifo);
 		dvd_video.df = dvd_video_df(vts_ifo);
@@ -577,10 +582,7 @@ int main(int argc, char **argv) {
 		dvd_track.active_subs = 0;
 		dvd_track.cells = dvd_track_cells(vmg_ifo, vts_ifo, dvd_track.track);
 		dvd_track.filesize_mbs = dvd_track_filesize_mbs(vmg_ifo, vts_ifo, dvd_track.track);
-
-		memset(dvd_video.fps, '\0', sizeof(dvd_video.fps));
 		dvd_track_str_fps(dvd_video.fps, vmg_ifo, vts_ifo, dvd_track.track);
-
 		dvd_track.dvd_video = dvd_video;
 
 		/** Audio Streams **/
@@ -704,20 +706,19 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
+	// Start dvd_info output
+
+	if(opt_track_number)
+		d_disc_title_header = false;
+
 	if(d_disc_title_header && !p_dvd_xchap) {
 		printf("Disc title: '%s', ", dvd_info.title);
 		printf("ID: '%s', ", dvd_info.dvdread_id);
-		printf("Num tracks: %" PRIu16 ", ", dvd_info.tracks);
-		printf("Longest track: %" PRIu16, dvd_info.longest_track);
-		if(opt_vts || verbose)
-			printf(", Video Title Sets: %" PRIu16, dvd_info.video_title_sets);
+		printf("VTSs: %" PRIu16", ", dvd_info.video_title_sets);
+		printf("Total tracks: %" PRIu16 ", ", dvd_info.tracks);
+		printf("Valid: %" PRIu16 ", ", dvd_info.valid_tracks);
+		printf("Longest: %" PRIu16, dvd_info.longest_track);
 		printf("\n");
-	}
-
-	// Exit if the track requested invalid
-	if(opt_track_number && dvd_tracks[arg_track_number - 1].valid == false && !debug) {
-		fprintf(stderr, "[dvd_info] Track %" PRIu16 " is marked as invalid, cannot open\n", arg_track_number);
-		return 1;
 	}
 
 	/** dvdxchap display output **/
@@ -817,13 +818,14 @@ int main(int argc, char **argv) {
 		printf("Chapters: %02" PRIu8 ", ", dvd_track.chapters);
 		printf("Cells: %02" PRIu8 ", ", dvd_track.cells);
 		printf("Audio streams: %02" PRIu8 ", ", dvd_track.active_audio_streams);
-		printf("Subpictures: %02" PRIu8", ", dvd_track.active_subs);
-		printf("Filesize: % 5.0lf MBs", dvd_track.filesize_mbs);
-		if(verbose || opt_vts) {
-			printf(", VTS: %02" PRIu16, dvd_track.vts);
-			printf(", Valid VTS: %s", dvd_vts[dvd_track.vts].valid ? "yes" : " no");
-			printf(", Valid track: %s", (dvd_track.valid ? "yes" : " no"));
+		printf("Subpictures: %02" PRIu8 ", ", dvd_track.active_subs);
+		if(debug || opt_vts) {
+			printf("VTS: %02" PRIu16", ", dvd_track.vts);
+			printf("Valid VTS: %s, ", dvd_vts[dvd_track.vts].valid ? "yes" : " no");
 		}
+		if(verbose)
+			printf("Valid: %s, ", (dvd_track.valid ? "yes" : " no"));
+		printf("Filesize: % 5.0lf MBs", dvd_track.filesize_mbs);
 		printf("\n");
 
 		// Display video information
