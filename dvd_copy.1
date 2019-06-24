@@ -2,12 +2,12 @@
 .\"     Title: dvd_copy
 .\"    Author: [see the "AUTHOR" section]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 05/30/2019
+.\"      Date: 06/24/2019
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_COPY" "1" "05/30/2019" "\ \&" "\ \&"
+.TH "DVD_COPY" "1" "06/24/2019" "\ \&" "\ \&"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -48,7 +48,7 @@ Sending the track directly to stdout makes it useful for things like piping to o
 .sp
 An example using ffmpeg, where track five and the second chapter are remuxed by ffmpeg into a Matroska file, copying the video stream as well as the third audio stream\&.
 .sp
-$ dvd_copy \-t 5 \-c 2\-2 \-o \- | ffmpeg \-i \- \-map 0:0 \-map 0:3 \-c copy video\&.mkv
+$ dvd_copy \-t 5 \-c 2\-2 \-o \- | ffmpeg \-i \- \-map 0:v \-map i:0x82 \-f vob \-c copy video\&.mkv
 .SH "OPTIONS"
 .PP
 \fB\-t, \-\-track\fR=\fITITLE\fR
