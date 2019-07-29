@@ -781,16 +781,8 @@ int main(int argc, char **argv) {
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
-		// Skip invalid tracks
-		if(dvd_tracks[track_number - 1].valid == false && !p_dvd_json && !verbose && !opt_vts && !(opt_track_number && track_number == arg_track_number))
-			continue;
-
 		dvd_track = dvd_tracks[track_number - 1];
 		dvd_video = dvd_tracks[track_number - 1].dvd_video;
-
-		// Skip tracks less than a second long
-		if((dvd_track.msecs < 1000) && !verbose && !(opt_track_number && track_number == arg_track_number))
-			continue;
 
 		// Skip if limiting to tracks with audio only
 		if(d_has_audio && dvd_track.active_audio_streams == 0)
@@ -819,10 +811,7 @@ int main(int argc, char **argv) {
 		printf("Cells: %02" PRIu8 ", ", dvd_track.cells);
 		printf("Audio streams: %02" PRIu8 ", ", dvd_track.active_audio_streams);
 		printf("Subpictures: %02" PRIu8 ", ", dvd_track.active_subs);
-		if(debug || opt_vts) {
-			printf("VTS: %02" PRIu16", ", dvd_track.vts);
-			printf("Valid VTS: %s, ", dvd_vts[dvd_track.vts].valid ? "yes" : " no");
-		}
+		printf("VTS: %02" PRIu16", ", dvd_track.vts);
 		printf("Valid: %s, ", (dvd_track.valid ? "yes" : " no"));
 		printf("Filesize: % 5.0lf MBs", dvd_track.filesize_mbs);
 		printf("\n");
