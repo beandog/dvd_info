@@ -873,8 +873,8 @@ int main(int argc, char **argv) {
 
 				printf("        Cell: %02" PRIu8 ", ", dvd_cell.cell);
 				printf("Length: %s, ", dvd_cell.length);
-				printf("First sector: %07" PRIu64 ", ", dvd_cell.first_sector);
-				printf("Last sector: %07" PRIu64", ", dvd_cell.last_sector);
+				printf("First sector: %7" PRIu64 ", ", dvd_cell.first_sector);
+				printf("Last sector: %7" PRIu64", ", dvd_cell.last_sector);
 				printf("Filesize: % 5.0lf MBs", dvd_cell.filesize_mbs);
 				printf("\n");
 
