@@ -464,6 +464,14 @@ int main(int argc, char **argv) {
 			continue;
 		}
 
+		// TODO needs more testing, and also move into a function that examines if VTS is valid or not
+		/*
+		if(vts_ifos[vts]->vtsi_mat->vts_tmapt == 0) {
+			dvd_vts[vts].valid = false;
+			continue;
+		}
+		*/
+
 		if(!ifo_is_vts(vts_ifos[vts])) {
 			dvd_vts[vts].valid = false;
 			ifoClose(vts_ifos[vts]);
