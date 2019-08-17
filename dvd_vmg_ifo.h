@@ -33,6 +33,18 @@
 bool ifo_is_vmg(const ifo_handle_t *ifo);
 
 /**
+ * Check if the IFO is a VTS or not.
+ *
+ * libdvdread populates the ifo_handle with various data, but the structure is
+ * the same for both a VMG IFO and a VTS one.  This does a few checks to make
+ * sure that the ifo_handle passed in is a Video Title Set.
+ *
+ * @param ifo dvdread IFO handle
+ * @return boolean
+ */
+bool ifo_is_vts(const ifo_handle_t *ifo);
+
+/**
  * Get the DVD title, which maxes out at a 32-character string.
  * All DVDs should have one.
  *

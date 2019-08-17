@@ -1,9 +1,18 @@
 #include "dvd_vmg_ifo.h"
 
+bool ifo_is_vts(const ifo_handle_t *ifo) {
+
+	if(ifo->vtsi_mat == NULL)
+		return false;
+	else
+		return true;
+
+}
+
 bool dvd_title(char *dest_str, const char *device_filename) {
 
 	char dvd_title[DVD_TITLE + 1] = {'\0'};
-	int fd = -1;	
+	int fd = -1;
 
 	// If we can't even open the device, exit quietly
 	fd = open(device_filename, O_RDONLY | O_NONBLOCK);
