@@ -140,3 +140,37 @@ bool dvd_specification_version(char *dest_str, const ifo_handle_t *vmg_ifo) {
 	return false;
 
 }
+
+dvd_info_t *dvd_info_init(dvd_reader_t *dvdread_dvd, const char *device_filename) {
+
+	dvd_info_t *dvd_info = calloc(1, sizeof(dvd_info_t));
+
+	if(!dvd_info)
+		return NULL;
+
+	ifo_handle_t *vmg_ifo = ifoOpen(dvdread_dvd, 0);
+	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo))
+		return NULL;
+
+	memset(dvd_info->title, '\0', sizeof(dvd_info->title));
+	dvd_title(dvd_info->title, device_filename);
+
+	memset(dvd_info->dvdread_id, '\0', sizeof(dvd_info->dvdread_id));
+	dvd_dvdread_id(dvd_info->dvdread_id, dvdread_dvd);
+
+	memset(dvd_info->provider_id, '\0', sizeof(dvd_info->provider_id));
+	dvd_provider_id(dvd_info->provider_id, vmg_ifo);
+
+	memset(dvd_info->vmg_id, '\0', sizeof(dvd_info->vmg_id));
+	dvd_vmg_id(dvd_info->vmg_id, vmg_ifo);
+
+	dvd_info->tracks = dvd_tracks(vmg_ifo);
+	dvd_info->video_title_sets = dvd_video_title_sets(vmg_ifo);
+	dvd_info->side = dvd_info_side(vmg_ifo);
+	dvd_info->longest_track = 1;
+	dvd_info->valid_tracks = 0;
+	dvd_info->invalid_tracks = 0;
+
+	return dvd_info;
+
+}

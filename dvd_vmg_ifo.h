@@ -6,9 +6,25 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 #include "dvd_specs.h"
+
+typedef struct dvd_info {
+	char dvdread_id[DVD_DVDREAD_ID + 1];
+	uint16_t video_title_sets;
+	uint16_t valid_video_title_sets;
+	uint16_t invalid_video_title_sets;
+	uint8_t side;
+	char title[DVD_TITLE + 1];
+	char provider_id[DVD_PROVIDER_ID + 1];
+	char vmg_id[DVD_VMG_ID + 1];
+	uint16_t tracks;
+	uint16_t longest_track;
+	uint16_t valid_tracks;
+	uint16_t invalid_tracks;
+} dvd_info_t;
 
 /**
  * Functions used to get basic DVD data:
@@ -195,5 +211,7 @@ bool dvd_specification_version(char *dest_str, const ifo_handle_t *vmg_ifo);
  * @param p char[17] to copy the string to
  */
 // void dvd_info_serial_id(dvdnav_t *dvdnav, char *p);
+
+dvd_info_t *dvd_info_init(dvd_reader_t *, const char *device_filename);
 
 #endif

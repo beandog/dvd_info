@@ -1,6 +1,6 @@
 #include "dvd_json.h"
 
-void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t track_number, uint16_t d_first_track, uint16_t d_last_track) {
+void dvd_json(dvd_info_t *dvd_info, struct dvd_track dvd_tracks[], uint16_t track_number, uint16_t d_first_track, uint16_t d_last_track) {
 
 	struct dvd_track dvd_track;
 	struct dvd_video dvd_video;
@@ -15,16 +15,16 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 
 	// DVD
 	printf(" \"dvd\": {");
-	printf(" \"title\": \"%s\",", dvd_info.title);
-	printf(" \"side\": %" PRIu8 ",", dvd_info.side);
-	printf(" \"tracks\": %" PRIu16 ",", dvd_info.tracks);
-	printf(" \"longest track\": %u,", dvd_info.longest_track);
-	if(strlen(dvd_info.provider_id))
-		printf(" \"provider id\": \"%s\",", dvd_info.provider_id);
-	if(strlen(dvd_info.vmg_id))
-		printf(" \"vmg id\": \"%s\",", dvd_info.vmg_id);
-	printf(" \"video title sets\": %" PRIu16 ",", dvd_info.video_title_sets);
-	printf(" \"dvdread id\": \"%s\"", dvd_info.dvdread_id);
+	printf(" \"title\": \"%s\",", dvd_info->title);
+	printf(" \"side\": %" PRIu8 ",", dvd_info->side);
+	printf(" \"tracks\": %" PRIu16 ",", dvd_info->tracks);
+	printf(" \"longest track\": %u,", dvd_info->longest_track);
+	if(strlen(dvd_info->provider_id))
+		printf(" \"provider id\": \"%s\",", dvd_info->provider_id);
+	if(strlen(dvd_info->vmg_id))
+		printf(" \"vmg id\": \"%s\",", dvd_info->vmg_id);
+	printf(" \"video title sets\": %" PRIu16 ",", dvd_info->video_title_sets);
+	printf(" \"dvdread id\": \"%s\"", dvd_info->dvdread_id);
 	printf(" },\n");
 
 	// DVD title tracks

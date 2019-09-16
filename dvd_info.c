@@ -58,7 +58,6 @@ int main(int argc, char **argv) {
 	uint16_t arg_vts = 0;
 
 	// dvd_info
-	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
 	bool d_disc_title_header = true;
 	uint16_t d_first_track = 1;
 	uint16_t d_last_track = 1;
@@ -80,19 +79,6 @@ int main(int argc, char **argv) {
 	ifo_handle_t *vts_ifo = NULL;
 
 	// DVD
-	struct dvd_info dvd_info;
-	memset(dvd_info.dvdread_id, '\0', sizeof(dvd_info.dvdread_id));
-	dvd_info.video_title_sets = 1;
-	dvd_info.side = 1;
-	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
-	memset(dvd_info.provider_id, '\0', sizeof(dvd_info.provider_id));
-	memset(dvd_info.vmg_id, '\0', sizeof(dvd_info.vmg_id));
-	dvd_info.tracks = 1;
-	dvd_info.longest_track = 1;
-	dvd_info.valid_video_title_sets = 0;
-	dvd_info.invalid_video_title_sets = 0;
-	dvd_info.valid_tracks = 0;
-	dvd_info.invalid_tracks = 0;
 
 	// Video Title Set
 	struct dvd_vts dvd_vts[99];
@@ -401,11 +387,13 @@ int main(int argc, char **argv) {
 	}
 
 	// Check if DVD has an identifier, fail otherwise
+	/*
 	dvd_dvdread_id(dvdread_id, dvdread_dvd);
 	if(strlen(dvdread_id) == 0) {
 		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
 		return 1;
 	}
+	*/
 
 	// Open VMG IFO -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
@@ -416,11 +404,18 @@ int main(int argc, char **argv) {
 	}
 
 	// Get the total number of title tracks on the DVD
-	dvd_info.tracks = dvd_tracks(vmg_ifo);
+
+	dvd_info_t *dvd_info = NULL;
+	dvd_info = dvd_info_init(dvdread_dvd, device_filename);
+	if(dvd_info == NULL) {
+		fprintf(stderr, "Opening VMG IFO failed\n");
+		DVDClose(dvdread_dvd);
+		return 1;
+	}
 
 	// Exit if track number requested does not exist
-	if(opt_track_number && (arg_track_number > dvd_info.tracks || arg_track_number < 1)) {
-		fprintf(stderr, "Valid track numbers: 1 to %" PRIu16 "\n", dvd_info.tracks);
+	if(opt_track_number && (arg_track_number > dvd_info->tracks || arg_track_number < 1)) {
+		fprintf(stderr, "Valid track numbers: 1 to %" PRIu16 "\n", dvd_info->tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -430,14 +425,13 @@ int main(int argc, char **argv) {
 		track_number = d_first_track;
 	} else {
 		d_first_track = 1;
-		d_last_track = dvd_info.tracks;
+		d_last_track = dvd_info->tracks;
 	}
 
-	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
 	ifo_handle_t *vts_ifos[DVD_MAX_VTS_IFOS];
 
-	if(opt_vts && (arg_vts == 0 || arg_vts > dvd_info.video_title_sets)) {
-		fprintf(stderr, "Video Title Set must be between 1 and %" PRIu16 "\n", dvd_info.video_title_sets);
+	if(opt_vts && (arg_vts == 0 || arg_vts > dvd_info->video_title_sets)) {
+		fprintf(stderr, "Video Title Set must be between 1 and %" PRIu16 "\n", dvd_info->video_title_sets);
 		return 1;
 	}
 
@@ -446,7 +440,7 @@ int main(int argc, char **argv) {
 		vts_ifos[vts_ifo_ix] = NULL;
 
 	// Do some checks to see if a VTS is ok or not
-	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
+	for(vts = 1; vts < dvd_info->video_title_sets + 1; vts++) {
 
 		dvd_vts[vts].vts = vts;
 		dvd_vts[vts].valid = false;
@@ -488,13 +482,6 @@ int main(int argc, char **argv) {
 		dvd_vts[vts].valid = true;
 
 	}
-
-	// GRAB ALL THE THINGS
-	dvd_title(dvd_info.title, device_filename);
-	dvd_info.side = dvd_info_side(vmg_ifo);
-	dvd_provider_id(dvd_info.provider_id, vmg_ifo);
-	dvd_vmg_id(dvd_info.vmg_id, vmg_ifo);
-	strncpy(dvd_info.dvdread_id, dvdread_id, DVD_DVDREAD_ID);
 
 	/**
 	 * Track information
@@ -543,7 +530,7 @@ int main(int argc, char **argv) {
 			dvd_track.valid = false;
 			dvd_tracks[track_number - 1] = dvd_track;
 			dvd_vts[dvd_track.vts].invalid_tracks++;
-			dvd_info.invalid_tracks++;
+			dvd_info->invalid_tracks++;
 			continue;
 		}
 
@@ -558,7 +545,7 @@ int main(int argc, char **argv) {
 			dvd_track.valid = false;
 			dvd_vts[dvd_track.vts].invalid_tracks++;
 			dvd_tracks[track_number - 1] = dvd_track;
-			dvd_info.invalid_tracks++;
+			dvd_info->invalid_tracks++;
 			continue;
 		}
 
@@ -566,10 +553,10 @@ int main(int argc, char **argv) {
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
 
 		dvd_vts[dvd_track.vts].valid_tracks++;
-		dvd_info.valid_tracks++;
+		dvd_info->valid_tracks++;
 
 		if(dvd_track.msecs > longest_msecs) {
-			dvd_info.longest_track = dvd_track.track;
+			dvd_info->longest_track = dvd_track.track;
 			longest_msecs = dvd_track.msecs;
 		}
 
@@ -720,12 +707,12 @@ int main(int argc, char **argv) {
 		d_disc_title_header = false;
 
 	if(d_disc_title_header && !p_dvd_xchap) {
-		printf("Disc title: '%s', ", dvd_info.title);
-		printf("ID: '%s', ", dvd_info.dvdread_id);
-		printf("VTSs: %" PRIu16", ", dvd_info.video_title_sets);
-		printf("Total tracks: %" PRIu16 ", ", dvd_info.tracks);
-		printf("Valid: %" PRIu16 ", ", dvd_info.valid_tracks);
-		printf("Longest: %" PRIu16, dvd_info.longest_track);
+		printf("Disc title: '%s', ", dvd_info->title);
+		printf("ID: '%s', ", dvd_info->dvdread_id);
+		printf("VTSs: %" PRIu16", ", dvd_info->video_title_sets);
+		printf("Total tracks: %" PRIu16 ", ", dvd_info->tracks);
+		printf("Valid: %" PRIu16 ", ", dvd_info->valid_tracks);
+		printf("Longest: %" PRIu16, dvd_info->longest_track);
 		printf("\n");
 	}
 
@@ -734,7 +721,7 @@ int main(int argc, char **argv) {
 		if(opt_track_number)
 			dvd_xchap(dvd_tracks[arg_track_number - 1]);
 		else
-			dvd_xchap(dvd_tracks[dvd_info.longest_track - 1]);
+			dvd_xchap(dvd_tracks[dvd_info->longest_track - 1]);
 		goto cleanup;
 	}
 
@@ -751,24 +738,24 @@ int main(int argc, char **argv) {
 	// Print the valid and invalid VTSs
 	if(debug) {
 
-		printf("        Tracks: %02" PRIu16 ", ", dvd_info.tracks);
-		printf("Valid: %02" PRIu16 ", ", dvd_info.valid_tracks);
-		printf("Invalid: %02" PRIu16, dvd_info.invalid_tracks);
+		printf("        Tracks: %02" PRIu16 ", ", dvd_info->tracks);
+		printf("Valid: %02" PRIu16 ", ", dvd_info->valid_tracks);
+		printf("Invalid: %02" PRIu16, dvd_info->invalid_tracks);
 		printf("\n");
 
-		for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
+		for(vts = 1; vts < dvd_info->video_title_sets + 1; vts++) {
 			if(dvd_vts[vts].valid == true)
-				dvd_info.valid_video_title_sets++;
+				dvd_info->valid_video_title_sets++;
 			else
-				dvd_info.invalid_video_title_sets++;
+				dvd_info->invalid_video_title_sets++;
 		}
 
-		printf("        Video Title Sets: %02" PRIu16 ", ", dvd_info.video_title_sets);
-		printf("Valid: %02" PRIu16 ", ", dvd_info.valid_video_title_sets);
-		printf("Invalid: %02" PRIu16, dvd_info.invalid_video_title_sets);
+		printf("        Video Title Sets: %02" PRIu16 ", ", dvd_info->video_title_sets);
+		printf("Valid: %02" PRIu16 ", ", dvd_info->valid_video_title_sets);
+		printf("Invalid: %02" PRIu16, dvd_info->invalid_video_title_sets);
 		printf("\n");
 
-		for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
+		for(vts = 1; vts < dvd_info->video_title_sets + 1; vts++) {
 			printf("        VTS: %02" PRIu16 ", ", vts);
 			printf("Tracks: %02" PRIu16 ", ", dvd_vts[vts].tracks);
 			printf("Valid: %02" PRIu16 ", ", dvd_vts[vts].valid_tracks);
