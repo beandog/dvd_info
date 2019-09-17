@@ -22,7 +22,6 @@
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
 #include "dvd_chapter.h"
-#include "dvd_cell.h"
 #include "dvd_video.h"
 #include "dvd_audio.h"
 #include "dvd_subtitles.h"
@@ -353,7 +352,7 @@ int main(int argc, char **argv) {
 		}
 
 	}
-	
+
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks)) {
 		fprintf(stderr, "[dvd_player] Choose a track number between 1 and %" PRIu16 "\n", dvd_info.tracks);
@@ -364,10 +363,10 @@ int main(int argc, char **argv) {
 
 	uint16_t ix = 0;
 	uint16_t track_number = 1;
-	
+
 	uint32_t msecs = 0;
 	uint32_t longest_msecs = 0;
-	
+
 	// If no track number is given, choose the longest one that is valid and also
 	// has active audio tracks.
 	if(!opt_track_number) {
@@ -397,7 +396,7 @@ int main(int argc, char **argv) {
 			}
 
 		}
-	
+
 	}
 
 	if(vts_ifo)
@@ -426,7 +425,7 @@ int main(int argc, char **argv) {
 			dvd_playback.first_chapter = dvd_track.chapters;
 		} else
 			dvd_playback.first_chapter = arg_first_chapter;
-		
+
 		if(arg_last_chapter > dvd_track.chapters) {
 			dvd_playback.last_chapter = dvd_track.chapters;
 		} else
@@ -435,7 +434,7 @@ int main(int argc, char **argv) {
 		dvd_playback.first_chapter = 1;
 		dvd_playback.last_chapter = dvd_track.chapters;
 	}
-	
+
 	// DVD playback using libmpv
 	mpv_handle *dvd_mpv = NULL;
 	dvd_mpv = mpv_create();

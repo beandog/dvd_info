@@ -192,3 +192,58 @@ bool dvd_track_repeat_last_sector_error(const ifo_handle_t *vmg_ifo, const ifo_h
 	return false;
 
 }
+
+/**
+ * Get the number of milliseconds of a cell
+ */
+uint32_t dvd_cell_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
+
+	if(vts_ifo->vts_pgcit == NULL)
+		return 0;
+
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, track_number);
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+
+	if(pgc->cell_playback == NULL)
+		return 0;
+
+	uint32_t msecs = dvd_time_to_milliseconds(&pgc->cell_playback[cell_number - 1].playback_time);
+
+	return msecs;
+
+}
+
+/**
+ * Get the formatted string length of a cell
+ */
+void dvd_cell_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
+
+	uint32_t msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, track_number, cell_number);
+
+	milliseconds_length_format(dest_str, msecs);
+
+}
+
+dvd_cell_t *dvd_cell_init(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number) {
+
+	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo) || vts_ifo == NULL)
+		return NULL;
+
+	dvd_cell_t *dvd_cell = calloc(1, sizeof(dvd_cell_t));
+
+	if(dvd_cell == NULL)
+		return NULL;
+
+	dvd_cell->cell = cell_number;
+	dvd_cell->first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, cell_number);
+	dvd_cell->last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, cell_number);
+	dvd_cell->blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, track_number, cell_number);
+	dvd_cell->filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, track_number, cell_number);
+	dvd_cell->filesize_mbs = dvd_cell_filesize_mbs(vmg_ifo, vts_ifo, track_number, cell_number);
+	dvd_cell->msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, track_number, cell_number);
+	dvd_cell_length(dvd_cell->length, vmg_ifo, vts_ifo, track_number, cell_number);
+
+	return dvd_cell;
+
+}

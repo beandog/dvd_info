@@ -400,7 +400,37 @@ bool dvd_track_str_fps(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_ha
 		snprintf(dest_str, DVD_VIDEO_FPS + 1, "%02.02f", fps);
 		return true;
 	}
-	
+
 	return false;
+
+}
+
+dvd_video_t *dvd_video_init(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
+
+	dvd_video_t *dvd_video = calloc(1, sizeof(dvd_video_t));
+
+	if(dvd_video == NULL || vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo) || vts_ifo == NULL)
+		return NULL;
+
+	memset(dvd_video->codec, '\0', sizeof(dvd_video->codec));
+	dvd_video_codec(dvd_video->codec, vts_ifo);
+
+	memset(dvd_video->format, '\0', sizeof(dvd_video->format));
+	dvd_track_video_format(dvd_video->format, vts_ifo);
+
+	memset(dvd_video->aspect_ratio, '\0', sizeof(dvd_video->aspect_ratio));
+	dvd_video_aspect_ratio(dvd_video->aspect_ratio, vts_ifo);
+
+	memset(dvd_video->fps, '\0', sizeof(dvd_video->fps));
+	dvd_track_str_fps(dvd_video->fps, vmg_ifo, vts_ifo, track_number);
+
+	dvd_video->width = dvd_video_height(vts_ifo);
+	dvd_video->height = dvd_video_width(vts_ifo);
+	dvd_video->letterbox = dvd_video_letterbox(vts_ifo);
+	dvd_video->pan_and_scan = dvd_video_pan_scan(vts_ifo);
+	dvd_video->df = dvd_video_df(vts_ifo);
+	dvd_video->angles = dvd_video_angles(vmg_ifo, track_number);
+
+	return dvd_video;
 
 }
