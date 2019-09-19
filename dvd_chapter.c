@@ -71,3 +71,63 @@ uint8_t dvd_chapter_last_cell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 	return last_cell;
 
 }
+
+uint8_t dvd_chapter_cells(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t chapter_number) {
+
+	uint8_t first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, track_number, chapter_number);
+	uint8_t last_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, track_number, chapter_number);
+
+	return last_cell - first_cell + 1;
+
+}
+
+uint64_t dvd_chapter_blocks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t chapter_number) {
+
+	uint8_t first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, track_number, chapter_number);
+	uint8_t last_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, track_number, chapter_number);
+
+	uint8_t cell;
+	uint64_t cell_blocks = 0;
+	uint64_t chapter_blocks = 0;
+
+	for(cell = first_cell; cell < last_cell + 1; cell++) {
+
+		cell_blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, track_number, cell);
+
+		chapter_blocks += cell_blocks;
+
+	}
+
+	return chapter_blocks;
+
+}
+
+uint64_t dvd_chapter_filesize(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t chapter_number) {
+
+	uint64_t blocks;
+	blocks = dvd_chapter_blocks(vmg_ifo, vts_ifo, track_number, chapter_number);
+
+	uint64_t filesize = 0;
+	filesize = blocks * DVD_VIDEO_LB_LEN;
+
+	return filesize;
+
+}
+
+double dvd_chapter_filesize_mbs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t chapter_number) {
+
+	uint64_t blocks;
+	blocks = dvd_chapter_blocks(vmg_ifo, vts_ifo, track_number, chapter_number);
+
+	if(blocks == 0)
+		return 0;
+
+	double filesize_mbs = 0;
+	filesize_mbs = (blocks * DVD_VIDEO_LB_LEN) / 1048576.0;
+
+	if(filesize_mbs < 1.0)
+		filesize_mbs = 1.0;
+
+	return filesize_mbs;
+
+}

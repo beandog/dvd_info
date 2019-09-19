@@ -148,6 +148,9 @@ int main(int argc, char **argv) {
 	snprintf(dvd_chapter.length, DVD_CHAPTER_LENGTH + 1, "00:00:00.000");
 	dvd_chapter.first_cell = 1;
 	dvd_chapter.last_cell = 1;
+	dvd_chapter.blocks = 0;
+	dvd_chapter.filesize = 0;
+	dvd_chapter.filesize_mbs = 0;
 
 	// Cells
 	struct dvd_cell dvd_cell;
@@ -670,6 +673,9 @@ int main(int argc, char **argv) {
 				dvd_chapter.msecs = dvd_chapter_msecs(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 				dvd_chapter.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 				dvd_chapter.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
+				dvd_chapter.blocks = dvd_chapter_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
+				dvd_chapter.filesize = dvd_chapter_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
+				dvd_chapter.filesize_mbs = dvd_chapter_filesize_mbs(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
 
 				dvd_track.dvd_chapters[chapter_ix] = dvd_chapter;
 
@@ -889,7 +895,11 @@ int main(int argc, char **argv) {
 			for(chapter_ix = 0; chapter_ix < dvd_track.chapters; chapter_ix++) {
 
 				dvd_chapter = dvd_track.dvd_chapters[chapter_ix];
-				printf("        Chapter: %02" PRIu8 ", Length: %s\n", dvd_chapter.chapter, dvd_chapter.length);
+				printf("        Chapter: %02" PRIu8 ", ", dvd_chapter.chapter);
+				printf("Length: %s, ", dvd_chapter.length);
+				printf("First cell: %02" PRIu8 ", ", dvd_chapter.first_cell);
+				printf("Last cell: %02" PRIu8 ", ", dvd_chapter.last_cell);
+				printf("Filesize: % 5.0lf MBs\n", dvd_chapter.filesize_mbs);
 
 			}
 

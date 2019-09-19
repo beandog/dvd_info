@@ -73,13 +73,21 @@ uint64_t dvd_cell_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 
 }
 
+/**
+ * Same as displaying for chapters, the tracks MBs size will be the alrgest,
+ * and always round up. Chapters and cells will only round up if the total is
+ * less than 1. The total won't match the display of the track exactly.
+ */
 double dvd_cell_filesize_mbs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number) {
 
 	uint64_t blocks;
 	blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, track_number, cell_number);
 
 	double cell_filesize_mbs = 0;
-	cell_filesize_mbs = ceil((blocks * DVD_VIDEO_LB_LEN) / 1048576.0);
+	cell_filesize_mbs = (blocks * DVD_VIDEO_LB_LEN) / 1048576.0;
+
+	if(cell_filesize_mbs < 1.0)
+		cell_filesize_mbs = 1;
 
 	return cell_filesize_mbs;
 
