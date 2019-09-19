@@ -817,8 +817,8 @@ int main(int argc, char **argv) {
 		printf("Length: %s, ", dvd_track.length);
 		printf("Chapters: %02" PRIu8 ", ", dvd_track.chapters);
 		printf("Cells: %02" PRIu8 ", ", dvd_track.cells);
-		printf("Audio streams: %02" PRIu8 ", ", dvd_track.active_audio_streams);
-		printf("Subpictures: %02" PRIu8 ", ", dvd_track.active_subs);
+		printf("Audio streams: %02" PRIu8 ", ", (verbose ? dvd_track.audio_tracks : dvd_track.active_audio_streams));
+		printf("Subpictures: %02" PRIu8 ", ", (verbose ? dvd_track.subtitles : dvd_track.active_subs));
 		printf("VTS: %02" PRIu16", ", dvd_track.vts);
 		printf("Valid: %s, ", (dvd_track.valid ? "yes" : " no"));
 		printf("Filesize: % 5.0lf MBs", dvd_track.filesize_mbs);
