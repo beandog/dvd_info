@@ -3,6 +3,50 @@
 /** Subtitles **/
 
 /**
+ * Get the number of subtitle streams for a track
+ *
+ */
+uint8_t dvd_track_subtitles(const ifo_handle_t *vts_ifo) {
+
+	if(vts_ifo->vtsi_mat == NULL)
+		return 0;
+
+	uint8_t subtitles = vts_ifo->vtsi_mat->nr_of_vts_subp_streams;
+
+	return subtitles;
+
+}
+
+/**
+ * Get the number of subtitle streams marked as active.
+ *
+ */
+uint8_t dvd_track_active_subtitles(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track) {
+
+	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
+		return 0;
+
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	pgc_t *pgc = vts_pgcit->pgci_srp[vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn - 1].pgc;
+	uint8_t idx = 0;
+	uint8_t active_subtitles = 0;
+
+	if(!pgc)
+		return 0;
+
+	for(idx = 0; idx < DVD_SUBTITLE_STREAM_LIMIT; idx++) {
+
+		if(pgc->subp_control[idx] & 0x80000000)
+			active_subtitles++;
+
+	}
+
+	return active_subtitles;
+
+}
+
+/**
  * Check if a subtitle stream is flagged as active or not.
  *
  * @param vmg_ifo dvdread track IFO handler
@@ -124,24 +168,5 @@ void dvd_subtitle_lang_code(char *dest_str, const ifo_handle_t *vts_ifo, const u
 void dvd_subtitle_stream_id(char *dest_str, const uint8_t subtitle_track) {
 
 	snprintf(dest_str, DVD_SUBTITLE_STREAM_ID + 1, "0x%x", 0x20 + subtitle_track);
-
-}
-
-dvd_subtitle_t *dvd_subtitle_init(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t subtitle_track_ix) {
-
-	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo) || vts_ifo == NULL)
-		return NULL;
-
-	dvd_subtitle_t *dvd_subtitle = calloc(1, sizeof(dvd_subtitle_t));
-
-	if(dvd_subtitle == NULL)
-		return NULL;
-
-	dvd_subtitle->track = subtitle_track_ix + 1;
-	dvd_subtitle->active = dvd_subtitle_active(vmg_ifo, vts_ifo, track_number, subtitle_track_ix);
-	dvd_subtitle_lang_code(dvd_subtitle->lang_code, vts_ifo, subtitle_track_ix);
-	dvd_subtitle_stream_id(dvd_subtitle->stream_id, subtitle_track_ix);
-
-	return dvd_subtitle;
 
 }

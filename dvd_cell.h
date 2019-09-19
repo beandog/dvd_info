@@ -2,7 +2,6 @@
 #define DVD_INFO_CELL_H
 
 #include "dvd_track.h"
-#include "dvd_time.h"
 #include "dvd_vmg_ifo.h"
 
 struct dvd_cell {
@@ -15,17 +14,6 @@ struct dvd_cell {
 	uint64_t filesize;
 	double filesize_mbs;
 };
-
-typedef struct {
-	uint8_t cell;
-	char length[DVD_CELL_LENGTH + 1];
-	uint32_t msecs;
-	uint64_t first_sector;
-	uint64_t last_sector;
-	uint64_t blocks;
-	uint64_t filesize;
-	double filesize_mbs;
-} dvd_cell_t;
 
 uint64_t dvd_cell_first_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number);
 
@@ -47,12 +35,6 @@ uint64_t dvd_cell_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_if
 uint64_t dvd_cell_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number);
 
 double dvd_cell_filesize_mbs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number);
-
-uint32_t dvd_cell_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number);
-
-void dvd_cell_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number);
-
-dvd_cell_t *dvd_cell_init(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number);
 
 /**
  * Track some possible indicators that the DVD is authored intentionally to break

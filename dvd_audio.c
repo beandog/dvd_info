@@ -3,6 +3,68 @@
 /** Audio Streams **/
 
 /**
+ * Get the number of audio streams for a track
+ *
+ * @param vts_ifo dvdread track IFO handler
+ * @return number of audio streams
+ */
+uint8_t dvd_track_audio_tracks(const ifo_handle_t *vts_ifo) {
+
+	if(vts_ifo->vtsi_mat == NULL)
+		return 0;
+
+	uint8_t audio_streams = vts_ifo->vtsi_mat->nr_of_vts_audio_streams;
+
+	return audio_streams;
+
+}
+
+/**
+ * Examine the PGC for the track IFO directly and see if there are any audio
+ * control entries marked as active.  This is an alternative way of checking
+ * for the number of audio streams, compared to looking at the VTS directly.
+ * This is useful for debugging, and flushing out either badly mastered DVDs or
+ * getting a closer identifier of how many streams this has.
+ *
+ * Some software uses this number of audio streams in the pgc instead of the
+ * one in the VTSI MAT, such as mplayer and HandBrake, which will skip over
+ * the other ones completely.
+ *
+ * @param vmg_ifo dvdread track IFO handler
+ * @param vts_ifo dvdread track IFO handler
+ * @param title_track track number
+ * @return number of PGC audio streams marked as active
+ */
+uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track) {
+
+	if(title_track == 0)
+		return 0;
+
+	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
+		return 0;
+
+	pgcit_t *vts_pgcit = vts_ifo->vts_pgcit;
+	uint8_t ttn = dvd_track_ttn(vmg_ifo, title_track);
+	uint16_t pgcn = vts_ifo->vts_ptt_srpt->title[ttn - 1].ptt[0].pgcn;
+	pgc_t *pgc = vts_pgcit->pgci_srp[pgcn - 1].pgc;
+	uint8_t idx = 0;
+	uint8_t audio_tracks = 0;
+
+	if(!pgc)
+		return 0;
+
+	for(idx = 0; idx < DVD_AUDIO_STREAM_LIMIT; idx++) {
+
+		if(pgc->audio_control[idx] & 0x8000)
+			audio_tracks++;
+
+	}
+
+	return audio_tracks;
+
+}
+
+/**
  * Look through the program chain to see if an audio track is flagged as
  * active or not.
  *
@@ -199,29 +261,5 @@ bool dvd_audio_lang_code(char *dest_str, const ifo_handle_t *vts_ifo, const uint
 	snprintf(dest_str, DVD_AUDIO_LANG_CODE + 1, "%c%c", audio_attr->lang_code >> 8, audio_attr->lang_code & 0xff);
 
 	return true;
-
-}
-
-dvd_audio_t *dvd_audio_init(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t audio_track_ix) {
-
-	dvd_audio_t *dvd_audio = calloc(1, sizeof(dvd_audio_t));
-
-	if(dvd_audio == NULL || vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo) || vts_ifo == NULL)
-		return NULL;
-
-	memset(dvd_audio->stream_id, '\0', sizeof(dvd_audio->stream_id));
-	dvd_audio_stream_id(dvd_audio->stream_id, vts_ifo, audio_track_ix);
-
-	memset(dvd_audio->lang_code, '\0', sizeof(dvd_audio->lang_code));
-	dvd_audio_lang_code(dvd_audio->lang_code, vts_ifo, audio_track_ix);
-
-	memset(dvd_audio->codec, '\0', sizeof(dvd_audio->codec));
-	dvd_audio_codec(dvd_audio->codec, vts_ifo, audio_track_ix);
-
-	dvd_audio->active = dvd_audio_active(vmg_ifo, vts_ifo, track_number, audio_track_ix);
-
-	dvd_audio->channels = dvd_audio_channels(vts_ifo, audio_track_ix);
-
-	return dvd_audio;
 
 }

@@ -13,6 +13,7 @@
 #include "dvd_vts.h"
 #include "dvd_track.h"
 #include "dvd_chapter.h"
+#include "dvd_cell.h"
 #include "dvd_video.h"
 #include "dvd_audio.h"
 #include "dvd_subtitles.h"
@@ -42,6 +43,7 @@ int main(int argc, char **argv) {
 	bool d_cells = false;
 
 	// How much output
+	bool verbose = false;
 	bool debug = false;
 
 	// limit results
@@ -56,6 +58,7 @@ int main(int argc, char **argv) {
 	uint16_t arg_vts = 0;
 
 	// dvd_info
+	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
 	bool d_disc_title_header = true;
 	uint16_t d_first_track = 1;
 	uint16_t d_last_track = 1;
@@ -65,6 +68,7 @@ int main(int argc, char **argv) {
 	uint8_t subtitle_track_ix = 0;
 	uint8_t chapter_ix = 0;
 	uint8_t cell_ix = 0;
+	uint8_t d_stream_num = 0;
 
 	// Device hardware
 	int dvd_fd = 0;
@@ -76,6 +80,19 @@ int main(int argc, char **argv) {
 	ifo_handle_t *vts_ifo = NULL;
 
 	// DVD
+	struct dvd_info dvd_info;
+	memset(dvd_info.dvdread_id, '\0', sizeof(dvd_info.dvdread_id));
+	dvd_info.video_title_sets = 1;
+	dvd_info.side = 1;
+	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
+	memset(dvd_info.provider_id, '\0', sizeof(dvd_info.provider_id));
+	memset(dvd_info.vmg_id, '\0', sizeof(dvd_info.vmg_id));
+	dvd_info.tracks = 1;
+	dvd_info.longest_track = 1;
+	dvd_info.valid_video_title_sets = 0;
+	dvd_info.invalid_video_title_sets = 0;
+	dvd_info.valid_tracks = 0;
+	dvd_info.invalid_tracks = 0;
 
 	// Video Title Set
 	struct dvd_vts dvd_vts[99];
@@ -175,6 +192,7 @@ int main(int argc, char **argv) {
 		{ "min-minutes", required_argument, NULL, 'M' },
 		{ "vts", required_argument, NULL, 'T' },
 		{ "help", no_argument, NULL, 'h' },
+		{ "verbose", no_argument, NULL, 'e' },
 		{ "version", no_argument, NULL, 'V' },
 		{ "debug", no_argument, NULL, 'z' },
 		{ 0, 0, 0, 0 }
@@ -202,6 +220,10 @@ int main(int argc, char **argv) {
 
 			case 'd':
 				d_cells = true;
+				break;
+
+			case 'e':
+				verbose = true;
 				break;
 
 			case 'E':
@@ -302,6 +324,7 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("Other:\n");
 				printf("  -g, --xchap           Display title's chapter format for mkvmerge\n");
+				printf("  -e, --verbose         Display invalid tracks and inactive streams\n");
 				printf("  -h, --help            Display these help options\n");
 				printf("      --version         Version information\n");
 				printf("\n");
@@ -317,6 +340,9 @@ int main(int argc, char **argv) {
 		}
 
 	}
+
+	if(debug)
+		verbose = true;
 
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
@@ -375,13 +401,11 @@ int main(int argc, char **argv) {
 	}
 
 	// Check if DVD has an identifier, fail otherwise
-	/*
 	dvd_dvdread_id(dvdread_id, dvdread_dvd);
 	if(strlen(dvdread_id) == 0) {
 		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
 		return 1;
 	}
-	*/
 
 	// Open VMG IFO -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
@@ -392,18 +416,11 @@ int main(int argc, char **argv) {
 	}
 
 	// Get the total number of title tracks on the DVD
-
-	dvd_info_t *dvd_info = NULL;
-	dvd_info = dvd_info_init(dvdread_dvd, device_filename);
-	if(dvd_info == NULL) {
-		fprintf(stderr, "Opening VMG IFO failed\n");
-		DVDClose(dvdread_dvd);
-		return 1;
-	}
+	dvd_info.tracks = dvd_tracks(vmg_ifo);
 
 	// Exit if track number requested does not exist
-	if(opt_track_number && (arg_track_number > dvd_info->tracks || arg_track_number < 1)) {
-		fprintf(stderr, "Valid track numbers: 1 to %" PRIu16 "\n", dvd_info->tracks);
+	if(opt_track_number && (arg_track_number > dvd_info.tracks || arg_track_number < 1)) {
+		fprintf(stderr, "Valid track numbers: 1 to %" PRIu16 "\n", dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -413,13 +430,14 @@ int main(int argc, char **argv) {
 		track_number = d_first_track;
 	} else {
 		d_first_track = 1;
-		d_last_track = dvd_info->tracks;
+		d_last_track = dvd_info.tracks;
 	}
 
+	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
 	ifo_handle_t *vts_ifos[DVD_MAX_VTS_IFOS];
 
-	if(opt_vts && (arg_vts == 0 || arg_vts > dvd_info->video_title_sets)) {
-		fprintf(stderr, "Video Title Set must be between 1 and %" PRIu16 "\n", dvd_info->video_title_sets);
+	if(opt_vts && (arg_vts == 0 || arg_vts > dvd_info.video_title_sets)) {
+		fprintf(stderr, "Video Title Set must be between 1 and %" PRIu16 "\n", dvd_info.video_title_sets);
 		return 1;
 	}
 
@@ -428,7 +446,7 @@ int main(int argc, char **argv) {
 		vts_ifos[vts_ifo_ix] = NULL;
 
 	// Do some checks to see if a VTS is ok or not
-	for(vts = 1; vts < dvd_info->video_title_sets + 1; vts++) {
+	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
 		dvd_vts[vts].vts = vts;
 		dvd_vts[vts].valid = false;
@@ -470,6 +488,13 @@ int main(int argc, char **argv) {
 		dvd_vts[vts].valid = true;
 
 	}
+
+	// GRAB ALL THE THINGS
+	dvd_title(dvd_info.title, device_filename);
+	dvd_info.side = dvd_info_side(vmg_ifo);
+	dvd_provider_id(dvd_info.provider_id, vmg_ifo);
+	dvd_vmg_id(dvd_info.vmg_id, vmg_ifo);
+	strncpy(dvd_info.dvdread_id, dvdread_id, DVD_DVDREAD_ID);
 
 	/**
 	 * Track information
@@ -518,7 +543,7 @@ int main(int argc, char **argv) {
 			dvd_track.valid = false;
 			dvd_tracks[track_number - 1] = dvd_track;
 			dvd_vts[dvd_track.vts].invalid_tracks++;
-			dvd_info->invalid_tracks++;
+			dvd_info.invalid_tracks++;
 			continue;
 		}
 
@@ -533,7 +558,7 @@ int main(int argc, char **argv) {
 			dvd_track.valid = false;
 			dvd_vts[dvd_track.vts].invalid_tracks++;
 			dvd_tracks[track_number - 1] = dvd_track;
-			dvd_info->invalid_tracks++;
+			dvd_info.invalid_tracks++;
 			continue;
 		}
 
@@ -541,10 +566,10 @@ int main(int argc, char **argv) {
 		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
 
 		dvd_vts[dvd_track.vts].valid_tracks++;
-		dvd_info->valid_tracks++;
+		dvd_info.valid_tracks++;
 
 		if(dvd_track.msecs > longest_msecs) {
-			dvd_info->longest_track = dvd_track.track;
+			dvd_info.longest_track = dvd_track.track;
 			longest_msecs = dvd_track.msecs;
 		}
 
@@ -695,12 +720,12 @@ int main(int argc, char **argv) {
 		d_disc_title_header = false;
 
 	if(d_disc_title_header && !p_dvd_xchap) {
-		printf("Disc title: '%s', ", dvd_info->title);
-		printf("ID: '%s', ", dvd_info->dvdread_id);
-		printf("VTSs: %" PRIu16", ", dvd_info->video_title_sets);
-		printf("Total tracks: %" PRIu16 ", ", dvd_info->tracks);
-		printf("Valid: %" PRIu16 ", ", dvd_info->valid_tracks);
-		printf("Longest: %" PRIu16, dvd_info->longest_track);
+		printf("Disc title: '%s', ", dvd_info.title);
+		printf("ID: '%s', ", dvd_info.dvdread_id);
+		printf("VTSs: %" PRIu16", ", dvd_info.video_title_sets);
+		printf("Total tracks: %" PRIu16 ", ", dvd_info.tracks);
+		printf("Valid: %" PRIu16 ", ", dvd_info.valid_tracks);
+		printf("Longest: %" PRIu16, dvd_info.longest_track);
 		printf("\n");
 	}
 
@@ -709,7 +734,7 @@ int main(int argc, char **argv) {
 		if(opt_track_number)
 			dvd_xchap(dvd_tracks[arg_track_number - 1]);
 		else
-			dvd_xchap(dvd_tracks[dvd_info->longest_track - 1]);
+			dvd_xchap(dvd_tracks[dvd_info.longest_track - 1]);
 		goto cleanup;
 	}
 
@@ -726,24 +751,24 @@ int main(int argc, char **argv) {
 	// Print the valid and invalid VTSs
 	if(debug) {
 
-		printf("        Tracks: %02" PRIu16 ", ", dvd_info->tracks);
-		printf("Valid: %02" PRIu16 ", ", dvd_info->valid_tracks);
-		printf("Invalid: %02" PRIu16, dvd_info->invalid_tracks);
+		printf("        Tracks: %02" PRIu16 ", ", dvd_info.tracks);
+		printf("Valid: %02" PRIu16 ", ", dvd_info.valid_tracks);
+		printf("Invalid: %02" PRIu16, dvd_info.invalid_tracks);
 		printf("\n");
 
-		for(vts = 1; vts < dvd_info->video_title_sets + 1; vts++) {
+		for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 			if(dvd_vts[vts].valid == true)
-				dvd_info->valid_video_title_sets++;
+				dvd_info.valid_video_title_sets++;
 			else
-				dvd_info->invalid_video_title_sets++;
+				dvd_info.invalid_video_title_sets++;
 		}
 
-		printf("        Video Title Sets: %02" PRIu16 ", ", dvd_info->video_title_sets);
-		printf("Valid: %02" PRIu16 ", ", dvd_info->valid_video_title_sets);
-		printf("Invalid: %02" PRIu16, dvd_info->invalid_video_title_sets);
+		printf("        Video Title Sets: %02" PRIu16 ", ", dvd_info.video_title_sets);
+		printf("Valid: %02" PRIu16 ", ", dvd_info.valid_video_title_sets);
+		printf("Invalid: %02" PRIu16, dvd_info.invalid_video_title_sets);
 		printf("\n");
 
-		for(vts = 1; vts < dvd_info->video_title_sets + 1; vts++) {
+		for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 			printf("        VTS: %02" PRIu16 ", ", vts);
 			printf("Tracks: %02" PRIu16 ", ", dvd_vts[vts].tracks);
 			printf("Valid: %02" PRIu16 ", ", dvd_vts[vts].valid_tracks);
@@ -762,143 +787,6 @@ int main(int argc, char **argv) {
 		printf("\n");
 	}
 
-	dvd_track_t *dvd_track_info = NULL;
-	dvd_video_t *dvd_video_info = NULL;
-	dvd_audio_t *dvd_audio_info = NULL;
-	dvd_subtitle_t *dvd_subtitle_info = NULL;
-	dvd_chapter_t *dvd_chapter_info = NULL;
-	dvd_cell_t *dvd_cell_info = NULL;
-
-	uint8_t audio_track_number;
-	uint8_t subtitle_track_number;
-
-	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
-
-		dvd_track_info = dvd_track_init(dvdread_dvd, vmg_ifo, track_number);
-
-		// Skip if limiting to tracks with audio only
-		if(d_has_audio && dvd_track_info->active_audio_streams == 0)
-			continue;
-
-		// Skip if limiting tracks to one with VOBSUB subtitles only (cc not supported)
-		if(d_has_subtitles && dvd_track_info->active_subs == 0)
-			continue;
-
-		// Skip if limiting to a minimum # of seconds which the length doesn't meet
-		if(opt_min_seconds && dvd_track_info->msecs < (arg_min_seconds * 1000))
-			continue;
-
-		// Skip if limiting to a minimum # of minutes which the length doesn't meet
-		if(opt_min_minutes && dvd_track_info->msecs < (arg_min_minutes * 1000 * 60))
-			continue;
-
-		// Skip if limiting to one title set
-		if(opt_vts && dvd_track_info->vts != arg_vts)
-			continue;
-
-		if(dvd_track_info == NULL)
-			continue;
-
-		/** Track **/
-		printf("Track: %02" PRIu16 ", ", dvd_track_info->track);
-		printf("Length: %s, ", dvd_track_info->length);
-		printf("Chapters: %02" PRIu8 ", ", dvd_track_info->chapters);
-		printf("Cells: %02" PRIu8 ", ", dvd_track_info->cells);
-		printf("Audio streams: %02" PRIu8 ", ", dvd_track_info->audio_tracks);
-		printf("Subpictures: %02" PRIu8 ", ", dvd_track_info->active_subs);
-		printf("VTS: %02" PRIu16", ", dvd_track_info->vts);
-		printf("Valid: %s, ", (dvd_track_info->valid ? "yes" : " no"));
-		printf("Filesize: % 5.0lf MBs", dvd_track_info->filesize_mbs);
-		printf("\n");
-
-		vts_ifo = ifoOpen(dvdread_dvd, dvd_track_info->vts);
-
-		/** Display video **/
-		dvd_video_info = NULL;
-		if(d_video && vts_ifo != NULL)
-			dvd_video_info = dvd_video_init(vmg_ifo, vts_ifo, track_number);
-
-		if(d_video && dvd_video_info != NULL) {
-			printf("        Video format: %s, ", dvd_video_info->format);
-			printf("Aspect ratio: %s, ", dvd_video_info->aspect_ratio);
-			printf("Width: %" PRIu16 ", ", dvd_video_info->width);
-			printf("Height: %" PRIu16 ", ", dvd_video_info->height);
-			printf("FPS: %s, ", dvd_video_info->fps);
-			printf("Display format: %s", display_formats[dvd_video_info->df]);
-			printf("\n");
-		}
-
-		/** Display audio **/
-		dvd_audio_info = NULL;
-		if(d_audio && vts_ifo != NULL) {
-
-			for(audio_track_ix = 0, audio_track_number = 1; audio_track_ix < dvd_track_info->audio_tracks; audio_track_ix++, audio_track_number++) {
-
-				dvd_audio_info = dvd_audio_init(vmg_ifo, vts_ifo, track_number, audio_track_ix);
-				printf("        Audio: %02" PRIu8 ", ", audio_track_number);
-				printf("Language: %s, ", (strlen(dvd_audio_info->lang_code) ? dvd_audio_info->lang_code : "--"));
-				printf("Codec: %s, ", dvd_audio_info->codec);
-				printf("Channels: %" PRIu8 ", ", dvd_audio_info->channels);
-				printf("Stream id: %s, ", dvd_audio_info->stream_id);
-				printf("Active: %s", (dvd_audio_info->active ? "yes" : "no"));
-				printf("\n");
-
-			}
-
-		}
-
-		/** Subtitles **/
-		dvd_subtitle_info = NULL;
-		if(d_subtitles && dvd_track_info->subtitles && vts_ifo != NULL) {
-			for(subtitle_track_ix = 0, subtitle_track_number = 1; subtitle_track_ix < dvd_track_info->subtitles; subtitle_track_ix++, subtitle_track_number++) {
-
-				dvd_subtitle_info = dvd_subtitle_init(vmg_ifo, vts_ifo, track_number, subtitle_track_ix);
-				printf("        Subtitle: %02" PRIu8 ", ", subtitle_track_number);
-				printf("Language: %s, ", (strlen(dvd_subtitle_info->lang_code) ? dvd_subtitle_info->lang_code : "--"));
-				printf("Stream id: %s, ", dvd_subtitle_info->stream_id);
-				printf("Active: %s", (dvd_subtitle_info->active ? "yes" : "no"));
-				printf("\n");
-
-			}
-
-		}
-
-		/** Chapters **/
-		if(d_chapters && dvd_track_info->chapters && vts_ifo != NULL) {
-
-			dvd_chapter_info = NULL;
-			for(chapter_ix = 0; chapter_ix < dvd_track_info->chapters; chapter_ix++) {
-				dvd_chapter_info = dvd_chapter_init(vmg_ifo, vts_ifo, track_number, chapter_ix + 1);
-
-				printf("        Chapter: %02" PRIu8 ", Length: %s\n", dvd_chapter_info->chapter, dvd_chapter_info->length);
-
-			}
-
-		}
-
-		/** Cells **/
-		if(d_cells && dvd_track_info->cells) {
-
-			dvd_cell_info = NULL;
-			for(cell_ix = 0; cell_ix < dvd_track_info->cells; cell_ix++) {
-
-				dvd_cell_info = dvd_cell_init(vmg_ifo, vts_ifo, track_number, cell_ix);
-
-				printf("        Cell: %02" PRIu8 ", ", dvd_cell_info->cell);
-				printf("Length: %s, ", dvd_cell_info->length);
-				printf("First sector: %7" PRIu64 ", ", dvd_cell_info->first_sector);
-				printf("Last sector: %7" PRIu64", ", dvd_cell_info->last_sector);
-				printf("Filesize: % 5.0lf MBs", dvd_cell_info->filesize_mbs);
-				printf("\n");
-
-			}
-
-		}
-
-	}
-
-	/*
-	uint8_t d_stream_num = 0;
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
 		dvd_track = dvd_tracks[track_number - 1];
@@ -929,7 +817,7 @@ int main(int argc, char **argv) {
 		printf("Length: %s, ", dvd_track.length);
 		printf("Chapters: %02" PRIu8 ", ", dvd_track.chapters);
 		printf("Cells: %02" PRIu8 ", ", dvd_track.cells);
-		printf("Audio streams: %02" PRIu8 ", ", dvd_track.audio_tracks);
+		printf("Audio streams: %02" PRIu8 ", ", dvd_track.active_audio_streams);
 		printf("Subpictures: %02" PRIu8 ", ", dvd_track.active_subs);
 		printf("VTS: %02" PRIu16", ", dvd_track.vts);
 		printf("Valid: %s, ", (dvd_track.valid ? "yes" : " no"));
@@ -956,6 +844,8 @@ int main(int argc, char **argv) {
 
 				dvd_audio = dvd_track.dvd_audio_tracks[audio_track_ix];
 
+				if(dvd_audio.active == false && !verbose)
+					continue;
 
 				printf("        Audio: %02" PRIu8 ", ", d_stream_num);
 				printf("Language: %s, ", (strlen(dvd_audio.lang_code) ? dvd_audio.lang_code : "--"));
@@ -1009,6 +899,9 @@ int main(int argc, char **argv) {
 
 				dvd_subtitle = dvd_track.dvd_subtitles[subtitle_track_ix];
 
+				if(dvd_subtitle.active == false && !verbose)
+					continue;
+
 				printf("        Subtitle: %02" PRIu8 ", ", d_stream_num);
 				printf("Language: %s, ", (strlen(dvd_subtitle.lang_code) ? dvd_subtitle.lang_code : "--"));
 				printf("Stream id: %s, ", dvd_subtitle.stream_id);
@@ -1022,7 +915,6 @@ int main(int argc, char **argv) {
 		}
 
 	}
-	*/
 
 	// Cleanup
 

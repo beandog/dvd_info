@@ -22,6 +22,7 @@
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
 #include "dvd_chapter.h"
+#include "dvd_cell.h"
 #include "dvd_video.h"
 #include "dvd_audio.h"
 #include "dvd_subtitles.h"
