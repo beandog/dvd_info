@@ -859,6 +859,30 @@ int main(int argc, char **argv) {
 
 		}
 
+		// Display subtitles
+		if(d_subtitles && dvd_track.subtitles) {
+
+			d_stream_num = 1;
+
+			for(subtitle_track_ix = 0; subtitle_track_ix < dvd_track.subtitles; subtitle_track_ix++) {
+
+				dvd_subtitle = dvd_track.dvd_subtitles[subtitle_track_ix];
+
+				if(dvd_subtitle.active == false && !verbose)
+					continue;
+
+				printf("        Subtitle: %02" PRIu8 ", ", d_stream_num);
+				printf("Language: %s, ", (strlen(dvd_subtitle.lang_code) ? dvd_subtitle.lang_code : "--"));
+				printf("Stream id: %s, ", dvd_subtitle.stream_id);
+				printf("Active: %s", (dvd_subtitle.active ? "yes" : "no"));
+				printf("\n");
+
+				d_stream_num++;
+
+			}
+
+		}
+
 		// Display chapters
 		if(d_chapters && dvd_track.chapters) {
 
@@ -884,30 +908,6 @@ int main(int argc, char **argv) {
 				printf("Last sector: %7" PRIu64", ", dvd_cell.last_sector);
 				printf("Filesize: % 5.0lf MBs", dvd_cell.filesize_mbs);
 				printf("\n");
-
-			}
-
-		}
-
-		// Display subtitles
-		if(d_subtitles && dvd_track.subtitles) {
-
-			d_stream_num = 1;
-
-			for(subtitle_track_ix = 0; subtitle_track_ix < dvd_track.subtitles; subtitle_track_ix++) {
-
-				dvd_subtitle = dvd_track.dvd_subtitles[subtitle_track_ix];
-
-				if(dvd_subtitle.active == false && !verbose)
-					continue;
-
-				printf("        Subtitle: %02" PRIu8 ", ", d_stream_num);
-				printf("Language: %s, ", (strlen(dvd_subtitle.lang_code) ? dvd_subtitle.lang_code : "--"));
-				printf("Stream id: %s, ", dvd_subtitle.stream_id);
-				printf("Active: %s", (dvd_subtitle.active ? "yes" : "no"));
-				printf("\n");
-
-				d_stream_num++;
 
 			}
 
