@@ -94,7 +94,7 @@ uint32_t dvd_time_to_milliseconds(dvd_time_t *dvd_time) {
  *
  * @param milliseconds milliseconds
  */
-void milliseconds_length_format(char *dest_str, const uint32_t milliseconds) {
+void milliseconds_length_format(char *dest_str, uint32_t milliseconds) {
 
 	uint32_t total_seconds = milliseconds / 1000;
 	uint32_t hours = total_seconds / (3600);
@@ -114,7 +114,7 @@ void milliseconds_length_format(char *dest_str, const uint32_t milliseconds) {
  * Get the number of milliseconds for a title track using the program chain.
  *
  */
-uint32_t dvd_track_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+uint32_t dvd_track_msecs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
 
 	if(vts_ifo->vts_pgcit == NULL)
 		return 0;
@@ -146,7 +146,7 @@ uint32_t dvd_track_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_if
 /**
  * Get the number of milliseconds of a chapter
  */
-uint32_t dvd_chapter_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
+uint32_t dvd_chapter_msecs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t chapter_number) {
 
 	if(vts_ifo->vts_pgcit == NULL)
 		return 0;
@@ -190,7 +190,7 @@ uint32_t dvd_chapter_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 /**
  * Get the number of milliseconds of a cell
  */
-uint32_t dvd_cell_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
+uint32_t dvd_cell_msecs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number) {
 
 	if(vts_ifo->vts_pgcit == NULL)
 		return 0;
@@ -224,7 +224,7 @@ uint32_t dvd_cell_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
  * is used to flag anomalies using the dvd_debug program.
  *
  */
-uint32_t dvd_track_total_chapter_msecs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+uint32_t dvd_track_total_chapter_msecs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
 
 	uint8_t chapters = dvd_track_chapters(vmg_ifo, vts_ifo, track_number);
 
@@ -244,7 +244,7 @@ uint32_t dvd_track_total_chapter_msecs(const ifo_handle_t *vmg_ifo, const ifo_ha
 /**
  * Get the formatted string length of a title track
  */
-void dvd_track_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+void dvd_track_length(char *dest_str, ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
 
 	uint32_t msecs = dvd_track_msecs(vmg_ifo, vts_ifo, track_number);
 
@@ -255,7 +255,7 @@ void dvd_track_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_han
 /**
  * Get the formatted string length of a chapter
  */
-void dvd_chapter_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
+void dvd_chapter_length(char *dest_str, ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t chapter_number) {
 
 	uint32_t msecs = dvd_chapter_msecs(vmg_ifo, vts_ifo, track_number, chapter_number);
 
@@ -266,7 +266,7 @@ void dvd_chapter_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_h
 /**
  * Get the formatted string length of a cell
  */
-void dvd_cell_length(char *dest_str, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, uint8_t cell_number) {
+void dvd_cell_length(char *dest_str, ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number) {
 
 	uint32_t msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, track_number, cell_number);
 

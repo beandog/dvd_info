@@ -4,7 +4,7 @@
  * Functions used to get information about a DVD cell
  */
 
-uint64_t dvd_cell_first_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number) {
+uint64_t dvd_cell_first_sector(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number) {
 
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
 		return 0;
@@ -23,7 +23,7 @@ uint64_t dvd_cell_first_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
 
 }
 
-uint64_t dvd_cell_last_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number) {
+uint64_t dvd_cell_last_sector(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number) {
 
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
 		return 0;
@@ -42,7 +42,7 @@ uint64_t dvd_cell_last_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
 
 }
 
-uint64_t dvd_cell_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number) {
+uint64_t dvd_cell_blocks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number) {
 
 	uint64_t first_sector = 0;
 	first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, cell_number);
@@ -61,7 +61,7 @@ uint64_t dvd_cell_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_if
 
 }
 
-uint64_t dvd_cell_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number) {
+uint64_t dvd_cell_filesize(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number) {
 
 	uint64_t blocks;
 	blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, track_number, cell_number);
@@ -78,7 +78,7 @@ uint64_t dvd_cell_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
  * and always round up. Chapters and cells will only round up if the total is
  * less than 1. The total won't match the display of the track exactly.
  */
-double dvd_cell_filesize_mbs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number) {
+double dvd_cell_filesize_mbs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number) {
 
 	uint64_t blocks;
 	blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, track_number, cell_number);
@@ -93,7 +93,7 @@ double dvd_cell_filesize_mbs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vt
 
 }
 
-bool dvd_track_min_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+bool dvd_track_min_sector_error(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
 
 	uint8_t cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 
@@ -121,7 +121,7 @@ bool dvd_track_min_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
 
 }
 
-bool dvd_track_max_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+bool dvd_track_max_sector_error(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
 
 	uint8_t cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 
@@ -149,7 +149,7 @@ bool dvd_track_max_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t 
 
 }
 
-bool dvd_track_repeat_first_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+bool dvd_track_repeat_first_sector_error(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
 
 	uint8_t cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 
@@ -175,7 +175,7 @@ bool dvd_track_repeat_first_sector_error(const ifo_handle_t *vmg_ifo, const ifo_
 
 }
 
-bool dvd_track_repeat_last_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+bool dvd_track_repeat_last_sector_error(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
 
 	uint8_t cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 

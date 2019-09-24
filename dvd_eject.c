@@ -88,14 +88,14 @@
  *
  */
 
-int drive_status(const int dvd_fd);
-bool has_media(const int dvd_fd);
-bool is_open(const int dvd_fd);
-bool is_ready(const int dvd_fd);
-int open_tray(const int dvd_fd);
-int close_tray(const int dvd_fd);
-int lock_door(const int dvd_fd);
-int unlock_door(const int dvd_fd);
+int drive_status(int dvd_fd);
+bool has_media(int dvd_fd);
+bool is_open(int dvd_fd);
+bool is_ready(int dvd_fd);
+int open_tray(int dvd_fd);
+int close_tray(int dvd_fd);
+int lock_door(int dvd_fd);
+int unlock_door(int dvd_fd);
 int8_t is_mounted(const char *device_filename);
 
 int main(int argc, char **argv) {
@@ -384,13 +384,13 @@ int main(int argc, char **argv) {
 
 }
 
-int drive_status(const int dvd_fd) {
+int drive_status(int dvd_fd) {
 
 	return ioctl(dvd_fd, CDROM_DRIVE_STATUS);
 
 }
 
-bool has_media(const int dvd_fd) {
+bool has_media(int dvd_fd) {
 
 	if(drive_status(dvd_fd) == CDS_DISC_OK)
 		return true;
@@ -399,7 +399,7 @@ bool has_media(const int dvd_fd) {
 
 }
 
-bool is_open(const int dvd_fd) {
+bool is_open(int dvd_fd) {
 
 	if(drive_status(dvd_fd) == CDS_TRAY_OPEN)
 		return true;
@@ -408,7 +408,7 @@ bool is_open(const int dvd_fd) {
 
 }
 
-bool is_ready(const int dvd_fd) {
+bool is_ready(int dvd_fd) {
 
 	if(drive_status(dvd_fd) != CDS_DRIVE_NOT_READY)
 		return true;
@@ -417,25 +417,25 @@ bool is_ready(const int dvd_fd) {
 
 }
 
-int open_tray(const int dvd_fd) {
+int open_tray(int dvd_fd) {
 
 	return ioctl(dvd_fd, CDROMEJECT);
 
 }
 
-int close_tray(const int dvd_fd) {
+int close_tray(int dvd_fd) {
 
 	return ioctl(dvd_fd, CDROMCLOSETRAY);
 
 }
 
-int lock_door(const int dvd_fd) {
+int lock_door(int dvd_fd) {
 
 	return ioctl(dvd_fd, CDROM_LOCKDOOR, 1);
 
 }
 
-int unlock_door(const int dvd_fd) {
+int unlock_door(int dvd_fd) {
 
 	return ioctl(dvd_fd, CDROM_LOCKDOOR, 0);
 

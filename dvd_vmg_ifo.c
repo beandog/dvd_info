@@ -1,6 +1,6 @@
 #include "dvd_vmg_ifo.h"
 
-bool ifo_is_vts(const ifo_handle_t *ifo) {
+bool ifo_is_vts(ifo_handle_t *ifo) {
 
 	if(ifo->vtsi_mat == NULL)
 		return false;
@@ -73,7 +73,7 @@ bool dvd_dvdread_id(char *dest_str, dvd_reader_t *dvdread_dvd) {
 
 }
 
-bool ifo_is_vmg(const ifo_handle_t *ifo) {
+bool ifo_is_vmg(ifo_handle_t *ifo) {
 
 	if(ifo->vmgi_mat == NULL)
 		return false;
@@ -82,7 +82,7 @@ bool ifo_is_vmg(const ifo_handle_t *ifo) {
 
 }
 
-uint16_t dvd_tracks(const ifo_handle_t *vmg_ifo) {
+uint16_t dvd_tracks(ifo_handle_t *vmg_ifo) {
 
 	if(ifo_is_vmg(vmg_ifo) && vmg_ifo->tt_srpt != NULL)
 		return vmg_ifo->tt_srpt->nr_of_srpts;
@@ -91,7 +91,7 @@ uint16_t dvd_tracks(const ifo_handle_t *vmg_ifo) {
 
 }
 
-uint16_t dvd_video_title_sets(const ifo_handle_t *vmg_ifo) {
+uint16_t dvd_video_title_sets(ifo_handle_t *vmg_ifo) {
 
 	if(ifo_is_vmg(vmg_ifo) && vmg_ifo->vts_atrt != NULL)
 		return vmg_ifo->vts_atrt->nr_of_vtss;
@@ -99,7 +99,7 @@ uint16_t dvd_video_title_sets(const ifo_handle_t *vmg_ifo) {
 		return 0;
 }
 
-bool dvd_provider_id(char *dest_str, const ifo_handle_t *vmg_ifo) {
+bool dvd_provider_id(char *dest_str, ifo_handle_t *vmg_ifo) {
 
 	if(ifo_is_vmg(vmg_ifo))
 		strncpy(dest_str, vmg_ifo->vmgi_mat->provider_identifier, DVD_PROVIDER_ID);
@@ -108,7 +108,7 @@ bool dvd_provider_id(char *dest_str, const ifo_handle_t *vmg_ifo) {
 
 }
 
-bool dvd_vmg_id(char *dest_str, const ifo_handle_t *vmg_ifo) {
+bool dvd_vmg_id(char *dest_str, ifo_handle_t *vmg_ifo) {
 
 	if(ifo_is_vmg(vmg_ifo))
 		strncpy(dest_str, vmg_ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID);
@@ -117,7 +117,7 @@ bool dvd_vmg_id(char *dest_str, const ifo_handle_t *vmg_ifo) {
 
 }
 
-uint8_t dvd_info_side(const ifo_handle_t *vmg_ifo) {
+uint8_t dvd_info_side(ifo_handle_t *vmg_ifo) {
 
 	if(ifo_is_vmg(vmg_ifo)) {
 		if(vmg_ifo->vmgi_mat->disc_side == 2)
@@ -130,7 +130,7 @@ uint8_t dvd_info_side(const ifo_handle_t *vmg_ifo) {
 
 }
 
-bool dvd_specification_version(char *dest_str, const ifo_handle_t *vmg_ifo) {
+bool dvd_specification_version(char *dest_str, ifo_handle_t *vmg_ifo) {
 
 	if(ifo_is_vmg(vmg_ifo)) {
 		snprintf(dest_str, DVD_SPECIFICATION_VERSION + 1, "%01x.%01x", vmg_ifo->vmgi_mat->specification_version >> 4, vmg_ifo->vmgi_mat->specification_version & 0xf);

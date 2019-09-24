@@ -36,7 +36,7 @@
 #endif
 
 int main(int, char **);
-void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo);
+void dvd_track_info(struct dvd_track *dvd_track, uint16_t track_number, ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo);
 
 struct dvd_copy {
 	uint16_t track;
@@ -603,7 +603,7 @@ int main(int argc, char **argv) {
 
 }
 
-void dvd_track_info(struct dvd_track *dvd_track, const uint16_t track_number, const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo) {
+void dvd_track_info(struct dvd_track *dvd_track, uint16_t track_number, ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo) {
 
 	dvd_track->track = track_number;
 	dvd_track->valid = true;

@@ -11,7 +11,7 @@
  * chapters than cells, and the lengths of chapters don't exceed cells either. Doing
  * so would be a good fit for dvd_debug program.
  */
-uint8_t dvd_chapter_first_cell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
+uint8_t dvd_chapter_first_cell(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t chapter_number) {
 
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
 		return chapter_number;
@@ -39,7 +39,7 @@ uint8_t dvd_chapter_first_cell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *
  * oddly mastered DVDs out there or some tricky navigation instructions. In
  * short, I'm overly cautious, and this will probably work just fine.
  */
-uint8_t dvd_chapter_last_cell(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t chapter_number) {
+uint8_t dvd_chapter_last_cell(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t chapter_number) {
 
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
 		return chapter_number;

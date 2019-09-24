@@ -13,22 +13,22 @@ struct dvd_audio {
 	uint8_t channels;
 };
 
-uint8_t dvd_track_audio_tracks(const ifo_handle_t *vts_ifo);
+uint8_t dvd_track_audio_tracks(ifo_handle_t *vts_ifo);
 
-uint8_t dvd_audio_active_tracks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track);
+uint8_t dvd_audio_active_tracks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t title_track);
 
-bool dvd_audio_active(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t title_track, const uint8_t audio_track);
+bool dvd_audio_active(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t title_track, uint8_t audio_track);
 
-uint8_t dvd_track_num_audio_lang_code_streams(const ifo_handle_t *vts_ifo, const char *lang_code);
+uint8_t dvd_track_num_audio_lang_code_streams(ifo_handle_t *vts_ifo, char *lang_code);
 
-bool dvd_track_has_audio_lang_code(const ifo_handle_t *vts_ifo, const char *lang_code);
+bool dvd_track_has_audio_lang_code(ifo_handle_t *vts_ifo, char *lang_code);
 
-bool dvd_audio_codec(char *dest_str, const ifo_handle_t *vts_ifo, const uint8_t audio_stream);
+bool dvd_audio_codec(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_stream);
 
-uint8_t dvd_audio_channels(const ifo_handle_t *vts_ifo, const uint8_t audio_track);
+uint8_t dvd_audio_channels(ifo_handle_t *vts_ifo, uint8_t audio_track);
 
-bool dvd_audio_stream_id(char *dest_str, const ifo_handle_t *vts_ifo, const uint8_t audio_track);
+bool dvd_audio_stream_id(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track);
 
-bool dvd_audio_lang_code(char *dest_str, const ifo_handle_t *vts_ifo, const uint8_t audio_stream);
+bool dvd_audio_lang_code(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_stream);
 
 #endif

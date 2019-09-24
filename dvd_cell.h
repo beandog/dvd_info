@@ -15,9 +15,9 @@ struct dvd_cell {
 	double filesize_mbs;
 };
 
-uint64_t dvd_cell_first_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number);
+uint64_t dvd_cell_first_sector(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number);
 
-uint64_t dvd_cell_last_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number);
+uint64_t dvd_cell_last_sector(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number);
 
 /**
  * Helper function to get the total number of blocks from a cell.
@@ -30,11 +30,11 @@ uint64_t dvd_cell_last_sector(const ifo_handle_t *vmg_ifo, const ifo_handle_t *v
  * naming.
  *
  */
-uint64_t dvd_cell_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number);
+uint64_t dvd_cell_blocks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number);
 
-uint64_t dvd_cell_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number);
+uint64_t dvd_cell_filesize(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number);
 
-double dvd_cell_filesize_mbs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number, const uint8_t cell_number);
+double dvd_cell_filesize_mbs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number);
 
 /**
  * Track some possible indicators that the DVD is authored intentionally to break
@@ -77,14 +77,14 @@ double dvd_cell_filesize_mbs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vt
  * goes down over the first one. Second, if the maximum sector on any cell is
  * lower than the highest one during the loop.
  */
-bool dvd_track_min_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
-bool dvd_track_max_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
+bool dvd_track_min_sector_error(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number);
+bool dvd_track_max_sector_error(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number);
 
 /**
  * Check to see if the first or last sector is used more than once.
  */
-bool dvd_track_repeat_first_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
+bool dvd_track_repeat_first_sector_error(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number);
 
-bool dvd_track_repeat_last_sector_error(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number);
+bool dvd_track_repeat_last_sector_error(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number);
 
 #endif

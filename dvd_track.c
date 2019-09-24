@@ -10,7 +10,7 @@
  * @param vmg_ifo dvdread handler for primary IFO
  * @return IFO number
  */
-uint16_t dvd_vts_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
+uint16_t dvd_vts_ifo_number(ifo_handle_t *vmg_ifo, uint16_t track_number) {
 
 	// TODO research
 	// Should these be the same number
@@ -22,7 +22,7 @@ uint16_t dvd_vts_ifo_number(const ifo_handle_t *vmg_ifo, const uint16_t track_nu
 
 }
 
-uint8_t dvd_track_ttn(const ifo_handle_t *vmg_ifo, const uint16_t track_number) {
+uint8_t dvd_track_ttn(ifo_handle_t *vmg_ifo, uint16_t track_number) {
 
 	uint8_t ttn = vmg_ifo->tt_srpt->title[track_number - 1].vts_ttn;
 
@@ -36,7 +36,7 @@ uint8_t dvd_track_ttn(const ifo_handle_t *vmg_ifo, const uint16_t track_number) 
  *
  * @param vts_ifo libdvdread IFO handle
  */
-bool dvd_vts_id(char *dest_str, const ifo_handle_t *vts_ifo) {
+bool dvd_vts_id(char *dest_str, ifo_handle_t *vts_ifo) {
 
 	size_t i = 0;
 
@@ -51,7 +51,7 @@ bool dvd_vts_id(char *dest_str, const ifo_handle_t *vts_ifo) {
 
 }
 
-uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+uint8_t dvd_track_chapters(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
 
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
 		return 0;
@@ -71,7 +71,7 @@ uint8_t dvd_track_chapters(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_
 
 }
 
-uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+uint8_t dvd_track_cells(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
 
 	if(vts_ifo->vts_pgcit == NULL || vts_ifo->vts_ptt_srpt == NULL || vts_ifo->vts_ptt_srpt->title == NULL)
 		return 0;
@@ -95,7 +95,7 @@ uint8_t dvd_track_cells(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo
 
 }
 
-uint64_t dvd_track_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+uint64_t dvd_track_blocks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
 
 	uint8_t cells;
 	cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
@@ -116,7 +116,7 @@ uint64_t dvd_track_blocks(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_i
 
 }
 
-uint64_t dvd_track_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+uint64_t dvd_track_filesize(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
 
 	uint64_t blocks;
 	blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
@@ -128,7 +128,7 @@ uint64_t dvd_track_filesize(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts
 
 }
 
-double dvd_track_filesize_mbs(const ifo_handle_t *vmg_ifo, const ifo_handle_t *vts_ifo, const uint16_t track_number) {
+double dvd_track_filesize_mbs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number) {
 
 	uint64_t blocks;
 	blocks = dvd_track_blocks(vmg_ifo, vts_ifo, track_number);
