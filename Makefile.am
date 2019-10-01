@@ -1,4 +1,4 @@
-bin_PROGRAMS = dvd_info dvd_copy
+bin_PROGRAMS = dvd_info dvd_copy dvd_backup
 man1_MANS = dvd_info.1 dvd_copy.1
 
 dvd_info_SOURCES = dvd_info.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_video.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_json.c dvd_chapter.c dvd_xchap.c dvd_init.c
@@ -8,6 +8,10 @@ dvd_info_LDADD = -lm $(DVDREAD_LIBS)
 dvd_copy_SOURCES = dvd_copy.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c dvd_init.c
 dvd_copy_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_copy_LDADD = -lm $(DVDREAD_LIBS)
+
+dvd_backup_SOURCES = dvd_backup.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_vts.c dvd_vob.c
+dvd_backup_CFLAGS = $(DVDREAD_CFLAGS)
+dvd_backup_LDADD = $(DVDREAD_LIBS)
 
 if LINUX_DRIVE_TOOLS
 
