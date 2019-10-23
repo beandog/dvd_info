@@ -103,6 +103,7 @@ int main(int argc, char **argv) {
 	dvd_track.valid = true;
 	dvd_track.vts = 1;
 	dvd_track.ttn = 1;
+	dvd_track.ptts = 1;
 	snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
 	dvd_track.msecs = 0;
 	dvd_track.chapters = 0;
@@ -551,6 +552,7 @@ int main(int argc, char **argv) {
 		}
 
 		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
+		dvd_track.ptts = dvd_track_title_parts(vmg_ifo, dvd_track.track);
 		dvd_vts[dvd_track.vts].tracks++;
 		vts_ifo = vts_ifos[dvd_track.vts];
 

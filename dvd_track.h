@@ -27,6 +27,7 @@ struct dvd_track {
 	bool valid;
 	uint16_t vts;
 	uint8_t ttn;
+	uint16_t ptts;
 	char length[DVD_TRACK_LENGTH + 1];
 	uint32_t msecs;
 	uint8_t chapters;
@@ -53,6 +54,8 @@ struct dvd_track {
 uint16_t dvd_vts_ifo_number(ifo_handle_t *vmg_ifo, uint16_t track_number);
 
 uint8_t dvd_track_ttn(ifo_handle_t *vmg_ifo, uint16_t track_number);
+
+uint16_t dvd_track_title_parts(ifo_handle_t *vmg_ifo, uint16_t track_number);
 
 bool dvd_vts_id(char *dest_str, ifo_handle_t *vts_ifo);
 

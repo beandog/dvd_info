@@ -30,6 +30,14 @@ uint8_t dvd_track_ttn(ifo_handle_t *vmg_ifo, uint16_t track_number) {
 
 }
 
+uint16_t dvd_track_title_parts(ifo_handle_t *vmg_ifo, uint16_t track_number) {
+
+	uint16_t nr_of_ptts = vmg_ifo->tt_srpt->title[track_number - 1].nr_of_ptts;
+
+	return nr_of_ptts;
+
+}
+
 /**
  * Get the track's VTS id
  * Possible that it's blank, usually set to DVDVIDEO-VTS otherwise.
