@@ -35,26 +35,26 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 		dvd_track = dvd_tracks[track_number - 1];
 
 		printf("  {\n");
-		printf("   \"track\": %u,", dvd_track.track);
+		printf("   \"track\": %u,\n", dvd_track.track);
 
 		dvd_video = dvd_tracks[track_number - 1].dvd_video;
 
-		printf(" \"length\": \"%s\",", dvd_track.length);
-		printf(" \"msecs\": %" PRIu32 ",", dvd_track.msecs);
-		printf(" \"vts\": %" PRIu16 ",", dvd_track.vts);
-		printf(" \"ttn\": %" PRIu8 ",", dvd_track.ttn);
-		printf(" \"valid\": \"%s\",", dvd_track.valid ? "yes" : "no");
+		printf("   \"length\": \"%s\",\n", dvd_track.length);
+		printf("   \"msecs\": %" PRIu32 ",\n", dvd_track.msecs);
+		printf("   \"vts\": %" PRIu16 ",\n", dvd_track.vts);
+		printf("   \"ttn\": %" PRIu8 ",\n", dvd_track.ttn);
+		printf("   \"valid\": \"%s\",\n", dvd_track.valid ? "yes" : "no");
 
-		printf(" \"video\": {");
-		printf(" \"codec\": \"%s\",", dvd_video.codec);
-		printf(" \"format\": \"%s\",", dvd_video.format);
-		printf(" \"aspect ratio\": \"%s\",", dvd_video.aspect_ratio);
-		printf(" \"width\": %" PRIu16 ",", dvd_video.width);
-		printf(" \"height\": %" PRIu16 ",", dvd_video.height);
-		printf(" \"angles\": %" PRIu8 ",", dvd_video.angles);
-		printf(" \"fps\": \"%s\",", dvd_video.fps);
-		printf(" \"display format\": \"%s\"", display_formats[dvd_video.df]);
-		printf(" }");
+		printf("   \"video\": {\n");
+		printf("     \"codec\": \"%s\",\n", dvd_video.codec);
+		printf("     \"format\": \"%s\",\n", dvd_video.format);
+		printf("     \"aspect ratio\": \"%s\",\n", dvd_video.aspect_ratio);
+		printf("     \"width\": %" PRIu16 ",\n", dvd_video.width);
+		printf("     \"height\": %" PRIu16 ",\n", dvd_video.height);
+		printf("     \"angles\": %" PRIu8 ",\n", dvd_video.angles);
+		printf("     \"fps\": \"%s\",\n", dvd_video.fps);
+		printf("     \"display format\": \"%s\"\n", display_formats[dvd_video.df]);
+		printf("   }");
 
 		if(dvd_track.audio_tracks || dvd_track.subtitles || dvd_track.chapters || dvd_track.cells)
 			printf(",");
