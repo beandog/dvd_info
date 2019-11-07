@@ -681,7 +681,7 @@ int main(int argc, char **argv) {
 
 				dvd_track.dvd_chapters[chapter_ix] = dvd_chapter;
 
-			};
+			}
 
 		}
 
