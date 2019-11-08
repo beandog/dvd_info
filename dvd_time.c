@@ -135,7 +135,7 @@ uint32_t dvd_track_msecs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t 
 /**
  * OLD NOTES, not relevant any more since it calculates all cell lengths:
  * Sourced from lsdvd.c.  I don't understand the logic behind it, and why the
- * original doesn't access pgc->cell_playback[cell_idx].playback_time directly.
+ * original doesn't access pgc->cell_playback[cell_ix].playback_time directly.
  * Two things I do know: not to assume a cell is a chapter, and lsdvd's chapter
  * output has always worked for me, so I'm leaving it alone for now.
  *
@@ -160,24 +160,22 @@ uint32_t dvd_chapter_msecs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_
 
 	uint8_t chapters = pgc->nr_of_programs;
 	uint8_t chapter_idx = 0;
-	uint8_t program_map_idx = 0;
-	uint8_t cell_idx = 0;
+	uint8_t program_map_ix = 0;
+	uint8_t cell_ix = 0;
 	uint32_t msecs = 0;
 
-	// There are two ways to look up times for chapters - here or adding
-	// all of the cells individually.
 	for(chapter_idx = 0; chapter_idx < chapters; chapter_idx++) {
 
 		if(chapter_idx == chapters - 1)
-			program_map_idx = pgc->nr_of_cells + 1;
+			program_map_ix = pgc->nr_of_cells + 1;
 		else
-			program_map_idx = pgc->program_map[chapter_idx + 1];
+			program_map_ix = pgc->program_map[chapter_idx + 1];
 
-		while(cell_idx < program_map_idx - 1) {
+		while(cell_ix < program_map_ix - 1) {
 			if(chapter_idx + 1 == chapter_number) {
-				msecs += dvd_time_to_milliseconds(&pgc->cell_playback[cell_idx].playback_time);
+				msecs += dvd_time_to_milliseconds(&pgc->cell_playback[cell_ix].playback_time);
 			}
-			cell_idx++;
+			cell_ix++;
 		}
 
 	}
