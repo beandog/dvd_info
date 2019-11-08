@@ -164,15 +164,14 @@ uint32_t dvd_chapter_msecs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_
 	uint8_t cell_idx = 0;
 	uint32_t msecs = 0;
 
-	// FIXME it'd be better, and more helpful as a reference, to simply get the
-	// cells that are in a chapter, and then add up the lengths of those cells.
-	// So, something similar to chapter_first_cell, chapter_stopcell as well.
+	// There are two ways to look up times for chapters - here or adding
+	// all of the cells individually.
 	for(chapter_idx = 0; chapter_idx < chapters; chapter_idx++) {
-
-		program_map_idx = pgc->program_map[chapter_idx + 1];
 
 		if(chapter_idx == chapters - 1)
 			program_map_idx = pgc->nr_of_cells + 1;
+		else
+			program_map_idx = pgc->program_map[chapter_idx + 1];
 
 		while(cell_idx < program_map_idx - 1) {
 			if(chapter_idx + 1 == chapter_number) {
