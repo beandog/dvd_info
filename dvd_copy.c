@@ -571,8 +571,11 @@ int main(int argc, char **argv) {
 
 				if(cell_block == dvd_cell.last_sector)
 					percent_complete = 100;
-				else
+				else {
 					percent_complete = floor((mbs_written / dvd_copy.filesize_mbs) * 100.0);
+					if(percent_complete == 100.0)
+						percent_complete = 99.0;
+				}
 
 				fprintf(p_dvd_copy ? stdout : stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
 				fflush(p_dvd_copy ? stdout : stderr);
