@@ -577,8 +577,8 @@ int main(int argc, char **argv) {
 						percent_complete = 99.0;
 				}
 
-				fprintf(p_dvd_copy ? stdout : stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
-				fflush(p_dvd_copy ? stdout : stderr);
+				fprintf(stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
+				fflush(stderr);
 
 				cell_block++;
 
@@ -592,7 +592,7 @@ int main(int argc, char **argv) {
 
 	DVDCloseFile(dvdread_vts_file);
 
-	fprintf(p_dvd_copy ? stdout : stderr, "\n");
+	fprintf(stderr, "\n");
 
 	if(vts_ifo)
 		ifoClose(vts_ifo);
