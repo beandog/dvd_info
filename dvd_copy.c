@@ -518,7 +518,7 @@ int main(int argc, char **argv) {
 	 * Integers for numbers of blocks read, copied, counters
 	 */
 	uint64_t cell_sectors = 0;
-	ssize_t cell_block = 0;
+	uint64_t cell_block = 0;
 	ssize_t cell_blocks_read = 0;
 	ssize_t bytes_written = 0;
 	ssize_t total_bytes_written = 0;
@@ -559,8 +559,9 @@ int main(int argc, char **argv) {
 			// This is where you would change the boundaries -- are you dumping to a track file (no boundaries) or a VOB (boundaries)
 			while(cell_block < dvd_cell.last_sector) {
 
-				cell_blocks_read = DVDReadBlocks(dvdread_vts_file, cell_block, 1, dvd_copy.buffer);
+				cell_blocks_read = DVDReadBlocks(dvdread_vts_file, (ssize_t)cell_block, 1, dvd_copy.buffer);
 
+				// Zero out cells that couldn't be read
 				if(cell_blocks_read == -1)
 					memset(dvd_copy.buffer, '\0', DVD_VIDEO_LB_LEN);
 
