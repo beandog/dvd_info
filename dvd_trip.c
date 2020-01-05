@@ -82,6 +82,9 @@ int main(int argc, char **argv) {
 	bool opt_chapter_number = false;
 	bool opt_filename = false;
 	bool opt_force_encode = false;
+	bool x264 = true;
+	bool x265 = false;
+	bool vpx = false;
 	uint16_t arg_track_number = 1;
 	int long_index = 0;
 	int opt = 0;
@@ -111,6 +114,7 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
 	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
+	dvd_trip.crf = -1;
 	memset(dvd_trip.acodec, '\0', sizeof(dvd_trip.acodec));
 	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
 	memset(dvd_trip.audio_lang, '\0', sizeof(dvd_trip.audio_lang));
@@ -139,6 +143,7 @@ int main(int argc, char **argv) {
 
 		{ "output", required_argument, 0, 'o' },
 
+		{ "encoder", required_argument, 0, 'e'},
 		{ "crf", required_argument, 0, 'q' },
 
 		{ "help", no_argument, 0, 'h' },
@@ -151,7 +156,7 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "AB:c:fhL:o:s:S:t:vz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "AB:c:fhL:o:q:s:S:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -197,6 +202,20 @@ int main(int argc, char **argv) {
 
 				break;
 
+			case 'e':
+				if(strncmp(optarg, "x264", 4) == 0) {
+					strcpy(dvd_trip.vcodec, "libx264");
+				} else if(strncmp(optarg, "x265", 4) == 0) {
+					strcpy(dvd_trip.vcodec, "libx265");
+					x264 = false;
+					x265 = true;
+				} else if(strncmp(optarg, "vpx", 3) == 0) {
+					strcpy(dvd_trip.vcodec, "libvpx-vp9");
+					x264 = false;
+					vpx = true;
+				}
+				break;
+
 			case 'L':
 				strncpy(dvd_trip.audio_lang, optarg, 2);
 				break;
@@ -224,7 +243,10 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'q':
-				dvd_trip.crf = strtoul(optarg, NULL, 10);
+				arg_number = strtoul(optarg, NULL, 10);
+				if(arg_number > 63)
+					arg_number = 63;
+				dvd_trip.crf = (int8_t)arg_number;
 				break;
 
 			case 's':
@@ -271,6 +293,7 @@ int main(int argc, char **argv) {
 				printf("  -t, --track <number>          Encode selected track (default: longest)\n");
 				printf("  -c, --chapter <#>[-#]         Encode chapter number or range (default: all)\n");
 				printf("  -o, --output <filename>       Save to filename (default: dvd_track_##.mkv)\n");
+				printf("  -q, --CRF <number>		Video encoder CRF (default: use codec baseline)\n");
 				printf("      --alang <language>        Select audio language, two character code (default: first audio track)\n");
 				printf("      --aid <#>                 Select audio track ID\n");
 				printf("      --slang <language>	Select subtitles language, two character code (default: none)\n");
@@ -657,30 +680,29 @@ int main(int argc, char **argv) {
 		strcpy(dvd_trip.color_opts, "color_primaries=bt470bg,color_trc=gamma28,colorspace=bt470bg");
 	}
 
+	strcpy(dvd_trip.vcodec_opts, dvd_trip.color_opts);
+
 	// Video codecs and encoding options
-	switch(dvd_container) {
-		case 0:
-			break;
-		case 1:
-			strcpy(dvd_trip.vcodec, "libx265");
-			sprintf(dvd_trip.vcodec_opts, "%s,preset=medium,crf=18,x265-params=log-level=%s", dvd_trip.color_opts, dvd_trip.vcodec_log_level);
-			mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
-			mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
-			break;
-		case 2:
-			strcpy(dvd_trip.vcodec, "libx264");
-			sprintf(dvd_trip.vcodec_opts, "%s,preset=medium,crf=20", dvd_trip.color_opts);
-			mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
-			mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
-			mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
-			break;
-		case 3:
-			strcpy(dvd_trip.vcodec, "libvpx-vp9");
-			sprintf(dvd_trip.vcodec_opts, "%s,b=0,crf=22,keyint_min=0,g=360", dvd_trip.color_opts);
-			mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
-			// mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
-			break;
+
+	// Fix input CRF if needed
+	if((x264 || x265) && dvd_trip.crf > 51)
+		dvd_trip.crf = 51;
+	else if(vpx && dvd_trip.crf > 63)
+		dvd_trip.crf = 63;
+
+	if(x264 && dvd_trip.crf == -1 )
+		dvd_trip.crf = 23;
+	else if(x265 && dvd_trip.crf == -1)
+		dvd_trip.crf = 28;
+
+	if(dvd_trip.crf > -1) {
+		char crf[8] = {'\0'};
+		snprintf(crf, 8, ",crf=%i", dvd_trip.crf);
+		strcat(dvd_trip.vcodec_opts, crf);
 	}
+
+	mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
+	mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
 
 	// Deinterlacing
 	memset(dvd_trip.vf_opts, '\0', sizeof(dvd_trip.vf_opts));
@@ -697,11 +719,13 @@ int main(int argc, char **argv) {
 	char mpv_audio_channels[2] = "1";
 	snprintf(mpv_audio_channels, 2, "%" PRIu32, audio_max_channels);
 
+	// Container
 	if(dvd_container == 1) {
 		strcpy(dvd_trip.acodec, "eac3");
 		mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
 		mpv_set_option_string(dvd_mpv, "audio-channels", mpv_audio_channels);
 	} else if(dvd_container == 2) {
+		mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
 		strcpy(dvd_trip.acodec, "libfdk_aac");
 		strcpy(dvd_trip.acodec_opts, "b=192k");
 		mpv_set_option_string(dvd_mpv, "oac", dvd_trip.acodec);
