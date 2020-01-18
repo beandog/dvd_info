@@ -644,7 +644,7 @@ int main(int argc, char **argv) {
 	/** DVD **/
 	char dvd_mpv_args[13];
 	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
-	sprintf(dvd_mpv_args, "dvdread://%" PRIu16, dvd_trip.track - 1);
+	sprintf(dvd_mpv_args, "dvd://%" PRIu16, dvd_trip.track - 1);
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 	uint8_t dvd_container = 0; // 0. Unset, 1. MKV, 2. MP4, 3. WEBM
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
