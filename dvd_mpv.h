@@ -43,7 +43,7 @@ struct dvd_trip {
 	char subtitles_lang[3];
 	char subtitles_stream_id[4];
 	char vf_opts[256];
-	int8_t crf;
+	char crf[3];
 };
 
 #endif

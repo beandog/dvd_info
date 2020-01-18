@@ -85,6 +85,7 @@ int main(int argc, char **argv) {
 	bool x264 = true;
 	bool x265 = false;
 	bool vpx = false;
+	int8_t crf = -1;
 	uint16_t arg_track_number = 1;
 	int long_index = 0;
 	int opt = 0;
@@ -114,7 +115,6 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
 	memset(dvd_trip.vcodec_log_level, '\0', sizeof(dvd_trip.vcodec_log_level));
-	dvd_trip.crf = -1;
 	memset(dvd_trip.acodec, '\0', sizeof(dvd_trip.acodec));
 	memset(dvd_trip.acodec_opts, '\0', sizeof(dvd_trip.acodec_opts));
 	memset(dvd_trip.audio_lang, '\0', sizeof(dvd_trip.audio_lang));
@@ -246,7 +246,7 @@ int main(int argc, char **argv) {
 				arg_number = strtoul(optarg, NULL, 10);
 				if(arg_number > 63)
 					arg_number = 63;
-				dvd_trip.crf = (int8_t)arg_number;
+				crf = (int8_t)arg_number;
 				break;
 
 			case 's':
@@ -685,21 +685,12 @@ int main(int argc, char **argv) {
 	// Video codecs and encoding options
 
 	// Fix input CRF if needed
-	if((x264 || x265) && dvd_trip.crf > 51)
-		dvd_trip.crf = 51;
-	else if(vpx && dvd_trip.crf > 63)
-		dvd_trip.crf = 63;
+	if((x264 || x265) && crf > 51)
+		crf = 51;
 
-	if(x264 && dvd_trip.crf == -1 )
-		dvd_trip.crf = 23;
-	else if(x265 && dvd_trip.crf == -1)
-		dvd_trip.crf = 28;
-
-	if(dvd_trip.crf > -1) {
-		char crf[8] = {'\0'};
-		snprintf(crf, 8, ",crf=%i", dvd_trip.crf);
-		strcat(dvd_trip.vcodec_opts, crf);
-	}
+	if(crf > -1)
+		snprintf(dvd_trip.crf, 8, ",crf=%i", crf);
+	strcat(dvd_trip.vcodec_opts, dvd_trip.crf);
 
 	mpv_set_option_string(dvd_mpv, "ovc", dvd_trip.vcodec);
 	mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
