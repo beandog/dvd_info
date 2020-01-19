@@ -457,13 +457,6 @@ int main(int argc, char **argv) {
 		mpv_request_log_messages(dvd_mpv, "none");
 	}
 
-	/** DVD Playback Engine */
-	/*
-	 * MPV supports playback through both libdvdread and libdvdnav. libdvdnav is the default
-	 * used if you pass 'dvd://' as the source input. To use libdvdread specifically, you
-	 * use 'dvdread://' instead, which is what I'm doing below.
-	 */
-
 	/** DVD Track Selection */
 	/*
 	 * One thing I try to do with dvd_info (and friends) is closely check if a track is valid
@@ -492,7 +485,7 @@ int main(int argc, char **argv) {
 	 *
 	 */
 	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
-	sprintf(dvd_mpv_args, "dvdread://%" PRIu16, dvd_playback.track - 1);
+	sprintf(dvd_mpv_args, "dvd://%" PRIu16, dvd_playback.track - 1);
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 
 	// Load user's mpv configuration in ~/.config/dvd_player/mpv.conf (and friends)
@@ -509,7 +502,7 @@ int main(int argc, char **argv) {
 	 * MPV has a very smart and nice way to parse lots of start / stop options with the
 	 * '--start' option they have. When playing one chapter, it expects the end one to
 	 * be the starting one incremented by 1. Syntax for playing only chapter 1 would be:
-	 * 'mpv dvdread:// --start=#1 --end=#2'
+	 * 'mpv dvd:// --start=#1 --end=#2'
 	 *
 	 * By default, MPV will just play all chapters of the selected track.
 	 */
@@ -562,7 +555,7 @@ int main(int argc, char **argv) {
 
 	/** Displaying Subtitles */
 	/**
-	 * When doing normal playback using "mpv dvdread://", the user has the option to cycle
+	 * When doing normal playback using "mpv dvd://", the user has the option to cycle
 	 * through the available subtitles. With dvd_player, they can only be turned on,
 	 * and they will stay on. There's no option to cycle through other ones (hence, why
 	 * it's a tiny player).

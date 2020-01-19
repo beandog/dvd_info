@@ -773,7 +773,7 @@ int main(int argc, char **argv) {
 	fprintf(stderr, "[libmpv] acodec = %s\n", mpv_get_property_string(dvd_mpv, "oac"));
 	if(dvd_container == 2 || dvd_container == 3)
 		fprintf(stderr, "[libmpv] oacopts = %s\n", mpv_get_property_string(dvd_mpv, "oacopts"));
-	printf("[dvd_trip] mpv dvdread://%" PRIu16 " # mpv zero-indexes tracks\n", dvd_trip.track - 1);
+	printf("[dvd_trip] mpv dvd://%" PRIu16 " # mpv zero-indexes tracks\n", dvd_trip.track - 1);
 	*/
 	fprintf(stderr, "[libmpv] slang = %s\n", mpv_get_property_string(dvd_mpv, "slang"));
 	fprintf(stderr, "[libmpv] sid = %s\n", mpv_get_property_string(dvd_mpv, "sid"));
