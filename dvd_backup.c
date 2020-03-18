@@ -14,6 +14,7 @@
 #include <linux/limits.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
+#include "dvd_device.h"
 #include "dvd_specs.h"
 #include "dvd_info.h"
 #include "dvd_vmg_ifo.h"
@@ -35,6 +36,10 @@
 	 * files on a DVD store the metadata, while VOBs store the menus and the audio / video.
 	 *
 	 */
+
+#ifndef DVD_INFO_VERSION
+#define DVD_INFO_VERSION "1.7_beta1"
+#endif
 
 #define DEFAULT_DVD_DEVICE "/dev/sr0"
 
@@ -70,6 +75,7 @@ int dvd_block_rw(dvd_file_t *dvdread_vts_file, ssize_t offset, int fd) {
 int main(int argc, char **argv) {
 
 	struct option p_long_opts[] = {
+		{ "help", no_argument, NULL, 'h' },
 		{ "vts", required_argument, NULL, 't' },
 		{ 0, 0, 0, 0 },
 	};
@@ -81,9 +87,21 @@ int main(int argc, char **argv) {
 	bool opt_vts_number = false;
 	uint16_t arg_vts_number = 0;
 
-	while((opt = getopt_long(argc, argv, "t:", p_long_opts, &ix)) != -1) {
+	while((opt = getopt_long(argc, argv, "ht:", p_long_opts, &ix)) != -1) {
 
 		switch(opt) {
+
+			case 'h':
+				printf("dvd_backup %s - backup a DVD\n", DVD_INFO_VERSION);
+				printf("\n");
+				printf("Usage: dvd_backup [path] [options]\n");
+				printf("\n");
+				printf("Options:\n");
+				printf("  -T, --vts <number>    Back up video title set number (default: all)\n");
+				printf("\n");
+				printf("DVD path can be a device name, a single file, or a directory (default: %s)\n", DEFAULT_DVD_DEVICE);
+				return 0;
+				break;
 
 			case 't':
 				opt_vts_number = true;
