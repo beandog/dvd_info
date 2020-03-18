@@ -31,12 +31,11 @@ AM_CONDITIONAL([LINUX_DRIVE_TOOLS], [test "x$linux_drive_tools" = xyes])
 AM_CONDITIONAL([LINUX_DRIVE_EJECT], [test "x$linux_drive_eject" = xyes])
 
 dnl Using libmpv for the player is optional, but enabled by default
-AC_ARG_WITH([libmpv], [AS_HELP_STRING([--with-libmpv], [Enable libmpv support for DVD player])], [PKG_CHECK_MODULES([MPV], [mpv >= 1.25.0], [
+AC_ARG_WITH([libmpv], [AS_HELP_STRING([--with-libmpv], [Build DVD player using libmpv])], [PKG_CHECK_MODULES([MPV], [mpv >= 1.25.0], [
 	with_libmpv=yes
 	AC_DEFINE(HAVE_LIBMPV, [], [libmpv])
 ])])
 AM_CONDITIONAL([DVD_PLAYER], [test "x$with_libmpv" = xyes])
-AM_CONDITIONAL([DVD_TRIP], [test "x$with_libmpv" = xyes])
 
 AC_CONFIG_FILES([Makefile])
 
