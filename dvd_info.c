@@ -56,6 +56,7 @@ int main(int argc, char **argv) {
 	uint32_t arg_min_minutes = 0;
 	bool opt_vts = false;
 	uint16_t arg_vts = 0;
+	bool d_is_valid = false;
 
 	// dvd_info
 	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
@@ -177,7 +178,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aAcdeE:ghjM:sST:t:Vvxz";
+	const char p_short_opts[] = "aAcdeE:ghjLM:sST:t:Vvxz";
 
 	struct option p_long_opts[] = {
 
@@ -187,6 +188,7 @@ int main(int argc, char **argv) {
 		{ "chapters", no_argument, NULL, 'c' },
 		{ "subtitles", no_argument, NULL, 's' },
 		{ "has-subtitles", no_argument, NULL, 'S' },
+		{ "valid", no_argument, NULL, 'L' },
 		{ "cells", no_argument, NULL, 'd' },
 		{ "all", no_argument, NULL, 'x' },
 		{ "json", no_argument, NULL, 'j' },
@@ -243,6 +245,10 @@ int main(int argc, char **argv) {
 			case 'j':
 				p_dvd_json = true;
 				d_disc_title_header = false;
+				break;
+
+			case 'L':
+				d_is_valid = true;
 				break;
 
 			case 'M':
@@ -325,6 +331,7 @@ int main(int argc, char **argv) {
 				printf("  -E, --seconds <secs>  Track has minimum number of seconds\n");
 				printf("  -M, --minutes <mins>  Track has minimum number of minutes\n");
 				printf("  -T, --vts <number>    Track is in video title set number\n");
+				printf("  -L, --valid		Track is marked as valid\n");
 				printf("\n");
 				printf("Other:\n");
 				printf("  -g, --xchap           Display title's chapter format for mkvmerge\n");
@@ -817,6 +824,10 @@ int main(int argc, char **argv) {
 
 		// Skip if limiting to one title set
 		if(opt_vts && dvd_track.vts != arg_vts)
+			continue;
+
+		// Skip if limiting to valid only
+		if(d_is_valid && dvd_track.valid == false)
 			continue;
 
 		// Display track information
