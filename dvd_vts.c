@@ -12,14 +12,11 @@ ssize_t dvd_vts_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 	if(dvdread_vts_file == 0)
 		return 0;
 
-	ssize_t vts_filesize = 0;
-	vts_filesize = DVDFileSize(dvdread_vts_file);
-
-	if(vts_filesize < 0)
-		return 0;
-
 	ssize_t vts_blocks = 0;
-	vts_blocks = vts_filesize / DVD_VIDEO_LB_LEN;
+	vts_blocks = DVDFileSize(dvdread_vts_file);
+
+	if(vts_blocks < 0)
+		return 0;
 
 	return vts_blocks;
 
