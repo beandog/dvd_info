@@ -2,12 +2,12 @@
 .\"     Title: dvd_info
 .\"    Author: [see the "AUTHOR" section]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/24/2019
+.\"      Date: 03/17/2020
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_INFO" "1" "06/24/2019" "\ \&" "\ \&"
+.TH "DVD_INFO" "1" "03/17/2020" "\ \&" "\ \&"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -31,16 +31,16 @@
 dvd_info \- displays information about a DVD
 .SH "SYNOPSIS"
 .sp
-\fBdvd_info\fR [\fIPATH\fR] [\fIOPTIONS\fR]
+\fBdvd_info\fR [\fIDVD PATH\fR] [\fIOPTIONS\fR]
 .SH "DESCRIPTION"
 .sp
 Displays information about a DVD optical disc, image, or directory in human\-readable, JSON, or formatted chapter outputs\&.
 .sp
 The default device is based on your operating system, and is the primary optical drive\&.
 .sp
-DVDs can store two kinds of subtitles \(em VOBSUB, which are images, and closed captioning, which are text\&. Only the VOBSUB subtitles are reported here\&. Getting access to the closed captioning ones would require demuxing the stream\&.
+DVDs can store two kinds of subtitles \(em VOBSUB, which are images, and closed captioning, which are text\&. Only the VOBSUB subtitles are reported here\&.
 .sp
-Some tracks are marked as \fIinvalid\fR\&. These are cases where it may have garbage data intentionally authored onto the disc to break applications\&. \fBdvd_info\fR does some checks on each track to look for properties that would flag it as invalid\&. These are hidden by default\&.
+Some tracks are marked as invalid\&. These are cases where it may have garbage data intentionally authored onto the disc to break applications\&. \fBdvd_info\fR does some checks on each track to look for properties that would flag it as invalid\&.
 .sp
 DVDs may also have audio and subtitle streams marked as inactive as well\&.
 .SH "OPTIONS"
@@ -75,6 +75,11 @@ Display detailed information about VOBSUB subtitles\&.
 Display detailed information about chapters\&.
 .RE
 .PP
+\fB\-d, \-\-cells\fR
+.RS 4
+Display detailed information about cells\&.
+.RE
+.PP
 \fB\-x, \-\-all\fR
 .RS 4
 Display all optional detailed information\&.
@@ -85,9 +90,9 @@ Display all optional detailed information\&.
 Limit output to tracks that have audio tracks\&.
 .RE
 .PP
-\fB\-S, \-\-has\-subtracks\fR
+\fB\-S, \-\-has\-subtitles\fR
 .RS 4
-Limit output to tracks that have subtracks\&.
+Limit output to tracks that have VOBSUB subtitles\&.
 .RE
 .PP
 \fB\-E, \-\-seconds\fR=\fISECONDS\fR
@@ -106,14 +111,14 @@ Limit output to tracks with a minimum length of number of minutes\&. Cannot be u
 Limit output to tracks in Video Title Set number\&.
 .RE
 .PP
-\fB\-e, \-\-verbose\fR
-.RS 4
-Display invalid tracks and inactive audio and subtitle streams\&.
-.RE
-.PP
 \fB\-g, \-\-xchap\fR
 .RS 4
 Display track chapters in export format suitable for mkvmerge(1) and ogmmerge(1)\&.
+.RE
+.PP
+\fB\-e, \-\-verbose\fR
+.RS 4
+Display invalid tracks and inactive audio and subtitle streams\&.
 .RE
 .PP
 \fB\-h, \-\-help\fR
@@ -127,7 +132,7 @@ Display version information\&.
 .RE
 .SH "SEE ALSO"
 .sp
-dvd_copy(1)
+dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_eject(1)
 .SH "BUGS"
 .sp
 Please file bugs at https://github\&.com/beandog/dvd_info/issues
@@ -141,4 +146,4 @@ Source code available at GitHub: https://github\&.com/beandog/dvd_info
 Main web site: https://dvds\&.beandog\&.org
 .SH "COPYING"
 .sp
-Copyright (C) 2019 Steve Dibb\&. Free use of this software is granted under the terms of the GNU General Public License, version 2 (GPL)\&.
+Copyright (C) 2020 Steve Dibb\&. Free use of this software is granted under the terms of the GNU General Public License, version 2 (GPL)\&.
