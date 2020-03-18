@@ -40,9 +40,9 @@ The default device is based on your operating system, and is the primary optical
 .sp
 DVDs can store two kinds of subtitles \(em VOBSUB, which are images, and closed captioning, which are text\&. Only the VOBSUB subtitles are reported here\&.
 .sp
-Some tracks are marked as invalid\&. These are cases where it may have garbage data intentionally authored onto the disc to break applications\&. \fBdvd_info\fR does some checks on each track to look for properties that would flag it as invalid\&.
+DVDs may be authored by the provider to intentionally have bugs on the structure that will cause problems during playback or ripping if the correct track is not selected\&. \fBdvd_info\fR does its best to work around and flag these tracks as invalid\&. See the JSON or verbose output formats to see which ones are tagged\&.
 .sp
-DVDs may also have audio and subtitle streams marked as inactive as well\&.
+DVDs may also have audio and subtitle streams marked as inactive as well\&. This is normal, and usually won\(cqt show up at all in other DVD applications\&.
 .SH "OPTIONS"
 .PP
 \fB\-t, \-\-track\fR=\fITRACK\fR
