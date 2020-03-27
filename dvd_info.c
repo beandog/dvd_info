@@ -483,17 +483,7 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
-	/**
-	 * lsdvd style output (default)
-	 *
-	 * Note that there are some differences between the JSON output and
-	 * the lsdvd one:
-	 *
-	 * - lsdvd output only displays *active* audio tracks, while the JSON
-	 *   shows all of them, but they are flagged as active or not.
-	 */
-
-
+	// Count valid, invalid tracks and title sets
 	if(debug || opt_vts) {
 
 		for(ix = 1; ix <= dvd_info.tracks; ix++) {
@@ -547,6 +537,9 @@ int main(int argc, char **argv) {
 		printf("Invalid tracks: %02" PRIu16, dvd_vts[arg_vts].invalid_tracks);
 		printf("\n");
 	}
+
+
+	/** dvd_info output **/
 
 	struct dvd_track dvd_track;
 	struct dvd_video dvd_video;
