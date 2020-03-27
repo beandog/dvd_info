@@ -14,8 +14,6 @@
 #include "dvd_vmg_ifo.h"
 #include "dvd_vts.h"
 
-int dvd_info_init(dvd_reader_t *dvdread_dvd, ifo_handle_t *vmg_ifo, struct dvd_info *dvd);
-
 struct dvd_track dvd_track_init(dvd_reader_t *dvdread_dvd, ifo_handle_t *vmg_ifo, uint16_t track_number, bool init_audio, bool init_subtitles, bool init_chapters, bool init_cells);
 
 struct dvd_track *dvd_tracks_init(dvd_reader_t *dvdread_dvd, ifo_handle_t *vmg_ifo, bool init_audio, bool init_subtitles, bool init_chapters, bool init_cells);
