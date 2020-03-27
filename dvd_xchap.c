@@ -20,7 +20,7 @@ void dvd_xchap(struct dvd_track dvd_track) {
 		struct dvd_chapter dvd_chapter;
 		uint32_t chapter_msecs = 0;
 		uint8_t chapter_number = 1;
-		char chapter_start[DVD_CHAPTER_LENGTH + 1] = {'\0'};
+		char chapter_start[] = "00:00:00.000";
 		uint8_t c = 0;
 
 		for(c = 0; c < dvd_track.chapters - 1; c++) {

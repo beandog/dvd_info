@@ -102,7 +102,8 @@ void milliseconds_length_format(char *dest_str, uint32_t milliseconds) {
 		seconds -= 59;
 	uint32_t msecs = milliseconds - (hours * 3600 * 1000) - (minutes * 60 * 1000) - (seconds * 1000);
 
-	snprintf(dest_str, DVD_CHAPTER_LENGTH + 1, "%02u:%02u:%02u.%03u", hours, minutes, seconds, msecs);
+	memset(dest_str, '\0', 13);
+	sprintf(dest_str, "%02u:%02u:%02u.%03u", hours, minutes, seconds, msecs);
 
 }
 
