@@ -32,12 +32,12 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
-		dvd_track = dvd_tracks[track_number - 1];
+		dvd_track = dvd_tracks[track_number];
 
 		printf("  {\n");
 		printf("   \"track\": %u,\n", dvd_track.track);
 
-		dvd_video = dvd_tracks[track_number - 1].dvd_video;
+		dvd_video = dvd_tracks[track_number].dvd_video;
 
 		printf("   \"length\": \"%s\",\n", dvd_track.length);
 		printf("   \"msecs\": %" PRIu32 ",\n", dvd_track.msecs);

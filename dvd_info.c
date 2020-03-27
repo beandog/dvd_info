@@ -21,6 +21,7 @@
 #include "dvd_json.h"
 #include "dvd_xchap.h"
 #include "dvd_vob.h"
+#include "dvd_init.h"
 #ifdef __linux__
 #include <linux/cdrom.h>
 #include "dvd_drive.h"
@@ -168,9 +169,6 @@ int main(int argc, char **argv) {
 	// Display formats
 	const char *display_formats[4] = { "Pan and Scan or Letterbox", "Pan and Scan", "Letterbox", "Unset" };
 
-	// Statistics
-	uint32_t longest_msecs = 0;
-
 	// getopt_long
 	bool valid_args = true;
 	bool opt_track_number = false;
@@ -240,11 +238,17 @@ int main(int argc, char **argv) {
 			case 'g':
 				p_dvd_xchap = true;
 				d_disc_title_header = false;
+				d_chapters = true;
 				break;
 
 			case 'j':
 				p_dvd_json = true;
 				d_disc_title_header = false;
+				d_audio = true;
+				d_video = true;
+				d_chapters = true;
+				d_subtitles = true;
+				d_cells = true;
 				break;
 
 			case 'L':
@@ -511,216 +515,10 @@ int main(int argc, char **argv) {
 	 * Track information
 	 */
 
-	struct dvd_track dvd_tracks[DVD_MAX_TRACKS];
+	struct dvd_track *dvd_tracks;
+	dvd_tracks = dvd_tracks_init(dvdread_dvd, vmg_ifo, d_audio, d_subtitles, d_chapters, d_cells);
 
-	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
-
-		dvd_track.track = track_number;
-
-		// Initialize track to default values
-		dvd_track.valid = true;
-		snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
-		dvd_track.msecs = 0;
-		dvd_track.chapters = 0;
-		dvd_track.audio_tracks = 0;
-		dvd_track.active_audio_streams = 0;
-		dvd_track.subtitles = 0;
-		dvd_track.active_subs = 0;
-		dvd_track.cells = 0;
-		dvd_track.filesize_mbs = 0;
-
-		memset(dvd_video.codec, '\0', sizeof(dvd_video.codec));
-		memset(dvd_video.format, '\0', sizeof(dvd_video.format));
-		memset(dvd_video.aspect_ratio, '\0', sizeof(dvd_video.aspect_ratio));
-		memset(dvd_video.fps, '\0', sizeof(dvd_video.fps));
-		dvd_video.width = 0;
-		dvd_video.height = 0;
-		dvd_video.letterbox = false;
-		dvd_video.pan_and_scan = false;
-		dvd_video.df = 3;
-		dvd_video.angles = 0;
-		dvd_track.dvd_video = dvd_video;
-
-		// There are two ways a track can be marked as invalid - either the VTS
-		// is bad, or the track has an empty length. The first one, it could be
-		// a number of things, but the second is likely by design in order to
-		// break DVD software. Invalid DVD tracks appear as completely empty in
-		// dvd_info's output.
-
-		// If the IFO is invalid, skip the residing track
-		// These are hard to find, so an example DVD is '4b4d78c077ea78576a7de09aee7715d4'
-		dvd_track.vts = dvd_vts_ifo_number(vmg_ifo, track_number);
-		if(dvd_vts[dvd_track.vts].valid == false) {
-			dvd_track.valid = false;
-			dvd_tracks[track_number - 1] = dvd_track;
-			dvd_vts[dvd_track.vts].invalid_tracks++;
-			dvd_info.invalid_tracks++;
-			continue;
-		}
-
-		dvd_track.ttn = dvd_track_ttn(vmg_ifo, dvd_track.track);
-		dvd_track.ptts = dvd_track_title_parts(vmg_ifo, dvd_track.track);
-		dvd_vts[dvd_track.vts].tracks++;
-		vts_ifo = vts_ifos[dvd_track.vts];
-
-		// If the length is empty, disregard all other data attached to it, and mark as invalid
-		dvd_track.msecs = dvd_track_msecs(vmg_ifo, vts_ifo, dvd_track.track);
-
-		if(dvd_track.msecs == 0) {
-			dvd_track.valid = false;
-			dvd_vts[dvd_track.vts].invalid_tracks++;
-			dvd_tracks[track_number - 1] = dvd_track;
-			dvd_info.invalid_tracks++;
-			continue;
-		}
-
-		dvd_track_length(dvd_track.length, vmg_ifo, vts_ifo, dvd_track.track);
-		dvd_track.chapters = dvd_track_chapters(vmg_ifo, vts_ifo, dvd_track.track);
-
-		dvd_vts[dvd_track.vts].valid_tracks++;
-		dvd_info.valid_tracks++;
-
-		if(dvd_track.msecs > longest_msecs) {
-			dvd_info.longest_track = dvd_track.track;
-			longest_msecs = dvd_track.msecs;
-		}
-
-		/** Video **/
-
-		dvd_video_codec(dvd_video.codec, vts_ifo);
-		dvd_track_video_format(dvd_video.format, vts_ifo);
-		dvd_video.width = dvd_video_width(vts_ifo);
-		dvd_video.height = dvd_video_height(vts_ifo);
-		dvd_video_aspect_ratio(dvd_video.aspect_ratio, vts_ifo);
-		dvd_video.letterbox = dvd_video_letterbox(vts_ifo);
-		dvd_video.pan_and_scan = dvd_video_pan_scan(vts_ifo);
-		dvd_video.df = dvd_video_df(vts_ifo);
-		dvd_video.angles = dvd_video_angles(vmg_ifo, dvd_track.track);
-		dvd_track.audio_tracks = dvd_track_audio_tracks(vts_ifo);
-		dvd_track.active_audio_streams = 0;
-		dvd_track.subtitles = dvd_track_subtitles(vts_ifo);
-		dvd_track.active_subs = 0;
-		dvd_track.cells = dvd_track_cells(vmg_ifo, vts_ifo, dvd_track.track);
-		dvd_track.filesize_mbs = dvd_track_filesize_mbs(vmg_ifo, vts_ifo, dvd_track.track);
-		dvd_track_str_fps(dvd_video.fps, vmg_ifo, vts_ifo, dvd_track.track);
-		dvd_track.dvd_video = dvd_video;
-
-		/** Audio Streams **/
-
-		dvd_track.dvd_audio_tracks = calloc(dvd_track.audio_tracks, sizeof(*dvd_track.dvd_audio_tracks));
-
-		if(dvd_track.audio_tracks && dvd_track.dvd_audio_tracks != NULL) {
-
-			for(audio_track_ix = 0; audio_track_ix < dvd_track.audio_tracks; audio_track_ix++) {
-
-				memset(&dvd_audio, 0, sizeof(dvd_audio));
-
-				dvd_audio.track = audio_track_ix + 1;
-
-				dvd_audio.active = dvd_audio_active(vmg_ifo, vts_ifo, dvd_track.track, audio_track_ix);
-				if(dvd_audio.active)
-					dvd_track.active_audio_streams++;
-
-				dvd_audio.channels = dvd_audio_channels(vts_ifo, audio_track_ix);
-
-				memset(dvd_audio.stream_id, '\0', sizeof(dvd_audio.stream_id));
-				dvd_audio_stream_id(dvd_audio.stream_id, vts_ifo, audio_track_ix);
-
-				memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
-				dvd_audio_lang_code(dvd_audio.lang_code, vts_ifo, audio_track_ix);
-
-				memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
-				dvd_audio_codec(dvd_audio.codec, vts_ifo, audio_track_ix);
-
-				dvd_track.dvd_audio_tracks[audio_track_ix] = dvd_audio;
-
-			}
-
-		}
-
-		/** Subtitles **/
-
-		dvd_track.dvd_subtitles = calloc(dvd_track.subtitles, sizeof(*dvd_track.dvd_subtitles));
-
-		if(dvd_track.subtitles && dvd_track.dvd_subtitles != NULL) {
-
-			for(subtitle_track_ix = 0; subtitle_track_ix < dvd_track.subtitles; subtitle_track_ix++) {
-
-				memset(&dvd_subtitle, 0, sizeof(dvd_subtitle));
-				memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
-
-				dvd_subtitle.track = subtitle_track_ix + 1;
-				dvd_subtitle.active = dvd_subtitle_active(vmg_ifo, vts_ifo, dvd_track.track, dvd_subtitle.track);
-				if(dvd_subtitle.active)
-					dvd_track.active_subs++;
-
-				memset(dvd_subtitle.stream_id, 0, sizeof(dvd_subtitle.stream_id));
-				dvd_subtitle_stream_id(dvd_subtitle.stream_id, subtitle_track_ix);
-
-				memset(dvd_subtitle.lang_code, 0, sizeof(dvd_subtitle.lang_code));
-				dvd_subtitle_lang_code(dvd_subtitle.lang_code, vts_ifo, subtitle_track_ix);
-
-				dvd_track.dvd_subtitles[subtitle_track_ix] = dvd_subtitle;
-
-			}
-
-		}
-
-		/** Chapters **/
-
-		dvd_track.dvd_chapters = calloc(dvd_track.chapters, sizeof(*dvd_track.dvd_chapters));
-
-		if(dvd_track.chapters && dvd_track.dvd_chapters != NULL) {
-
-			for(chapter_ix = 0; chapter_ix < dvd_track.chapters; chapter_ix++) {
-
-				dvd_chapter.chapter = chapter_ix + 1;
-
-				snprintf(dvd_chapter.length, DVD_CHAPTER_LENGTH + 1, "00:00:00.000");
-				dvd_chapter_length(dvd_chapter.length, vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
-
-				dvd_chapter.msecs = dvd_chapter_msecs(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
-				dvd_chapter.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
-				dvd_chapter.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
-				dvd_chapter.blocks = dvd_chapter_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
-				dvd_chapter.filesize = dvd_chapter_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
-				dvd_chapter.filesize_mbs = dvd_chapter_filesize_mbs(vmg_ifo, vts_ifo, dvd_track.track, dvd_chapter.chapter);
-
-				dvd_track.dvd_chapters[chapter_ix] = dvd_chapter;
-
-			}
-
-		}
-
-		/** Cells **/
-
-		dvd_track.dvd_cells = calloc(dvd_track.cells, sizeof(*dvd_track.dvd_cells));
-
-		if(dvd_track.cells && dvd_track.dvd_cells != NULL) {
-
-			for(cell_ix = 0; cell_ix < dvd_track.cells; cell_ix++) {
-
-				dvd_cell.cell = cell_ix + 1;
-
-				snprintf(dvd_cell.length, DVD_CELL_LENGTH + 1, "00:00:00.000");
-				dvd_cell_length(dvd_cell.length, vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-
-				dvd_cell.msecs = dvd_cell_msecs(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-				dvd_cell.first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-				dvd_cell.last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-				dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-				dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-				dvd_cell.filesize_mbs = dvd_cell_filesize_mbs(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-
-				dvd_track.dvd_cells[cell_ix] = dvd_cell;
-
-			}
-
-		}
-
-		dvd_tracks[track_number - 1] = dvd_track;
-
-	}
+	dvd_info.longest_track = dvd_tracks[0].track;
 
 	/** JSON display output **/
 
@@ -746,9 +544,9 @@ int main(int argc, char **argv) {
 	/** dvdxchap display output **/
 	if(p_dvd_xchap) {
 		if(opt_track_number)
-			dvd_xchap(dvd_tracks[arg_track_number - 1]);
+			dvd_xchap(dvd_tracks[arg_track_number]);
 		else
-			dvd_xchap(dvd_tracks[dvd_info.longest_track - 1]);
+			dvd_xchap(dvd_tracks[dvd_info.longest_track]);
 		goto cleanup;
 	}
 
@@ -803,8 +601,8 @@ int main(int argc, char **argv) {
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
-		dvd_track = dvd_tracks[track_number - 1];
-		dvd_video = dvd_tracks[track_number - 1].dvd_video;
+		dvd_track = dvd_tracks[track_number];
+		dvd_video = dvd_tracks[track_number].dvd_video;
 
 		// Skip if limiting to tracks with audio only
 		if(d_has_audio && dvd_track.active_audio_streams == 0)

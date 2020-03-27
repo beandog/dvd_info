@@ -1,6 +1,7 @@
 #ifndef DVD_INFO_TRACK_H
 #define DVD_INFO_TRACK_H
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <ctype.h>
@@ -8,6 +9,7 @@
 #include <math.h>
 #include "dvd_cell.h"
 #include "dvd_vmg_ifo.h"
+#include "dvd_time.h"
 
 struct dvd_video {
 	char codec[DVD_VIDEO_CODEC + 1];

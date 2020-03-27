@@ -1,4 +1,7 @@
 #include "dvd_track.h"
+#include "dvd_audio.h"
+#include "dvd_video.h"
+#include "dvd_subtitles.h"
 
 /**
  * Functions used to get information about a DVD track
