@@ -10,8 +10,12 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <getopt.h>
+#ifdef __linux__
 #include <linux/cdrom.h>
 #include <linux/limits.h>
+#else
+#include <limits.h>
+#endif
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 #include "dvd_device.h"
@@ -131,6 +135,8 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+#ifdef __linux__
+
 	// Poll drive status if it is hardware
 	if(strncmp(device_filename, "/dev/", 5) == 0) {
 
@@ -158,6 +164,9 @@ int main(int argc, char **argv) {
 		}
 
 	}
+
+#endif
+
 	close(fd);
 
 	printf("[DVD]\n");
