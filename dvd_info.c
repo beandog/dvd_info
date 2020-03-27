@@ -496,6 +496,17 @@ int main(int argc, char **argv) {
 	// Print the valid and invalid VTSs
 	if(debug) {
 
+		for(ix = 1; ix <= dvd_info.tracks; ix++) {
+			dvd_vts[dvd_tracks[ix].vts].tracks++;
+			if(dvd_tracks[ix].valid) {
+				dvd_info.valid_tracks++;
+				dvd_vts[dvd_tracks[ix].vts].valid_tracks++;
+			} else {
+				dvd_info.invalid_tracks++;
+				dvd_vts[dvd_tracks[ix].vts].invalid_tracks++;
+			}
+		}
+
 		printf("        Tracks: %02" PRIu16 ", ", dvd_info.tracks);
 		printf("Valid: %02" PRIu16 ", ", dvd_info.valid_tracks);
 		printf("Invalid: %02" PRIu16, dvd_info.invalid_tracks);
