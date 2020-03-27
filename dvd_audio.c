@@ -106,49 +106,6 @@ bool dvd_audio_active(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t tit
 }
 
 /**
- * Get the number of audio streams for a specific language
- *
- * @param vts_ifo dvdread track IFO handler
- * @param lang_code language code
- * @return number of subtitles
- */
-uint8_t dvd_track_num_audio_lang_code_streams(ifo_handle_t *vts_ifo, char *lang_code) {
-
-	uint8_t audio_tracks = dvd_track_audio_tracks(vts_ifo);
-	uint8_t language_tracks = 0;
-	char str[DVD_AUDIO_LANG_CODE + 1] = {'\0'};
-	uint8_t i = 0;
-
-	for(i = 0; i < audio_tracks; i++) {
-
-		dvd_audio_lang_code(str, vts_ifo, i);
-
-		if(strncmp(str, lang_code, DVD_AUDIO_LANG_CODE) == 0)
-			language_tracks++;
-
-	}
-
-	return language_tracks;
-
-}
-
-/**
- * Check if a DVD track has a specific audio language
- *
- * @param vts_ifo dvdread track IFO handler
- * @param lang_code language code
- * @return boolean
- */
-bool dvd_track_has_audio_lang_code(ifo_handle_t *vts_ifo, char *lang_code) {
-
-	if(dvd_track_num_audio_lang_code_streams(vts_ifo, lang_code) > 0)
-		return true;
-	else
-		return false;
-
-}
-
-/**
  * Get the codec for an audio track.
  *
  * FIXME see dvdread/ifo_print.c:196 for how it handles mpeg2ext with drc, no drc,
