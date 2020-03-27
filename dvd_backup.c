@@ -54,7 +54,7 @@ int dvd_block_rw(dvd_file_t *dvdread_vts_file, uint64_t offset, int fd) {
 	ssize_t rw = 0;
 	unsigned char buffer[2048];
 
-	rw = DVDReadBlocks(dvdread_vts_file, offset, 1, buffer);
+	rw = DVDReadBlocks(dvdread_vts_file, (size_t)offset, 1, buffer);
 
 	if(rw < 0) {
 		memset(buffer, '\0', DVD_VIDEO_LB_LEN);
