@@ -99,73 +99,6 @@ int main(int argc, char **argv) {
 	// Video Title Set
 	struct dvd_vts dvd_vts[99];
 
-	// Track
-	struct dvd_track dvd_track;
-	dvd_track.track = 1;
-	dvd_track.valid = true;
-	dvd_track.vts = 1;
-	dvd_track.ttn = 1;
-	dvd_track.ptts = 1;
-	snprintf(dvd_track.length, DVD_TRACK_LENGTH + 1, "00:00:00.000");
-	dvd_track.msecs = 0;
-	dvd_track.chapters = 0;
-	dvd_track.audio_tracks = 0;
-	dvd_track.active_audio_streams = 0;
-	dvd_track.subtitles = 0;
-	dvd_track.active_subs = 0;
-	dvd_track.cells = 0;
-
-	// Video
-	struct dvd_video dvd_video;
-	memset(dvd_video.codec, '\0', sizeof(dvd_video.codec));
-	memset(dvd_video.format, '\0', sizeof(dvd_video.format));
-	memset(dvd_video.aspect_ratio, '\0', sizeof(dvd_video.aspect_ratio));
-	dvd_video.width = 0;
-	dvd_video.height = 0;
-	dvd_video.letterbox = false;
-	dvd_video.pan_and_scan = false;
-	dvd_video.df = 3;
-	memset(dvd_video.fps, '\0', sizeof(dvd_video.fps));
-	dvd_video.angles = 1;
-
-	// Audio
-	struct dvd_audio dvd_audio;
-	dvd_audio.ix = 0;
-	dvd_audio.track = 1;
-	dvd_audio.active = false;
-	memset(dvd_audio.stream_id, '\0', sizeof(dvd_audio.stream_id));
-	memset(dvd_audio.lang_code, '\0', sizeof(dvd_audio.lang_code));
-	memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
-	dvd_audio.channels = 0;
-
-	// Subtitles
-	struct dvd_subtitle dvd_subtitle;
-	dvd_subtitle.track = 1;
-	dvd_subtitle.active = false;
-	memset(dvd_subtitle.stream_id, '\0', sizeof(dvd_subtitle.stream_id));
-	memset(dvd_subtitle.lang_code, '\0', sizeof(dvd_subtitle.lang_code));
-
-	// Chapters
-	struct dvd_chapter dvd_chapter;
-	dvd_chapter.chapter = 0;
-	snprintf(dvd_chapter.length, DVD_CHAPTER_LENGTH + 1, "00:00:00.000");
-	dvd_chapter.first_cell = 1;
-	dvd_chapter.last_cell = 1;
-	dvd_chapter.blocks = 0;
-	dvd_chapter.filesize = 0;
-	dvd_chapter.filesize_mbs = 0;
-
-	// Cells
-	struct dvd_cell dvd_cell;
-	dvd_cell.cell = 1;
-	memset(dvd_cell.length, '\0', sizeof(dvd_cell.length));
-	snprintf(dvd_cell.length, DVD_CELL_LENGTH + 1, "00:00:00.000");
-	dvd_cell.msecs = 0;
-	dvd_cell.first_sector = 0;
-	dvd_cell.last_sector = 0;
-	dvd_cell.filesize = 0;
-	dvd_cell.filesize_mbs = 0;
-
 	// Display formats
 	const char *display_formats[4] = { "Pan and Scan or Letterbox", "Pan and Scan", "Letterbox", "Unset" };
 
@@ -598,6 +531,13 @@ int main(int argc, char **argv) {
 		printf("Invalid tracks: %02" PRIu16, dvd_vts[arg_vts].invalid_tracks);
 		printf("\n");
 	}
+
+	struct dvd_track dvd_track;
+	struct dvd_video dvd_video;
+	struct dvd_audio dvd_audio;
+	struct dvd_subtitle dvd_subtitle;
+	struct dvd_chapter dvd_chapter;
+	struct dvd_cell dvd_cell;
 
 	for(track_number = d_first_track; track_number <= d_last_track; track_number++) {
 
