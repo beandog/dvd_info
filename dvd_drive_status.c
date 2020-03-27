@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
+#include <string.h>
 #include <linux/cdrom.h>
 
 #define DEFAULT_DVD_DEVICE "/dev/sr0"
@@ -71,6 +72,23 @@ int main(int argc, char **argv) {
 	char secondary_fallback_device[] = SECONDARY_FALLBACK_DEVICE;
 	bool using_fallback_device = false;
 	char *status;
+
+	if(argc > 1 && (strncmp(argv[1], "-h", 2) == 0 || strncmp(argv[1], "--h", 3) == 0)) {
+
+		printf("dvd_drive_status - display optical drive status and return exit code\n");
+		printf("\n");
+		printf("Exit codes:\n");
+		printf("  1 - no disc (closed, no media)\n");
+		printf("  2 - tray open\n");
+		printf("  3 - drive not ready (opening or polling)\n");
+		printf("  4 - drive ready (closed, has media)\n");
+		printf("  5 - device exists, but is NOT a DVD drive\n");
+		printf("  6 - cannot access device\n");
+		printf("  7 - cannot find a device\n");
+
+		return 0;
+
+	}
 
 	// Check if device exists
 	if(argc == 1) {
