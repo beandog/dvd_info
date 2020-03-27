@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <getopt.h>
+#include "dvd_config.h"
 #include "dvd_info.h"
 #include "dvd_device.h"
 #include "dvd_vmg_ifo.h"
@@ -25,9 +26,6 @@
 #ifdef __linux__
 #include <linux/cdrom.h>
 #include "dvd_drive.h"
-#endif
-#ifndef DVD_INFO_VERSION
-#define DVD_INFO_VERSION "1.7_beta1"
 #endif
 
 int main(int argc, char **argv) {
@@ -227,7 +225,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'V':
-				printf("dvd_info %s\n", DVD_INFO_VERSION);
+				printf("dvd_info %s\n", PACKAGE_VERSION);
 				return 0;
 
 			case 'x':
@@ -246,7 +244,7 @@ int main(int argc, char **argv) {
 			case '?':
 				invalid_opt = true;
 			case 'h':
-				printf("dvd_info %s - display information about a DVD\n", DVD_INFO_VERSION);
+				printf("dvd_info %s - display information about a DVD\n", PACKAGE_VERSION);
 				printf("\n");
 				printf("Usage: dvd_info [path] [options]\n");
 				printf("\n");

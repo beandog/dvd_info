@@ -16,6 +16,7 @@
 #endif
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
+#include "dvd_config.h"
 #include "dvd_info.h"
 #include "dvd_device.h"
 #include "dvd_drive.h"
@@ -27,9 +28,6 @@
 #include "dvd_audio.h"
 #include "dvd_subtitles.h"
 #include "dvd_time.h"
-#ifndef DVD_INFO_VERSION
-#define DVD_INFO_VERSION "1.7_beta1"
-#endif
 
 #ifndef DVD_VIDEO_LB_LEN
 #define DVD_VIDEO_LB_LEN 2048
@@ -203,14 +201,14 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'V':
-				printf("dvd_copy %s\n", DVD_INFO_VERSION);
+				printf("dvd_copy %s\n", PACKAGE_VERSION);
 				return 0;
 
 			// ignore unknown arguments
 			case '?':
 				invalid_opt = true;
 			case 'h':
-				printf("dvd_copy %s - copy a single DVD track\n", DVD_INFO_VERSION);
+				printf("dvd_copy %s - copy a single DVD track\n", PACKAGE_VERSION);
 				printf("\n");
 				printf("Usage: dvd_copy [path] [options]\n");
 				printf("\n");

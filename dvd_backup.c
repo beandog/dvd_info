@@ -18,6 +18,7 @@
 #endif
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
+#include "dvd_config.h"
 #include "dvd_device.h"
 #include "dvd_specs.h"
 #include "dvd_info.h"
@@ -40,10 +41,6 @@
 	 * files on a DVD store the metadata, while VOBs store the menus and the audio / video.
 	 *
 	 */
-
-#ifndef DVD_INFO_VERSION
-#define DVD_INFO_VERSION "1.7_beta1"
-#endif
 
 #ifndef DVD_VIDEO_LB_LEN
 #define DVD_VIDEO_LB_LEN 2048
@@ -94,7 +91,7 @@ int main(int argc, char **argv) {
 		switch(opt) {
 
 			case 'h':
-				printf("dvd_backup %s - backup a DVD\n", DVD_INFO_VERSION);
+				printf("dvd_backup %s - backup a DVD\n", PACKAGE_VERSION);
 				printf("\n");
 				printf("Usage: dvd_backup [path] [options]\n");
 				printf("\n");
