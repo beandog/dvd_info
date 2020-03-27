@@ -421,8 +421,8 @@ int main(int argc, char **argv) {
 	/** Backup VIDEO_TS.VOB **/
 	snprintf(vob_filename, PATH_MAX, "%s/VIDEO_TS.VOB", dvd_backup_dir);
 
-	uint64_t dvd_blocks_offset;
-	uint64_t dvd_blocks_skipped;
+	uint64_t dvd_blocks_offset = 0;
+	uint64_t dvd_blocks_skipped = 0;
 
 	struct stat vob_stat;
 
@@ -448,7 +448,7 @@ int main(int argc, char **argv) {
 		// Skip if file exists
 		if(access(vob_filename, F_OK) == 0) {
 			retval = stat(vob_filename, &vob_stat);
-			printf("source %s bytes: %zu\n", vob_filename, dvd_vts[vts].dvd_vobs[0].blocks * DVD_VIDEO_LB_LEN);
+			printf("source %s bytes: %" PRIu64 "\n", vob_filename, dvd_vts[vts].dvd_vobs[0].blocks * DVD_VIDEO_LB_LEN);
 			printf("target %s bytes: %li\n", vob_filename, vob_stat.st_size);
 			continue;
 		}
@@ -480,7 +480,7 @@ int main(int argc, char **argv) {
 				return 1;
 			}
 
-			fprintf(stdout, "* %s blocks written: %ld of %ld\r", vob_filename, dvd_blocks_offset + 1, dvd_vts[vts].dvd_vobs[0].blocks);
+			fprintf(stdout, "* %s blocks written: %" PRIu64 " of %" PRIu64 "\r", vob_filename, dvd_blocks_offset + 1, dvd_vts[vts].dvd_vobs[0].blocks);
 			fflush(stdout);
 
 			dvd_blocks_offset++;
@@ -514,7 +514,7 @@ int main(int argc, char **argv) {
 
 		printf("[VTS %d]\n", vts);
 
-		printf("* Blocks: %ld\n", dvd_vts[vts].blocks);
+		printf("* Blocks: %" PRIu64 "\n", dvd_vts[vts].blocks);
 		printf("* Filesize: %ld\n", dvd_vts[vts].filesize);
 		printf("* VOBs: %u\n", dvd_vts[vts].vobs);
 
@@ -553,7 +553,7 @@ int main(int argc, char **argv) {
 					return 1;
 				}
 
-				fprintf(stdout, "* %s blocks written: %ld of %ld, skipped: %ld\r", vob_filename, vob_block + 1, dvd_vts[vts].dvd_vobs[vob].blocks, vob_blocks_skipped);
+				fprintf(stdout, "* %s blocks written: %" PRIu64 " of %" PRIu64 ", skipped: %" PRIu64 "\r", vob_filename, vob_block + 1, dvd_vts[vts].dvd_vobs[vob].blocks, vob_blocks_skipped);
 				fflush(stdout);
 
 				dvd_blocks_offset++;
