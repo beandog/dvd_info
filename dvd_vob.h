@@ -8,7 +8,7 @@ struct dvd_vob {
 	uint16_t vts;
 	uint16_t vob;
 	uint64_t blocks;
-	uint64_t filesize;
+	ssize_t filesize;
 };
 
 /**
@@ -23,7 +23,7 @@ struct dvd_vob {
  * @return VOB number of blocks, zero if file does not exist
  *
  */
-ssize_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number);
+uint64_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number);
 
 /**
  * Checks a VOB in a VTS to get its filesize.

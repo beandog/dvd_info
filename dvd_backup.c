@@ -46,14 +46,14 @@
 #endif
 
 int main(int, char **);
-int dvd_block_rw(dvd_file_t *, ssize_t, int);
+int dvd_block_rw(dvd_file_t *, uint64_t, int);
 
-int dvd_block_rw(dvd_file_t *dvdread_vts_file, ssize_t offset, int fd) {
+int dvd_block_rw(dvd_file_t *dvdread_vts_file, uint64_t offset, int fd) {
 
 	ssize_t rw = 0;
 	unsigned char buffer[2048];
 
-	rw = DVDReadBlocks(dvdread_vts_file, (int)offset, 1, buffer);
+	rw = DVDReadBlocks(dvdread_vts_file, offset, 1, buffer);
 
 	if(rw < 0) {
 		memset(buffer, '\0', DVD_VIDEO_LB_LEN);
@@ -349,7 +349,7 @@ int main(int argc, char **argv) {
 	}
 
 	/** VOB copy variables **/
-	ssize_t vob_block = 0;
+	uint64_t vob_block = 0;
 
 	/** copy title sets **/
 	struct dvd_info dvd_info;
@@ -421,8 +421,8 @@ int main(int argc, char **argv) {
 	/** Backup VIDEO_TS.VOB **/
 	snprintf(vob_filename, PATH_MAX, "%s/VIDEO_TS.VOB", dvd_backup_dir);
 
-	ssize_t dvd_blocks_offset;
-	ssize_t dvd_blocks_skipped;
+	uint64_t dvd_blocks_offset;
+	uint64_t dvd_blocks_skipped;
 
 	struct stat vob_stat;
 

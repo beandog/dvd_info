@@ -4,14 +4,14 @@
  * Functions used to get information about a DVD VOB
  */
 
-ssize_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number) {
+uint64_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number) {
 
-	ssize_t vob_blocks = 0;
+	uint64_t vob_blocks = 0;
 	ssize_t vob_filesize = 0;
 
 	vob_filesize = dvd_vob_filesize(dvdread_dvd, vts_number, vob_number);
 	if(vob_filesize > 0)
-		vob_blocks = vob_filesize / DVD_VIDEO_LB_LEN;
+		vob_blocks = (uint64_t)(vob_filesize / DVD_VIDEO_LB_LEN);
 
 	return vob_blocks;
 
