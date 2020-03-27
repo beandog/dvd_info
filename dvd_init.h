@@ -1,7 +1,6 @@
 #ifndef DVD_INIT_H
 #define DVD_INIT_H
 
-#include <stdlib.h>
 #include "dvd_specs.h"
 #include "dvd_audio.h"
 #include "dvd_cell.h"
