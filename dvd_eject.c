@@ -12,6 +12,7 @@
 #include <getopt.h>
 #include <mntent.h>
 #include <dvdcss/dvdcss.h>
+#include "dvd_config.h"
 
 #define DEFAULT_DVD_DEVICE "/dev/sr0"
 
@@ -155,6 +156,8 @@ int main(int argc, char **argv) {
 	}
 
 	if(d_help) {
+		printf("dvd_eject %s - eject an optical drive\n", PACKAGE_VERSION);
+		printf("\n");
 		printf("Usage: dvd_eject [options] [device]\n\n");
 		printf("-h, --help	Display this help output\n");
 		printf("-t, --close	Close tray\n");
