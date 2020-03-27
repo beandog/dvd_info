@@ -19,12 +19,12 @@ uint8_t dvd_audio_active_tracks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, ui
 
 bool dvd_audio_active(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t title_track, uint8_t audio_track);
 
-bool dvd_audio_codec(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_stream);
+bool dvd_audio_codec(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track);
 
 uint8_t dvd_audio_channels(ifo_handle_t *vts_ifo, uint8_t audio_track);
 
 bool dvd_audio_stream_id(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track);
 
-bool dvd_audio_lang_code(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_stream);
+bool dvd_audio_lang_code(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track);
 
 #endif

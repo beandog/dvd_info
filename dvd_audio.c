@@ -6,16 +6,16 @@
  * Get the number of audio streams for a track
  *
  * @param vts_ifo dvdread track IFO handler
- * @return number of audio streams
+ * @return number of audio tracks
  */
 uint8_t dvd_track_audio_tracks(ifo_handle_t *vts_ifo) {
 
 	if(vts_ifo->vtsi_mat == NULL)
 		return 0;
 
-	uint8_t audio_streams = vts_ifo->vtsi_mat->nr_of_vts_audio_streams;
+	uint8_t audio_tracks = vts_ifo->vtsi_mat->nr_of_vts_audio_streams;
 
-	return audio_streams;
+	return audio_tracks;
 
 }
 
@@ -115,16 +115,16 @@ bool dvd_audio_active(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t tit
  *
  * Possible values: AC3, MPEG1, MPEG2, LPCM, SDDS, DTS
  * @param vts_ifo dvdread track IFO handler
- * @param audio_stream audio track number
+ * @param audio_track audio track
  * @return audio codec
  */
-bool dvd_audio_codec(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_stream) {
+bool dvd_audio_codec(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track) {
 
 	if(vts_ifo->vtsi_mat == NULL)
 		return false;
 
 	char *audio_codecs[7] = { "ac3", "", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
-	audio_attr_t *audio_attr =  &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
+	audio_attr_t *audio_attr =  &vts_ifo->vtsi_mat->vts_audio_attr[audio_track];
 	uint8_t audio_codec = audio_attr->audio_format;
 
 	strncpy(dest_str, audio_codecs[audio_codec], DVD_AUDIO_CODEC);
@@ -201,15 +201,15 @@ bool dvd_audio_stream_id(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_tr
  * Examples: en: English, fr: French, es: Spanish
  *
  * @param vts_ifo dvdread track IFO handler
- * @param audio_stream audio track number
+ * @param audio_track audio track number
  * @return language code
  */
-bool dvd_audio_lang_code(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_stream) {
+bool dvd_audio_lang_code(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track) {
 
 	if(vts_ifo->vtsi_mat == NULL)
 		return false;
 
-	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_stream];
+	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_track];
 	uint8_t lang_type = audio_attr->lang_type;
 
 	if(lang_type != 1)
