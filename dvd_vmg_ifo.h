@@ -156,15 +156,4 @@ uint8_t dvd_info_side(ifo_handle_t *vmg_ifo);
  */
 bool dvd_specification_version(char *dest_str, ifo_handle_t *vmg_ifo);
 
-/**
- * Get the DVD serial id from dvdnav
- *
- * These strings are set by the DVD authoring software.  They are not unique.
- *
- * Some examples:
- * - Good Night, and Good Luck: 33905bf9
- * - Shipwrecked! (PAL): 3f69708e___mvb__
- */
-// void dvd_info_serial_id(dvdnav_t *dvdnav, char *p);
-
 #endif
