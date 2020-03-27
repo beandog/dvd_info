@@ -588,6 +588,9 @@ int main(int argc, char **argv) {
 
 	}
 
+	fprintf(stderr, "Progress: %.0lf/%.0lf MBs (100%%)\r", dvd_copy.filesize_mbs, dvd_copy.filesize_mbs);
+	fflush(stderr);
+
 	close(dvd_copy.fd);
 
 	DVDCloseFile(dvdread_vts_file);
