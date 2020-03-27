@@ -37,4 +37,5 @@ bin_PROGRAMS += dvd_player
 dvd_player_SOURCES = dvd_player.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c dvd_video.c
 dvd_player_CFLAGS = $(DVDREAD_CFLAGS) $(MPV_CFLAGS)
 dvd_player_LDADD = -lm $(DVDREAD_LIBS) $(MPV_LIBS)
+man1_MANS += dvd_player.1
 endif

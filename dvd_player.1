@@ -1,0 +1,103 @@
+'\" t
+.\"     Title: dvd_player
+.\"    Author: [see the "AUTHOR" section]
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: 03/27/2020
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "DVD_PLAYER" "1" "03/27/2020" "\ \&" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+dvd_player \- a tiny DVD player
+.SH "SYNOPSIS"
+.sp
+\fBdvd_player\fR [\fIDVD PATH\fR] [\fIOPTIONS\fR]
+.SH "DESCRIPTION"
+.sp
+Plays back a DVD track\&. DVD can be an optical disc, image, or directory\&.
+.sp
+The default device is based on your operating system, and is the primary optical drive\&.
+.SH "OPTIONS"
+.PP
+\fB\-t, \-\-track\fR=\fITRACK\fR
+.RS 4
+Playback track number\&. Default is longest valid track\&.
+.RE
+.sp
+\fB\-c, \-\-chapter\fR=\fICHAPTER[\-[CHAPTER]]\fR Playback chapter number or range\&. Default is all chapters\&.
+.sp
+\fB\-a, \-\-alang\fR=\fILANGUAGE\fR Select audio track by language code, two letters\&. Default is first audio track\&.
+.sp
+\fB\-A, \-\-aid\fR=\fI#\fR Select audio track by stream ID\&.
+.sp
+\fB\-s, \-\-slang\fR=\fILANGUAGE\fR Select subtitle track by language code, two letters\&. Default is no subtitles\&.
+.sp
+\fB\-S, \-\-sid\fR=\fI#\fR Select subtitle track by stream ID\&.
+.sp
+\fB\-f, \-\-fullscreen\fR Display in fullscreen mode\&.
+.sp
+\fB\-d, \-\-deinterlace\fR Deinterlace video\&.
+.sp
+\fB\-v, \-\-verbose\fR Enable verbose output\&.
+.sp
+\fB\-V, \-\-version\fR Display version number\&.
+.sp
+\fB\-h, \-\-help\fR Display help output\&.
+.SH "CONFIGURATION"
+.sp
+\fBdvd_player\fR uses libmpv as its backend\&. Configuration file can be created in ~/\&.config/dvd_player/mpv\&.conf to set and override defaults\&. See mpv documentation for more details\&.
+.sp
+Settings in mpv\&.conf will override options passed to \fBdvd_player\fR\&.
+.sp
+As an example, always select Spanish as default audio language, English as subtitle language, and play in fullscreen:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+alang=es
+slang=en
+fullscreen
+.fi
+.if n \{\
+.RE
+.\}
+.SH "SEE ALSO"
+.sp
+dvd_info(1)
+.SH "BUGS"
+.sp
+\fBdvd_player\fR does not wait for an optical device to be ready\&. Wait for it to finish "polling" before running the program\&.
+.sp
+Please file bugs at https://github\&.com/beandog/dvd_info/issues
+.SH "AUTHOR"
+.sp
+dvd_player was written by Steve Dibb <steve\&.dibb@gmail\&.com>
+.SH "RESOURCES"
+.sp
+Source code available at GitHub: https://github\&.com/beandog/dvd_info
+.sp
+Main web site: http://dvds\&.beandog\&.org
+.SH "COPYING"
+.sp
+Copyright (C) 2019 Steve Dibb\&. Free use of this software is granted under the terms of the GNU General Public License, version 2 (GPL)\&.
