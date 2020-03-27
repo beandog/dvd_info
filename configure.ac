@@ -27,10 +27,11 @@ case "$host_os" in
 	;;
 esac
 
+dnl build dvd_drive_status, dvd_eject
 AM_CONDITIONAL([LINUX_DRIVE_TOOLS], [test "x$linux_drive_tools" = xyes])
 AM_CONDITIONAL([LINUX_DRIVE_EJECT], [test "x$linux_drive_eject" = xyes])
 
-dnl Using libmpv for the player is optional, but enabled by default
+dnl Using libmpv for the player is optional, but enabled by default, builds dvd_player
 AC_ARG_WITH([libmpv], [AS_HELP_STRING([--with-libmpv], [Build DVD player using libmpv])], [PKG_CHECK_MODULES([MPV], [mpv >= 1.25.0], [
 	with_libmpv=yes
 	AC_DEFINE(HAVE_LIBMPV, [], [libmpv])
