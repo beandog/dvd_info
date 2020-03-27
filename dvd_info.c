@@ -493,8 +493,8 @@ int main(int argc, char **argv) {
 	 *   shows all of them, but they are flagged as active or not.
 	 */
 
-	// Print the valid and invalid VTSs
-	if(debug) {
+
+	if(debug || opt_vts) {
 
 		for(ix = 1; ix <= dvd_info.tracks; ix++) {
 			dvd_vts[dvd_tracks[ix].vts].tracks++;
@@ -506,6 +506,11 @@ int main(int argc, char **argv) {
 				dvd_vts[dvd_tracks[ix].vts].invalid_tracks++;
 			}
 		}
+
+	}
+
+	// Print the valid and invalid VTSs
+	if(debug) {
 
 		printf("        Tracks: %02" PRIu16 ", ", dvd_info.tracks);
 		printf("Valid: %02" PRIu16 ", ", dvd_info.valid_tracks);
