@@ -44,8 +44,6 @@
  * length from other DVD applications -- again, in milliseconds only -- but I
  * justify this approach in the sense that using this way, the cell, chapter
  * and title track lengths all match up.
- *
- * @param dvd_time dvd_time
  */
 uint32_t dvd_time_to_milliseconds(dvd_time_t *dvd_time) {
 
@@ -91,8 +89,6 @@ uint32_t dvd_time_to_milliseconds(dvd_time_t *dvd_time) {
 
 /**
  * Convert milliseconds to format hh:mm:ss.ms
- *
- * @param milliseconds milliseconds
  */
 void milliseconds_length_format(char *dest_str, uint32_t milliseconds) {
 

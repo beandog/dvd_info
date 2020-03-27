@@ -35,9 +35,6 @@ uint8_t dvd_track_mpeg_version(ifo_handle_t *vts_ifo) {
 
 /**
  * Helper function to check if video codec is MPEG-1
- *
- * @param vts_ifo dvdread track IFO handler
- * @return boolean
  */
 bool dvd_track_mpeg1(ifo_handle_t *vts_ifo) {
 
@@ -50,9 +47,6 @@ bool dvd_track_mpeg1(ifo_handle_t *vts_ifo) {
 
 /**
  * Helper function to check if video codec is MPEG-2
- *
- * @param vts_ifo dvdread track IFO handler
- * @return boolean
  */
 bool dvd_track_mpeg2(ifo_handle_t *vts_ifo) {
 
@@ -70,9 +64,6 @@ bool dvd_track_mpeg2(ifo_handle_t *vts_ifo) {
  * 1 = PAL
  * 2 = Reserved, do not use
  * 3 = Reserved, do not use
- *
- * @param vts_ifo dvdread track IFO handler
- * @return boolean
  */
 bool dvd_track_ntsc_video(ifo_handle_t *vts_ifo) {
 
@@ -87,9 +78,6 @@ bool dvd_track_ntsc_video(ifo_handle_t *vts_ifo) {
 
 /**
  * Check if a video format is PAL
- *
- * @param vts_ifo dvdread track IFO handler
- * @return boolean
  */
 bool dvd_track_pal_video(ifo_handle_t *vts_ifo) {
 
@@ -104,9 +92,6 @@ bool dvd_track_pal_video(ifo_handle_t *vts_ifo) {
 
 /**
  * Get the video height
- *
- * @param vts_ifo dvdread track IFO handler
- * @return video height, or 0 for unknown
  */
 uint16_t dvd_video_height(ifo_handle_t *vts_ifo) {
 
@@ -164,9 +149,6 @@ uint16_t dvd_video_width(ifo_handle_t *vts_ifo) {
 
 /**
  * Check for a valid aspect ratio (4:3, 16:9)
- *
- * @param vts_ifo dvdread track IFO handler
- * @return aspect ratio
  */
 bool dvd_track_valid_aspect_ratio(ifo_handle_t *vts_ifo) {
 
@@ -181,9 +163,6 @@ bool dvd_track_valid_aspect_ratio(ifo_handle_t *vts_ifo) {
 
 /**
  * Check for 4:3 aspect ratio
- *
- * @param vts_ifo dvdread track IFO handler
- * @return boolean
  */
 bool dvd_track_aspect_ratio_4x3(ifo_handle_t *vts_ifo) {
 
@@ -198,9 +177,6 @@ bool dvd_track_aspect_ratio_4x3(ifo_handle_t *vts_ifo) {
 
 /**
  * Check for 16:9 aspect ratio
- *
- * @param vts_ifo dvdread track IFO handler
- * @return boolean
  */
 bool dvd_track_aspect_ratio_16x9(ifo_handle_t *vts_ifo) {
 
@@ -221,9 +197,6 @@ bool dvd_track_aspect_ratio_16x9(ifo_handle_t *vts_ifo) {
  * 1 = Pan and Scan
  * 2 = Letterbox
  * 3 = Unset
- *
- * @param vts_ifo dvdread track IFO handler
- * @return uint8_t
  */
 uint8_t dvd_video_df(ifo_handle_t *vts_ifo) {
 
@@ -262,9 +235,6 @@ uint8_t dvd_video_df(ifo_handle_t *vts_ifo) {
  * 1: Pan and Scan
  * 2: Letterbox
  * 3: Unset (most likely non-anormphic widescreen?)
- *
- * @param vts_ifo dvdread track IFO handler
- * @return boolean
  */
 bool dvd_video_letterbox(ifo_handle_t *vts_ifo) {
 
@@ -294,9 +264,6 @@ bool dvd_video_letterbox(ifo_handle_t *vts_ifo) {
  * This function returns true if either the first condition or the second one
  * is true.  This means that a video may be pan & scan, or it may be non-
  * anomorphic widescreen.
- *
- * @param vts_ifo dvdread track IFO handler
- * @return boolean
  */
 bool dvd_video_pan_scan(ifo_handle_t *vts_ifo) {
 
@@ -314,9 +281,6 @@ bool dvd_video_pan_scan(ifo_handle_t *vts_ifo) {
 
 /*
  * Get the video codec for a track
- *
- * @param vts_ifo dvdread track IFO handler
- * @retval video codec
  */
 bool dvd_video_codec(char *dest_str, ifo_handle_t *vts_ifo) {
 
@@ -336,9 +300,6 @@ bool dvd_video_codec(char *dest_str, ifo_handle_t *vts_ifo) {
 
 /*
  * Get the video format for a track
- *
- * @param vts_ifo dvdread track IFO handler
- * @retval video format
  */
 bool dvd_track_video_format(char *dest_str, ifo_handle_t *vts_ifo) {
 
@@ -355,9 +316,6 @@ bool dvd_track_video_format(char *dest_str, ifo_handle_t *vts_ifo) {
 
 /*
  * Get the video aspect ratio for a track
- *
- * @param vts_ifo dvdread track IFO handler
- * @retval aspect ratio
  */
 bool dvd_video_aspect_ratio(char *dest_str, ifo_handle_t *vts_ifo) {
 

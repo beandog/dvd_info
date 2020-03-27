@@ -26,9 +26,6 @@
  * libdvdread populates the ifo_handle with various data, but the structure is
  * the same for both a VMG IFO and a VTS one.  This does a few checks to make
  * sure that the ifo_handle passed in is a VMG.
- *
- * @param ifo dvdread IFO handle
- * @return boolean
  */
 bool ifo_is_vmg(ifo_handle_t *ifo);
 
@@ -38,9 +35,6 @@ bool ifo_is_vmg(ifo_handle_t *ifo);
  * libdvdread populates the ifo_handle with various data, but the structure is
  * the same for both a VMG IFO and a VTS one.  This does a few checks to make
  * sure that the ifo_handle passed in is a Video Title Set.
- *
- * @param ifo dvdread IFO handle
- * @return boolean
  */
 bool ifo_is_vts(ifo_handle_t *ifo);
 
@@ -69,8 +63,6 @@ bool ifo_is_vts(ifo_handle_t *ifo);
  * - Star Trek: Voyager: VOYAGER_S7D1
  *
  * This whole function is mostly lifted from lsdvd.
- *
- * @param device_filename device filename
  */
 bool dvd_title(char *dest_str, const char *device_filename);
 
@@ -79,8 +71,6 @@ bool dvd_title(char *dest_str, const char *device_filename);
  *
  * Uses libdvdreads DVDDiscID() function to return an MD5 string of the first
  * 10 IFOs on the DVD.
- *
- * @param dvdread_dvd dvdreader_t handle
  */
 bool dvd_dvdread_id(char *dest_str, dvd_reader_t *dvdread_dvd);
 
@@ -109,17 +99,11 @@ bool dvd_dvdread_id(char *dest_str, dvd_reader_t *dvdread_dvd);
  * Superman (Warner. Bros): 4
  * The Black Cauldron (Walt Disney): 99
  * Searching For Bobby Fischer: 4
- *
- * @param vmg_ifo dvdread IFO handle
- * @return num tracks
  */
 uint16_t dvd_tracks(ifo_handle_t *vmg_ifo);
 
 /**
  * Get the number of VTS on a DVD
- *
- * @param vmg_ifo dvdread IFO handle
- * @return num VTS
  */
 uint16_t dvd_video_title_sets(ifo_handle_t *vmg_ifo);
 
@@ -144,8 +128,6 @@ uint16_t dvd_video_title_sets(ifo_handle_t *vmg_ifo);
  * It's not unusual for this one to be empty as well.
  *
  * These should *not* be considered as unique identifiers for discs.
- *
- * @param vmg_ifo dvdread IFO handle
  */
 bool dvd_provider_id(char *dest_str, ifo_handle_t *vmg_ifo);
 
@@ -153,8 +135,6 @@ bool dvd_provider_id(char *dest_str, ifo_handle_t *vmg_ifo);
  * Get the DVD's VMG id
  * It's entirely possible, and common, that the string is blank.  If it's not
  * blank, it is probably 'DVDVIDEO-VMG'.
- *
- * @param vmg_ifo libdvdread IFO handle
  */
 bool dvd_vmg_id(char *dest_str, ifo_handle_t *vmg_ifo);
 
@@ -166,9 +146,6 @@ bool dvd_vmg_id(char *dest_str, ifo_handle_t *vmg_ifo);
  *
  * I haven't ever checked this before, so I don't know what DVDs are authored
  * with.  I'm going to simply return 2 if it's set to that, and a 1 otherwise.
- *
- * @param vmg_ifo libdvdread IFO handle
- * @return DVD side
  */
 uint8_t dvd_info_side(ifo_handle_t *vmg_ifo);
 
@@ -176,9 +153,6 @@ uint8_t dvd_info_side(ifo_handle_t *vmg_ifo);
  * Get the DVD specifiation version
  *
  * Example: 1.0
- *
- * @param vmg_ifo libdvdread IFO handle
- * @return DVD speficiation
  */
 bool dvd_specification_version(char *dest_str, ifo_handle_t *vmg_ifo);
 
@@ -190,9 +164,6 @@ bool dvd_specification_version(char *dest_str, ifo_handle_t *vmg_ifo);
  * Some examples:
  * - Good Night, and Good Luck: 33905bf9
  * - Shipwrecked! (PAL): 3f69708e___mvb__
- *
- * @param dvdnav dvdnav_t
- * @param p char[17] to copy the string to
  */
 // void dvd_info_serial_id(dvdnav_t *dvdnav, char *p);
 

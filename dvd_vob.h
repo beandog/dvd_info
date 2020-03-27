@@ -17,11 +17,6 @@ struct dvd_vob {
  * A simple helper function around dvd_vob_filesize to do the math of number of
  * blocks, which is the filesize divided by the block size (2 KiB), or DVD_VIDEO_LB_LEN
  *
- * @param dvd A dvdread handle
- * @param VTS number
- * @param VOB number
- * @return VOB number of blocks, zero if file does not exist
- *
  */
 uint64_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number);
 
@@ -33,11 +28,6 @@ uint64_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t
  *
  * A menu vob may or may not be present on a disc, so this can safely be run to check
  * if it's zero or not.
- *
- * @param dvd A dvdread handle
- * @param VTS number
- * @param VOB number
- * @return VOB filesize, positive if exists, zero if does not
  *
  */
 ssize_t dvd_vob_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number);

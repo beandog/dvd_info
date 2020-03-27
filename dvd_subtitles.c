@@ -48,12 +48,6 @@ uint8_t dvd_track_active_subtitles(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo,
 
 /**
  * Check if a subtitle stream is flagged as active or not.
- *
- * @param vmg_ifo dvdread track IFO handler
- * @param vts_ifo dvdread track IFO handler
- * @param title_track track number
- * @param subtitle_track track number
- * @return boolean
  */
 bool dvd_subtitle_active(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t title_track, uint8_t subtitle_track) {
 
@@ -82,10 +76,6 @@ bool dvd_subtitle_active(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t 
 
 /**
  * Get the number of subtitle streams for a specific language
- *
- * @param vts_ifo dvdread track IFO handler
- * @param lang_code language code
- * @return number of subtitles
  */
 uint8_t dvd_track_num_subtitle_lang_code_streams(ifo_handle_t *vts_ifo, char *lang_code) {
 
@@ -113,10 +103,6 @@ uint8_t dvd_track_num_subtitle_lang_code_streams(ifo_handle_t *vts_ifo, char *la
 
 /**
  * Check if a DVD track has a specific subtitle language
- *
- * @param vts_ifo dvdread track IFO handler
- * @param lang_code language code
- * @return boolean
  */
 bool dvd_track_has_subtitle_lang_code(ifo_handle_t *vts_ifo, char *lang_code) {
 
@@ -162,8 +148,6 @@ void dvd_subtitle_lang_code(char *dest_str, ifo_handle_t *vts_ifo, uint8_t subti
  * the index to 0x20.
  *
  * Possible ranges: 0x20 to 0x3f
- *
- * @param subtitle_track subtitle track number
  */
 void dvd_subtitle_stream_id(char *dest_str, uint8_t subtitle_track) {
 

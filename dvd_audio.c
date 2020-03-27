@@ -1,12 +1,9 @@
 #include "dvd_audio.h"
 
-/** Audio Streams **/
+/** Audio Tracks **/
 
 /**
  * Get the number of audio streams for a track
- *
- * @param vts_ifo dvdread track IFO handler
- * @return number of audio tracks
  */
 uint8_t dvd_track_audio_tracks(ifo_handle_t *vts_ifo) {
 
@@ -29,11 +26,6 @@ uint8_t dvd_track_audio_tracks(ifo_handle_t *vts_ifo) {
  * Some software uses this number of audio streams in the pgc instead of the
  * one in the VTSI MAT, such as mplayer and HandBrake, which will skip over
  * the other ones completely.
- *
- * @param vmg_ifo dvdread track IFO handler
- * @param vts_ifo dvdread track IFO handler
- * @param title_track track number
- * @return number of PGC audio streams marked as active
  */
 uint8_t dvd_audio_active_tracks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t title_track) {
 
@@ -70,12 +62,6 @@ uint8_t dvd_audio_active_tracks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, ui
  *
  * There is no fixed order to active, inactive tracks relative to each other.
  * The first can be inactive, the next active, etc.
- *
- * @param vmg_ifo dvdread track IFO handler
- * @param vts_ifo dvdread track IFO handler
- * @param title_track track number
- * @param audio_track audio track
- * @return boolean
  */
 bool dvd_audio_active(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t title_track, uint8_t audio_track) {
 
@@ -114,9 +100,6 @@ bool dvd_audio_active(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t tit
  * FIXME check for multi channel extension
  *
  * Possible values: AC3, MPEG1, MPEG2, LPCM, SDDS, DTS
- * @param vts_ifo dvdread track IFO handler
- * @param audio_track audio track
- * @return audio codec
  */
 bool dvd_audio_codec(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track) {
 
@@ -141,10 +124,6 @@ bool dvd_audio_codec(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track)
  * 3: 2.1, stereo and subwoofer
  * 4: front right, front left, rear right, rear left
  * 5: front right, front left, rear right, rear left, subwoofer
- *
- * @param vts_ifo dvdread track IFO handler
- * @param audio_track audio track number
- * @return num channels
  */
 uint8_t dvd_audio_channels(ifo_handle_t *vts_ifo, uint8_t audio_track) {
 
@@ -164,10 +143,6 @@ uint8_t dvd_audio_channels(ifo_handle_t *vts_ifo, uint8_t audio_track) {
  * AC3 = 0x80 to 0x87
  * DTS = 0x88 to 0x8f
  * LPCM = 0xa0 to 0xa7
- *
- * @param vts_ifo dvdread track IFO handler
- * @param audio_track audio track number
- * @return audio stream id
  */
 bool dvd_audio_stream_id(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track) {
 
@@ -199,10 +174,6 @@ bool dvd_audio_stream_id(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_tr
  * lang_extension are both 0.
  *
  * Examples: en: English, fr: French, es: Spanish
- *
- * @param vts_ifo dvdread track IFO handler
- * @param audio_track audio track number
- * @return language code
  */
 bool dvd_audio_lang_code(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track) {
 

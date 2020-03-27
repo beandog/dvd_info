@@ -9,9 +9,6 @@
 
 /**
  * Get the IFO number that a track resides in
- *
- * @param vmg_ifo dvdread handler for primary IFO
- * @return IFO number
  */
 uint16_t dvd_vts_ifo_number(ifo_handle_t *vmg_ifo, uint16_t track_number) {
 
@@ -44,8 +41,6 @@ uint16_t dvd_track_title_parts(ifo_handle_t *vmg_ifo, uint16_t track_number) {
 /**
  * Get the track's VTS id
  * Possible that it's blank, usually set to DVDVIDEO-VTS otherwise.
- *
- * @param vts_ifo libdvdread IFO handle
  */
 bool dvd_vts_id(char *dest_str, ifo_handle_t *vts_ifo) {
 
