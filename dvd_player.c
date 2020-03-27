@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "Aa:c:dfhS:s:t:Vvz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "Aa:c:dfhS:s:t:vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -180,10 +180,6 @@ int main(int argc, char **argv) {
 					arg_track_number = (uint16_t)arg_number;
 				break;
 
-			case 'V':
-				printf("dvd_player %s\n", PACKAGE_VERSION);
-				return 0;
-
 			case 'v':
 				verbose = true;
 				break;
@@ -196,7 +192,7 @@ int main(int argc, char **argv) {
 			case '?':
 				invalid_opts = true;
 			case 'h':
-				printf("dvd_player - a tiny DVD player\n");
+				printf("dvd_player %s - a tiny DVD player\n", PACKAGE_VERSION);
 				printf("\n");
 				printf("Usage: dvd_player [path] [options]\n");
 				printf("\n");
@@ -211,7 +207,6 @@ int main(int argc, char **argv) {
 				printf("  -d, --deinterlace             Deinterlace video\n");
 				printf("  -v, --verbose                 Verbose output\n");
 				printf("  -h, --help			Show this help text and exit\n");
-				printf("      --version                 Show version info and exit\n");
 				printf("\n");
 				printf("DVD path can be a device name, a single file, or directory (default: %s)\n", DEFAULT_DVD_DEVICE);
 				printf("\n");
