@@ -41,8 +41,6 @@
 #define DVD_INFO_VERSION "1.7_beta1"
 #endif
 
-#define DEFAULT_DVD_DEVICE "/dev/sr0"
-
 #ifndef DVD_VIDEO_LB_LEN
 #define DVD_VIDEO_LB_LEN 2048
 #endif
