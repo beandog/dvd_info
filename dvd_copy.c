@@ -36,6 +36,18 @@
 #define DVD_VIDEO_LB_LEN 2048
 #endif
 
+	/**
+	 *      _          _
+	 *   __| |_   ____| |    ___ ___  _ __  _   _
+	 *  / _` \ \ / / _` |   / __/ _ \| '_ \| | | |
+	 * | (_| |\ V / (_| |  | (_| (_) | |_) | |_| |
+	 *  \__,_| \_/ \__,_|___\___\___/| .__/ \__, |
+	 *                 |_____|       |_|    |___/
+	 *
+	 * ** copy a DVD track to the filesystem **
+	 *
+	 */
+
 int main(int, char **);
 void dvd_track_info(struct dvd_track *dvd_track, uint16_t track_number, ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo);
 

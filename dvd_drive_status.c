@@ -19,28 +19,35 @@
  * CDS_DISC_OK             4
  */
 
-/**
- * dvd_drive_status.c
- * Get the status of the disc tray
- *
- * See http://dvds.beandog.org/doku.php/dvd_drive_status for justification :)
- *
- * This does do strict error checking to see if the device exists, is a DVD
- * drive, is accessible, and so on.
- *
- * With no argument, uses '/dev/dvd' as the drive
- *
- * Exit codes:
- * 1 - no disc (closed, no media)
- * 2 - tray open
- * 3 - drive not ready (opening or polling)
- * 4 - drive ready (closed, has media)
- * 5 - device exists, but is NOT a DVD drive
- * 6 - cannot access device
- * 7 - cannot find a device
- *
- * - Returns an exit code similar to CDROM_DRIVE_STATUS in cdrom.h
- */
+	/**
+	 *      _          _        _      _                   _        _
+	 *   __| |_   ____| |    __| |_ __(_)_   _____     ___| |_ __ _| |_ _   _ ___
+	 *  / _` \ \ / / _` |   / _` | '__| \ \ / / _ \   / __| __/ _` | __| | | / __|
+	 * | (_| |\ V / (_| |  | (_| | |  | |\ V /  __/   \__ \ || (_| | |_| |_| \__ \
+	 *  \__,_| \_/ \__,_|___\__,_|_|  |_| \_/ \___|___|___/\__\__,_|\__|\__,_|___/
+	 *                 |_____|                   |_____|
+	 *
+	 * ** Linux tool to get get the status of the disc tray **
+	 *
+	 * See http://dvds.beandog.org/doku.php/dvd_drive_status for justification :)
+	 *
+	 * This does do strict error checking to see if the device exists, is a DVD
+	 * drive, is accessible, and so on.
+	 *
+	 * With no argument, uses '/dev/sr0' as the drive
+	 *
+	 * Exit codes:
+	 * 1 - no disc (closed, no media)
+	 * 2 - tray open
+	 * 3 - drive not ready (opening or polling)
+	 * 4 - drive ready (closed, has media)
+	 * 5 - device exists, but is NOT a DVD drive
+	 * 6 - cannot access device
+	 * 7 - cannot find a device
+	 *
+	 * - Returns an exit code similar to CDROM_DRIVE_STATUS in cdrom.h
+	 */
+
 bool device_access(const char *device_filename);
 
 int main(int argc, char **argv);

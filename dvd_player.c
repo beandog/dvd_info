@@ -31,6 +31,17 @@
 #include "dvd_time.h"
 #include "dvd_player.h"
 
+	/**
+	 *      _          _            _
+	 *   __| |_   ____| |     _ __ | | __ _ _   _  ___ _ __
+	 *  / _` \ \ / / _` |    | '_ \| |/ _` | | | |/ _ \ '__|
+	 * | (_| |\ V / (_| |    | |_) | | (_| | |_| |  __/ |
+	 *  \__,_| \_/ \__,_|____| .__/|_|\__,_|\__, |\___|_|
+	 *                 |_____|_|            |___/
+	 *
+	 * ** a tiny DVD player using libmpv as backend **
+	 */
+
 int main(int argc, char **argv) {
 
 	int retval = 0;

@@ -16,78 +16,84 @@
 
 #define DEFAULT_DVD_DEVICE "/dev/sr0"
 
-/**
- * dvd_eject.c
- *
- * Opens / closes a disc tray, and decrypts the CSS on the drive to avoid
- * any spatial anomalies (and hardware devices whining to the kernel about
- * reading sectors without authentication). Requires libdvdcss as a
- * dependency library.
- *
- * Three return values: 0 on success, 1 on error, 2 on success and drive has
- * a DVD inside of it.
- *
- * To build:
- * $ gcc -o dvd_eject dvd_eject.c -l dvdcss
- *
- * Usage:
- * $ dvd_eject -h
- *
- * BUGS
- *
- * I found one race condition where if you close the tray (using dvd_eject -t),
- * have a trigger mount it when udev fires one, and immediately try to eject
- * it again, it will fail. Unlocking the tray seems to be a requirement before
- * it can send a command to open it. So, if you have a sequence like this, it
- * will try, but fail: 1) close tray 2) mount disc 3) immediately eject. I
- * believe the reason is that the drive status will report whether its ready or
- * not, regardless of it being in the process of mounted. The is_mounted check
- * will pass, and unmounting it passes fine as well, but unlocking the door
- * will continue to fail. I haven't been able to find a fix for this yet.
- * However, you shouldn't run into this bug unless you are debugging like me.
- *
- * Story mode:
- *
- * I've spent a lot of time trying to track down why the hardware will send
- * errors to the systemlog like so:
- *
- * "Sense Key : Illegal Request [current]"
- * "Add. Sense: Read of scrambled sector without authentication"
- *
- * I'm debugging them not because I care about the messages, but becaue if it
- * happens enough, the drives will eventually lock up and be unable to process
- * any more discs (until next reboot).
- *
- * I've narrowed down two things that help a lot to prevent them as best as I
- * can:
- *
- * 1. Make as *few* calls as possible to the device to check on its status
- *    (this program does that -- it keeps it to a bare minimum)
- * 2. Use libdvdcss to authenticate access to the DVD.
- *
- * Those two combined seem to help in large amounts, but I've never found
- * anything that is a sure fire solution.
- *
- * The basic logic of this program and reason for it is this: Opening and
- * closing a disc tray is trivial.  The issue this one works around, however,
- * is that just because a tray is *closed*, does not mean that it is *ready* to
- * acess the media in it.  This can cause issues when you do something like
- * "lsdvd /dev/dvd" and the tray is open.  The tray will close by the call made
- * through libdvdread / libdvdcss to access the device, but will fail because
- * the device is not yet in a ready mode.  So there's a gap between "closing" and
- * "closed and ready".  Fortunately, the Linux kernel allows for checking those
- * states, and that's the core of the logic here.
- *
- * With that in mind, all this does is close or open the tray, wait until it is
- * a "ready" state again, and then exits.  In addition, if it closes the tray,
- * it waits until the "ready" state and then decrypts the CSS using libdvdcss.
- *
- * If anecdotal evidence has any value ... it works for me. :)
- *
- * Good luck, and here's to all the other DVD collectors / multimedia geeks out
- * there! :D
- *
- */
+	/**
+	 *      _          _          _           _
+	 *   __| |_   ____| |    ___ (_) ___  ___| |_
+	 *  / _` \ \ / / _` |   / _ \| |/ _ \/ __| __|
+	 * | (_| |\ V / (_| |  |  __/| |  __/ (__| |_
+	 *  \__,_| \_/ \__,_|___\___|/ |\___|\___|\__|
+	 *                 |_____| |__/
+	 *
+	 *
+	 * Opens / closes a disc tray, and decrypts the CSS on the drive to avoid
+	 * any spatial anomalies (and hardware devices whining to the kernel about
+	 * reading sectors without authentication). Requires libdvdcss as a
+	 * dependency library.
+	 *
+	 * Three return values: 0 on success, 1 on error, 2 on success and drive has
+	 * a DVD inside of it.
+	 *
+	 * To build:
+	 * $ gcc -o dvd_eject dvd_eject.c -l dvdcss
+	 *
+	 * Usage:
+	 * $ dvd_eject -h
+	 *
+	 * BUGS
+	 *
+	 * I found one race condition where if you close the tray (using dvd_eject -t),
+	 * have a trigger mount it when udev fires one, and immediately try to eject
+	 * it again, it will fail. Unlocking the tray seems to be a requirement before
+	 * it can send a command to open it. So, if you have a sequence like this, it
+	 * will try, but fail: 1) close tray 2) mount disc 3) immediately eject. I
+	 * believe the reason is that the drive status will report whether its ready or
+	 * not, regardless of it being in the process of mounted. The is_mounted check
+	 * will pass, and unmounting it passes fine as well, but unlocking the door
+	 * will continue to fail. I haven't been able to find a fix for this yet.
+	 * However, you shouldn't run into this bug unless you are debugging like me.
+	 *
+	 * Story mode:
+	 *
+	 * I've spent a lot of time trying to track down why the hardware will send
+	 * errors to the systemlog like so:
+	 *
+	 * "Sense Key : Illegal Request [current]"
+	 * "Add. Sense: Read of scrambled sector without authentication"
+	 *
+	 * I'm debugging them not because I care about the messages, but becaue if it
+	 * happens enough, the drives will eventually lock up and be unable to process
+	 * any more discs (until next reboot).
+	 *
+	 * I've narrowed down two things that help a lot to prevent them as best as I
+	 * can:
+	 *
+	 * 1. Make as *few* calls as possible to the device to check on its status
+	 *    (this program does that -- it keeps it to a bare minimum)
+	 * 2. Use libdvdcss to authenticate access to the DVD.
+	 *
+	 * Those two combined seem to help in large amounts, but I've never found
+	 * anything that is a sure fire solution.
+	 *
+	 * The basic logic of this program and reason for it is this: Opening and
+	 * closing a disc tray is trivial.  The issue this one works around, however,
+	 * is that just because a tray is *closed*, does not mean that it is *ready* to
+	 * acess the media in it.  This can cause issues when you do something like
+	 * "lsdvd /dev/dvd" and the tray is open.  The tray will close by the call made
+	 * through libdvdread / libdvdcss to access the device, but will fail because
+	 * the device is not yet in a ready mode.  So there's a gap between "closing" and
+	 * "closed and ready".  Fortunately, the Linux kernel allows for checking those
+	 * states, and that's the core of the logic here.
+	 *
+	 * With that in mind, all this does is close or open the tray, wait until it is
+	 * a "ready" state again, and then exits.  In addition, if it closes the tray,
+	 * it waits until the "ready" state and then decrypts the CSS using libdvdcss.
+	 *
+	 * If anecdotal evidence has any value ... it works for me. :)
+	 *
+	 * Good luck, and here's to all the other DVD collectors / multimedia geeks out
+	 * there! :D
+	 *
+	 */
 
 int drive_status(int dvd_fd);
 bool has_media(int dvd_fd);
