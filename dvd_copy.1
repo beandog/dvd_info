@@ -2,12 +2,12 @@
 .\"     Title: dvd_copy
 .\"    Author: [see the "AUTHOR" section]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/24/2019
+.\"      Date: 03/28/2020
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_COPY" "1" "06/24/2019" "\ \&" "\ \&"
+.TH "DVD_COPY" "1" "03/28/2020" "\ \&" "\ \&"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -46,9 +46,9 @@ dvd_info(1) examines tracks closely to check for flags that would make a track i
 .sp
 Sending the track directly to stdout makes it useful for things like piping to other programs\&. Since the output is decrypted, it\(cqs a clean stream that at that point can be re\-encoded, remuxed, etc\&.
 .sp
-An example using ffmpeg, where track five and the second chapter are remuxed by ffmpeg into a Matroska file, copying the video stream as well as the third audio stream\&.
+An example using ffmpeg, remuxing a track into a Matroska file:
 .sp
-$ dvd_copy \-t 5 \-c 2\-2 \-o \- | ffmpeg \-i \- \-map 0:v \-map i:0x82 \-f vob \-c copy video\&.mkv
+$ dvd_copy \-o \- | ffmpeg \-fflags +genpts \-i \- \-c copy dvd_track\&.mkv
 .SH "OPTIONS"
 .PP
 \fB\-t, \-\-track\fR=\fITITLE\fR
