@@ -12,7 +12,10 @@
 #include <getopt.h>
 #ifdef __linux__
 #include <linux/cdrom.h>
+#include <linux/limits.h>
 #include "dvd_drive.h"
+#else
+#include <limits.h>
 #endif
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
@@ -45,7 +48,7 @@ struct dvd_copy {
 	uint64_t blocks;
 	uint64_t filesize;
 	double filesize_mbs;
-	char *filename;
+	char filename[PATH_MAX];
 	int fd;
 	unsigned char buffer[DVD_VIDEO_LB_LEN];
 };
@@ -96,6 +99,7 @@ int main(int argc, char **argv) {
 	dvd_copy.filesize_mbs = 0;
 	dvd_copy.fd = -1;
 	memset(dvd_copy.buffer, '\0', DVD_VIDEO_LB_LEN);
+	memset(dvd_copy.filename, '\0', PATH_MAX);
 
 	while((opt = getopt_long(argc, argv, "c:d:ho:t:V", long_options, &long_index )) != -1) {
 
@@ -185,7 +189,7 @@ int main(int argc, char **argv) {
 					p_dvd_copy = true;
 					p_dvd_cat = false;
 					opt_filename = true;
-					dvd_copy.filename = optarg;
+					strncpy(dvd_copy.filename, optarg, PATH_MAX - 1);
 				}
 				break;
 
@@ -436,8 +440,7 @@ int main(int argc, char **argv) {
 
 	// Set default filename
 	if(!opt_filename) {
-		dvd_copy.filename = calloc(17, sizeof(unsigned char));
-		snprintf(dvd_copy.filename, 17, "dvd_track_%02" PRIu16 ".mpg", dvd_copy.track);
+		sprintf(dvd_copy.filename, "dvd_track_%02" PRIu16 ".mpg", dvd_copy.track);
 	}
 
 	/**
