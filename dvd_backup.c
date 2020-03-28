@@ -207,6 +207,9 @@ int main(int argc, char **argv) {
 	char backup_title[DVD_TITLE + 1];
 	memset(backup_title, '\0', DVD_TITLE + 1);
 	dvd_title(backup_title, device_filename);
+	if(strlen(backup_title) == 0) {
+		strcpy(backup_title, "DVD_VIDEO");
+	}
 
 	// Build the backup directory
 	char dvd_backup_dir[PATH_MAX];
