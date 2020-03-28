@@ -238,7 +238,7 @@ int main(int argc, char **argv) {
 			case '?':
 				invalid_opt = true;
 			case 'h':
-				printf("dvd_info %s - display information about a DVD\n", PACKAGE_VERSION);
+				printf("dvd_info - display information about a DVD\n");
 				printf("\n");
 				printf("Usage: dvd_info [path] [options]\n");
 				printf("\n");
@@ -265,7 +265,7 @@ int main(int argc, char **argv) {
 				printf("Other:\n");
 				printf("  -g, --xchap           Display title's chapter format for mkvmerge\n");
 				printf("  -h, --help            Display these help options\n");
-				printf("      --version         Version information\n");
+				printf("      --version         Display version\n");
 				printf("\n");
 				printf("DVD path can be a device name, a single file, or a directory (default: %s)\n", DEFAULT_DVD_DEVICE);
 				if(invalid_opt)

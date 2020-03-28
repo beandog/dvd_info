@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
 			case '?':
 				invalid_opt = true;
 			case 'h':
-				printf("dvd_copy %s - copy a single DVD track\n", PACKAGE_VERSION);
+				printf("dvd_copy - copy a single DVD track\n");
 				printf("\n");
 				printf("Usage: dvd_copy [path] [options]\n");
 				printf("\n");

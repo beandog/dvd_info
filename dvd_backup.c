@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
 	struct option p_long_opts[] = {
 		{ "help", no_argument, NULL, 'h' },
 		{ "vts", required_argument, NULL, 't' },
+		{ "version", no_argument, NULL, 'V' },
 		{ 0, 0, 0, 0 },
 	};
 
@@ -86,12 +87,12 @@ int main(int argc, char **argv) {
 	bool opt_vts_number = false;
 	uint16_t arg_vts_number = 0;
 
-	while((opt = getopt_long(argc, argv, "ht:", p_long_opts, &ix)) != -1) {
+	while((opt = getopt_long(argc, argv, "ht:V", p_long_opts, &ix)) != -1) {
 
 		switch(opt) {
 
 			case 'h':
-				printf("dvd_backup %s - backup a DVD\n", PACKAGE_VERSION);
+				printf("dvd_backup - backup a DVD\n");
 				printf("\n");
 				printf("Usage: dvd_backup [path] [options]\n");
 				printf("\n");
@@ -109,6 +110,11 @@ int main(int argc, char **argv) {
 					printf("VTS must be between 1 and 99\n");
 					return 1;
 				}
+				break;
+
+			case 'V':
+				printf("dvd_backup %s\n", PACKAGE_VERSION);
+				return 0;
 				break;
 
 			case 0:

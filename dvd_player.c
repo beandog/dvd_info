@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "Aa:c:dfhS:s:t:vz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "Aa:c:dfhS:s:t:vVz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -184,6 +184,11 @@ int main(int argc, char **argv) {
 				verbose = true;
 				break;
 
+			case 'V':
+				printf("dvd_player %s\n", PACKAGE_VERSION);
+				return 0;
+				break;
+
 			case 'z':
 				verbose = true;
 				debug = true;
@@ -192,7 +197,7 @@ int main(int argc, char **argv) {
 			case '?':
 				invalid_opts = true;
 			case 'h':
-				printf("dvd_player %s - a tiny DVD player\n", PACKAGE_VERSION);
+				printf("dvd_player - a tiny DVD player\n");
 				printf("\n");
 				printf("Usage: dvd_player [path] [options]\n");
 				printf("\n");

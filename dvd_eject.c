@@ -127,11 +127,12 @@ int main(int argc, char **argv) {
 		{ "close", no_argument, 0, 't' },
 		{ "help", no_argument, 0, 'h' },
 		{ "no-wait", no_argument, 0, 'n' },
+		{ "version", no_argument, 0, 'V' },
 		// { "retry", no_argument, 0, 'r' },
 		{ 0, 0, 0, 0 }
 	};
 
-	while((opt = getopt_long(argc, argv, "hnrt", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "hnrtV", long_options, &long_index )) != -1) {
 		switch(opt) {
 			case 'h':
 				d_help = true;
@@ -146,6 +147,10 @@ int main(int argc, char **argv) {
 				p_dvd_eject = false;
 				p_dvd_close = true;
 				break;
+			case 'V':
+				printf("dvd_eject %s\n", PACKAGE_VERSION);
+				return 0;
+				break;
 			case '?':
 				d_help = true;
 				break;
@@ -156,7 +161,7 @@ int main(int argc, char **argv) {
 	}
 
 	if(d_help) {
-		printf("dvd_eject %s - eject an optical drive\n", PACKAGE_VERSION);
+		printf("dvd_eject - eject or close an optical drive\n");
 		printf("\n");
 		printf("Usage: dvd_eject [options] [device]\n\n");
 		printf("-h, --help	Display this help output\n");
