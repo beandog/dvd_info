@@ -28,6 +28,21 @@
 #include "dvd_drive.h"
 #endif
 
+	/**
+	 *      _          _     _        __
+	 *   __| |_   ____| |   (_)_ __  / _| ___
+	 *  / _` \ \ / / _` |   | | '_ \| |_ / _ \
+	 * | (_| |\ V / (_| |   | | | | |  _| (_) |
+	 *  \__,_| \_/ \__,_|___|_|_| |_|_|  \___/
+	 *                 |_____|
+	 *
+	 * ** display information about a DVD **
+	 *
+	 * dvd_info is a clone of lsdvd that adds additional features, such as
+	 * JSON output, OGM chapter support, and checking for track errors.
+	 *
+	 */
+
 int main(int argc, char **argv) {
 
 	// Program name
