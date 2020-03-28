@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
 
 	struct option p_long_opts[] = {
 		{ "help", no_argument, NULL, 'h' },
-		{ "vts", required_argument, NULL, 't' },
+		{ "vts", required_argument, NULL, 'T' },
 		{ "version", no_argument, NULL, 'V' },
 		{ 0, 0, 0, 0 },
 	};
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
 	bool opt_vts_number = false;
 	uint16_t arg_vts_number = 0;
 
-	while((opt = getopt_long(argc, argv, "ht:V", p_long_opts, &ix)) != -1) {
+	while((opt = getopt_long(argc, argv, "hT:V", p_long_opts, &ix)) != -1) {
 
 		switch(opt) {
 
@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
 				return 0;
 				break;
 
-			case 't':
+			case 'T':
 				opt_vts_number = true;
 				arg_vts_number = (uint16_t)strtoumax(optarg, NULL, 0);
 				if(arg_vts_number < 1 || arg_vts_number > 99) {
