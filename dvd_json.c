@@ -44,6 +44,7 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 		printf("     \"vts\": %" PRIu16 ",\n", dvd_track.vts);
 		printf("     \"ttn\": %" PRIu8 ",\n", dvd_track.ttn);
 		printf("     \"ptts\": %" PRIu16 ",\n", dvd_track.ptts);
+		printf("     \"filesize\": %" PRIu64 ",\n", dvd_track.filesize);
 		printf("     \"valid\": \"%s\",\n", dvd_track.valid ? "yes" : "no");
 
 		printf("     \"video\": {\n");
@@ -141,7 +142,8 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 				printf("         \"length\": \"%s\",\n", dvd_chapter.length);
 				printf("         \"msecs\": %" PRIu32 ",\n", dvd_chapter.msecs);
 				printf("         \"first cell\": %" PRIu8 ",\n", dvd_chapter.first_cell);
-				printf("         \"last cell\": %" PRIu8 "\n", dvd_chapter.last_cell);
+				printf("         \"last cell\": %" PRIu8 ",\n", dvd_chapter.last_cell);
+				printf("         \"filesize\": %" PRIu64 "\n", dvd_chapter.filesize);
 				printf("       }");
 
 				if(c + 1 < dvd_track.chapters)
@@ -169,7 +171,8 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 				printf("         \"length\": \"%s\",\n", dvd_cell.length);
 				printf("         \"msecs\": %" PRIu32 ",\n", dvd_cell.msecs);
 				printf("         \"first sector\": %" PRIu64 ",\n", dvd_cell.first_sector);
-				printf("         \"last sector\": %" PRIu64 "\n", dvd_cell.last_sector);
+				printf("         \"last sector\": %" PRIu64 ",\n", dvd_cell.last_sector);
+				printf("         \"filesize:\": %" PRIu64 "\n", dvd_cell.filesize);
 				printf("       }");
 
 				if(c  + 1 < dvd_track.cells)
