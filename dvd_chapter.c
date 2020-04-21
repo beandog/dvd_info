@@ -84,7 +84,7 @@ uint8_t dvd_chapter_cells(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t
 uint64_t dvd_chapter_blocks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t chapter_number) {
 
 	uint8_t first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, track_number, chapter_number);
-	uint8_t last_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, track_number, chapter_number);
+	uint8_t last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, track_number, chapter_number);
 
 	uint8_t cell;
 	uint64_t cell_blocks = 0;
