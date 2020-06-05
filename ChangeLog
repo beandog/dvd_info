@@ -1,4 +1,9 @@
-1.7_beta1
+1.8
+
+* Update detelecine filters for dvd_player
+* Require mpv version >= 0.29.0 for dvd_player
+
+1.7
 
 * Add dvd_player - a tiny little DVD player using libmpv
 
