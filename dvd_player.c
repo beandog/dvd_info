@@ -588,17 +588,8 @@ int main(int argc, char **argv) {
 	 * Instead, I'm enabling the pullup and dejudder filters, the combination
 	 * which I've had good results in working with telecined interlacing.
 	 */
-	if(dvd_playback.detelecine) {
-
-		if(mpv_client_api_version() <= MPV_MAKE_VERSION(1, 25)) {
-			// Syntax up to 0.27.2
-			mpv_set_option_string(dvd_mpv, "vf", "lavfi=yadif");
-		} else {
-			// Syntax starting in 0.29.1
-			mpv_set_option_string(dvd_mpv, "vf", "pullup,dejudder");
-		}
-
-	}
+	if(dvd_playback.detelecine)
+		mpv_set_option_string(dvd_mpv, "vf", "pullup,dejudder");
 
 	// setup mpv
 	retval = mpv_initialize(dvd_mpv);
