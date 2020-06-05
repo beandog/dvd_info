@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
 	dvd_playback.first_chapter = 1;
 	dvd_playback.last_chapter = 99;
 	dvd_playback.fullscreen = false;
-	dvd_playback.deinterlace = false;
+	dvd_playback.detelecine = false;
 	dvd_playback.subtitles = false;
 	memset(dvd_playback.audio_lang, '\0', sizeof(dvd_playback.audio_lang));
 	memset(dvd_playback.audio_stream_id, '\0', sizeof(dvd_playback.audio_stream_id));
@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
 		{ "alang", required_argument, 0, 'a' },
 		{ "aid", required_argument, 0, 'A' },
 		{ "chapters", required_argument, 0, 'c' },
-		{ "deinterlace", no_argument, 0, 'd' },
+		{ "detelecine", no_argument, 0, 'd' },
 		{ "fullscreen", no_argument, 0, 'f' },
 		{ "help", no_argument, 0, 'h' },
 		{ "slang", required_argument, 0, 's' },
@@ -157,7 +157,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'd':
-				dvd_playback.deinterlace = true;
+				dvd_playback.detelecine = true;
 				break;
 
 			case 'f':
@@ -220,7 +220,7 @@ int main(int argc, char **argv) {
 				printf("  -A, --aid <#>                 Select audio track ID\n");
 				printf("  -s, --slang <language>        Select subtitles language, two character code (default: no subtitles)\n");
 				printf("  -S, --sid <#>                 Select subtitles track ID\n");
-				printf("  -d, --deinterlace             Deinterlace video\n");
+				printf("  -d, --detelecine              Detelecine video\n");
 				printf("  -v, --verbose                 Verbose output\n");
 				printf("  -h, --help			Show this help text and exit\n");
 				printf("\n");
@@ -585,17 +585,17 @@ int main(int argc, char **argv) {
 
 	/*
 	 * MPV has a --deinterlace option, but I haven't seen it actually work.
-	 * Instead, I'm enabling the yadif (yet another deinterlacing filter) filter option,
-	 * The yadif video filter will cover both detelecining and decombing just fine.
+	 * Instead, I'm enabling the pullup and dejudder filters, the combination
+	 * which I've had good results in working with telecined interlacing.
 	 */
-	if(dvd_playback.deinterlace) {
+	if(dvd_playback.detelecine) {
 
 		if(mpv_client_api_version() <= MPV_MAKE_VERSION(1, 25)) {
 			// Syntax up to 0.27.2
 			mpv_set_option_string(dvd_mpv, "vf", "lavfi=yadif");
 		} else {
 			// Syntax starting in 0.29.1
-			mpv_set_option_string(dvd_mpv, "vf", "lavfi-yadif");
+			mpv_set_option_string(dvd_mpv, "vf", "pullup,dejudder");
 		}
 
 	}
