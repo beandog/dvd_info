@@ -40,6 +40,7 @@ AC_ARG_WITH([libmpv], [AS_HELP_STRING([--with-libmpv], [Build DVD player using l
 	AC_DEFINE(HAVE_LIBMPV, [], [libmpv])
 ])])
 AM_CONDITIONAL([DVD_PLAYER], [test "x$with_libmpv" = xyes])
+AM_CONDITIONAL([DVD_RIPPER], [test "x$with_libmpv" = xyes])
 
 AC_CONFIG_FILES([Makefile])
 

@@ -11,7 +11,7 @@ struct dvd_playback {
 	uint8_t first_chapter;
 	uint8_t last_chapter;
 	bool fullscreen;
-	bool detelecine;
+	bool deinterlace;
 	char audio_lang[3];
 	char audio_stream_id[4];
 	bool subtitles;
@@ -32,7 +32,6 @@ struct dvd_trip {
 	char vcodec[256];
 	char vcodec_opts[256];
 	char vcodec_log_level[6];
-	char color_opts[256];
 	bool encode_audio;
 	char audio_lang[3];
 	char audio_stream_id[4];
@@ -43,7 +42,8 @@ struct dvd_trip {
 	char subtitles_lang[3];
 	char subtitles_stream_id[4];
 	char vf_opts[256];
-	char crf[3];
+	char of_opts[256];
+	uint8_t crf;
 };
 
 #endif
