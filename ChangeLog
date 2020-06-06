@@ -2,6 +2,7 @@
 
 * Update detelecine filters for dvd_player
 * Require mpv version >= 0.29.0 for dvd_player
+* Add dvd_trip - a tiny little DVD ripper using libmpv as backend
 
 1.7
 
