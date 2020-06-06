@@ -51,8 +51,7 @@
 	 *
 	 * Just running "dvd_trip" alone with no arguments or options will fetch the longest track
 	 * on the DVD, select the first English audio track, and encode it to H.265 using libx265 with
-	 * its medium preset and default CRF of 28, and AAC audio using libfdk-aac. It also preserves
-	 * the source's framerate.
+	 * its default preset and CRF, and AAC audio using libfdk-aac.
 	 *
 	 * Because it is so tiny, some options it doesn't have that larger DVD ripper applications
 	 * would are: encoding multiple audio streams, audio passthrough, subtitle support (VOBSUB and
@@ -65,7 +64,7 @@
 	 * Presets
 	 *
 	 * To keep things simple, dvd_trip only has three presets which fit the most commonly used
-	 * codecs and formats when ripping DVDs: "mkv", "mp4", "webp".
+	 * codecs and formats when ripping DVDs: "mkv", "mp4", "webm".
 	 *
 	 */
 
