@@ -9,6 +9,7 @@
 #include <getopt.h>
 #include "dvd_config.h"
 #include "dvd_info.h"
+#include "dvd_open.h"
 #include "dvd_device.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_vts.h"
@@ -72,7 +73,6 @@ int main(int argc, char **argv) {
 	bool d_is_valid = false;
 
 	// dvd_info
-	char dvdread_id[DVD_DVDREAD_ID + 1] = {'\0'};
 	bool d_disc_title_header = true;
 	uint16_t d_first_track = 1;
 	uint16_t d_last_track = 1;
@@ -85,7 +85,6 @@ int main(int argc, char **argv) {
 	uint8_t d_stream_num = 0;
 
 	// Device hardware
-	int dvd_fd = 0;
 	const char *device_filename = NULL;
 
 	// libdvdread
@@ -95,18 +94,6 @@ int main(int argc, char **argv) {
 
 	// DVD
 	struct dvd_info dvd_info;
-	memset(dvd_info.dvdread_id, '\0', sizeof(dvd_info.dvdread_id));
-	dvd_info.video_title_sets = 1;
-	dvd_info.side = 1;
-	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
-	memset(dvd_info.provider_id, '\0', sizeof(dvd_info.provider_id));
-	memset(dvd_info.vmg_id, '\0', sizeof(dvd_info.vmg_id));
-	dvd_info.tracks = 1;
-	dvd_info.longest_track = 1;
-	dvd_info.valid_video_title_sets = 0;
-	dvd_info.invalid_video_title_sets = 0;
-	dvd_info.valid_tracks = 0;
-	dvd_info.invalid_tracks = 0;
 
 	// Video Title Set
 	struct dvd_vts dvd_vts[99];
@@ -309,54 +296,10 @@ int main(int argc, char **argv) {
 
 	/** Begin dvd_info :) */
 
-	// Check to see if device can be accessed
-	if(!dvd_device_access(device_filename)) {
-		fprintf(stderr, "Cannot access %s\n", device_filename);
+	dvdread_dvd = dvdread_open(device_filename);
+
+	if(dvdread_dvd == NULL)
 		return 1;
-	}
-
-	// Check to see if device can be opened
-	dvd_fd = dvd_device_open(device_filename);
-	if(dvd_fd < 0) {
-		fprintf(stderr, "Could not open %s\n", device_filename);
-		return 1;
-	}
-	dvd_device_close(dvd_fd);
-
-#ifdef __linux__
-
-	// Poll drive status if it is hardware
-	if(dvd_device_is_hardware(device_filename)) {
-
-		// Wait for the drive to become ready
-		if(!dvd_drive_has_media(device_filename)) {
-
-			fprintf(stderr, "DVD drive status: ");
-			dvd_drive_display_status(device_filename);
-
-			return 1;
-
-		}
-
-	}
-
-#endif
-
-	// begin libdvdread usage
-
-	// Open DVD device
-	dvdread_dvd = DVDOpen(device_filename);
-	if(!dvdread_dvd) {
-		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
-		return 1;
-	}
-
-	// Check if DVD has an identifier, fail otherwise
-	dvd_dvdread_id(dvdread_id, dvdread_dvd);
-	if(strlen(dvdread_id) == 0) {
-		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
-		return 1;
-	}
 
 	// Open VMG IFO -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
@@ -366,8 +309,9 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// Get the total number of title tracks on the DVD
-	dvd_info.tracks = dvd_tracks(vmg_ifo);
+	dvd_info = dvd_info_open(dvdread_dvd, device_filename);
+	if(dvd_info.valid == 0)
+		return 1;
 
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks || arg_track_number < 1)) {
@@ -384,7 +328,6 @@ int main(int argc, char **argv) {
 		d_last_track = dvd_info.tracks;
 	}
 
-	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
 	ifo_handle_t *vts_ifos[DVD_MAX_VTS_IFOS];
 
 	if(opt_vts && (arg_vts == 0 || arg_vts > dvd_info.video_title_sets)) {
@@ -397,55 +340,8 @@ int main(int argc, char **argv) {
 		vts_ifos[vts_ifo_ix] = NULL;
 
 	// Do some checks to see if a VTS is ok or not
-	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
-
-		dvd_vts[vts].vts = vts;
-		dvd_vts[vts].valid = false;
-		dvd_vts[vts].blocks = 0;
-		dvd_vts[vts].filesize = 0;
-		dvd_vts[vts].vobs = 0;
-		dvd_vts[vts].tracks = 0;
-		dvd_vts[vts].valid_tracks = 0;
-		dvd_vts[vts].invalid_tracks = 0;
-
-		vts_ifos[vts] = ifoOpen(dvdread_dvd, vts);
-
-		if(vts_ifos[vts] == NULL) {
-			dvd_vts[vts].valid = false;
-			continue;
-		}
-
-		// TODO needs more testing, and also move into a function that examines if VTS is valid or not
-		/*
-		if(vts_ifos[vts]->vtsi_mat->vts_tmapt == 0) {
-			dvd_vts[vts].valid = false;
-			continue;
-		}
-		*/
-
-		if(!ifo_is_vts(vts_ifos[vts])) {
-			dvd_vts[vts].valid = false;
-			ifoClose(vts_ifos[vts]);
-			vts_ifos[vts] = NULL;
-			continue;
-		}
-
-		dvd_vts[vts].filesize = dvd_vts_filesize(dvdread_dvd, vts);
-		if(!dvd_vts[vts].filesize) {
-			dvd_vts[vts].valid = false;
-			continue;
-		}
-
-		dvd_vts[vts].valid = true;
-
-	}
-
-	// GRAB ALL THE THINGS
-	dvd_title(dvd_info.title, device_filename);
-	dvd_info.side = dvd_info_side(vmg_ifo);
-	dvd_provider_id(dvd_info.provider_id, vmg_ifo);
-	dvd_vmg_id(dvd_info.vmg_id, vmg_ifo);
-	strncpy(dvd_info.dvdread_id, dvdread_id, DVD_DVDREAD_ID);
+	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++)
+		dvd_vts[vts] = dvd_vts_open(dvdread_dvd, vts);
 
 	/**
 	 * Track information
