@@ -12,7 +12,7 @@ dvd_copy_LDADD = -lm $(DVDREAD_LIBS)
 
 bin_PROGRAMS += dvd_backup
 man1_MANS += dvd_backup.1
-dvd_backup_SOURCES = dvd_backup.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_vts.c dvd_vob.c
+dvd_backup_SOURCES = dvd_backup.c dvd_drive.c dvd_device.c dvd_open.c dvd_vmg_ifo.c dvd_vts.c dvd_vob.c
 dvd_backup_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_backup_LDADD = $(DVDREAD_LIBS)
 

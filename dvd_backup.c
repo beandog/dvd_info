@@ -20,6 +20,7 @@
 #include <dvdread/ifo_read.h>
 #include "dvd_config.h"
 #include "dvd_device.h"
+#include "dvd_open.h"
 #include "dvd_specs.h"
 #include "dvd_info.h"
 #include "dvd_vmg_ifo.h"
@@ -73,6 +74,9 @@ int dvd_block_rw(dvd_file_t *dvdread_vts_file, uint64_t offset, int fd) {
 
 int main(int argc, char **argv) {
 
+	const char *device_filename;
+	int retval = 0;
+
 	struct option p_long_opts[] = {
 		{ "help", no_argument, NULL, 'h' },
 		{ "vts", required_argument, NULL, 'T' },
@@ -125,63 +129,20 @@ int main(int argc, char **argv) {
 
 	}
 
-	const char *device_filename = DEFAULT_DVD_DEVICE;
-	if(access(device_filename, F_OK) != 0) {
-		fprintf(stderr, "cannot access %s\n", device_filename);
+	if (argv[optind])
+		device_filename = argv[optind];
+	else
+		device_filename = DEFAULT_DVD_DEVICE;
+
+	retval = device_open(device_filename);
+	if(retval == 1)
 		return 1;
-	}
-
-	int fd = -1;
-	fd = open(device_filename, O_RDONLY|O_NONBLOCK);
-	if(fd < 0) {
-		fprintf(stderr, "error opening %s\n", device_filename);
-		return 1;
-	}
-
-#ifdef __linux__
-
-	// Poll drive status if it is hardware
-	if(strncmp(device_filename, "/dev/", 5) == 0) {
-
-		int drive_status = 0;
-		drive_status = ioctl(fd, CDROM_DRIVE_STATUS);
-
-		if(drive_status != CDS_DISC_OK) {
-
-			switch(drive_status) {
-				case 1:
-					fprintf(stderr, "drive status: no disc\n");
-					break;
-				case 2:
-					fprintf(stderr, "drive status: tray open\n");
-					break;
-				case 3:
-					fprintf(stderr, "drive status: drive not ready\n");
-					break;
-				default:
-					fprintf(stderr, "drive status: unable to poll\n");
-					break;
-			}
-
-			return 1;
-		}
-
-	}
-
-#endif
-
-	close(fd);
-
-	printf("[DVD]\n");
-	printf("* Opening device %s\n", device_filename);
 
 	dvd_reader_t *dvdread_dvd = NULL;
-	dvdread_dvd = DVDOpen(device_filename);
+	dvdread_dvd = dvdread_open(device_filename);
 
-	if(!dvdread_dvd) {
-		printf("* dvdread could not open %s\n", device_filename);
+	if(dvdread_dvd == NULL)
 		return 1;
-	}
 
 	printf("* Opening VMG IFO\n");
 	ifo_handle_t *vmg_ifo = NULL;
@@ -217,7 +178,6 @@ int main(int argc, char **argv) {
 	snprintf(dvd_backup_dir, PATH_MAX, "%s", backup_title);
 
 	// Use name first
-	int retval = 0;
 	retval = mkdir(dvd_backup_dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	if(retval == -1 && errno != EEXIST) {
 		printf("* could not create backup directory: %s\n", dvd_backup_dir);
@@ -368,15 +328,16 @@ int main(int argc, char **argv) {
 
 	/** copy title sets **/
 	struct dvd_info dvd_info;
+	dvd_info = dvd_info_open(dvdread_dvd, device_filename);
+	if(dvd_info.valid == 0)
+		return 1;
+
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
-	memset(dvd_info.dvdread_id, '\0', sizeof(dvd_info.dvdread_id));
 	dvd_info.video_title_sets = 1;
-	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
 	struct dvd_vts dvd_vts[99];
 
 	// Exit if all the IFOs cannot be opened
-	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
 	ifo_handle_t *vts_ifos[DVD_MAX_VTS_IFOS];
 	vts_ifos[0] = NULL;
 
