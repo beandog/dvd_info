@@ -6,7 +6,7 @@ dvd_info_LDADD = -lm $(DVDREAD_LIBS)
 
 bin_PROGRAMS += dvd_copy
 man1_MANS += dvd_copy.1
-dvd_copy_SOURCES = dvd_copy.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c
+dvd_copy_SOURCES = dvd_copy.c dvd_drive.c dvd_device.c dvd_open.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c
 dvd_copy_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_copy_LDADD = -lm $(DVDREAD_LIBS)
 

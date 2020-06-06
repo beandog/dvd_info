@@ -21,6 +21,7 @@
 #include <dvdread/ifo_read.h>
 #include "dvd_config.h"
 #include "dvd_info.h"
+#include "dvd_open.h"
 #include "dvd_device.h"
 #include "dvd_drive.h"
 #include "dvd_vmg_ifo.h"
@@ -260,46 +261,13 @@ int main(int argc, char **argv) {
 	if (argv[optind])
 		device_filename = argv[optind];
 
-	if(access(device_filename, F_OK) != 0) {
-		fprintf(stderr, "[dvd_copy] Cannot access %s\n", device_filename);
-		return 1;
-	}
-
-	// Check to see if device can be opened
-	int dvd_fd = 0;
-	dvd_fd = dvd_device_open(device_filename);
-	if(dvd_fd < 0) {
-		fprintf(stderr, "[dvd_copy] Error opening %s\n", device_filename);
-		return 1;
-	}
-	dvd_device_close(dvd_fd);
-
-#ifdef __linux__
-
-	// Poll drive status if it is hardware
-	if(dvd_device_is_hardware(device_filename)) {
-
-		// Wait for the drive to become ready
-		if(!dvd_drive_has_media(device_filename)) {
-
-			fprintf(stderr, "[dvd_copy] drive status: ");
-			dvd_drive_display_status(device_filename);
-
-			return 1;
-
-		}
-
-	}
-
-#endif
+	/** Begin dvd_copy :) */
 
 	dvd_reader_t *dvdread_dvd = NULL;
-	dvdread_dvd = DVDOpen(device_filename);
+	dvdread_dvd = dvdread_open(device_filename);
 
-	if(!dvdread_dvd) {
-		fprintf(stderr, "[dvd_copy] libdvdread could not open %s\n", device_filename);
+	if(dvdread_dvd == NULL)
 		return 1;
-	}
 
 	ifo_handle_t *vmg_ifo = NULL;
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
@@ -312,16 +280,9 @@ int main(int argc, char **argv) {
 
 	// DVD
 	struct dvd_info dvd_info;
-	memset(dvd_info.dvdread_id, '\0', sizeof(dvd_info.dvdread_id));
-	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
-	dvd_info.side = 1;
-	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
-	memset(dvd_info.provider_id, '\0', sizeof(dvd_info.provider_id));
-	memset(dvd_info.vmg_id, '\0', sizeof(dvd_info.vmg_id));
-	dvd_info.tracks = dvd_tracks(vmg_ifo);
-	dvd_info.longest_track = 1;
-
-	dvd_title(dvd_info.title, device_filename);
+	dvd_info = dvd_info_open(dvdread_dvd, device_filename);
+	if(dvd_info.valid == 0)
+		return 1;
 	if(p_dvd_copy)
 		printf("Disc title: %s\n", dvd_info.title);
 
