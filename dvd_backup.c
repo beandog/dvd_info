@@ -147,22 +147,15 @@ int main(int argc, char **argv) {
 	if(dvdread_dvd == NULL)
 		return 1;
 
+	struct dvd_info dvd_info;
 	printf("* Opening VMG IFO\n");
-	ifo_handle_t *vmg_ifo = NULL;
-	vmg_ifo = ifoOpen(dvdread_dvd, 0);
-
-	// Open VMG IFO -- where all the cool stuff is
-	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo)) {
-		fprintf(stderr, "Could not open VMG IFO\n");
+	dvd_info = dvd_info_open(dvdread_dvd, device_filename);
+	if(dvd_info.valid == 0)
 		return 1;
-	}
 
-	uint16_t num_ifos;
-	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
+	printf("* %d Video Title Sets present\n", dvd_info.video_title_sets);
 
-	printf("* %d Video Title Sets present\n", num_ifos);
-
-	if(num_ifos < 1) {
+	if(dvd_info.video_title_sets < 1) {
 		printf("* DVD has no title IFOs?!\n");
 		return 1;
 	}
@@ -226,7 +219,7 @@ int main(int argc, char **argv) {
 	memset(vts_filename, '\0', 23);
 	ifo_handle_t *ifo = NULL;
 	int ifo_fd = -1;
-	for (ifo_number = 0; ifo_number < num_ifos + 1; ifo_number++) {
+	for (ifo_number = 0; ifo_number < dvd_info.video_title_sets + 1; ifo_number++) {
 
 		// Always write the VMG IFO, and skip others if optional one is passed
 		if(ifo_number && opt_vts_number && arg_vts_number != ifo_number)
@@ -328,12 +321,6 @@ int main(int argc, char **argv) {
 
 	/** VOB copy variables **/
 	uint64_t vob_block = 0;
-
-	/** copy title sets **/
-	struct dvd_info dvd_info;
-	dvd_info = dvd_info_open(dvdread_dvd, device_filename);
-	if(dvd_info.valid == 0)
-		return 1;
 
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
