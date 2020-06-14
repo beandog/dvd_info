@@ -101,12 +101,6 @@ struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, const char *device_file
 	dvd_vmg_id(dvd_info.vmg_id, vmg_ifo);
 	dvd_info.tracks = dvd_tracks(vmg_ifo);
 
-	// Create space for all IFOs
-	ifo_handle_t *vts_ifos[99];
-
-	for(ix = 0; ix < 100; ix++)
-		vts_ifos[ix] = NULL;
-
 	return dvd_info;
 
 }
