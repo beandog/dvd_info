@@ -423,8 +423,6 @@ int main(int argc, char **argv) {
 		// Skip if file exists
 		if(access(vob_filename, F_OK) == 0) {
 			retval = stat(vob_filename, &vob_stat);
-			printf("source %s bytes: %" PRIu64 "\n", vob_filename, dvd_vts[vts].dvd_vobs[0].blocks * DVD_VIDEO_LB_LEN);
-			printf("target %s bytes: %li\n", vob_filename, vob_stat.st_size);
 			continue;
 		}
 
