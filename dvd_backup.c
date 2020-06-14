@@ -334,7 +334,6 @@ int main(int argc, char **argv) {
 
 	uint16_t vts = 1;
 	bool has_invalid_ifos = false;
-	dvd_info.video_title_sets = 1;
 	struct dvd_vts dvd_vts[99];
 
 	// Exit if all the IFOs cannot be opened
