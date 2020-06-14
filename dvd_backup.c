@@ -138,6 +138,9 @@ int main(int argc, char **argv) {
 	if(retval == 1)
 		return 1;
 
+	printf("[DVD]\n");
+	printf("* Opening device %s\n", device_filename);
+
 	dvd_reader_t *dvdread_dvd = NULL;
 	dvdread_dvd = dvdread_open(device_filename);
 
