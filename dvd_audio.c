@@ -188,6 +188,11 @@ bool dvd_audio_lang_code(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_tr
 
 	snprintf(dest_str, DVD_AUDIO_LANG_CODE + 1, "%c%c", audio_attr->lang_code >> 8, audio_attr->lang_code & 0xff);
 
+	if(!isalpha(dest_str[0]) || !isalpha(dest_str[1])) {
+		dest_str[0] = '\0';
+		dest_str[1] = '\0';
+	}
+
 	return true;
 
 }
