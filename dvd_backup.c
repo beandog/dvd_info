@@ -263,7 +263,7 @@ int main(int argc, char **argv) {
 			}
 
 			// Seek to beginning of file
-			DVDFileSeek(ifo->file, 0);
+			DVDFileSeek(dvdread_ifo_file, 0);
 
 			if(ifo_number == 0) {
 				sprintf(vts_filename, "VIDEO_TS.%s", info_file ? "IFO" : "BUP");
@@ -293,7 +293,7 @@ int main(int argc, char **argv) {
 				// In the case of IFOs and BUPs, be pedantic and read only one block at a time plus
 				// always count one as written
 				while(dvd_block < dvd_backup_blocks) {
-					ifo_bytes_read = DVDReadBytes(ifo->file, ifo_buffer, DVD_VIDEO_LB_LEN);
+					ifo_bytes_read = DVDReadBytes(dvdread_ifo_file, ifo_buffer, DVD_VIDEO_LB_LEN);
 					if(ifo_bytes_read < 0)
 						memset(ifo_buffer, '\0', DVD_VIDEO_LB_LEN);
 					ifo_bytes_written = write(ifo_fd, ifo_buffer, DVD_VIDEO_LB_LEN);
