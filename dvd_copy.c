@@ -134,6 +134,11 @@ int main(int argc, char **argv) {
 					arg_first_chapter = (uint8_t)arg_number;
 
 				token = strtok(NULL, "-");
+
+				if(token == NULL) {
+					arg_last_chapter = arg_first_chapter;
+				}
+
 				if(token != NULL) {
 					if(strlen(token) > 2) {
 						fprintf(stderr, "[dvd_copy] Chapter range must be between 1 and 99\n");
@@ -153,7 +158,6 @@ int main(int argc, char **argv) {
 
 				if(arg_first_chapter > arg_last_chapter)
 					arg_first_chapter = arg_last_chapter;
-
 				break;
 
 			case 'd':
@@ -173,6 +177,11 @@ int main(int argc, char **argv) {
 				}
 
 				token = strtok(NULL, "-");
+
+				if(token == NULL) {
+					arg_last_cell = arg_first_cell;
+				}
+
 				if(token != NULL) {
 					if(strlen(token) > 2) {
 						fprintf(stderr, "[dvd_copy] Cell range must be between 1 and 99\n");

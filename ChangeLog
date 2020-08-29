@@ -1,3 +1,7 @@
+1.12
+
+* dvd_copy: when given a single cell or chapter, don't use a range
+
 1.11
 
 * Fix build with libdvdread-6.1.1
