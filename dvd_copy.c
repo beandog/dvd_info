@@ -19,7 +19,7 @@
 #endif
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
-#include "dvd_config.h"
+#include "config.h"
 #include "dvd_info.h"
 #include "dvd_open.h"
 #include "dvd_device.h"

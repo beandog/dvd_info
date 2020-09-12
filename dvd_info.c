@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <getopt.h>
-#include "dvd_config.h"
+#include "config.h"
 #include "dvd_info.h"
 #include "dvd_open.h"
 #include "dvd_device.h"

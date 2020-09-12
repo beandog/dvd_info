@@ -12,7 +12,7 @@
 #include <getopt.h>
 #include <mntent.h>
 #include <dvdcss/dvdcss.h>
-#include "dvd_config.h"
+#include "config.h"
 
 #define DEFAULT_DVD_DEVICE "/dev/sr0"
 

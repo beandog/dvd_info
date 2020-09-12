@@ -16,7 +16,7 @@
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 #include <mpv/client.h>
-#include "dvd_config.h"
+#include "config.h"
 #include "dvd_info.h"
 #include "dvd_device.h"
 #include "dvd_drive.h"
