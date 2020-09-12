@@ -16,17 +16,18 @@ dvd_backup_SOURCES = dvd_backup.c dvd_drive.c dvd_device.c dvd_open.c dvd_vmg_if
 dvd_backup_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_backup_LDADD = $(DVDREAD_LIBS)
 
-if LINUX_DRIVE_TOOLS
+if DVD_DRIVE_STATUS
 bin_PROGRAMS += dvd_drive_status
 man1_MANS += dvd_drive_status.1
 dvd_drive_status_SOURCES = dvd_drive_status.c
-if LINUX_DRIVE_EJECT
+endif
+
+if DVD_EJECT
 bin_PROGRAMS += dvd_eject
 man1_MANS += dvd_eject.1
 dvd_eject_SOURCES = dvd_eject.c
 dvd_eject_CFLAGS = $(DVDCSS_CFLAGS)
 dvd_eject_LDADD = $(DVDCSS_LIBS)
-endif
 endif
 
 if DVD_PLAYER

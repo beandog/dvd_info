@@ -20,19 +20,21 @@ AC_CANONICAL_HOST
 case "$host_os" in
 	linux*)
 		linux_drive_tools=yes
-		PKG_CHECK_MODULES([DVDCSS], [libdvdcss > 1.4.1], [
-			has_libdvdcss=yes
-			linux_drive_eject=yes
-		],[
-			has_libdvdcss=no
-			linux_drive_eject=no
-		])
-	;;
+		;;
+	*)
+		linux_drive_tools=no
+		;;
 esac
 
-dnl build dvd_drive_status, dvd_eject
-AM_CONDITIONAL([LINUX_DRIVE_TOOLS], [test "x$linux_drive_tools" = xyes])
-AM_CONDITIONAL([LINUX_DRIVE_EJECT], [test "x$linux_drive_eject" = xyes])
+dnl Build dvd_drive_status if ioctl function exists (Linux, *BSD)
+dnl Build dvd_eject if system is Linux and libdvdcss is installed
+AC_CHECK_HEADERS([sys/ioctl.h],[
+	AC_DEFINE(HAVE_IOCTL_H, [], [ioctl])
+	AM_CONDITIONAL([DVD_DRIVE_STATUS], [true])
+	PKG_CHECK_MODULES([DVDCSS], [libdvdcss > 1.4.1],
+		[AM_CONDITIONAL([DVD_EJECT], [test "x$linux_drive_tools" = xyes])])
+	]
+)
 
 dnl Using libmpv for the player is optional, but enabled by default, builds dvd_player
 AC_ARG_WITH([libmpv], [AS_HELP_STRING([--with-libmpv], [Build DVD player using libmpv])], [PKG_CHECK_MODULES([MPV], [mpv >= 1.101.0], [
