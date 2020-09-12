@@ -15,24 +15,17 @@ AC_CHECK_HEADERS([math.h])
 dnl Use pkg-config to check for libdvdread, libdvdcss
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
 
-dnl The DVD drive tools are OS-specific
-AC_CANONICAL_HOST
-case "$host_os" in
-	linux*)
-		linux_drive_tools=yes
-		;;
-	*)
-		linux_drive_tools=no
-		;;
-esac
-
 dnl Build dvd_drive_status if ioctl function exists (Linux, *BSD)
 dnl Build dvd_eject if system is Linux and libdvdcss is installed
+AM_CONDITIONAL([DVD_DRIVE_STATUS], [false])
+AM_CONDITIONAL([DVD_EJECT], [false])
 AC_CHECK_HEADERS([sys/ioctl.h],[
 	AC_DEFINE(HAVE_IOCTL_H, [], [ioctl])
 	AM_CONDITIONAL([DVD_DRIVE_STATUS], [true])
 	PKG_CHECK_MODULES([DVDCSS], [libdvdcss > 1.4.1],
-		[AM_CONDITIONAL([DVD_EJECT], [test "x$linux_drive_tools" = xyes])])
+		[
+			AM_CONDITIONAL([DVD_EJECT], [true])
+		])
 	]
 )
 
