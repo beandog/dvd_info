@@ -2,10 +2,12 @@
 #define DVD_INFO_DRIVE_H
 
 #include <stdio.h>
-#include <sys/ioctl.h>
 #include "dvd_device.h"
 
 #ifdef __linux__
+
+#include <sys/ioctl.h>
+
 int dvd_drive_get_status(const char *device_filename);
 
 bool dvd_drive_has_media(const char *device_filename);
