@@ -2,12 +2,12 @@
 .\"     Title: dvd_info
 .\"    Author: [see the "AUTHOR" section]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 03/17/2020
+.\"      Date: 09/12/2020
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_INFO" "1" "03/17/2020" "\ \&" "\ \&"
+.TH "DVD_INFO" "1" "09/12/2020" "\ \&" "\ \&"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -43,6 +43,10 @@ DVDs can store two kinds of subtitles \(em VOBSUB, which are images, and closed 
 DVDs may be authored by the provider to intentionally have bugs on the structure that will cause problems during playback or ripping if the correct track is not selected\&. \fBdvd_info\fR does its best to work around and flag these tracks as invalid\&. See the JSON or verbose output formats to see which ones are tagged\&.
 .sp
 DVDs may also have audio and subtitle streams marked as inactive as well\&. This is normal, and usually won\(cqt show up at all in other DVD applications\&.
+.sp
+The ID of a DVD is a md5 hash of the IFOs on the disc\&.
+.sp
+The disc title is the volume name of the DVD\(cqs UDF\&. It will only appear if the source is an ISO file or a physical disc\&.
 .SH "OPTIONS"
 .PP
 \fB\-t, \-\-track\fR=\fITRACK\fR
@@ -109,6 +113,16 @@ Limit output to tracks with a minimum length of number of minutes\&. Cannot be u
 \fB\-T, \-\-vts\fR=\fINUMBER\fR
 .RS 4
 Limit output to tracks in Video Title Set number\&.
+.RE
+.PP
+\fB\-i, \-\-id\fR
+.RS 4
+Display DVD unique identifier only\&.
+.RE
+.PP
+\fB\-u, \-\-volume\fR
+.RS 4
+Display DVD UDF volume name only\&.
 .RE
 .PP
 \fB\-g, \-\-xchap\fR

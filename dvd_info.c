@@ -49,6 +49,8 @@ int main(int argc, char **argv) {
 	// Program name
 	bool p_dvd_json = false;
 	bool p_dvd_xchap = false;
+	bool p_dvd_id = false;
+	bool p_dvd_title = false;
 
 	// lsdvd similar display output
 	bool d_audio = false;
@@ -108,7 +110,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aAcdE:ghjLM:sST:t:Vvxz";
+	const char p_short_opts[] = "aAcdE:ghijLM:sST:t:uVvxz";
 
 	struct option p_long_opts[] = {
 
@@ -122,6 +124,8 @@ int main(int argc, char **argv) {
 		{ "cells", no_argument, NULL, 'd' },
 		{ "all", no_argument, NULL, 'x' },
 		{ "json", no_argument, NULL, 'j' },
+		{ "id", no_argument, NULL, 'i' },
+		{ "volume", no_argument, NULL, 'u' },
 		{ "track", required_argument, NULL, 't' },
 		{ "xchap", no_argument, NULL, 'g' },
 		{ "min-seconds", required_argument, NULL, 'E' },
@@ -166,6 +170,10 @@ int main(int argc, char **argv) {
 				p_dvd_xchap = true;
 				d_disc_title_header = false;
 				d_chapters = true;
+				break;
+
+			case 'i':
+				p_dvd_id = true;
 				break;
 
 			case 'j':
@@ -214,6 +222,10 @@ int main(int argc, char **argv) {
 					arg_track_number = 1;
 				else
 					arg_track_number = (uint16_t)arg_number;
+				break;
+
+			case 'u':
+				p_dvd_title = true;
 				break;
 
 			case 'v':
@@ -265,6 +277,8 @@ int main(int argc, char **argv) {
 				printf("  -L, --valid		Track is marked as valid\n");
 				printf("\n");
 				printf("Other:\n");
+				printf("  -i, --id		Display DVD ID only\n");
+				printf("  -u, --volume		Display DVD UDF volume name only (for ISO or disc)\n");
 				printf("  -g, --xchap           Display title's chapter format for mkvmerge\n");
 				printf("  -h, --help            Display these help options\n");
 				printf("      --version         Display version\n");
@@ -312,6 +326,18 @@ int main(int argc, char **argv) {
 	dvd_info = dvd_info_open(dvdread_dvd, device_filename);
 	if(dvd_info.valid == 0)
 		return 1;
+
+	// Display ID only if requested
+	if(p_dvd_id) {
+		printf("%s\n", dvd_info.dvdread_id);
+		return 0;
+	}
+
+	// Display volume name only if requested
+	if(p_dvd_title) {
+		printf("%s\n", dvd_info.title);
+		return 0;
+	}
 
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks || arg_track_number < 1)) {
