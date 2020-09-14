@@ -173,7 +173,11 @@ int main(int argc, char **argv) {
 	snprintf(dvd_backup_dir, PATH_MAX, "%s", backup_title);
 
 	// Use name first
+#ifdef __linux__
 	retval = mkdir(dvd_backup_dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+#else
+	retval = mkdir(dvd_backup_dir);
+#endif
 	if(retval == -1 && errno != EEXIST) {
 		printf("* could not create backup directory: %s\n", dvd_backup_dir);
 		return 1;
@@ -181,7 +185,13 @@ int main(int argc, char **argv) {
 
 	// And VIDEO_TS sub-directory second
 	snprintf(dvd_backup_dir, PATH_MAX, "%s/VIDEO_TS", backup_title);
+#ifdef __linux__
 	retval = mkdir(dvd_backup_dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+#else
+	retval = mkdir(dvd_backup_dir);
+#endif
+	
+
 	if(retval == -1 && errno != EEXIST) {
 		printf("* could not create backup directory: %s\n", dvd_backup_dir);
 		return 1;

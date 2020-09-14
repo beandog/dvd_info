@@ -19,7 +19,11 @@ bool dvd_device_access(const char *device_filename) {
  */
 int dvd_device_open(const char *device_filename) {
 
+#ifdef __linux__ 
 	return open(device_filename, O_RDONLY | O_NONBLOCK);
+#elif _WIN32
+	return open(device_filename, O_RDONLY);
+#endif
 
 }
 

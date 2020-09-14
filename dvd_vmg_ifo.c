@@ -15,7 +15,11 @@ bool dvd_title(char *dest_str, const char *device_filename) {
 	int fd = -1;
 
 	// If we can't even open the device, exit quietly
+#ifdef __linux__
 	fd = open(device_filename, O_RDONLY | O_NONBLOCK);
+#elif _WIN32
+	fd = open(device_filename, O_RDONLY);
+#endif
 	if(fd == -1) {
 		return false;
 	}
