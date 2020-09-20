@@ -22,7 +22,7 @@ AC_CANONICAL_HOST
 case "$host_os" in
 	*linux*)
 		AM_CONDITIONAL([DVD_DRIVE_STATUS], [true])
-		PKG_CHECK_MODULES([DVDCSS], [libdvdcss > 1.4.1], [AM_CONDITIONAL([DVD_EJECT], [true])])
+		PKG_CHECK_MODULES([DVDCSS], [libdvdcss > 1.4.1], [AM_CONDITIONAL([DVD_EJECT], [true])], [AM_CONDITIONAL([DVD_EJECT], [false])])
 		;;
 	*)
 		;;
