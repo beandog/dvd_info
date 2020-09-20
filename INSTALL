@@ -1,5 +1,7 @@
 You will need automake, autoconf, make, pkg-config and libdvdread packages.
 
+To build dvd_player and dvd_trip, you will need mpv libraries installed.
+
 $ autoreconf -fi
 $ ./configure
 $ make
