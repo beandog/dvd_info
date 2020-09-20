@@ -1,4 +1,4 @@
-You will need automake, autoconf, make and pkg-config tools.
+You will need automake, autoconf, make, pkg-config and libdvdread packages.
 
 $ autoreconf -fi
 $ ./configure
