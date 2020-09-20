@@ -392,7 +392,6 @@ int main(int argc, char **argv) {
 	if(d_disc_title_header && !p_dvd_xchap) {
 		printf("Disc title: '%s', ", dvd_info.title);
 		printf("ID: '%s', ", dvd_info.dvdread_id);
-		printf("Title sets: %" PRIu16", ", dvd_info.video_title_sets);
 		printf("Tracks: %" PRIu16 ", ", dvd_info.tracks);
 		printf("Longest track: %" PRIu16, dvd_info.longest_track);
 		printf("\n");
