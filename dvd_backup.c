@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
 	snprintf(dvd_backup_dir, PATH_MAX, "%s", backup_title);
 
 	// Use name first
-	retval = mkdir(dvd_backup_dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+	retval = mkdir(dvd_backup_dir, 0755);
 	if(retval == -1 && errno != EEXIST) {
 		printf("* could not create backup directory: %s\n", dvd_backup_dir);
 		return 1;
