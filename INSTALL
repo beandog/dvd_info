@@ -1,0 +1,6 @@
+You will need automake, autoconf, make and pkg-config tools.
+
+$ autoreconf -fi
+$ ./configure
+$ make
+$ sudo make install
