@@ -15,7 +15,7 @@ bool dvd_title(char *dest_str, const char *device_filename) {
 	int fd = -1;
 
 	// If we can't even open the device, exit quietly
-	fd = open(device_filename, O_RDONLY | O_NONBLOCK);
+	fd = open(device_filename, O_RDONLY);
 	if(fd == -1) {
 		return false;
 	}

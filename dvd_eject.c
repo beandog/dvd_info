@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
 	else
 		device_filename = DEFAULT_DVD_DEVICE;
 
-	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
+	dvd_fd = open(device_filename, O_RDONLY);
 
 	if(dvd_fd < 0) {
 		printf("error opening %s\n", device_filename);
@@ -227,7 +227,7 @@ int main(int argc, char **argv) {
 				printf("* Closing file descriptor failed, continuing anyway\n");
 			}
 			printf("* Reopening file descriptor\n");
-			dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
+			dvd_fd = open(device_filename, O_RDONLY);
 			if(dvd_fd == 0) {
 				printf("* Closing and reopening file descriptor worked, checking if device is ready now\n");
 				if(is_ready(dvd_fd) == false) {

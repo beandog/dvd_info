@@ -19,7 +19,7 @@ bool dvd_device_access(const char *device_filename) {
  */
 int dvd_device_open(const char *device_filename) {
 
-	return open(device_filename, O_RDONLY | O_NONBLOCK);
+	return open(device_filename, O_RDONLY);
 
 }
 

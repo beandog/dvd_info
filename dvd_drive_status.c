@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Try opening device
-	cdrom = open(device_filename, O_RDONLY | O_NONBLOCK);
+	cdrom = open(device_filename, O_RDONLY);
 	if(cdrom < 0) {
 		fprintf(stderr, "error opening %s\n", device_filename);
 		return 6;
