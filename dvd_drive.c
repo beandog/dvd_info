@@ -35,9 +35,9 @@ int dvd_drive_get_status(const char *device_filename) {
 	int dvd_fd;
 	int drive_status;
 
-	dvd_fd = dvd_device_open(device_filename);
+	dvd_fd = open(device_filename, O_RDONLY);
 	drive_status = ioctl(dvd_fd, CDROM_DRIVE_STATUS);
-	dvd_device_close(dvd_fd);
+	close(dvd_fd);
 
 	return drive_status;
 
