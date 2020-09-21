@@ -60,8 +60,6 @@ struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, const char *device_file
 		return dvd_info;
 	}
 
-	uint16_t ix = 0;
-
 	// Initialize strings
 	memset(dvd_info.dvdread_id, '\0', sizeof(dvd_info.dvdread_id));
 	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
