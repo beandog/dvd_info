@@ -26,18 +26,6 @@ int device_open(const char *device_filename) {
 
 }
 
-dvd_reader_t *dvdread_open(const char *device_filename) {
-
-	// Open DVD device
-	dvd_reader_t *dvdread_dvd = DVDOpen(device_filename);
-
-	if(!dvdread_dvd)
-		return NULL;
-
-	return dvdread_dvd;
-
-}
-
 struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, const char *device_filename) {
 
 	struct dvd_info dvd_info;
