@@ -272,9 +272,8 @@ int main(int argc, char **argv) {
 	/** Begin dvd_copy :) */
 
 	dvd_reader_t *dvdread_dvd = NULL;
-	dvdread_dvd = dvdread_open(device_filename);
-
-	if(dvdread_dvd == NULL) {
+	dvdread_dvd = DVDOpen(device_filename);
+	if(!dvdread_dvd) {
 		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
 		return 1;
 	}

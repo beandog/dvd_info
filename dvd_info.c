@@ -309,10 +309,11 @@ int main(int argc, char **argv) {
 
 	/** Begin dvd_info :) */
 
-	dvdread_dvd = dvdread_open(device_filename);
-
-	if(dvdread_dvd == NULL)
+	dvdread_dvd = DVDOpen(device_filename);
+	if(!dvdread_dvd) {
+		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
 		return 1;
+	}
 
 	// Open VMG IFO -- where all the cool stuff is
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
