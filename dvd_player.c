@@ -252,22 +252,10 @@ int main(int argc, char **argv) {
 	}
 
 #ifdef __linux__
-
-	// Poll drive status if it is hardware
-	if(dvd_device_is_hardware(device_filename)) {
-
-		// Wait for the drive to become ready
-		if(!dvd_drive_has_media(device_filename)) {
-
-			fprintf(stderr, "[dvd_player] drive status: ");
-			dvd_drive_display_status(device_filename);
-
-			return 1;
-
-		}
-
-	}
-
+	// Check for device drive status
+	retval = device_open(device_filename);
+	if(retval == 1)
+		return 1;
 #endif
 
 	// begin libdvdread usage

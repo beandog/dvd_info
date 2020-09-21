@@ -2,8 +2,6 @@
 
 int device_open(const char *device_filename) {
 
-#ifdef __linux__
-
 	// Poll drive status if it is hardware
 	if(dvd_device_is_hardware(device_filename)) {
 
@@ -19,19 +17,11 @@ int device_open(const char *device_filename) {
 
 	}
 
-#endif
-
 	return 0;
 
 }
 
 dvd_reader_t *dvdread_open(const char *device_filename) {
-
-	int d;
-	d = device_open(device_filename);
-
-	if(d)
-		return NULL;
 
 	// Open DVD device
 	dvd_reader_t *dvdread_dvd = DVDOpen(device_filename);

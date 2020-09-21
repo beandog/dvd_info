@@ -28,8 +28,6 @@
 #include <string.h>
 #include <unistd.h>
 
-bool dvd_device_access(const char *device_filename);
-
 bool dvd_device_is_hardware(const char *device_filename);
 
 bool dvd_device_is_image(const char *device_filename);
