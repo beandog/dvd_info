@@ -2,6 +2,9 @@
 #define DVD_INFO_DRIVE_H
 
 #include <stdio.h>
+#include <stdbool.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include "dvd_device.h"
 
 #ifdef __linux__

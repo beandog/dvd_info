@@ -2,8 +2,13 @@
 
 int device_open(const char *device_filename) {
 
+	bool hardware = false;
+
+	if(strncmp(device_filename, "/dev/", 5) == 0)
+		hardware = true;
+
 	// Poll drive status if it is hardware
-	if(dvd_device_is_hardware(device_filename)) {
+	if(hardware) {
 
 		// Wait for the drive to become ready
 		if(!dvd_drive_has_media(device_filename)) {
