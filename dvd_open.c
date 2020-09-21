@@ -2,23 +2,6 @@
 
 int device_open(const char *device_filename) {
 
-	// Check to see if device can be accessed
-	if(!dvd_device_access(device_filename)) {
-		fprintf(stderr, "Cannot access %s\n", device_filename);
-		return 1;
-	}
-
-	// Check to see if device can be opened
-	int dvd_fd = 0;
-	dvd_fd = dvd_device_open(device_filename);
-
-	if(dvd_fd < 0) {
-		fprintf(stderr, "Could not open %s\n", device_filename);
-		return 1;
-	}
-
-	dvd_device_close(dvd_fd);
-
 #ifdef __linux__
 
 	// Poll drive status if it is hardware
@@ -52,10 +35,9 @@ dvd_reader_t *dvdread_open(const char *device_filename) {
 
 	// Open DVD device
 	dvd_reader_t *dvdread_dvd = DVDOpen(device_filename);
-	if(!dvdread_dvd) {
-		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
+
+	if(!dvdread_dvd)
 		return NULL;
-	}
 
 	return dvdread_dvd;
 

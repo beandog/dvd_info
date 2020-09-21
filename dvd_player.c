@@ -19,6 +19,7 @@
 #include "dvd_info.h"
 #include "dvd_device.h"
 #include "dvd_drive.h"
+#include "dvd_open.h"
 #include "dvd_vts.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
@@ -250,15 +251,6 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// Check to see if device can be opened
-	int dvd_fd = 0;
-	dvd_fd = dvd_device_open(device_filename);
-	if(dvd_fd < 0) {
-		fprintf(stderr, "[dvd_player] error opening %s\n", device_filename);
-		return 1;
-	}
-	dvd_device_close(dvd_fd);
-
 #ifdef __linux__
 
 	// Poll drive status if it is hardware
@@ -282,7 +274,7 @@ int main(int argc, char **argv) {
 
 	// Open DVD device
 	dvd_reader_t *dvdread_dvd = NULL;
-	dvdread_dvd = DVDOpen(device_filename);
+	dvdread_dvd = dvdread_open(device_filename);
 
 	if(!dvdread_dvd) {
 		fprintf(stderr, "[dvd_player] Opening DVD %s failed\n", device_filename);

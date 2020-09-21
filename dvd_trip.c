@@ -17,6 +17,7 @@
 #include "dvd_info.h"
 #include "dvd_device.h"
 #include "dvd_drive.h"
+#include "dvd_open.h"
 #include "dvd_vts.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_track.h"
@@ -357,15 +358,6 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "[dvd_trip] cannot access %s\n", device_filename);
 		return 1;
 	}
-
-	// Check to see if device can be opened
-	int dvd_fd = 0;
-	dvd_fd = dvd_device_open(device_filename);
-	if(dvd_fd < 0) {
-		fprintf(stderr, "[dvd_trip] error opening %s\n", device_filename);
-		return 1;
-	}
-	dvd_device_close(dvd_fd);
 
 #ifdef __linux__
 

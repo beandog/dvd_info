@@ -274,8 +274,10 @@ int main(int argc, char **argv) {
 	dvd_reader_t *dvdread_dvd = NULL;
 	dvdread_dvd = dvdread_open(device_filename);
 
-	if(dvdread_dvd == NULL)
+	if(dvdread_dvd == NULL) {
+		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
 		return 1;
+	}
 
 	ifo_handle_t *vmg_ifo = NULL;
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);

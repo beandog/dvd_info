@@ -133,18 +133,16 @@ int main(int argc, char **argv) {
 	else
 		device_filename = DEFAULT_DVD_DEVICE;
 
-	retval = device_open(device_filename);
-	if(retval == 1)
-		return 1;
-
 	printf("[DVD]\n");
 	printf("* Opening device %s\n", device_filename);
 
 	dvd_reader_t *dvdread_dvd = NULL;
 	dvdread_dvd = dvdread_open(device_filename);
 
-	if(dvdread_dvd == NULL)
+	if(dvdread_dvd == NULL) {
+		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
 		return 1;
+	}
 
 	struct dvd_info dvd_info;
 	printf("* Opening VMG IFO\n");

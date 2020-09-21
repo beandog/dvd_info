@@ -33,14 +33,14 @@ endif
 if DVD_PLAYER
 bin_PROGRAMS += dvd_player
 man1_MANS += dvd_player.1
-dvd_player_SOURCES = dvd_player.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c dvd_video.c
+dvd_player_SOURCES = dvd_player.c dvd_drive.c dvd_device.c dvd_open.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c dvd_video.c
 dvd_player_CFLAGS = $(DVDREAD_CFLAGS) $(MPV_CFLAGS)
 dvd_player_LDADD = -lm $(DVDREAD_LIBS) $(MPV_LIBS)
 endif
 
 if DVD_RIPPER
 bin_PROGRAMS += dvd_trip
-dvd_trip_SOURCES = dvd_trip.c dvd_drive.c dvd_device.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c dvd_video.c
+dvd_trip_SOURCES = dvd_trip.c dvd_drive.c dvd_device.c dvd_open.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c dvd_video.c
 dvd_trip_CFLAGS = $(DVDREAD_CFLAGS) $(MPV_CFLAGS)
 dvd_trip_LDADD = -lm $(DVDREAD_LIBS) $(MPV_LIBS)
 endif
