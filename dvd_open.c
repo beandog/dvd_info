@@ -2,6 +2,8 @@
 
 int device_open(const char *device_filename) {
 
+#ifdef __linux__
+
 	bool hardware = false;
 
 	if(strncmp(device_filename, "/dev/", 5) == 0)
@@ -21,6 +23,8 @@ int device_open(const char *device_filename) {
 		}
 
 	}
+
+#endif
 
 	return 0;
 
