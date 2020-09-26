@@ -2,12 +2,12 @@
 .\"     Title: dvd_backup
 .\"    Author: [see the "AUTHOR" section]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 03/27/2020
+.\"      Date: 09/26/2020
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_BACKUP" "1" "03/27/2020" "\ \&" "\ \&"
+.TH "DVD_BACKUP" "1" "09/26/2020" "\ \&" "\ \&"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,7 +37,14 @@ dvd_backup \- backup an entire DVD or a Video Title Set
 The dvd_backup(1) program will copy either an entire DVD\(cqs contents or a video title set to the filesystem\&. The output directory will be the UDF volume name of the disc\&.
 .sp
 The default device is based on your operating system, and is the primary optical drive\&.
+.sp
+For backing up a single track, see dvd_copy(1)\&.
 .SH "OPTIONS"
+.PP
+\fB\-i, \-\-ifos\fR
+.RS 4
+Back up the IFO and BUP files\&.
+.RE
 .PP
 \fB\-T, \-\-vts\fR=\fIVTS\fR
 .RS 4

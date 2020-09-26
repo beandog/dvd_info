@@ -2,12 +2,12 @@
 .\"     Title: dvd_copy
 .\"    Author: [see the "AUTHOR" section]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 03/28/2020
+.\"      Date: 09/26/2020
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_COPY" "1" "03/28/2020" "\ \&" "\ \&"
+.TH "DVD_COPY" "1" "09/26/2020" "\ \&" "\ \&"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -49,16 +49,18 @@ Sending the track directly to stdout makes it useful for things like piping to o
 An example using ffmpeg, remuxing a track into a Matroska file:
 .sp
 $ dvd_copy \-o \- | ffmpeg \-fflags +genpts \-i \- \-c copy dvd_track\&.mkv
+.sp
+To backup an entire DVD, see dvd_backup(1)\&.
 .SH "OPTIONS"
 .PP
 \fB\-t, \-\-track\fR=\fITITLE\fR
 .RS 4
-Copy the selected track number\&.
+Copy the selected track number\&. Default is the longest track\&.
 .RE
 .sp
 \fB\-c, \-\-chapter\fR=\fICHAPTER[\-[CHAPTER]]\fR Copy the selected chapter range\&. Default is to copy all chapters\&.
 .sp
-\fB\-o, \-\-output\fR=\fIFILENAME\fR Save to filename\&. Default is \fIdvd_track_##\&.mpg\fR\&.
+\fB\-o, \-\-output\fR=\fIFILENAME\fR Save to filename\&. Default is \fIdvd_track_\&.mpg\fR where is the zero\-padded track number\&.
 .sp
 .if n \{\
 .RS 4
@@ -76,7 +78,7 @@ is switched to standard error output\&.
 \fB\-\-version\fR Display version information\&.
 .SH "SEE ALSO"
 .sp
-dvd_info(1)
+dvd_info(1), dvd_backup(1)
 .SH "BUGS"
 .sp
 \fBdvd_copy\fR does not wait for an optical device to be ready\&. Wait for it to finish "polling" before running the program\&.
