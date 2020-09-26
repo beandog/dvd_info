@@ -79,6 +79,7 @@ int main(int argc, char **argv) {
 
 	struct option p_long_opts[] = {
 		{ "help", no_argument, NULL, 'h' },
+		{ "ifos", required_argument, NULL, 'i' },
 		{ "vts", required_argument, NULL, 'T' },
 		{ "version", no_argument, NULL, 'V' },
 		{ 0, 0, 0, 0 },
@@ -88,10 +89,11 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	opterr = 1;
 
+	bool opt_title_sets = true;
 	bool opt_vts_number = false;
 	uint16_t arg_vts_number = 0;
 
-	while((opt = getopt_long(argc, argv, "hT:V", p_long_opts, &ix)) != -1) {
+	while((opt = getopt_long(argc, argv, "hiT:V", p_long_opts, &ix)) != -1) {
 
 		switch(opt) {
 
@@ -101,10 +103,15 @@ int main(int argc, char **argv) {
 				printf("Usage: dvd_backup [path] [options]\n");
 				printf("\n");
 				printf("Options:\n");
+				printf("  -i, --ifos            Back up only the IFO and BUP files\n");
 				printf("  -T, --vts <number>    Back up video title set number (default: all)\n");
 				printf("\n");
 				printf("DVD path can be a device name, a single file, or a directory (default: %s)\n", DEFAULT_DVD_DEVICE);
 				return 0;
+				break;
+
+			case 'i':
+				opt_title_sets = false;
 				break;
 
 			case 'T':
@@ -330,6 +337,9 @@ int main(int argc, char **argv) {
 		ifo = NULL;
 
 	}
+
+	if(opt_title_sets == false)
+		return 0;
 
 	/** VOB copy variables **/
 	uint64_t vob_block = 0;
