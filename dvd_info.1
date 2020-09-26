@@ -47,6 +47,10 @@ DVDs may also have audio and subtitle streams marked as inactive as well\&. This
 The ID of a DVD is a md5 hash of the IFOs on the disc\&.
 .sp
 The disc title is the volume name of the DVD\(cqs UDF\&. It will only appear if the source is an ISO file or a physical disc\&.
+.sp
+DVDs support three audio codecs: ac3 (Dolby Digital), dts, and pcm\&. Dolby Digital and DTS support up to 6 channels (5\&.1 surround sound)\&. PCM supports stereo only\&.
+.sp
+DVDs support multiple audio and subtitle languages\&. These are displayed in output as a two letter string\&. Examples: de \- German, en \- English, fr \- French, it \- Italian, etc\&.
 .SH "OPTIONS"
 .PP
 \fB\-t, \-\-track\fR=\fITRACK\fR
