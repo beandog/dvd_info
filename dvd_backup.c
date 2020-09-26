@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
 	// Build the backup directory
 	char dvd_backup_dir[PATH_MAX];
 	memset(dvd_backup_dir, '\0', PATH_MAX);
-	snprintf(dvd_backup_dir, PATH_MAX, "%s", backup_title);
+	snprintf(dvd_backup_dir, PATH_MAX - 1, "%s", backup_title);
 
 	// Use name first
 #ifdef _WIN32
@@ -181,7 +181,7 @@ int main(int argc, char **argv) {
 	}
 
 	// And VIDEO_TS sub-directory second
-	snprintf(dvd_backup_dir, PATH_MAX, "%s/VIDEO_TS", backup_title);
+	snprintf(dvd_backup_dir, PATH_MAX - 1, "%s/VIDEO_TS", backup_title);
 #ifdef _WIN32
 	retval = mkdir(dvd_backup_dir);
 #else
@@ -271,10 +271,10 @@ int main(int argc, char **argv) {
 
 			if(ifo_number == 0) {
 				sprintf(vts_filename, "VIDEO_TS.%s", info_file ? "IFO" : "BUP");
-				snprintf(dvd_backup_filename, PATH_MAX, "%s/%s", dvd_backup_dir, vts_filename);
+				snprintf(dvd_backup_filename, PATH_MAX - 1, "%s/%s", dvd_backup_dir, vts_filename);
 			} else {
 				sprintf(vts_filename, "VTS_%02" PRIu16 "_0.%s", ifo_number, info_file ? "IFO" : "BUP");
-				snprintf(dvd_backup_filename, PATH_MAX, "%s/%s", dvd_backup_dir, vts_filename);
+				snprintf(dvd_backup_filename, PATH_MAX - 1, "%s/%s", dvd_backup_dir, vts_filename);
 			}
 
 			// file handlers
@@ -388,7 +388,7 @@ int main(int argc, char **argv) {
 	memset(vob_filename, '\0', PATH_MAX);
 
 	/** Backup VIDEO_TS.VOB **/
-	snprintf(vob_filename, PATH_MAX, "%s/VIDEO_TS.VOB", dvd_backup_dir);
+	snprintf(vob_filename, PATH_MAX - 1, "%s/VIDEO_TS.VOB", dvd_backup_dir);
 
 	uint64_t dvd_blocks_offset = 0;
 	uint64_t dvd_blocks_skipped = 0;
@@ -410,9 +410,9 @@ int main(int argc, char **argv) {
 			continue;
 
 		if(vts == 0)
-			snprintf(vob_filename, PATH_MAX, "%s/VIDEO_TS.VOB", dvd_backup_dir);
+			snprintf(vob_filename, PATH_MAX - 1, "%s/VIDEO_TS.VOB", dvd_backup_dir);
 		else
-			snprintf(vob_filename, PATH_MAX, "%s/VTS_%02" PRIu16  "_0.VOB", dvd_backup_dir, vts);
+			snprintf(vob_filename, PATH_MAX - 1, "%s/VTS_%02" PRIu16  "_0.VOB", dvd_backup_dir, vts);
 
 		// Skip if file exists
 		if(access(vob_filename, F_OK) == 0) {
@@ -493,7 +493,7 @@ int main(int argc, char **argv) {
 
 		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++) {
 
-			snprintf(vob_filename, PATH_MAX, "%s/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", dvd_backup_dir, vts, vob);
+			snprintf(vob_filename, PATH_MAX - 1, "%s/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", dvd_backup_dir, vts, vob);
 
 			// Skip existing file and increase block offset
 			if(access(vob_filename, F_OK) == 0) {

@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
 	uint32_t sleepy_time = 1000000;
 	int dvd_fd = -1;
 	const char *device_filename = NULL;
-	char umount_str[PATH_MAX - 1];
+	char umount_str[PATH_MAX];
 	bool p_dvd_eject = true;
 	bool p_dvd_close = false;
 	bool dvd_drive_opened = false;
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
 	// dvdcss_t *dvdcss;
 	// dvd_reader_t *dvdread_dvd;
 
-	memset(umount_str, '\0', sizeof(umount_str));
+	memset(umount_str, '\0', PATH_MAX);
 
 	struct option long_options[] = {
 		{ "close", no_argument, 0, 't' },

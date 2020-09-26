@@ -128,8 +128,10 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.vf_opts, '\0', sizeof(dvd_trip.vf_opts));
 	memset(dvd_trip.of_opts, '\0', sizeof(dvd_trip.of_opts));
 	memset(str_crf, '\0', sizeof(str_crf));
+	memset(dvd_trip.config_dir, '\0', PATH_MAX);
 	snprintf(dvd_trip.config_dir, PATH_MAX - 1, "/.config/dvd_trip");
 	memset(dvd_trip.mpv_config_dir, '\0', sizeof(dvd_trip.mpv_config_dir));
+	memset(dvd_trip.mpv_config_dir, '\0', PATH_MAX);
 	if(home_dir != NULL)
 		snprintf(dvd_trip.mpv_config_dir, PATH_MAX - 1, "%s%s", home_dir, dvd_trip.config_dir);
 
