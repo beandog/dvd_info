@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <getopt.h>
+#include <ctype.h>
 #ifdef __linux__
 #include <linux/cdrom.h>
 #include <linux/limits.h>
@@ -162,6 +163,13 @@ int main(int argc, char **argv) {
 	dvd_title(backup_title, device_filename);
 	if(strlen(backup_title) == 0) {
 		strcpy(backup_title, "DVD_VIDEO");
+	}
+
+	// Set backup directory to uppercase
+	size_t l = strlen(backup_title);
+	for(l = 0; l < strlen(backup_title); l++) {
+		if(isalpha(backup_title[l]))
+			backup_title[l] = toupper(backup_title[l]);
 	}
 
 	// Build the backup directory
