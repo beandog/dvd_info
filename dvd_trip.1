@@ -1,0 +1,101 @@
+'\" t
+.\"     Title: dvd_trip
+.\"    Author: [see the "AUTHOR" section]
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: 09/26/2020
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "DVD_TRIP" "1" "09/26/2020" "\ \&" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+dvd_trip \- a tiny DVD ripper
+.SH "SYNOPSIS"
+.sp
+\fBdvd_trip\fR [\fIDVD PATH\fR] [\fIOPTIONS\fR]
+.SH "DESCRIPTION"
+.sp
+A tiny DVD ripper that has a small set of options for encoding\&.
+.sp
+Options and switches can be set in ~/\&.config/dvd_trip/mpv\&.conf\&. See the mpv documentation for details\&.
+.sp
+By default, dvd_trip will encode source to HEVC video with AAC audio in a Matroska container\&. If an output filename is given with a different extension, it will use the default settings for those instead\&. In each case, the default presets are used as selected by the codecs as well\&. Note that mpv must already be built with support for these codecs, or dvd_trip will quit\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+\&.mkv \- HEVC video, AAC audio
+\&.mp4 \- H\&.264 video, AAC audio
+\&.webm \- VPX9 video, Opus audio
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+With no options, the largest track will be ripped with the first audio track, to a Matroska file named dvd_track_\&.mkv, where is a zero\-padded name of the track number\&.
+.SH "OPTIONS"
+.PP
+\fB\-o, \-\-output\fR=\fIFILENAME\fR
+.RS 4
+Save to filename (default: dvd_track_\&.mkv), where default track is longest one on DVD, and is zero\-padded track number\&.
+.RE
+.PP
+\fB\-t, \-\-track\fR=\fITRACK\fR
+.RS 4
+Encode track number\&. Default is longest valid track\&.
+.RE
+.sp
+\fB\-c, \-\-chapter\fR=\fICHAPTER[\-[CHAPTER]]\fR Encode chapter number or range\&. Default is all chapters\&.
+.sp
+\fB\-a, \-\-alang\fR=\fILANGUAGE\fR Select audio track by language code, two letters\&. Default is first audio track\&.
+.sp
+\fB\-A, \-\-aid\fR=\fI#\fR Select audio track by stream ID\&.
+.sp
+\fB\-s, \-\-slang\fR=\fILANGUAGE\fR Select subtitle track by language code, two letters\&. Default is no subtitles\&.
+.sp
+\fB\-v, \-\-vcodec\fR=\fIx264|x265|vpx\fR Video codec to use\&. H\&.264 (x264) has widest support, including HTML5\&. H\&.265 (x265) videos will be smaller than H\&.264\&. VPX 9 can also be played back with HTML5\&.
+.sp
+\fB\-q, \-\-crf\fR=\fI#\fR Video encoder CRF to use\&. The default is the baseline for the codec\&.
+.sp
+\fB\-a, \-\-acodec\fR=\fIaac|opus\fR Audio codec to use\&. AAC is lossy while Opus is lossless\&. Both options will downmix to 2 channels (stereo)\&.
+.sp
+\fB\-h, \-\-help\fR Display help output\&.
+.SH "SEE ALSO"
+.sp
+dvd_info(1), dvd_copy(1), dvd_backup(1), mpv(1)
+.SH "BUGS"
+.sp
+\fBdvd_trip\fR does not wait for an optical device to be ready\&. Wait for it to finish "polling" before running the program\&.
+.sp
+Please file bugs at https://github\&.com/beandog/dvd_info/issues
+.SH "AUTHOR"
+.sp
+dvd_player was written by Steve Dibb <steve\&.dibb@gmail\&.com>
+.SH "RESOURCES"
+.sp
+Source code available at GitHub: https://github\&.com/beandog/dvd_info
+.sp
+Main web site: http://dvds\&.beandog\&.org
+.SH "COPYING"
+.sp
+Copyright (C) 2020 Steve Dibb\&. Free use of this software is granted under the terms of the GNU General Public License, version 2 (GPL)\&.
