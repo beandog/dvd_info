@@ -494,6 +494,12 @@ int main(int argc, char **argv) {
 
 	}
 
+	/** Filename **/
+	if(!opt_filename) {
+		strcpy(dvd_trip.container, "mkv");
+		sprintf(dvd_trip.filename, "dvd_track_%02" PRIu16 ".mkv", dvd_trip.track);
+	}
+
 	// Track
 	struct dvd_track dvd_track;
 	dvd_track.track = dvd_trip.track;
@@ -604,6 +610,8 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "[dvd_trip] could not create an mpv instance\n");
 		return 1;
 	}
+	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
+	fprintf(stderr, "[dvd_trip] outputting to \"%s\"\n", dvd_trip.filename);
 	mpv_set_option_string(dvd_mpv, "config-dir", dvd_trip.mpv_config_dir);
 	mpv_set_option_string(dvd_mpv, "config", "yes");
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
@@ -660,14 +668,6 @@ int main(int argc, char **argv) {
 		x265 = false;
 		vpx = true;
 	}
-
-	/** Filename **/
-	if(!opt_filename) {
-		strcpy(dvd_trip.container, "mkv");
-		strcpy(dvd_trip.filename, "trip_encode.mkv");
-	}
-
-	mpv_set_option_string(dvd_mpv, "o", dvd_trip.filename);
 
 	/** Video **/
 
