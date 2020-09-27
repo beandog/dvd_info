@@ -1,6 +1,8 @@
 1.12
 
+* Port to msys
 * dvd_copy: when given a single cell or chapter, don't use a range
+* dvd_backup: allow setting DVD name for directory
 
 1.11
 
