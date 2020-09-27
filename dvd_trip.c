@@ -669,6 +669,11 @@ int main(int argc, char **argv) {
 		vpx = true;
 	}
 
+	// If no audio option is given on vpx for video, vorbis is used as audio by default,
+	// switch to opus here.
+	if(mkv && vpx && !aac && !opus)
+		opus = true;
+
 	/** Video **/
 
 	// Fix input CRF if needed
