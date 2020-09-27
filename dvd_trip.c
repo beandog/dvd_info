@@ -14,6 +14,7 @@
 #endif
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
+#include "config.h"
 #include "dvd_info.h"
 #include "dvd_device.h"
 #include "dvd_drive.h"
@@ -29,9 +30,6 @@
 #include "dvd_time.h"
 #include "dvd_mpv.h"
 #include <mpv/client.h>
-#ifndef DVD_INFO_VERSION
-#define DVD_INFO_VERSION "1.8"
-#endif
 
 	/**
 	 *      _          _    _        _
@@ -262,7 +260,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'V':
-				printf("dvd_trip %s\n", DVD_INFO_VERSION);
+				printf("dvd_trip %s\n", PACKAGE_VERSION);
 				return 0;
 
 			case 'x':
