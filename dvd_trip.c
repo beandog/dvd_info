@@ -317,11 +317,12 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("Defaults:\n");
 				printf("\n");
-				printf("  By default, dvd_trip will encode source to HEVC video with AAC audio in a Matroska container.\n");
-				printf("  If an output filename is given with a different extension, it will use the default settings\n");
-				printf("  for those instead. In each case, the default presets are used as selected by the codecs as well.\n");
-				printf("  Note that mpv must already be built with support for these codecs, or dvd_trip will quit.\n");
-				printf("  See the man page for more details.\n");
+				printf("By default, dvd_trip will encode source to HEVC video with AAC audio in a\n");
+				printf("Matroska container. If an output filename is given with a different extension,\n");
+				printf("it will use the default settings. for those instead. In each case, the default\n");
+				printf("presets are used as selected by the codecs as well. Note that mpv must already\n");
+				printf("be built with support for these codecs, or dvd_trip will quit.\n\n");
+				printf("See the man page for more details.\n");
 				printf("\n");
 				printf("  .mkv - HEVC video, AAC audio\n");
 				printf("  .mp4 - H.264 video, AAC audio\n");
