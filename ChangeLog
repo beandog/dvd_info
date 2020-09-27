@@ -3,6 +3,7 @@
 * Port to msys
 * dvd_copy: when given a single cell or chapter, don't use a range
 * dvd_backup: allow setting DVD name for directory
+* dvd_backup: add option to backup IFOs only
 
 1.11
 
