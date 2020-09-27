@@ -34,7 +34,9 @@ dvd_backup \- backup an entire DVD or a Video Title Set
 \fBdvd_backup\fR [\fIPATH\fR] [\fIOPTIONS\fR]
 .SH "DESCRIPTION"
 .sp
-The dvd_backup(1) program will copy either an entire DVD\(cqs contents or a video title set to the filesystem\&. The output directory will be the UDF volume name of the disc\&.
+The dvd_backup(1) program will copy either an entire DVD\(cqs contents or a video title set to the filesystem\&. The output directory will be the UDF volume name of the disc, the name passed for the directory, or DVD_VIDEO if no label exists\&.
+.sp
+dvd_backup will read each block individually, and write it to the output file(s)\&. If a block cannot be read, it will fill it with null data, which should preserve playback\&. If a disc is damaged, reading can take a long time for each broken block\&. The amount of skipped blocks is displayed on output\&.
 .sp
 The default device is based on your operating system, and is the primary optical drive\&.
 .sp
