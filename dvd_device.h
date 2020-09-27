@@ -18,7 +18,7 @@
 #elif defined (__CYGWIN__)
 #define DEFAULT_DVD_DEVICE "D:\\"
 #elif defined(_WIN32)
-#define DEFAULT_DVD_DEVICE "/d/"
+#define DEFAULT_DVD_DEVICE "D:\\"
 #else
 #define DEFAULT_DVD_DEVICE "/dev/dvd"
 #endif
