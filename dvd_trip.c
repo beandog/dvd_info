@@ -311,8 +311,8 @@ int main(int argc, char **argv) {
 				printf("Encoding options:\n");
 				printf("\n");
 				printf("  -v, --vcodec <x264|x265|vpx>	Video codec (defaut: x265)\n");
-				printf("  -a, --acodec <aac|opus>	Audio codec (default: AAC)\n");
 				printf("  -q, --crf <#>			Video encoder CRF (default: use codec baseline)\n");
+				printf("  -a, --acodec <aac|opus>	Audio codec (default: AAC)\n");
 				// printf("  -f, --force                   Ignore invalid track warning\n");
 				printf("\n");
 				printf("Defaults:\n");
