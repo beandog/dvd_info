@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include <ctype.h>
+#include <libgen.h>
 #ifdef __linux__
 #include <linux/cdrom.h>
 #include <linux/limits.h>
@@ -47,6 +48,8 @@
 #define DVD_VIDEO_LB_LEN 2048
 #endif
 
+#define DVD_DIR_PATH_MAX (PATH_MAX - strlen("/VIDEO_TS.IFO"))
+
 int main(int, char **);
 int dvd_block_rw(dvd_file_t *, uint64_t, int);
 
@@ -79,6 +82,7 @@ int main(int argc, char **argv) {
 
 	struct option p_long_opts[] = {
 		{ "help", no_argument, NULL, 'h' },
+		{ "name", required_argument, NULL, 'n' },
 		{ "ifos", required_argument, NULL, 'i' },
 		{ "vts", required_argument, NULL, 'T' },
 		{ "version", no_argument, NULL, 'V' },
@@ -93,7 +97,10 @@ int main(int argc, char **argv) {
 	bool opt_vts_number = false;
 	uint16_t arg_vts_number = 0;
 
-	while((opt = getopt_long(argc, argv, "hiT:V", p_long_opts, &ix)) != -1) {
+	char dvd_custom_dir[PATH_MAX];
+	memset(dvd_custom_dir, '\0', PATH_MAX);
+
+	while((opt = getopt_long(argc, argv, "hin:T:V", p_long_opts, &ix)) != -1) {
 
 		switch(opt) {
 
@@ -103,11 +110,16 @@ int main(int argc, char **argv) {
 				printf("Usage: dvd_backup [path] [options]\n");
 				printf("\n");
 				printf("Options:\n");
+				printf("  -n, --name            Set DVD name\n");
 				printf("  -i, --ifos            Back up only the IFO and BUP files\n");
 				printf("  -T, --vts <number>    Back up video title set number (default: all)\n");
 				printf("\n");
 				printf("DVD path can be a device name, a single file, or a directory (default: %s)\n", DEFAULT_DVD_DEVICE);
 				return 0;
+				break;
+
+			case 'n':
+				strncpy(dvd_custom_dir, basename(optarg), DVD_DIR_PATH_MAX - 1);
 				break;
 
 			case 'i':
@@ -180,23 +192,29 @@ int main(int argc, char **argv) {
 	}
 
 	// Build the backup directory
+	char dvd_parent_dir[PATH_MAX];
 	char dvd_backup_dir[PATH_MAX];
+	memset(dvd_parent_dir, '\0', PATH_MAX);
 	memset(dvd_backup_dir, '\0', PATH_MAX);
-	snprintf(dvd_backup_dir, PATH_MAX - 1, "%s", backup_title);
+	if(strlen(dvd_custom_dir)) {
+		snprintf(dvd_parent_dir, DVD_DIR_PATH_MAX - 1, "%s/", dvd_custom_dir);
+		snprintf(dvd_backup_dir, DVD_DIR_PATH_MAX - 1, "%s%s", dvd_parent_dir, "VIDEO_TS");
+	} else {
+		snprintf(dvd_parent_dir, DVD_DIR_PATH_MAX - 1, "%s/", backup_title);
+		snprintf(dvd_backup_dir, DVD_DIR_PATH_MAX - 1, "%s%s", dvd_parent_dir, "VIDEO_TS");
+	}
 
 	// Use name first
 #ifdef _WIN32
-	retval = mkdir(dvd_backup_dir);
+	retval = mkdir(dvd_parent_dir);
 #else
-	retval = mkdir(dvd_backup_dir, 0755);
+	retval = mkdir(dvd_parent_dir, 0755);
 #endif
 	if(retval == -1 && errno != EEXIST) {
-		printf("* could not create backup directory: %s\n", dvd_backup_dir);
+		printf("* could not create backup directory: %s\n", dvd_parent_dir);
 		return 1;
 	}
 
-	// And VIDEO_TS sub-directory second
-	snprintf(dvd_backup_dir, PATH_MAX - 1, "%s/VIDEO_TS", backup_title);
 #ifdef _WIN32
 	retval = mkdir(dvd_backup_dir);
 #else
