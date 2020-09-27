@@ -108,9 +108,9 @@ int main(int argc, char **argv) {
 	dvd_trip.track = 1;
 	dvd_trip.first_chapter = 1;
 	dvd_trip.last_chapter = 99;
-	memset(dvd_trip.filename, '\0', sizeof(dvd_trip.filename));
-	memset(dvd_trip.config_dir, '\0', sizeof(dvd_trip.config_dir));
-	memset(dvd_trip.mpv_config_dir, '\0', sizeof(dvd_trip.mpv_config_dir));
+	memset(dvd_trip.filename, '\0', PATH_MAX);
+	memset(dvd_trip.config_dir, '\0', PATH_MAX);
+	memset(dvd_trip.mpv_config_dir, '\0', PATH_MAX);
 	memset(dvd_trip.container, '\0', sizeof(dvd_trip.container));
 	memset(dvd_trip.vcodec, '\0', sizeof(dvd_trip.vcodec));
 	memset(dvd_trip.vcodec_opts, '\0', sizeof(dvd_trip.vcodec_opts));
@@ -126,10 +126,7 @@ int main(int argc, char **argv) {
 	memset(dvd_trip.vf_opts, '\0', sizeof(dvd_trip.vf_opts));
 	memset(dvd_trip.of_opts, '\0', sizeof(dvd_trip.of_opts));
 	memset(str_crf, '\0', sizeof(str_crf));
-	memset(dvd_trip.config_dir, '\0', PATH_MAX);
 	snprintf(dvd_trip.config_dir, PATH_MAX - 1, "/.config/dvd_trip");
-	memset(dvd_trip.mpv_config_dir, '\0', sizeof(dvd_trip.mpv_config_dir));
-	memset(dvd_trip.mpv_config_dir, '\0', PATH_MAX);
 	if(home_dir != NULL)
 		snprintf(dvd_trip.mpv_config_dir, PATH_MAX - 1, "%s%s", home_dir, dvd_trip.config_dir);
 
