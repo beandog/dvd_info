@@ -1,11 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <string.h>
-#include <stdbool.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <getopt.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 #include <dvdread/ifo_print.h>
