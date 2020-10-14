@@ -16,6 +16,11 @@ dvd_backup_SOURCES = dvd_backup.c dvd_drive.c dvd_open.c dvd_vmg_ifo.c dvd_vts.c
 dvd_backup_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_backup_LDADD = $(DVDREAD_LIBS)
 
+bin_PROGRAMS += dvd_debug
+dvd_debug_SOURCES = dvd_debug.c
+dvd_debug_CFLAGS = $(DVDREAD_CFLAGS)
+dvd_debug_LDADD = $(DVDREAD_LIBS)
+
 if DVD_DRIVE_STATUS
 bin_PROGRAMS += dvd_drive_status
 man1_MANS += dvd_drive_status.1

@@ -1,3 +1,7 @@
+1.13
+
+* Add dvd_debug, a wrapper to libdvdread's ifo_print()
+
 1.12
 
 * Port to msys (thanks to veso266)
