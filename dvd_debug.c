@@ -9,7 +9,7 @@
 int main(int argc, char **argv) {
 
 	const char *device_filename = NULL;
-	if (argc == 1)
+	if (argc == 2)
 		device_filename = argv[1];
 	else
 		device_filename = DEFAULT_DVD_DEVICE;
