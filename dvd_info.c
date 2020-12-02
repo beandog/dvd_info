@@ -110,26 +110,29 @@ int main(int argc, char **argv) {
 	int opt = 0;
 	bool invalid_opt = false;
 	const char p_short_opts[] = "aAcdE:ghijLM:sST:t:uVvxz";
-
 	struct option p_long_opts[] = {
 
+		{ "track", required_argument, NULL, 't' },
+		{ "vts", required_argument, NULL, 'T' },
+
 		{ "audio", no_argument, NULL, 'a' },
-		{ "has-audio", no_argument, NULL, 'A' },
 		{ "video", no_argument, NULL, 'v' },
 		{ "chapters", no_argument, NULL, 'c' },
 		{ "subtitles", no_argument, NULL, 's' },
-		{ "has-subtitles", no_argument, NULL, 'S' },
-		{ "valid", no_argument, NULL, 'L' },
 		{ "cells", no_argument, NULL, 'd' },
 		{ "all", no_argument, NULL, 'x' },
+
 		{ "json", no_argument, NULL, 'j' },
+		{ "xchap", no_argument, NULL, 'g' },
 		{ "id", no_argument, NULL, 'i' },
 		{ "volume", no_argument, NULL, 'u' },
-		{ "track", required_argument, NULL, 't' },
-		{ "xchap", no_argument, NULL, 'g' },
+
 		{ "min-seconds", required_argument, NULL, 'E' },
 		{ "min-minutes", required_argument, NULL, 'M' },
-		{ "vts", required_argument, NULL, 'T' },
+		{ "has-audio", no_argument, NULL, 'A' },
+		{ "has-subtitles", no_argument, NULL, 'S' },
+		{ "valid", no_argument, NULL, 'L' },
+
 		{ "help", no_argument, NULL, 'h' },
 		{ "version", no_argument, NULL, 'V' },
 		{ "debug", no_argument, NULL, 'z' },
