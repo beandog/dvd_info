@@ -64,6 +64,7 @@ int main(int argc, char **argv) {
 	// limit results
 	bool d_has_audio = false;
 	bool d_has_subtitles = false;
+	bool d_longest = false;
 	bool opt_min_seconds = true;
 	unsigned long int arg_number = 0;
 	uint32_t arg_min_seconds = 0;
@@ -109,7 +110,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aAcdE:ghijLM:sST:t:uVvxz";
+	const char p_short_opts[] = "aAcdE:ghijlLM:sST:t:uVvxz";
 	struct option p_long_opts[] = {
 
 		{ "track", required_argument, NULL, 't' },
@@ -127,6 +128,7 @@ int main(int argc, char **argv) {
 		{ "id", no_argument, NULL, 'i' },
 		{ "volume", no_argument, NULL, 'u' },
 
+		{ "longest", required_argument, NULL, 'l' },
 		{ "min-seconds", required_argument, NULL, 'E' },
 		{ "min-minutes", required_argument, NULL, 'M' },
 		{ "has-audio", no_argument, NULL, 'A' },
@@ -186,6 +188,10 @@ int main(int argc, char **argv) {
 				d_chapters = true;
 				d_subtitles = true;
 				d_cells = true;
+				break;
+
+			case 'l':
+				d_longest = true;
 				break;
 
 			case 'L':
@@ -271,6 +277,7 @@ int main(int argc, char **argv) {
 				printf("  -x, --all             Display all\n");
 				printf("\n");
 				printf("Narrow results:\n");
+				printf("  -l, --longest		Track with the longest length\n");
 				printf("  -A, --has-audio       Track has audio streams\n");
 				printf("  -S, --has-subtitles   Track has VobSub subtitles\n");
 				printf("  -E, --seconds <secs>  Track has minimum number of seconds\n");
@@ -380,6 +387,12 @@ int main(int argc, char **argv) {
 	dvd_tracks = dvd_tracks_init(dvdread_dvd, vmg_ifo, d_audio, d_subtitles, d_chapters, d_cells);
 
 	dvd_info.longest_track = dvd_tracks[0].track;
+
+	// Only display the longest track if requested
+	if(d_longest) {
+		d_first_track = dvd_info.longest_track;
+		d_last_track = dvd_info.longest_track;
+	}
 
 	/** JSON display output **/
 
