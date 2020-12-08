@@ -68,6 +68,8 @@ struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, const char *device_file
 	dvd_vmg_id(dvd_info.vmg_id, vmg_ifo);
 	dvd_info.tracks = dvd_tracks(vmg_ifo);
 
+	// FIXME either put longest_track in here, or remove it from the struct
+
 	return dvd_info;
 
 }
