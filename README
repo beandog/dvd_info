@@ -39,12 +39,6 @@ If you want to give it a whirl, I recommend ddrescue:
 I try porting my code to other systems, and in addition to popular Linux
 distros, it runs fine on BSD systems as well.
 
-I take a minimalist approach to my code, and so there is only the minimum
-of required autotools content in the repo: configure.ac and Makefile.am
-This allows the user to build the config files on their system. Run
-"autoreconf -fi" and you'll have the familiar configure, make, make install
-setup.
-
 See also:
 
   * http://github.com/beandog/bluray_info - similar tools for Blu-ray discs
