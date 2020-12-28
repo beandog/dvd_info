@@ -1,6 +1,7 @@
 1.13
 
 * Add dvd_debug, a wrapper to libdvdread's ifo_print()
+* Add autotools scripts
 
 1.12
 
