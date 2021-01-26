@@ -86,6 +86,8 @@ int main(int argc, char **argv) {
 	bool mkv = false;
 	bool mp4 = false;
 	bool webm = false;
+	bool detelecine = false;
+	bool deinterlace = false;
 	int8_t crf = -1;
 	char str_crf[10];
 	uint16_t arg_track_number = 1;
@@ -144,6 +146,9 @@ int main(int argc, char **argv) {
 
 		{ "output", required_argument, 0, 'o' },
 
+		{ "detelecine", no_argument, 0, 'd' },
+		{ "deinterlace", no_argument, 0, 'e' },
+
 		{ "vcodec", required_argument, 0, 'v'},
 		{ "acodec", required_argument, 0, 'a'},
 		{ "crf", required_argument, 0, 'q' },
@@ -157,7 +162,7 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "a:B:c:hL:o:q:s:S:t:Vv:xz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "a:B:c:dehL:o:q:s:S:t:Vv:xz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -211,6 +216,14 @@ int main(int argc, char **argv) {
 				if(arg_first_chapter > arg_last_chapter)
 					arg_first_chapter = arg_last_chapter;
 
+				break;
+
+			case 'd':
+				detelecine = true;
+				break;
+
+			case 'e':
+				deinterlace = true;
 				break;
 
 			case 'L':
@@ -308,6 +321,8 @@ int main(int argc, char **argv) {
 				printf("  -v, --vcodec <x264|x265|vpx>	Video codec (defaut: x265)\n");
 				printf("  -q, --crf <#>			Video encoder CRF (default: use codec baseline)\n");
 				printf("  -a, --acodec <aac|opus>	Audio codec (default: AAC)\n");
+				printf("  -d, --detelecine		Detelecine video\n");
+				printf("  -e, --deinterlace		Deinterlace video\n");
 				// printf("  -f, --force                   Ignore invalid track warning\n");
 				printf("\n");
 				printf("Defaults:\n");
@@ -721,7 +736,16 @@ int main(int argc, char **argv) {
 		mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
 
 	// Detelecining
-	strcpy(dvd_trip.vf_opts, "pullup,dejudder");
+	if(detelecine) {
+		printf("[dvd_trip] detelecining video using pullup, dejudder, fps filters\n");
+		strcat(dvd_trip.vf_opts, "pullup,dejudder,fps=fps=24000/1001");
+	}
+	if(detelecine && deinterlace)
+		strcat(dvd_trip.vf_opts, ",");
+	if(deinterlace) {
+		printf("[dvd_trip] deinterlacing video using bwdif filter\n");
+		strcat(dvd_trip.vf_opts, "bwdif=mode=send_frame:deint=interlaced");
+	}
 	mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
 
 	/** Audio **/
