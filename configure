@@ -4732,12 +4732,12 @@ if test -n "$MPV_CFLAGS"; then
     pkg_cv_MPV_CFLAGS="$MPV_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"mpv >= 1.101.0\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "mpv >= 1.101.0") 2>&5
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"mpv\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "mpv") 2>&5
   ac_status=$?
   printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_MPV_CFLAGS=`$PKG_CONFIG --cflags "mpv >= 1.101.0" 2>/dev/null`
+  pkg_cv_MPV_CFLAGS=`$PKG_CONFIG --cflags "mpv" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4749,12 +4749,12 @@ if test -n "$MPV_LIBS"; then
     pkg_cv_MPV_LIBS="$MPV_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"mpv >= 1.101.0\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "mpv >= 1.101.0") 2>&5
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"mpv\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "mpv") 2>&5
   ac_status=$?
   printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_MPV_LIBS=`$PKG_CONFIG --libs "mpv >= 1.101.0" 2>/dev/null`
+  pkg_cv_MPV_LIBS=`$PKG_CONFIG --libs "mpv" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4775,14 +4775,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        MPV_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "mpv >= 1.101.0" 2>&1`
+	        MPV_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "mpv" 2>&1`
         else
-	        MPV_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "mpv >= 1.101.0" 2>&1`
+	        MPV_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "mpv" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$MPV_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (mpv >= 1.101.0) were not met:
+	as_fn_error $? "Package requirements (mpv) were not met:
 
 $MPV_PKG_ERRORS
 
