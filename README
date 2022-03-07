@@ -8,14 +8,24 @@ Includes:
 * dvd_copy - copy a DVD title to the filesystem
 
 * dvd_drive_status - display drive status: open, closed, closed with disc,
-	or polling
+	or polling (support depends on operating system)
+
+* dvd_backup - back up an entire DVD to the filesystem
+
+* dvd_player - a small DVD player using libmpv as backend
+
+* dvd_trip - a small DVD ripper using libmpv as backend
+
+* dvd_debug - print debug information about a DVD
 
 Requirements:
 
 * libdvdread >= 4.2.1 (libdvdcss required for decryption)
 
-Homepage:
+Documentation:
 
+  * See man pages for each program
+  * https://github.com/beandog/dvd_info/wiki
   * http://dvds.beandog.org/doku.php?id=dvd_info
 
 The git repo on github is intended to build from a straight pull. There
@@ -25,7 +35,7 @@ target releases here.
 
 If you're going to do a lot of reads on a disc drive, I'd recommend mounting it
 so the access can be cached -- this is especially helpful when using / testing
-bluray_copy a lot to get chapters, titles, playlists, etc.
+dvd_copy a lot to get chapters, titles, etc.
 
   # mount /dev/sr0 -o ro -t udf /mnt/dvd
 
