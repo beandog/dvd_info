@@ -1,7 +1,14 @@
+1.14
+
+* dvd_player: fix bug where custom configuration file not loading
+
 1.13
 
 * Add dvd_debug, a wrapper to libdvdread's ifo_print()
 * Add autotools scripts
+* dvd_info: Fix typo in JSON output (thanks to gurpreetatwal)
+* dvd_info: Add option to only display the longest track
+* dvd_trip: Add detelecine and deinterlace as options
 
 1.12
 
