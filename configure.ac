@@ -32,7 +32,7 @@ dnl Need ioctl.h for checking drive status in programs
 AC_CHECK_HEADERS([sys/ioctl.h], [], [])
 
 dnl Using libmpv for the player is optional, but enabled by default, builds dvd_player
-AC_ARG_WITH([libmpv], [AS_HELP_STRING([--with-libmpv], [Build DVD player using libmpv])], [PKG_CHECK_MODULES([MPV], [mpv >= 1.101.0], [
+AC_ARG_WITH([libmpv], [AS_HELP_STRING([--with-libmpv], [Build DVD player using libmpv])], [PKG_CHECK_MODULES([MPV], [mpv], [
 	with_libmpv=yes
 	AC_DEFINE(HAVE_LIBMPV, [], [libmpv])
 ])])
