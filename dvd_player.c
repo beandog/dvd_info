@@ -64,8 +64,8 @@ int main(int argc, char **argv) {
 	struct dvd_vts dvd_vts[DVD_MAX_VTS_IFOS];
 
 	// DVD player default options
-	snprintf(dvd_player.config_dir, 20, "/.config/dvd_player");
 	memset(dvd_player.config_dir, '\0', PATH_MAX);
+	snprintf(dvd_player.config_dir, 20, "/.config/dvd_player");
 	memset(dvd_player.mpv_config_dir, '\0', PATH_MAX);
 	if(home_dir != NULL)
 		snprintf(dvd_player.mpv_config_dir, PATH_MAX - 1, "%s%s", home_dir, dvd_player.config_dir);
