@@ -1,4 +1,4 @@
-You will need automake, autoconf, make, pkg-config and libdvdread packages.
+You will need libdvdcss and libdvdread installed.
 
 $ ./configure
 $ make
