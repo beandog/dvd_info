@@ -437,7 +437,7 @@ int main(int argc, char **argv) {
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
 	if(p_dvd_copy)
-		printf("Track: %*" PRIu16 ", Length: %s, Chapters: %*" PRIu8 ", Cells: %*" PRIu8 ", Audio streams: %*" PRIu8 ", Subpictures: %*" PRIu8 ", Filesize: %.0lf MBs\n", 2, dvd_track.track, dvd_track.length, 2, dvd_track.chapters, 2, dvd_track.cells, 2, dvd_track.audio_tracks, 2, dvd_track.subtitles, dvd_track.filesize_mbs);
+		printf("Track: %*" PRIu16 ", Length: %s, Chapters: %*" PRIu8 ", Cells: %*" PRIu8 ", Audio streams: %*" PRIu8 ", Subpictures: %*" PRIu8 ", Title set: %*" PRIu16 ", Filesize: %.0lf MBs\n", 2, dvd_track.track, dvd_track.length, 2, dvd_track.chapters, 2, dvd_track.cells, 2, dvd_track.audio_tracks, 2, dvd_track.subtitles, 2, vts, dvd_track.filesize_mbs);
 
 	// Check for track issues
 	dvd_track.valid = true;
@@ -532,7 +532,7 @@ int main(int argc, char **argv) {
 			cell_sectors = dvd_cell.last_sector - dvd_cell.first_sector;
 
 			if(p_dvd_copy)
-				printf("        Chapter: %*" PRIu8 ", Cell: %" PRIu8 ", VTS: %" PRIu16 ", Filesize: % 5.0lf MBs\n", 2, dvd_chapter.chapter, 2, dvd_cell.cell, vts, ceil(dvd_cell.filesize / 1048576.0));
+				printf("        Chapter: %*" PRIu8 ", Cell: %*" PRIu8 ", Filesize: % 5.0lf MBs\n", 2, dvd_chapter.chapter, 2, dvd_cell.cell, ceil(dvd_cell.filesize / 1048576.0));
 
 			if(dvd_cell.last_sector > dvd_cell.first_sector)
 				cell_sectors++;
