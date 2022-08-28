@@ -1,3 +1,7 @@
+1.15
+
+* Make display output more human-friendly
+
 1.14
 
 * dvd_player: fix bug where custom configuration file not loading
