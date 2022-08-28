@@ -592,7 +592,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "[dvd_trip] Disc title: '%s'\n", dvd_info.title);
 	if(strlen(dvdread_id))
 		fprintf(stderr, "[dvd_trip] Disc ID: '%s'\n", dvdread_id);
-	fprintf(stderr, "[dvd_trip] Track: %02" PRIu16 ", Length: %s, Chapters: %02" PRIu8 ", Cells: %02" PRIu8 ", Audio streams: %02" PRIu8 ", Subpictures: %02" PRIu8 "\n", dvd_track.track, dvd_track.length, dvd_track.chapters, dvd_track.cells, dvd_track.audio_tracks, dvd_track.subtitles);
+	fprintf(stderr, "[dvd_trip] Track: %*" PRIu16 ", Length: %s, Chapters: %*" PRIu8 ", Cells: %*" PRIu8 ", Audio streams: %*" PRIu8 ", Subpictures: %*" PRIu8 "\n", 2, dvd_track.track, dvd_track.length, 2, dvd_track.chapters, 2, dvd_track.cells, 2, dvd_track.audio_tracks, 2, dvd_track.subtitles);
 
 	// Check for track issues
 	if(dvd_vts[vts].valid == false) {
