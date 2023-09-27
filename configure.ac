@@ -12,9 +12,8 @@ AC_PROG_CC_C99
 dnl need math.h to do MBs calculations
 AC_CHECK_HEADERS([math.h])
 
-dnl Use pkg-config to check for libdvdread, libdvdcss
+dnl Use pkg-config to check for libdvdread
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
-PKG_CHECK_MODULES([DVDCSS], [libdvdcss >= 1.4.1])
 
 dnl The DVD drive tools are OS-specific
 AM_CONDITIONAL([DVD_DRIVE_STATUS], [false])
