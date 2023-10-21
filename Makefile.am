@@ -27,14 +27,6 @@ man1_MANS += dvd_drive_status.1
 dvd_drive_status_SOURCES = dvd_drive_status.c
 endif
 
-if DVD_EJECT
-bin_PROGRAMS += dvd_eject
-man1_MANS += dvd_eject.1
-dvd_eject_SOURCES = dvd_eject.c
-dvd_eject_CFLAGS = $(DVDCSS_CFLAGS)
-dvd_eject_LDADD = $(DVDCSS_LIBS)
-endif
-
 if DVD_PLAYER
 bin_PROGRAMS += dvd_player
 man1_MANS += dvd_player.1

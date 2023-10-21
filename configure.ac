@@ -17,12 +17,10 @@ PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
 
 dnl The DVD drive tools are OS-specific
 AM_CONDITIONAL([DVD_DRIVE_STATUS], [false])
-AM_CONDITIONAL([DVD_EJECT], [false])
 AC_CANONICAL_HOST
 case "$host_os" in
 	*linux*)
 		AM_CONDITIONAL([DVD_DRIVE_STATUS], [true])
-		AM_CONDITIONAL([DVD_EJECT], [true])
 		;;
 	*)
 		;;
