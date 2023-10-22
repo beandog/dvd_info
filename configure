@@ -613,7 +613,7 @@ PACKAGE_TARNAME='dvd_info'
 PACKAGE_VERSION='1.16'
 PACKAGE_STRING='dvd_info 1.16'
 PACKAGE_BUGREPORT='https://github.com/beandog/dvd_info/issues'
-PACKAGE_URL='http://dvds.beandog.org/'
+PACKAGE_URL='https://github.com/beandog/dvd_info'
 
 # Factoring default headers for most tests.
 ac_includes_default="\
@@ -665,12 +665,8 @@ build_os
 build_vendor
 build_cpu
 build
-DVD_EJECT_FALSE
-DVD_EJECT_TRUE
 DVD_DRIVE_STATUS_FALSE
 DVD_DRIVE_STATUS_TRUE
-DVDCSS_LIBS
-DVDCSS_CFLAGS
 DVDREAD_LIBS
 DVDREAD_CFLAGS
 PKG_CONFIG_LIBDIR
@@ -782,8 +778,6 @@ PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
 DVDREAD_CFLAGS
 DVDREAD_LIBS
-DVDCSS_CFLAGS
-DVDCSS_LIBS
 MPV_CFLAGS
 MPV_LIBS'
 
@@ -1423,7 +1417,7 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-libmpv           Build DVD player using libmpv
+  --with-libmpv           Enable mpv support to build dvd_player
 
 Some influential environment variables:
   CC          C compiler command
@@ -1442,9 +1436,6 @@ Some influential environment variables:
               C compiler flags for DVDREAD, overriding pkg-config
   DVDREAD_LIBS
               linker flags for DVDREAD, overriding pkg-config
-  DVDCSS_CFLAGS
-              C compiler flags for DVDCSS, overriding pkg-config
-  DVDCSS_LIBS linker flags for DVDCSS, overriding pkg-config
   MPV_CFLAGS  C compiler flags for MPV, overriding pkg-config
   MPV_LIBS    linker flags for MPV, overriding pkg-config
 
@@ -1452,7 +1443,7 @@ Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
 
 Report bugs to <https://github.com/beandog/dvd_info/issues>.
-dvd_info home page: <http://dvds.beandog.org/>.
+dvd_info home page: <https://github.com/beandog/dvd_info>.
 _ACEOF
 ac_status=$?
 fi
@@ -1911,9 +1902,7 @@ struct stat;
 /* Most of the following tests are stolen from RCS 5.7 src/conf.sh.  */
 struct buf { int x; };
 struct buf * (*rcsopen) (struct buf *, struct stat *, int);
-static char *e (p, i)
-     char **p;
-     int i;
+static char *e (char **p, int i)
 {
   return p[i];
 }
@@ -1964,6 +1953,7 @@ extern int puts (const char *);
 extern int printf (const char *, ...);
 extern int dprintf (int, const char *, ...);
 extern void *malloc (size_t);
+extern void free (void *);
 
 // Check varargs macros.  These examples are taken from C99 6.10.3.5.
 // dprintf is used instead of fprintf to avoid needing to declare
@@ -4513,111 +4503,12 @@ printf "%s\n" "yes" >&6; }
 
 fi
 
-pkg_failed=no
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for DVDCSS" >&5
-printf %s "checking for DVDCSS... " >&6; }
-
-if test -n "$DVDCSS_CFLAGS"; then
-    pkg_cv_DVDCSS_CFLAGS="$DVDCSS_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libdvdcss >= 1.4.1\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libdvdcss >= 1.4.1") 2>&5
-  ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_DVDCSS_CFLAGS=`$PKG_CONFIG --cflags "libdvdcss >= 1.4.1" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-if test -n "$DVDCSS_LIBS"; then
-    pkg_cv_DVDCSS_LIBS="$DVDCSS_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libdvdcss >= 1.4.1\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libdvdcss >= 1.4.1") 2>&5
-  ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_DVDCSS_LIBS=`$PKG_CONFIG --libs "libdvdcss >= 1.4.1" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-
-
-
-if test $pkg_failed = yes; then
-   	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        DVDCSS_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libdvdcss >= 1.4.1" 2>&1`
-        else
-	        DVDCSS_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libdvdcss >= 1.4.1" 2>&1`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$DVDCSS_PKG_ERRORS" >&5
-
-	as_fn_error $? "Package requirements (libdvdcss >= 1.4.1) were not met:
-
-$DVDCSS_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables DVDCSS_CFLAGS
-and DVDCSS_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
-elif test $pkg_failed = untried; then
-     	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }
-	{ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables DVDCSS_CFLAGS
-and DVDCSS_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
-else
-	DVDCSS_CFLAGS=$pkg_cv_DVDCSS_CFLAGS
-	DVDCSS_LIBS=$pkg_cv_DVDCSS_LIBS
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }
-
-fi
-
  if false; then
   DVD_DRIVE_STATUS_TRUE=
   DVD_DRIVE_STATUS_FALSE='#'
 else
   DVD_DRIVE_STATUS_TRUE='#'
   DVD_DRIVE_STATUS_FALSE=
-fi
-
- if false; then
-  DVD_EJECT_TRUE=
-  DVD_EJECT_FALSE='#'
-else
-  DVD_EJECT_TRUE='#'
-  DVD_EJECT_FALSE=
 fi
 
 
@@ -4705,14 +4596,6 @@ else
   DVD_DRIVE_STATUS_FALSE=
 fi
 
-		 if true; then
-  DVD_EJECT_TRUE=
-  DVD_EJECT_FALSE='#'
-else
-  DVD_EJECT_TRUE='#'
-  DVD_EJECT_FALSE=
-fi
-
 		;;
 	*)
 		;;
@@ -4730,7 +4613,19 @@ fi
 # Check whether --with-libmpv was given.
 if test ${with_libmpv+y}
 then :
-  withval=$with_libmpv;
+  withval=$with_libmpv; with_libmpv=${withval}
+else $as_nop
+  with_libmpv=no
+fi
+
+
+if test "x$with_libmpv" != "xno"
+then :
+
+
+printf "%s\n" "#define HAVE_LIBMPV /**/" >>confdefs.h
+
+
 pkg_failed=no
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for MPV" >&5
 printf %s "checking for MPV... " >&6; }
@@ -4820,15 +4715,12 @@ else
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 
-	with_libmpv=yes
-
-printf "%s\n" "#define HAVE_LIBMPV /**/" >>confdefs.h
+fi
 
 
 fi
-fi
 
- if test "x$with_libmpv" = xyes; then
+ if test "x$with_libmpv" != "xno"; then
   DVD_PLAYER_TRUE=
   DVD_PLAYER_FALSE='#'
 else
@@ -4836,7 +4728,7 @@ else
   DVD_PLAYER_FALSE=
 fi
 
- if test "x$with_libmpv" = xyes; then
+ if test "x$with_libmpv" != "xno"; then
   DVD_RIPPER_TRUE=
   DVD_RIPPER_FALSE='#'
 else
@@ -4985,16 +4877,8 @@ if test -z "${DVD_DRIVE_STATUS_TRUE}" && test -z "${DVD_DRIVE_STATUS_FALSE}"; th
   as_fn_error $? "conditional \"DVD_DRIVE_STATUS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${DVD_EJECT_TRUE}" && test -z "${DVD_EJECT_FALSE}"; then
-  as_fn_error $? "conditional \"DVD_EJECT\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
 if test -z "${DVD_DRIVE_STATUS_TRUE}" && test -z "${DVD_DRIVE_STATUS_FALSE}"; then
   as_fn_error $? "conditional \"DVD_DRIVE_STATUS\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${DVD_EJECT_TRUE}" && test -z "${DVD_EJECT_FALSE}"; then
-  as_fn_error $? "conditional \"DVD_EJECT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${DVD_PLAYER_TRUE}" && test -z "${DVD_PLAYER_FALSE}"; then
@@ -5456,7 +5340,7 @@ Configuration commands:
 $config_commands
 
 Report bugs to <https://github.com/beandog/dvd_info/issues>.
-dvd_info home page: <http://dvds.beandog.org/>."
+dvd_info home page: <https://github.com/beandog/dvd_info>."
 
 _ACEOF
 ac_cs_config=`printf "%s\n" "$ac_configure_args" | sed "$ac_safe_unquote"`
