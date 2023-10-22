@@ -29,13 +29,18 @@ esac
 dnl Need ioctl.h for checking drive status in programs
 AC_CHECK_HEADERS([sys/ioctl.h], [], [])
 
-dnl Using libmpv for the player is optional, but enabled by default, builds dvd_player
-AC_ARG_WITH([libmpv], [AS_HELP_STRING([--with-libmpv], [Build DVD player using libmpv])], [PKG_CHECK_MODULES([MPV], [mpv], [
-	with_libmpv=yes
-	AC_DEFINE(HAVE_LIBMPV, [], [libmpv])
-])])
-AM_CONDITIONAL([DVD_PLAYER], [test "x$with_libmpv" = xyes])
-AM_CONDITIONAL([DVD_RIPPER], [test "x$with_libmpv" = xyes])
+dnl Using libmpv for the player is optional, builds dvd_player
+AC_ARG_WITH([libmpv], [AS_HELP_STRING([--with-libmpv], [Enable mpv support to build dvd_player])], [with_libmpv=${withval}], [with_libmpv=no])
+
+AS_IF([test "x$with_libmpv" != "xno"],
+	[
+		AC_DEFINE(HAVE_LIBMPV, [], [libmpv])
+		PKG_CHECK_MODULES([MPV], [mpv])
+	]
+)
+
+AM_CONDITIONAL([DVD_PLAYER], [test "x$with_libmpv" != "xno"])
+AM_CONDITIONAL([DVD_RIPPER], [test "x$with_libmpv" != "xno"])
 
 AC_CONFIG_FILES([Makefile])
 
