@@ -51,11 +51,7 @@ uint64_t dvd_cell_blocks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t 
 	last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, cell_number);
 
 	uint64_t blocks = 0;
-	blocks = last_sector - first_sector;
-
-	// Include the last cell
-	if(last_sector == first_sector)
-		blocks++;
+	blocks = last_sector - first_sector + 1;
 
 	return blocks;
 
