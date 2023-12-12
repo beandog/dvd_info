@@ -42,6 +42,11 @@ uint64_t dvd_cell_last_sector(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint
 
 }
 
+/**
+ * There's no need to check for an invalid number of blocks, the smallest I've
+ * seen is 3. Should be good.
+ */
+
 uint64_t dvd_cell_blocks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t track_number, uint8_t cell_number) {
 
 	uint64_t first_sector = 0;
@@ -51,11 +56,9 @@ uint64_t dvd_cell_blocks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t 
 	last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, cell_number);
 
 	uint64_t blocks = 0;
-	blocks = last_sector - first_sector;
 
-	// Include the last cell
-	if(last_sector == first_sector)
-		blocks++;
+	// Make sure to include the last sector
+	blocks = last_sector - first_sector + 1;
 
 	return blocks;
 
