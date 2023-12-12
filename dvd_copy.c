@@ -568,9 +568,12 @@ int main(int argc, char **argv) {
 						percent_complete = 99.0;
 				}
 
+				// FIXME causes bleeding on previous lines
+				/*
 				if(debug)
 					fprintf(stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)  Blocks: %li/%li\r", mbs_written, dvd_copy.filesize_mbs, percent_complete, total_cell_blocks_read, dvd_copy.blocks);
 				else
+				*/
 					fprintf(stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
 
 				fflush(stderr);
