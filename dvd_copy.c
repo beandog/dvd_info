@@ -77,6 +77,7 @@ int main(int argc, char **argv) {
 	bool p_dvd_copy = true;
 	bool p_dvd_cat = false;
 	bool opt_filename = false;
+	bool debug = false;
 	uint16_t arg_track_number = 1;
 	int long_index = 0;
 	int opt = 0;
@@ -97,6 +98,7 @@ int main(int argc, char **argv) {
 		{ "track", required_argument, 0, 't' },
 		{ "help", no_argument, 0, 'h' },
 		{ "version", no_argument, 0, 'V' },
+		{ "debug", no_argument, 0, 'z' },
 		{ 0, 0, 0, 0 }
 
 	};
@@ -113,7 +115,7 @@ int main(int argc, char **argv) {
 	memset(dvd_copy.buffer, '\0', DVD_VIDEO_LB_LEN);
 	memset(dvd_copy.filename, '\0', PATH_MAX);
 
-	while((opt = getopt_long(argc, argv, "c:d:ho:t:V", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "c:d:ho:t:Vz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -228,6 +230,10 @@ int main(int argc, char **argv) {
 			case 'V':
 				printf("dvd_copy %s\n", PACKAGE_VERSION);
 				return 0;
+
+			case 'z':
+				debug = true;
+				break;
 
 			// ignore unknown arguments
 			case '?':
@@ -503,6 +509,7 @@ int main(int argc, char **argv) {
 	uint64_t cell_sectors = 0;
 	uint64_t cell_block = 0;
 	ssize_t cell_blocks_read = 0;
+	ssize_t total_cell_blocks_read = 0;
 	ssize_t bytes_written = 0;
 	ssize_t total_bytes_written = 0;
 
@@ -543,6 +550,7 @@ int main(int argc, char **argv) {
 			while(cell_block < dvd_cell.last_sector) {
 
 				cell_blocks_read = DVDReadBlocks(dvdread_vts_file, (size_t)cell_block, 1, dvd_copy.buffer);
+				total_cell_blocks_read += cell_blocks_read;
 
 				// Zero out cells that couldn't be read
 				if(cell_blocks_read == -1)
@@ -560,7 +568,11 @@ int main(int argc, char **argv) {
 						percent_complete = 99.0;
 				}
 
-				fprintf(stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
+				if(debug)
+					fprintf(stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)  Blocks: %li/%li\r", mbs_written, dvd_copy.filesize_mbs, percent_complete, total_cell_blocks_read, dvd_copy.blocks);
+				else
+					fprintf(stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
+
 				fflush(stderr);
 
 				cell_block++;
