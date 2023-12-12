@@ -1,9 +1,12 @@
-1.15
+1.16
 
-* Make display output more human-friendly
 * dvd_info: display # of blocks per track in JSON
 * dvd_copy: fix copying last block of a cell (bug #5, thanks to remenor and
   tremon015)
+
+1.15
+
+* Make display output more human-friendly
 
 1.14
 
