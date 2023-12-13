@@ -509,7 +509,7 @@ int main(int argc, char **argv) {
 	uint64_t cell_sectors = 0;
 	uint64_t cell_block = 0;
 	ssize_t cell_blocks_read = 0;
-	ssize_t total_cell_blocks_read = 0;
+	ssize_t total_blocks_read = 0;
 	ssize_t bytes_written = 0;
 	ssize_t total_bytes_written = 0;
 
@@ -550,7 +550,7 @@ int main(int argc, char **argv) {
 			while(cell_block < dvd_cell.last_sector + 1) {
 
 				cell_blocks_read = DVDReadBlocks(dvdread_vts_file, (size_t)cell_block, 1, dvd_copy.buffer);
-				total_cell_blocks_read += cell_blocks_read;
+				total_blocks_read += cell_blocks_read;
 
 				// Zero out cells that couldn't be read
 				if(cell_blocks_read == -1)
@@ -571,7 +571,7 @@ int main(int argc, char **argv) {
 				// FIXME causes bleeding on previous lines
 				/*
 				if(debug)
-					fprintf(stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)  Blocks: %li/%li\r", mbs_written, dvd_copy.filesize_mbs, percent_complete, total_cell_blocks_read, dvd_copy.blocks);
+					fprintf(stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)  Blocks: %li/%li\r", mbs_written, dvd_copy.filesize_mbs, percent_complete, total_blocks_read, dvd_copy.blocks);
 				else
 				*/
 					fprintf(stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
