@@ -144,6 +144,7 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 				printf("         \"msecs\": %" PRIu32 ",\n", dvd_chapter.msecs);
 				printf("         \"first cell\": %" PRIu8 ",\n", dvd_chapter.first_cell);
 				printf("         \"last cell\": %" PRIu8 ",\n", dvd_chapter.last_cell);
+				printf("         \"blocks\": %" PRIu64 "\n", dvd_chapter.blocks);
 				printf("         \"filesize\": %" PRIu64 "\n", dvd_chapter.filesize);
 				printf("       }");
 
