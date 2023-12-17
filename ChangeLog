@@ -6,6 +6,7 @@
 * Don't require libdvdcss to build
 * Remove dvd_eject, doesn't work very well and requires libdvdcss
 * Fix building without libmpv in configure script
+* Rename dvd_trip to dvd_rip
 
 1.15
 
