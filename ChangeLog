@@ -3,6 +3,9 @@
 * dvd_info: display # of blocks per track in JSON
 * dvd_copy: fix copying last block of a cell (bug #5, thanks to remenor and
   tremon015)
+* Don't require libdvdcss to build
+* Remove dvd_eject, doesn't work very well and requires libdvdcss
+* Fix building without libmpv in configure script
 
 1.15
 
