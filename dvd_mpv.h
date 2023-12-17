@@ -20,7 +20,7 @@ struct dvd_playback {
 	char mpv_chapters_range[32];
 };
 
-struct dvd_trip {
+struct dvd_rip {
 	uint16_t track;
 	uint8_t first_chapter;
 	uint8_t last_chapter;
