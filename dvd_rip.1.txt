@@ -79,6 +79,9 @@ BUGS
 *dvd_rip* does not wait for an optical device to be ready. Wait for it to
 finish "polling" before running the program.
 
+When ripping a specific set of chapters, libmpv will display in the progress
+bar the length of the entire video.
+
 Please file bugs at <https://github.com/beandog/dvd_info/issues>
 
 AUTHOR
