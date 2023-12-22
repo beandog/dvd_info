@@ -87,7 +87,6 @@ int main(int argc, char **argv) {
 	bool mp4 = false;
 	bool webm = false;
 	bool detelecine = false;
-	bool deinterlace = false;
 	int8_t crf = -1;
 	char str_crf[10];
 	uint16_t arg_track_number = 1;
@@ -147,7 +146,6 @@ int main(int argc, char **argv) {
 		{ "output", required_argument, 0, 'o' },
 
 		{ "detelecine", no_argument, 0, 'd' },
-		{ "deinterlace", no_argument, 0, 'e' },
 
 		{ "vcodec", required_argument, 0, 'v'},
 		{ "acodec", required_argument, 0, 'a'},
@@ -162,7 +160,7 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "a:B:c:dehL:o:q:s:S:t:Vv:xz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "a:B:c:dhL:o:q:s:S:t:Vv:xz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -220,10 +218,6 @@ int main(int argc, char **argv) {
 
 			case 'd':
 				detelecine = true;
-				break;
-
-			case 'e':
-				deinterlace = true;
 				break;
 
 			case 'L':
@@ -322,7 +316,6 @@ int main(int argc, char **argv) {
 				printf("  -a, --acodec <aac|opus>	Audio codec (default: AAC)\n");
 				printf("  -q, --crf <#>			Video encoder CRF (default: use codec baseline)\n");
 				printf("  -d, --detelecine		Detelecine video\n");
-				printf("  -e, --deinterlace		Deinterlace video\n");
 				printf("\n");
 				printf("Defaults:\n");
 				printf("\n");
@@ -743,12 +736,7 @@ int main(int argc, char **argv) {
 		printf("[dvd_rip] detelecining video using pullup, dejudder, fps filters\n");
 		strcat(dvd_rip.vf_opts, "pullup,dejudder,fps=fps=24000/1001");
 	}
-	if(detelecine && deinterlace)
-		strcat(dvd_rip.vf_opts, ",");
-	if(deinterlace) {
-		printf("[dvd_rip] deinterlacing video using bwdif filter\n");
-		strcat(dvd_rip.vf_opts, "bwdif=mode=send_frame:deint=interlaced");
-	}
+
 	mpv_set_option_string(dvd_mpv, "vf", dvd_rip.vf_opts);
 
 	/** Audio **/
