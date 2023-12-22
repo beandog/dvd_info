@@ -1,101 +1,127 @@
 '\" t
-.\"     Title: dvd_trip
-.\"    Author: [see the "AUTHOR" section]
-.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/27/2022
+.\"     Title: dvd_rip
+.\"    Author: [see the "AUTHOR(S)" section]
+.\" Generator: Asciidoctor 2.0.18
+.\"      Date: 2023-12-22
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_TRIP" "1" "08/27/2022" "\ \&" "\ \&"
-.\" -----------------------------------------------------------------
-.\" * Define some portability stuff
-.\" -----------------------------------------------------------------
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" http://bugs.debian.org/507673
-.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.TH "DVD_RIP" "1" "2023-12-22" "\ \&" "\ \&"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
-.\" -----------------------------------------------------------------
-.\" * set default formatting
-.\" -----------------------------------------------------------------
-.\" disable hyphenation
+.ss \n[.ss] 0
 .nh
-.\" disable justification (adjust text to left margin only)
 .ad l
-.\" -----------------------------------------------------------------
-.\" * MAIN CONTENT STARTS HERE *
-.\" -----------------------------------------------------------------
+.de URL
+\fI\\$2\fP <\\$1>\\$3
+..
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
 .SH "NAME"
-dvd_trip \- a tiny DVD ripper
+dvd_rip \- a tiny DVD ripper
 .SH "SYNOPSIS"
 .sp
-\fBdvd_trip\fR [\fIPATH\fR] [\fIOPTIONS\fR]
+\fBdvd_rip\fP [\fIPATH\fP] [\fIOPTIONS\fP]
 .SH "DESCRIPTION"
 .sp
-A tiny DVD ripper that has a small set of options for encoding\&.
+A tiny DVD ripper that has a small set of options for encoding.
 .sp
-Options and switches can be set in ~/\&.config/dvd_trip/mpv\&.conf\&. See the mpv documentation for details\&.
+Options and switches can be set in ~/.config/dvd_rip/mpv.conf. See the mpv
+documentation for details.
 .sp
-By default, dvd_trip will encode source to HEVC video with AAC audio in a Matroska container\&. If an output filename is given with a different extension, it will use the default settings for those instead\&. In each case, the default presets are used as selected by the codecs as well\&. Note that mpv must already be built with support for these codecs, or dvd_trip will quit\&.
+By default, dvd_rip will encode source to H.264 video with AAC audio in an
+MPEG\-4 container. If an output filename is given with a different extension,
+it will use the default settings for those instead. In each case, the default
+presets are used as selected by the codecs as well. Note that mpv must already
+be built with support for these codecs, or dvd_rip will quit.
 .sp
-.if n \{\
-.RS 4
-.\}
+.if n .RS 4
 .nf
+.fam C
+\&.mp4 \- H.264 video, AAC audio
 \&.mkv \- HEVC video, AAC audio
-\&.mp4 \- H\&.264 video, AAC audio
 \&.webm \- VPX9 video, Opus audio
+.fam
 .fi
-.if n \{\
-.RE
-.\}
+.if n .RE
 .sp
-With no options, the largest track will be ripped with the first audio track, to a Matroska file named dvd_track_\&.mkv, where is a zero\-padded name of the track number\&.
+With no options, the largest track will be ripped with the first audio track,
+to a file named dvd_track_#.mp4, where # is a zero\-padded name of the track
+number.
 .SH "OPTIONS"
-.PP
-\fB\-o, \-\-output\fR=\fIFILENAME\fR
+.sp
+\fB\-o, \-\-output\fP=\fIFILENAME\fP
 .RS 4
-Save to filename (default: dvd_track_\&.mkv), where default track is longest one on DVD, and is zero\-padded track number\&.
-.RE
-.PP
-\fB\-t, \-\-track\fR=\fITRACK\fR
-.RS 4
-Encode track number\&. Default is longest valid track\&.
+Save to filename (default: \fIdvd_track_#.mp4\fP),
+where default track is longest one on DVD, and ## is zero\-padded
+track number.
 .RE
 .sp
-\fB\-c, \-\-chapter\fR=\fICHAPTER[\-[CHAPTER]]\fR Encode chapter number or range\&. Default is all chapters\&.
+\fB\-t, \-\-track\fP=\fITRACK\fP
+.RS 4
+Encode track number. Default is longest valid track.
+.RE
 .sp
-\fB\-a, \-\-alang\fR=\fILANGUAGE\fR Select audio track by language code, two letters\&. Default is first audio track\&.
+\fB\-c, \-\-chapter\fP=\fICHAPTER[\-[CHAPTER]]\fP
+Encode chapter number or range. Default is all chapters.
 .sp
-\fB\-A, \-\-aid\fR=\fI#\fR Select audio track by stream ID\&.
+\fB\-a, \-\-alang\fP=\fILANGUAGE\fP
+Select audio track by language code, two letters. Default is first
+audio track.
 .sp
-\fB\-s, \-\-slang\fR=\fILANGUAGE\fR Select subtitle track by language code, two letters\&. Default is no subtitles\&.
+\fB\-A, \-\-aid\fP=\fI#\fP
+Select audio track by stream ID.
 .sp
-\fB\-v, \-\-vcodec\fR=\fIx264|x265|vpx\fR Video codec to use\&. H\&.264 (x264) has widest support, including HTML5\&. H\&.265 (x265) videos will be smaller than H\&.264\&. VPX 9 can also be played back with HTML5\&.
+\fB\-s, \-\-slang\fP=\fILANGUAGE\fP
+Select subtitle track by language code, two letters. Default is no
+subtitles.
 .sp
-\fB\-q, \-\-crf\fR=\fI#\fR Video encoder CRF to use\&. The default is the baseline for the codec\&.
+\fB\-v, \-\-vcodec\fP=\fIx264|x265|vpx\fP
+Video codec to use. H.264 (x264) has widest support, including
+HTML5. H.265 (x265) videos will be smaller than H.264. VPX 9 can also
+be played back with HTML5.
 .sp
-\fB\-a, \-\-acodec\fR=\fIaac|opus\fR Audio codec to use\&. AAC is lossy while Opus is lossless\&. Both options will downmix to 2 channels (stereo)\&.
+\fB\-q, \-\-crf\fP=\fI#\fP
+Video encoder CRF to use. The default is the baseline for the codec.
 .sp
-\fB\-h, \-\-help\fR Display help output\&.
+\fB\-a, \-\-acodec\fP=\fIaac|opus\fP
+Audio codec to use. AAC is lossy while Opus is lossless. Both options
+will downmix to 2 channels (stereo).
+.sp
+\fB\-h, \-\-help\fP
+Display help output.
 .SH "SEE ALSO"
 .sp
 dvd_info(1), dvd_copy(1), dvd_backup(1), mpv(1)
 .SH "BUGS"
 .sp
-\fBdvd_trip\fR does not wait for an optical device to be ready\&. Wait for it to finish "polling" before running the program\&.
+\fBdvd_rip\fP does not wait for an optical device to be ready. Wait for it to
+finish "polling" before running the program.
 .sp
-Please file bugs at https://github\&.com/beandog/dvd_info/issues
+Please file bugs at \c
+.URL "https://github.com/beandog/dvd_info/issues" "" ""
 .SH "AUTHOR"
 .sp
-dvd_player was written by Steve Dibb <steve\&.dibb@gmail\&.com>
+dvd_player was written by Steve Dibb \c
+.MTO "steve.dibb\(atgmail.com" "" ""
 .SH "RESOURCES"
 .sp
-Source code available at GitHub: https://github\&.com/beandog/dvd_info
+Source code available at GitHub: \c
+.URL "https://github.com/beandog/dvd_info" "" ""
 .sp
-Main web site: http://dvds\&.beandog\&.org
+Main web site: \c
+.URL "https://dvds.beandog.org" "" ""
 .SH "COPYING"
 .sp
-Copyright (C) 2020 Steve Dibb\&. Free use of this software is granted under the terms of the GNU General Public License, version 2 (GPL)\&.
+Copyright (C) 2020 Steve Dibb. Free use of this software is granted under the
+terms of the GNU General Public License, version 2 (GPL).

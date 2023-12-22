@@ -48,7 +48,7 @@
 	 * has a good set of default encoding settings.
 	 *
 	 * Just running "dvd_rip" alone with no arguments or options will fetch the longest track
-	 * on the DVD, select the first English audio track, and encode it to H.265 using libx265 with
+	 * on the DVD, select the first English audio track, and encode it to H.264 using libx264 with
 	 * its default preset and CRF, and AAC audio using libfdk-aac.
 	 *
 	 * Because it is so tiny, some options it doesn't have that larger DVD ripper applications
@@ -318,7 +318,7 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("Encoding options:\n");
 				printf("\n");
-				printf("  -v, --vcodec <x264|x265|vpx>	Video codec (defaut: x265)\n");
+				printf("  -v, --vcodec <x264|x265|vpx>	Video codec (defaut: x264)\n");
 				printf("  -q, --crf <#>			Video encoder CRF (default: use codec baseline)\n");
 				printf("  -a, --acodec <aac|opus>	Audio codec (default: AAC)\n");
 				printf("  -d, --detelecine		Detelecine video\n");
@@ -661,7 +661,7 @@ int main(int argc, char **argv) {
 	}
 
 	if(mkv == false && mp4 == false && webm == false) {
-		mkv = true;
+		mp4 = true;
 	}
 
 	if(x264 == false && x265 == false && vpx == false) {
