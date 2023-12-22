@@ -55,17 +55,23 @@ OPTIONS
 	Select subtitle track by language code, two letters. Default is no
 	subtitles.
 
+*-S, --sid*='#'
+	Select subtitles track by stream ID.
+
 *-v, --vcodec*='x264|x265|vpx'
 	Video codec to use. H.264 (x264) has widest support, including
 	HTML5. H.265 (x265) videos will be smaller than H.264. VPX 9 can also
 	be played back with HTML5.
 
-*-q, --crf*='#'
-	Video encoder CRF to use. The default is the baseline for the codec.
-
 *-a, --acodec*='aac|opus'
 	Audio codec to use. AAC is lossy while Opus is lossless. Both options
 	will downmix to 2 channels (stereo).
+
+*-q, --crf*='#'
+	Video encoder CRF to use. The default is the baseline for the codec.
+
+*-d, --detelecine*
+	Detelecine video (recommended on most sources).
 
 *-h, --help*
 	Display help output.
