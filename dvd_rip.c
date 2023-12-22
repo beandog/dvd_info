@@ -841,7 +841,7 @@ int main(int argc, char **argv) {
 			if(dvd_mpv_eof->reason == MPV_END_FILE_REASON_ERROR) {
 
 				retval = 1;
-				fprintf(stderr, "[dvd_rip] libmpv hit end of file error, check video for problems\n");
+				fprintf(stderr, "[dvd_rip] libmpv hit end of file error, video may have problems at end\n");
 
 				if(dvd_mpv_eof->error == MPV_ERROR_NOTHING_TO_PLAY) {
 					fprintf(stderr, "[dvd_rip] no audio or video data to play\n");
@@ -863,11 +863,12 @@ int main(int argc, char **argv) {
 
 	mpv_terminate_destroy(dvd_mpv);
 
+	fprintf(stderr, "[dvd_rip] encode finished\n");
+
 	if(retval == 0) {
-		fprintf(stderr, "[dvd_rip] encode finished\n");
 		fprintf(stderr, "[dvd_rip] file saved to '%s'\n", dvd_rip.filename);
 	} else {
-		fprintf(stderr, "[dvd_rip] encode failed, did not write to '%s'\n", dvd_rip.filename);
+		fprintf(stderr, "[dvd_rip] encoding errors, file may be incomplete: '%s'\n", dvd_rip.filename);
 	}
 
 	DVDCloseFile(dvdread_vts_file);
