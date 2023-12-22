@@ -304,7 +304,7 @@ int main(int argc, char **argv) {
 				printf("Usage:\n");
 				printf("  dvd_rip [path] [options]\n");
 				printf("\n");
-				printf("  -o, --output <filename>       Save to filename (default: dvd_track_##.mkv)\n");
+				printf("  -o, --output <filename>       Save to filename (default: dvd_track_##.mp4\n");
 				printf("\n");
 				printf("Track selection:\n");
 				printf("  -t, --track <#>          	Encode selected track (default: longest)\n");
@@ -511,8 +511,8 @@ int main(int argc, char **argv) {
 
 	/** Filename **/
 	if(!opt_filename) {
-		strcpy(dvd_rip.container, "mkv");
-		sprintf(dvd_rip.filename, "dvd_track_%02" PRIu16 ".mkv", dvd_rip.track);
+		strcpy(dvd_rip.container, "mp4");
+		sprintf(dvd_rip.filename, "dvd_track_%02" PRIu16 ".mp4", dvd_rip.track);
 	}
 
 	// Track
