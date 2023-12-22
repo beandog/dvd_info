@@ -4,7 +4,7 @@ DVD_PLAYER(1)
 
 NAME
 ----
-dvd_player - a tiny DVD player
+dvd_player - a tiny DVD player using libmpv as backend
 
 SYNOPSIS
 --------
@@ -90,7 +90,7 @@ RESOURCES
 ---------
 Source code available at GitHub: <https://github.com/beandog/dvd_info>
 
-Main web site: <http://dvds.beandog.org>
+Main web site: <https://dvds.beandog.org>
 
 COPYING
 -------

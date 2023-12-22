@@ -1,5 +1,5 @@
 DVD_BACKUP(1)
-===========
+=============
 :doctype: manpage
 
 NAME
@@ -61,7 +61,7 @@ RESOURCES
 ---------
 Source code available at GitHub: <https://github.com/beandog/dvd_info>
 
-Main web site: <http://dvds.beandog.org>
+Main web site: <https://dvds.beandog.org>
 
 COPYING
 -------

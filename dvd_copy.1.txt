@@ -18,7 +18,7 @@ or directory to either a file or stdout.
 The default device is based on your operating system, and is the primary
 optical drive.
 
-Default output filename is 'dvd_track_##.mpg' where the number is
+Default output filename is 'dvd_track_#.mpg' where the number is
 a zero-padded string of the longest track.
 
 Some DVDs are intentionally authored to break playback and copying software

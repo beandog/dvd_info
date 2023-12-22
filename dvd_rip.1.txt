@@ -4,7 +4,7 @@ DVD_RIP(1)
 
 NAME
 ----
-dvd_rip - a tiny DVD ripper
+dvd_rip - a tiny DVD ripper using libmpv as backend
 
 SYNOPSIS
 --------
@@ -72,7 +72,7 @@ OPTIONS
 
 SEE ALSO
 --------
-dvd_info(1), dvd_copy(1), dvd_backup(1), mpv(1)
+dvd_info(1), dvd_copy(1), dvd_backup(1)
 
 BUGS
 ----

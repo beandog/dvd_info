@@ -70,8 +70,11 @@ OPTIONS
 *-x, --all*::
 	Display all optional detailed information.
 
+*-l, --longest*::
+	Only display the longest track.
+
 *-A, --has-audio*::
-	Limit output to tracks that have audio tracks.
+	Limit output to tracks that have audio streams.
 
 *-S, --has-subtitles*::
 	Limit output to tracks that have VOBSUB subtitles.
@@ -86,6 +89,9 @@ OPTIONS
 *-T, --vts*='NUMBER'::
 	Limit output to tracks in Video Title Set number.
 
+*-L, --valid::
+	Don't display tracks that may be flagged as broken or invalid.
+
 *-i, --id*::
 	Display DVD unique identifier only.
 
@@ -93,11 +99,7 @@ OPTIONS
 	Display DVD UDF volume name only.
 
 *-g, --xchap*::
-	Display track chapters in export format suitable for mkvmerge(1) and
-	ogmmerge(1).
-
-*-e, --verbose*::
-	Display invalid tracks and inactive audio and subtitle streams.
+	Display track chapters in export format suitable for mkvmerge(1).
 
 *-h, --help*::
 	Display help output.
@@ -107,8 +109,7 @@ OPTIONS
 
 SEE ALSO
 --------
-dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_eject(1), dvd_player(1),
-dvd_trip(1)
+dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_player(1), dvd_rip(1)
 
 BUGS
 ----
@@ -117,7 +118,7 @@ Please file bugs at <https://github.com/beandog/dvd_info/issues>
 
 AUTHOR
 ------
-dvd_info was written by Steve Dibb <steve.dibb@gmail.com> and was originally a
+dvd_info was written by Steve Dibb <steve.dibb@gmail.com> and was started as a
 clone of lsdvd(1).
 
 RESOURCES
