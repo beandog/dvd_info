@@ -7,6 +7,7 @@
 * Remove dvd_eject, doesn't work very well and requires libdvdcss
 * Fix building without libmpv in configure script
 * Rename dvd_trip to dvd_rip
+* dvd_rip: Rip to H.264 / MP4 by default
 
 1.15
 
