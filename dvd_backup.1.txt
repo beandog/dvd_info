@@ -1,0 +1,69 @@
+DVD_BACKUP(1)
+===========
+:doctype: manpage
+
+NAME
+----
+dvd_backup - backup an entire DVD or a Video Title Set
+
+SYNOPSIS
+--------
+*dvd_backup* ['PATH'] ['OPTIONS']
+
+DESCRIPTION
+-----------
+The dvd_backup(1) program will copy either an entire DVD's contents or a video
+title set to the filesystem. The output directory will be the UDF volume name
+of the disc, the name passed for the directory, or DVD_VIDEO if no label
+exists.
+
+dvd_backup will read each block individually, and write it to the output
+file(s). If a block cannot be read, it will fill it with null data, which
+should preserve playback. If a disc is damaged, reading can take a long time
+for each broken block. The amount of skipped blocks is displayed on output.
+
+The default device is based on your operating system, and is the primary
+optical drive.
+
+For backing up a single track, see dvd_copy(1).
+
+OPTIONS
+-------
+
+*-n, --name*::
+	Set DVD name to backup directory to.
+
+*-i, --ifos*::
+	Back up the IFO and BUP files.
+
+*-T, --vts*='VTS'::
+	Back up a video title set number.
+
+*-h, --help*
+	Display help output.
+
+SEE ALSO
+--------
+dvd_copy(1), dvd_info(1)
+
+BUGS
+----
+*dvd_backup* does not wait for an optical device to be ready. Wait for it to
+finish "polling" before running the program.
+
+Please file bugs at <https://github.com/beandog/dvd_info/issues>
+
+AUTHOR
+------
+dvd_copy was written by Steve Dibb <steve.dibb@gmail.com>
+
+RESOURCES
+---------
+Source code available at GitHub: <https://github.com/beandog/dvd_info>
+
+Main web site: <http://dvds.beandog.org>
+
+COPYING
+-------
+Copyright \(C) 2019 Steve Dibb. Free use of this software is granted under the
+terms of the GNU General Public License, version 2 (GPL).

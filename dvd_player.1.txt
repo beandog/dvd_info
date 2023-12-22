@@ -1,0 +1,98 @@
+DVD_PLAYER(1)
+=============
+:doctype: manpage
+
+NAME
+----
+dvd_player - a tiny DVD player
+
+SYNOPSIS
+--------
+*dvd_player* ['PATH'] ['OPTIONS']
+
+DESCRIPTION
+-----------
+Plays back a DVD track. DVD can be an optical disc, image, or directory.
+
+The default device is based on your operating system, and is the primary
+optical drive.
+
+OPTIONS
+-------
+
+*-t, --track*='TRACK'::
+	Playback track number. Default is longest valid track.
+
+*-c, --chapter*='CHAPTER[-[CHAPTER]]'
+	Playback chapter number or range. Default is all chapters.
+
+*-a, --alang*='LANGUAGE'
+	Select audio track by language code, two letters. Default is first
+	audio track.
+
+*-A, --aid*='#'
+	Select audio track by stream ID.
+
+*-s, --slang*='LANGUAGE'
+	Select subtitle track by language code, two letters. Default is no
+	subtitles.
+
+*-S, --sid*='#'
+	Select subtitle track by stream ID.
+
+*-f, --fullscreen*
+	Display in fullscreen mode.
+
+*-d, --detelecine*
+	Detelecine video.
+
+*-v, --verbose*
+	Enable verbose output.
+
+*-V, --version*
+	Display version number.
+
+*-h, --help*
+	Display help output.
+
+CONFIGURATION
+-------------
+
+*dvd_player* uses libmpv as its backend. A configuration file can be created in
+~/.config/dvd_player/mpv.conf to set and override defaults. See the mpv
+documentation for switches and options that can be used.
+
+Settings in mpv.conf will override options passed to *dvd_player*.
+
+As an example, always select Spanish as default audio language, English as subtitle
+language, and play in fullscreen:
+
+	alang=es
+	slang=en
+	fullscreen
+
+SEE ALSO
+--------
+dvd_info(1)
+
+BUGS
+----
+*dvd_player* does not wait for an optical device to be ready. Wait for it to
+finish "polling" before running the program.
+
+Please file bugs at <https://github.com/beandog/dvd_info/issues>
+
+AUTHOR
+------
+dvd_player was written by Steve Dibb <steve.dibb@gmail.com>
+
+RESOURCES
+---------
+Source code available at GitHub: <https://github.com/beandog/dvd_info>
+
+Main web site: <http://dvds.beandog.org>
+
+COPYING
+-------
+Copyright \(C) 2019 Steve Dibb. Free use of this software is granted under the
+terms of the GNU General Public License, version 2 (GPL).

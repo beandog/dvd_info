@@ -1,0 +1,132 @@
+DVD_INFO(1)
+===========
+:doctype: manpage
+
+NAME
+----
+dvd_info - displays information about a DVD
+
+SYNOPSIS
+--------
+*dvd_info* ['DVD PATH'] ['OPTIONS']
+
+DESCRIPTION
+-----------
+Displays information about a DVD optical disc, image, or directory in
+human-readable, JSON, or formatted chapter outputs.
+
+The default device is based on your operating system, and is the primary
+optical drive.
+
+DVDs can store two kinds of subtitles -- VOBSUB, which are images, and closed
+captioning, which are text. Only the VOBSUB subtitles are reported here.
+
+DVDs may be authored by the provider to intentionally have bugs on the
+structure that will cause problems during playback or ripping if the correct
+track is not selected. *dvd_info* does its best to work around and flag these
+tracks as invalid. See the JSON or verbose output formats to see which ones
+are tagged.
+
+DVDs may also have audio and subtitle streams marked as inactive as well. This
+is normal, and usually won't show up at all in other DVD applications.
+
+The ID of a DVD is a md5 hash of the IFOs on the disc.
+
+The disc title is the volume name of the DVD's UDF. It will only appear if the
+source is an ISO file or a physical disc.
+
+DVDs support three audio codecs: ac3 (Dolby Digital), dts, and pcm. Dolby
+Digital and DTS support up to 6 channels (5.1 surround sound). PCM supports
+stereo only.
+
+DVDs support multiple audio and subtitle languages. These are displayed in
+output as a two letter string. Examples: de - German, en - English, fr -
+French, it - Italian, etc.
+
+OPTIONS
+-------
+
+*-t, --track*='TRACK'::
+	Limit output to the selected track. By default, list all tracks.
+
+*-j, --json*::
+	Format output in JSON. All detailed information is included.
+
+*-v, --video*::
+	Display detailed information about video streams.
+
+*-a, --audio*::
+	Display detailed information about audio streams.
+
+*-s, --subtitles*::
+	Display detailed information about VOBSUB subtitles.
+
+*-c, --chapters*::
+	Display detailed information about chapters.
+
+*-d, --cells*::
+	Display detailed information about cells.
+
+*-x, --all*::
+	Display all optional detailed information.
+
+*-A, --has-audio*::
+	Limit output to tracks that have audio tracks.
+
+*-S, --has-subtitles*::
+	Limit output to tracks that have VOBSUB subtitles.
+
+*-E, --seconds*='SECONDS'::
+	Limit output to tracks with a minimum length of number of seconds.
+
+*-M, --minutes*='MINUTES'::
+	Limit output to tracks with a minimum length of number of minutes.
+	Cannot be used in combination with '--seconds'.
+
+*-T, --vts*='NUMBER'::
+	Limit output to tracks in Video Title Set number.
+
+*-i, --id*::
+	Display DVD unique identifier only.
+
+*-u, --volume*::
+	Display DVD UDF volume name only.
+
+*-g, --xchap*::
+	Display track chapters in export format suitable for mkvmerge(1) and
+	ogmmerge(1).
+
+*-e, --verbose*::
+	Display invalid tracks and inactive audio and subtitle streams.
+
+*-h, --help*::
+	Display help output.
+
+*--version*::
+	Display version information.
+
+SEE ALSO
+--------
+dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_eject(1), dvd_player(1),
+dvd_trip(1)
+
+BUGS
+----
+
+Please file bugs at <https://github.com/beandog/dvd_info/issues>
+
+AUTHOR
+------
+dvd_info was written by Steve Dibb <steve.dibb@gmail.com> and was originally a
+clone of lsdvd(1).
+
+RESOURCES
+---------
+Source code available at GitHub: <https://github.com/beandog/dvd_info>
+
+Main web site: <https://dvds.beandog.org>
+
+COPYING
+-------
+Copyright \(C) 2020 Steve Dibb. Free use of this software is granted under the
+terms of the GNU General Public License, version 2 (GPL).

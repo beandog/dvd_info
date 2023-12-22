@@ -1,0 +1,89 @@
+DVD_COPY(1)
+===========
+:doctype: manpage
+
+NAME
+----
+dvd_copy - copy a track from a DVD to a file or stdout
+
+SYNOPSIS
+--------
+*dvd_copy* ['PATH'] ['OPTIONS']
+
+DESCRIPTION
+-----------
+The dvd_copy(1) program will copy a track from a DVD optical disc, image,
+or directory to either a file or stdout.
+
+The default device is based on your operating system, and is the primary
+optical drive.
+
+Default output filename is 'dvd_track_##.mpg' where the number is
+a zero-padded string of the longest track.
+
+Some DVDs are intentionally authored to break playback and copying software
+like this one. An example of a "poisoned" DVD is where the indexes on the disc
+point to the same locations multiple times, and your rip may end up to be
+dozens of gigabytes in size.
+
+dvd_info(1) examines tracks closely to check for flags that would make a track
+invalid, and you can use that as a reference if something may be broken or
+not. 'dvd_copy' doesn't use any checks, and will copy whatever is requested.
+
+Sending the track directly to stdout makes it useful for things like piping to
+other programs. Since the output is decrypted, it's a clean stream that at
+that point can be re-encoded, remuxed, etc.
+
+An example using ffmpeg, remuxing a track into a Matroska file:
+
+$ dvd_copy -o - | ffmpeg -fflags +genpts -i - -c copy dvd_track.mkv
+
+To backup an entire DVD, see dvd_backup(1).
+
+OPTIONS
+-------
+
+*-t, --track*='TITLE'::
+	Copy the selected track number. Default is the longest track.
+
+*-c, --chapter*='CHAPTER[-[CHAPTER]]'
+	Copy the selected chapter range. Default is to copy all chapters.
+
+*-o, --output*='FILENAME'
+	Save to filename. Default is 'dvd_track_##.mpg' where ## is the
+	zero-padded track number.
+
+	'FILENAME' can be '-' to send to standard output. All display output
+	is switched to standard error output.
+
+*-h, --help*
+	Display help output.
+
+*--version*
+	Display version information.
+
+SEE ALSO
+--------
+dvd_info(1), dvd_backup(1)
+
+BUGS
+----
+*dvd_copy* does not wait for an optical device to be ready. Wait for it to
+finish "polling" before running the program.
+
+Please file bugs at <https://github.com/beandog/dvd_info/issues>
+
+AUTHOR
+------
+dvd_copy was written by Steve Dibb <steve.dibb@gmail.com>
+
+RESOURCES
+---------
+Source code available at GitHub: <https://github.com/beandog/dvd_info>
+
+Main web site: <https://dvds.beandog.org>
+
+COPYING
+-------
+Copyright \(C) 2019 Steve Dibb. Free use of this software is granted under the
+terms of the GNU General Public License, version 2 (GPL).
