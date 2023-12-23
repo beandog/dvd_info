@@ -65,6 +65,10 @@ struct dvd_track dvd_track_init(dvd_reader_t *dvdread_dvd, ifo_handle_t *vmg_ifo
 	// If the length is empty, disregard all other data attached to it, and mark as invalid
 	dvd_track.msecs = dvd_track_msecs(vmg_ifo, vts_ifo, dvd_track.track);
 
+	// For reference, I've toyed with the idea of marking anything less than 1 second as
+	// invalid, so that they are skipped when passing '--valid' option. However, playing
+	// one may simply jump to another track, and that doesn't really justify ignoring
+	// them. Plus someone can pass '--seconds 1' and it will filter them out anyway.
 	if(dvd_track.msecs == 0) {
 		dvd_track.valid = false;
 		return dvd_track;
