@@ -1,18 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 #include <dvdread/ifo_print.h>
 #include "dvd_device.h"
+#ifdef __linux__
+#include <linux/limits.h>
+#else
+#include <limits.h>
+#endif
 
 int main(int argc, char **argv) {
 
-	const char *device_filename = NULL;
+	char device_filename[PATH_MAX];
+	memset(device_filename, '\0', PATH_MAX);
 	if (argc == 2)
-		device_filename = argv[1];
+		strncpy(device_filename, argv[1], PATH_MAX - 1);
 	else
-		device_filename = DEFAULT_DVD_DEVICE;
+		strncpy(device_filename, DEFAULT_DVD_DEVICE, PATH_MAX - 1);
 
 	/** Begin dvd_debug :) */
 

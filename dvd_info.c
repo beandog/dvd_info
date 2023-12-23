@@ -25,7 +25,10 @@
 #include "dvd_init.h"
 #ifdef __linux__
 #include <linux/cdrom.h>
+#include <linux/limits.h>
 #include "dvd_drive.h"
+#else
+#include <limits.h>
 #endif
 
 	/**
@@ -87,7 +90,7 @@ int main(int argc, char **argv) {
 	uint8_t d_stream_num = 0;
 
 	// Device hardware
-	const char *device_filename = NULL;
+	char device_filename[PATH_MAX];
 
 	// libdvdread
 	dvd_reader_t *dvdread_dvd = NULL;
@@ -308,10 +311,11 @@ int main(int argc, char **argv) {
 	// If '-i /dev/device' is not passed, then set it to the string
 	// passed.  fex: 'dvd_info /dev/dvd1' would change it from the default
 	// of '/dev/dvd'.
+	memset(device_filename, '\0', PATH_MAX);
 	if (argv[optind])
-		device_filename = argv[optind];
+		strncpy(device_filename, argv[optind], PATH_MAX - 1);
 	else
-		device_filename = DEFAULT_DVD_DEVICE;
+		strncpy(device_filename, DEFAULT_DVD_DEVICE, PATH_MAX - 1);
 
 	// Exit after all invalid input warnings have been sent
 	if(valid_args == false)

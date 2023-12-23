@@ -77,8 +77,8 @@ int dvd_block_rw(dvd_file_t *dvdread_vts_file, uint64_t offset, int fd) {
 
 int main(int argc, char **argv) {
 
-	const char *device_filename;
 	int retval = 0;
+	char device_filename[PATH_MAX];
 
 	struct option p_long_opts[] = {
 		{ "help", no_argument, NULL, 'h' },
@@ -148,10 +148,11 @@ int main(int argc, char **argv) {
 
 	}
 
+	memset(device_filename, '\0', PATH_MAX);
 	if (argv[optind])
-		device_filename = argv[optind];
+		strncpy(device_filename, argv[optind], PATH_MAX - 1);
 	else
-		device_filename = DEFAULT_DVD_DEVICE;
+		strncpy(device_filename, DEFAULT_DVD_DEVICE, PATH_MAX - 1);
 
 	printf("[DVD]\n");
 	printf("* Opening device %s\n", device_filename);

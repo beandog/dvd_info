@@ -67,17 +67,14 @@ struct dvd_copy {
 
 int main(int argc, char **argv) {
 
-	/**
-	 * Parse options
-	 */
-
+	bool debug = false;
+	char device_filename[PATH_MAX];
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
 	bool opt_cell_number = false;
 	bool p_dvd_copy = true;
 	bool p_dvd_cat = false;
 	bool opt_filename = false;
-	bool debug = false;
 	uint16_t arg_track_number = 1;
 	int long_index = 0;
 	int opt = 0;
@@ -270,10 +267,11 @@ int main(int argc, char **argv) {
 		arg_last_chapter = 1;
 	}
 
-	const char *device_filename = DEFAULT_DVD_DEVICE;
-
+	memset(device_filename, '\0', PATH_MAX);
 	if (argv[optind])
-		device_filename = argv[optind];
+		strncpy(device_filename, argv[optind], PATH_MAX - 1);
+	else
+		strncpy(device_filename, DEFAULT_DVD_DEVICE, PATH_MAX - 1);
 
 	/** Begin dvd_copy :) */
 

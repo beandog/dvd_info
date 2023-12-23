@@ -10,7 +10,10 @@
 #include <getopt.h>
 #ifdef __linux__
 #include <linux/cdrom.h>
+#include <linux/limits.h>
 #include "dvd_drive.h"
+#else
+#include <limits.h>
 #endif
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
@@ -47,6 +50,7 @@ int main(int argc, char **argv) {
 	int retval = 0;
 	bool verbose = false;
 	bool debug = false;
+	char device_filename[PATH_MAX];
 	bool invalid_opts = false;
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
@@ -243,10 +247,11 @@ int main(int argc, char **argv) {
 
 	}
 
-	const char *device_filename = DEFAULT_DVD_DEVICE;
-
+	memset(device_filename, '\0', PATH_MAX);
 	if (argv[optind])
-		device_filename = argv[optind];
+		strncpy(device_filename, argv[optind], PATH_MAX - 1);
+	else
+		strncpy(device_filename, DEFAULT_DVD_DEVICE, PATH_MAX - 1);
 
 	if(access(device_filename, F_OK) != 0) {
 		fprintf(stderr, "[dvd_player] cannot access %s\n", device_filename);
