@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include <sys/stat.h>
 #include <dirent.h>
 #include <fcntl.h>
 #include <stdbool.h>
@@ -430,8 +429,6 @@ int main(int argc, char **argv) {
 	uint64_t dvd_blocks_offset = 0;
 	uint64_t dvd_blocks_skipped = 0;
 
-	struct stat vob_stat;
-
 	// Copy the menu title vobs
 	/** Backup VIDEO_TS.VOB, VTS_01_0.VOB to VTS_99_0.VOB **/
 	dvd_file_t *dvdread_vts_file = NULL;
@@ -450,12 +447,6 @@ int main(int argc, char **argv) {
 			snprintf(vob_filename, PATH_MAX - 1, "%s/VIDEO_TS.VOB", dvd_backup_dir);
 		else
 			snprintf(vob_filename, PATH_MAX - 1, "%s/VTS_%02" PRIu16  "_0.VOB", dvd_backup_dir, vts);
-
-		// Skip if file exists
-		if(access(vob_filename, F_OK) == 0) {
-			retval = stat(vob_filename, &vob_stat);
-			continue;
-		}
 
 		vob_fd = open(vob_filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 
@@ -531,12 +522,6 @@ int main(int argc, char **argv) {
 		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++) {
 
 			snprintf(vob_filename, PATH_MAX - 1, "%s/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", dvd_backup_dir, vts, vob);
-
-			// Skip existing file and increase block offset
-			if(access(vob_filename, F_OK) == 0) {
-				dvd_blocks_offset += dvd_vts[vts].dvd_vobs[vob].blocks;
-				continue;
-			}
 
 			vob_fd = open(vob_filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 
