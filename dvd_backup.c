@@ -10,6 +10,7 @@
 #include <getopt.h>
 #include <ctype.h>
 #include <libgen.h>
+#include <sys/stat.h>
 #ifdef __linux__
 #include <linux/cdrom.h>
 #include <linux/limits.h>
