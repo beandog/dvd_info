@@ -394,16 +394,10 @@ int main(int argc, char **argv) {
 		d_last_track = dvd_info.tracks;
 	}
 
-	ifo_handle_t *vts_ifos[DVD_MAX_VTS_IFOS];
-
 	if(opt_vts && (arg_vts == 0 || arg_vts > dvd_info.video_title_sets)) {
 		fprintf(stderr, "Video Title Set must be between 1 and %" PRIu16 "\n", dvd_info.video_title_sets);
 		return 1;
 	}
-
-	uint8_t vts_ifo_ix;
-	for(vts_ifo_ix = 0; vts_ifo_ix < 100; vts_ifo_ix++)
-		vts_ifos[vts_ifo_ix] = NULL;
 
 	// Do some checks to see if a VTS is ok or not
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++)
