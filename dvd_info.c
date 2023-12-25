@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
 	struct dvd_info dvd_info;
 
 	// Video Title Set
-	struct dvd_vts dvd_vts[99];
+	struct dvd_vts dvd_vts[DVD_MAX_VTS_IFOS];
 
 	// Display formats
 	const char *display_formats[4] = { "Pan and Scan or Letterbox", "Pan and Scan", "Letterbox", "Unset" };
