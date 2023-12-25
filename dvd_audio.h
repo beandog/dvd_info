@@ -27,4 +27,6 @@ bool dvd_audio_stream_id(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_tr
 
 bool dvd_audio_lang_code(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track);
 
+bool dvd_track_has_audio_lang_code(ifo_handle_t *vts_ifo, char *lang_code);
+
 #endif

@@ -67,6 +67,10 @@ int main(int argc, char **argv) {
 	// limit results
 	bool d_has_audio = false;
 	bool d_has_subtitles = false;
+	bool d_has_alang = false;
+	bool d_has_slang = false;
+	char d_alang[DVD_AUDIO_LANG_CODE + 1] = {'\0'};
+	char d_slang[DVD_AUDIO_LANG_CODE + 1] = {'\0'};
 	bool d_longest = false;
 	bool opt_min_seconds = true;
 	unsigned long int arg_number = 0;
@@ -113,7 +117,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aAcdE:ghijlLM:sST:t:uVvxz";
+	const char p_short_opts[] = "aAcdE:gG:hijlLM:N:sST:t:uVvxz";
 	struct option p_long_opts[] = {
 
 		{ "track", required_argument, NULL, 't' },
@@ -135,7 +139,9 @@ int main(int argc, char **argv) {
 		{ "min-seconds", required_argument, NULL, 'E' },
 		{ "min-minutes", required_argument, NULL, 'M' },
 		{ "has-audio", no_argument, NULL, 'A' },
+		{ "has-alang", required_argument, NULL, 'N' },
 		{ "has-subtitles", no_argument, NULL, 'S' },
+		{ "has-slang", required_argument, NULL, 'G' },
 		{ "valid", no_argument, NULL, 'L' },
 
 		{ "help", no_argument, NULL, 'h' },
@@ -179,6 +185,15 @@ int main(int argc, char **argv) {
 				d_chapters = true;
 				break;
 
+			case 'G':
+				if(strlen(optarg) != 2 || !isalpha(optarg[0]) || !isalpha(optarg[1])) {
+					fprintf(stderr, "Subtitle language code must be two characters\n");
+					return 1;
+				}
+				strncpy(d_slang, optarg, DVD_AUDIO_LANG_CODE);
+				d_has_slang = true;
+				break;
+
 			case 'i':
 				p_dvd_id = true;
 				break;
@@ -204,6 +219,15 @@ int main(int argc, char **argv) {
 			case 'M':
 				opt_min_minutes = true;
 				arg_min_minutes = (uint32_t)strtoul(optarg, NULL, 10);
+				break;
+
+			case 'N':
+				if(strlen(optarg) != 2 || !isalpha(optarg[0]) || !isalpha(optarg[1])) {
+					fprintf(stderr, "Audio language code must be two characters\n");
+					return 1;
+				}
+				strncpy(d_alang, optarg, DVD_AUDIO_LANG_CODE);
+				d_has_alang = true;
 				break;
 
 			case 's':
@@ -282,7 +306,9 @@ int main(int argc, char **argv) {
 				printf("Narrow results:\n");
 				printf("  -l, --longest		Track with the longest length\n");
 				printf("  -A, --has-audio       Track has audio streams\n");
+				printf("  -N, --has-alang <xx>  Track has audio audio language, two character code\n");
 				printf("  -S, --has-subtitles   Track has VobSub subtitles\n");
+				printf("  -G, --has-slang <xx>  Track has subtitle language, two character code\n");
 				printf("  -E, --seconds <secs>  Track has minimum number of seconds\n");
 				printf("  -M, --minutes <mins>  Track has minimum number of minutes\n");
 				printf("  -T, --vts <number>    Track is in video title set number\n");
@@ -520,6 +546,24 @@ int main(int argc, char **argv) {
 		// Skip if limiting to valid only
 		if(d_is_valid && dvd_track.valid == false)
 			continue;
+
+		// Need an IFO if checking for audio or sub track languages
+		if(d_has_alang || d_has_slang)
+			vts_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
+
+		// Skip if audio track language stream isn't found
+		if(d_has_alang && vts_ifo && !dvd_track_has_audio_lang_code(vts_ifo, d_alang))
+			continue;
+
+		// Skip if subtitle language stream isn't found
+		if(d_has_slang && vts_ifo && !dvd_track_has_subtitle_lang_code(vts_ifo, d_slang))
+			continue;
+
+		// Close out for next round
+		if(vts_ifo) {
+			ifoClose(vts_ifo);
+			vts_ifo = NULL;
+		}
 
 		// Display track information
 		printf("Track: %*" PRIu16 ", ", 2, dvd_track.track);

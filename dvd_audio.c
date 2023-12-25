@@ -196,3 +196,29 @@ bool dvd_audio_lang_code(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_tr
 	return true;
 
 }
+
+/**
+ * Check if a DVD track has a specific audio language
+ */
+bool dvd_track_has_audio_lang_code(ifo_handle_t *vts_ifo, char *lang_code) {
+
+	uint8_t streams = dvd_track_audio_tracks(vts_ifo);
+
+	if(streams == 0)
+		return false;
+
+	uint8_t i = 0;
+	char str[DVD_AUDIO_LANG_CODE + 1] = {'\0'};
+
+	for(i = 0; i < streams; i++) {
+
+		dvd_audio_lang_code(str, vts_ifo, i);
+
+		if(strncmp(str, lang_code, DVD_AUDIO_LANG_CODE) == 0)
+			return true;
+
+	}
+
+	return false;
+
+}
