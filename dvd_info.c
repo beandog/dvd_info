@@ -547,12 +547,9 @@ int main(int argc, char **argv) {
 		if(d_is_valid && dvd_track.valid == false)
 			continue;
 
-		// Need an IFO if checking for audio or sub track languages, skip if broken
-		if(d_has_alang || d_has_slang) {
+		// Need an IFO if checking for audio or sub track languages
+		if(d_has_alang || d_has_slang)
 			vts_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
-			if(!vts_ifo)
-				continue;
-		}
 
 		// Skip if audio track language stream isn't found
 		if(d_has_alang && !dvd_track_has_audio_lang_code(vts_ifo, d_alang))
