@@ -2,12 +2,12 @@
 .\"     Title: dvd_info
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.18
-.\"      Date: 2023-12-22
+.\"      Date: 2023-12-24
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_INFO" "1" "2023-12-22" "\ \&" "\ \&"
+.TH "DVD_INFO" "1" "2023-12-24" "\ \&" "\ \&"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -116,9 +116,21 @@ Only display the longest track.
 Limit output to tracks that have audio streams.
 .RE
 .sp
+\fB\-N, \-\-has\-alang\fP=\fILANGUAGE\fP
+.RS 4
+Limit output to tracks with a an audio track of two\-character language
+code. For example, \fIen\fP, \fIes\fP, \fIfr\fP.
+.RE
+.sp
 \fB\-S, \-\-has\-subtitles\fP
 .RS 4
 Limit output to tracks that have VOBSUB subtitles.
+.RE
+.sp
+\fB\-G, \-\-has\-slang\fP=\fILANGUAGE\fP
+.RS 4
+Limit output to tracks with a subtitles off two\-character language
+code. For example, \fIen\fP, \fIes\fP, \fIfr\fP.
 .RE
 .sp
 \fB\-E, \-\-seconds\fP=\fISECONDS\fP

@@ -76,8 +76,16 @@ OPTIONS
 *-A, --has-audio*::
 	Limit output to tracks that have audio streams.
 
+*-N, --has-alang*='LANGUAGE'::
+	Limit output to tracks with a an audio track of two-character language
+	code. For example, 'en', 'es', 'fr'.
+
 *-S, --has-subtitles*::
 	Limit output to tracks that have VOBSUB subtitles.
+
+*-G, --has-slang*='LANGUAGE'::
+	Limit output to tracks with a subtitles off two-character language
+	code. For example, 'en', 'es', 'fr'.
 
 *-E, --seconds*='SECONDS'::
 	Limit output to tracks with a minimum length of number of seconds.
