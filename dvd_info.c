@@ -60,6 +60,7 @@ int main(int argc, char **argv) {
 	bool d_chapters = false;
 	bool d_subtitles = false;
 	bool d_cells = false;
+	bool d_title_sets = false;
 
 	// How much output
 	bool debug = false;
@@ -117,7 +118,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aAcdE:gG:hijlLM:N:sST:t:uVvxz";
+	const char p_short_opts[] = "aAcdeE:gG:hijlLM:N:sST:t:uVvxz";
 	struct option p_long_opts[] = {
 
 		{ "track", required_argument, NULL, 't' },
@@ -128,6 +129,7 @@ int main(int argc, char **argv) {
 		{ "chapters", no_argument, NULL, 'c' },
 		{ "subtitles", no_argument, NULL, 's' },
 		{ "cells", no_argument, NULL, 'd' },
+		{ "title-sets", no_argument, NULL, 'e' },
 		{ "all", no_argument, NULL, 'x' },
 
 		{ "json", no_argument, NULL, 'j' },
@@ -172,6 +174,10 @@ int main(int argc, char **argv) {
 
 			case 'd':
 				d_cells = true;
+				break;
+
+			case 'e':
+				d_title_sets = true;
 				break;
 
 			case 'E':
@@ -301,6 +307,7 @@ int main(int argc, char **argv) {
 				printf("  -s, --subtitles       Display VobSub subtitles\n");
 				printf("  -c, --chapters        Display chapters\n");
 				printf("  -d, --cells           Display cells\n");
+				printf("  -e, --title-sets      Display video title sets\n");
 				printf("  -x, --all             Display all\n");
 				printf("\n");
 				printf("Narrow results:\n");
@@ -448,7 +455,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Count valid, invalid tracks and title sets
-	if(debug || opt_vts) {
+	if(debug || opt_vts || d_title_sets) {
 
 		for(ix = 1; ix <= dvd_info.tracks; ix++) {
 			dvd_vts[dvd_tracks[ix].vts].tracks++;
@@ -464,7 +471,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Print the valid and invalid VTSs
-	if(debug) {
+	if(debug || d_title_sets) {
 
 		printf("        Tracks: %*" PRIu16 ", ", 2, dvd_info.tracks);
 		printf("Valid: %*" PRIu16 ", ", 2, dvd_info.valid_tracks);
