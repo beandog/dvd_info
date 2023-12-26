@@ -513,12 +513,12 @@ int main(int argc, char **argv) {
 		printf("[VTS %d]\n", vts);
 
 		printf("* Blocks: %" PRIu64 "\n", dvd_vts[vts].blocks);
-		printf("* Filesize: %zu\n", dvd_vts[vts].filesize);
+		printf("* Filesize: %.0lf MBs\n", dvd_vts[vts].filesize_mbs);
 		printf("* VOBs: %u\n", dvd_vts[vts].vobs);
 
 		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++)
 			if(dvd_vts[vts].dvd_vobs[vob].blocks)
-				printf("* VOB %i filesize: %zu\n", vob, dvd_vob_filesize(dvdread_dvd, vts, vob));
+				printf("* VOB %i filesize: %.0lf MBs\n", vob, dvd_vts[vts].dvd_vobs[vob].filesize_mbs);
 
 		dvd_blocks_offset = 0;
 
