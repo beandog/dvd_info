@@ -366,7 +366,6 @@ int main(int argc, char **argv) {
 	uint64_t vob_block = 0;
 
 	uint16_t vts = 1;
-	bool has_invalid_ifos = false;
 	struct dvd_vts dvd_vts[99];
 
 	// Exit if all the IFOs cannot be opened
@@ -388,7 +387,6 @@ int main(int argc, char **argv) {
 
 		if(vts_ifos[vts] == NULL) {
 			dvd_vts[vts].valid = false;
-			has_invalid_ifos = true;
 			vts_ifos[vts] = NULL;
 			continue;
 		}
