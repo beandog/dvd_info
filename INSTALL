@@ -1,7 +1,7 @@
-You will need libdvdcss and libdvdread installed.
+You will need libdvdread installed, along with libdvdcss for decryption.
 
 $ ./configure
 $ make
 
-To build dvd_player and dvd_trip, you will need mpv libraries installed.
+To build dvd_player and dvd_rip, you will need mpv libraries installed.
 $ ./configure --with-libmpv

@@ -5,16 +5,16 @@ Includes:
 * dvd_info - display information about a DVD in human-readable or JSON output,
 	disc title, disc ID, disc chapters in OGM container format
 
-* dvd_copy - copy a DVD title to the filesystem
+* dvd_copy - copy a DVD track to the filesystem
 
 * dvd_drive_status - display drive status: open, closed, closed with disc,
-	or polling (support depends on operating system)
+	or polling (Linux only)
 
 * dvd_backup - back up an entire DVD to the filesystem
 
 * dvd_player - a small DVD player using libmpv as backend
 
-* dvd_trip - a small DVD ripper using libmpv as backend
+* dvd_rip - a small DVD ripper using libmpv as backend
 
 * dvd_debug - print debug information about a DVD
 
@@ -26,7 +26,6 @@ Documentation:
 
   * See man pages for each program
   * https://github.com/beandog/dvd_info/wiki
-  * http://dvds.beandog.org/doku.php?id=dvd_info
 
 The git repo on github is intended to build from a straight pull. There
 are programs I'm working on that are not in the Makefile.am yet (or there are
@@ -59,20 +58,10 @@ See also:
   * http://wonkabar.org - my *very old* blog with some multimedia content
   * https://forums.gentoo.org/viewforum-f-33.html - Gentoo Linux Multimedia
 
-Other stuff:
-
-I don't have my own tool to copy the entire DVD file structure to the
-filesystem, simply because I don't really need one. I use dvdbackup, and that's
-what I'd recommend. See http://dvdbackup.sourceforge.net/
-
 Support:
 
 I love hunting down anomalies, so if you run into something odd on a disc, let
 me know and I'd love to look into it. Bug reports are good, too.
-
-If you want to say thanks, buy me a Blu-ray disc :D There's nothing I'd love
-more than a new disc to play with (and something to watch as well).
-Here's my Amazon wishlist: http://a.co/ik9j9Fw if you're feeling generous!
 
 If you have questions, feel free to contact me at steve.dibb@gmail.com
 
