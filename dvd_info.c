@@ -538,7 +538,7 @@ int main(int argc, char **argv) {
 			continue;
 
 		// Skip if limiting to valid only
-		if(d_is_valid && dvd_track.valid == false)
+		if(d_is_valid && (dvd_vts[dvd_track.vts].valid == false || dvd_track.valid == false))
 			continue;
 
 		// Need an IFO if checking for audio or sub track languages
