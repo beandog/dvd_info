@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <math.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 #include "dvd_specs.h"
@@ -16,6 +17,7 @@ struct dvd_vts {
 	char id[DVD_VTS_ID + 1];
 	ssize_t blocks;
 	ssize_t filesize;
+	double filesize_mbs;
 	int vobs;
 	uint16_t tracks;
 	uint16_t valid_tracks;
@@ -26,6 +28,8 @@ struct dvd_vts {
 ssize_t dvd_vts_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
 
 ssize_t dvd_vts_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
+
+double dvd_vts_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
 
 int dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
 

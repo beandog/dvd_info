@@ -34,6 +34,21 @@ ssize_t dvd_vts_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
 }
 
+double dvd_vts_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
+
+	ssize_t vts_blocks = 0;
+	vts_blocks = dvd_vts_blocks(dvdread_dvd, vts_number);
+
+	if(vts_blocks == 0)
+		return 0;
+
+	double vts_filesize_mbs = 0;
+	vts_filesize_mbs = ceil((vts_blocks * DVD_VIDEO_LB_LEN) / 1048576.0);
+
+	return vts_filesize_mbs;
+
+}
+
 int dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
 	dvd_stat_t dvdread_stat;
@@ -60,6 +75,7 @@ struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts) {
 	dvd_vts.valid = false;
 	dvd_vts.blocks = 0;
 	dvd_vts.filesize = 0;
+	dvd_vts.filesize_mbs = 0;
 	dvd_vts.vobs = 0;
 	dvd_vts.tracks = 0;
 	dvd_vts.valid_tracks = 0;
@@ -93,6 +109,7 @@ struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts) {
 
 	dvd_vts.vobs = dvd_vts_vobs(dvdread_dvd, vts);
 	dvd_vts.filesize = dvd_vts_filesize(dvdread_dvd, vts);
+	dvd_vts.filesize_mbs = dvd_vts_filesize_mbs(dvdread_dvd, vts);
 
 	dvd_vts.valid = true;
 

@@ -400,6 +400,7 @@ int main(int argc, char **argv) {
 		dvd_vts[vts].valid = true;
 		dvd_vts[vts].blocks = dvd_vts_blocks(dvdread_dvd, vts);
 		dvd_vts[vts].filesize = dvd_vts_filesize(dvdread_dvd, vts);
+		dvd_vts[vts].filesize_mbs = dvd_vts_filesize_mbs(dvdread_dvd, vts);
 		dvd_vts[vts].vobs = dvd_vts_vobs(dvdread_dvd, vts);
 
 		/*
