@@ -97,7 +97,7 @@ OPTIONS
 *-T, --vts*='NUMBER'::
 	Limit output to tracks in Video Title Set number.
 
-*-L, --valid::
+*-L, --valid*::
 	Don't display tracks that may be flagged as broken or invalid.
 
 *-i, --id*::
