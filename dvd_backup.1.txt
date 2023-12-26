@@ -18,9 +18,11 @@ of the disc, the name passed for the directory, or DVD_VIDEO if no label
 exists.
 
 dvd_backup will read each block individually, and write it to the output
-file(s). If a block cannot be read, it will fill it with null data, which
-should preserve playback. If a disc is damaged, reading can take a long time
-for each broken block. The amount of skipped blocks is displayed on output.
+file(s). If a block cannot be read, it will skip it, which should preserve
+playback though it will skip where data is missed.
+
+If a disc is damaged, reading can take a long time for each broken block.
+The amount of skipped blocks is displayed on output.
 
 The default device is based on your operating system, and is the primary
 optical drive.

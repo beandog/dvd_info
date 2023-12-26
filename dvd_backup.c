@@ -37,7 +37,7 @@
 	 *   \__,_| \_/ \__,_|___|_.__/ \__,_|\___|_|\_\\__,_| .__/
 	 *                  |_____|                          |_|
 	 *
-	 * ** back up the DVD IFO, BUP, VTS and VOBs **
+	 * ** back up the DVD IFOs, BUPs, VTSs and VOBs **
 	 *
 	 * dvd_backup is a tiny little program to clone the DVD as much as possible. The IFO and BUP
 	 * files on a DVD store the metadata, while VOBs store the menus and the audio / video.
@@ -53,22 +53,24 @@
 int main(int, char **);
 int dvd_block_rw(dvd_file_t *, uint64_t, int);
 
+/**
+ * Read and write to the backup file. If there is an error, quit, and
+ * dvd_backup will skip the blocks.
+ */
 int dvd_block_rw(dvd_file_t *dvdread_vts_file, uint64_t offset, int fd) {
 
-	ssize_t rw = 0;
+	ssize_t bytes_read = 0;
 	unsigned char buffer[DVD_VIDEO_LB_LEN];
 
-	rw = DVDReadBlocks(dvdread_vts_file, (size_t)offset, 1, buffer);
+	bytes_read = DVDReadBlocks(dvdread_vts_file, (size_t)offset, 1, buffer);
 
-	if(rw < 0) {
-		memset(buffer, '\0', DVD_VIDEO_LB_LEN);
-		rw = write(fd, buffer, DVD_VIDEO_LB_LEN);
+	if(bytes_read < 0)
 		return 1;
-	}
 
-	rw = write(fd, buffer, DVD_VIDEO_LB_LEN);
+	ssize_t bytes_written = 0;
+	bytes_written = write(fd, buffer, DVD_VIDEO_LB_LEN);
 
-	if(rw < 0)
+	if(bytes_written < 0)
 		return 2;
 
 	return 0;
