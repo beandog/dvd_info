@@ -2,6 +2,7 @@
 #define DVD_INFO_VOB_H
 
 #include <stdint.h>
+#include <math.h>
 #include <dvdread/dvd_reader.h>
 
 struct dvd_vob {
@@ -9,6 +10,7 @@ struct dvd_vob {
 	uint16_t vob;
 	uint64_t blocks;
 	ssize_t filesize;
+	double filesize_mbs;
 };
 
 /**
@@ -31,5 +33,10 @@ uint64_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t
  *
  */
 ssize_t dvd_vob_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number);
+
+/**
+ * Helper function to get filesize of a VOB in MBs.
+ */
+double dvd_vob_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number);
 
 #endif

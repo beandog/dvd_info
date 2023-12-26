@@ -36,3 +36,18 @@ ssize_t dvd_vob_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_
 	return vob_filesize;
 
 }
+
+double dvd_vob_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number) {
+
+	uint64_t blocks;
+	blocks = dvd_vob_blocks(dvdread_dvd, vts_number, vob_number);
+
+	if(blocks == 0)
+		return 0;
+
+	double vob_filesize_mbs = 0;
+	vob_filesize_mbs = ceil((blocks * DVD_VIDEO_LB_LEN) / 1048576.0);
+
+	return vob_filesize_mbs;
+
+}

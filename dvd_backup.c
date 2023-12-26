@@ -412,6 +412,7 @@ int main(int argc, char **argv) {
 			dvd_vts[vts].dvd_vobs[vob].vts = vts;
 			dvd_vts[vts].dvd_vobs[vob].vob = vob;
 			dvd_vts[vts].dvd_vobs[vob].filesize = dvd_vob_filesize(dvdread_dvd, vts, vob);
+			dvd_vts[vts].dvd_vobs[vob].filesize_mbs = dvd_vob_filesize_mbs(dvdread_dvd, vts, vob);
 			dvd_vts[vts].dvd_vobs[vob].blocks = dvd_vob_blocks(dvdread_dvd, vts, vob);
 		}
 
