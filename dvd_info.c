@@ -542,16 +542,27 @@ int main(int argc, char **argv) {
 			continue;
 
 		// Need an IFO if checking for audio or sub track languages
-		if(d_has_alang || d_has_slang)
-			vts_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
+		if(d_has_alang || d_has_slang) {
+			if(dvd_vts[dvd_track.vts].valid == false) {
+				fprintf(stderr, "VTS %" PRIu16 " is invalid, skipping\n", dvd_track.vts);
+			} else {
+				vts_ifo = ifoOpen(dvdread_dvd, dvd_track.vts);
+			}
+		}
 
 		// Skip if audio track language stream isn't found
-		if(d_has_alang && !dvd_track_has_audio_lang_code(vts_ifo, d_alang))
+		if(d_has_alang && !dvd_track_has_audio_lang_code(vts_ifo, d_alang)) {
+			ifoClose(vts_ifo);
+			vts_ifo = NULL;
 			continue;
+		}
 
 		// Skip if subtitle language stream isn't found
-		if(d_has_slang && !dvd_track_has_subtitle_lang_code(vts_ifo, d_slang))
+		if(d_has_slang && !dvd_track_has_subtitle_lang_code(vts_ifo, d_slang)) {
+			ifoClose(vts_ifo);
+			vts_ifo = NULL;
 			continue;
+		}
 
 		// Close out for next round
 		if(vts_ifo) {
