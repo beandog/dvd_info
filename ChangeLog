@@ -6,6 +6,7 @@
 * Rename dvd_trip to dvd_rip
 * dvd_info: display # of blocks per track in JSON
 * dvd_info: add option to narrow by audio or subtitle by language
+* dvd_info: add option to display detailed VTS info
 * dvd_copy: fix copying last block of a cell (bug #5, thanks to remenor and
   tremon015)
 * dvd_rip: Rip to H.264 / MP4 by default
