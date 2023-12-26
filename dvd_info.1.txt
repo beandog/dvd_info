@@ -133,9 +133,7 @@ RESOURCES
 ---------
 Source code available at GitHub: <https://github.com/beandog/dvd_info>
 
-Main web site: <https://dvds.beandog.org>
-
 COPYING
 -------
-Copyright \(C) 2020 Steve Dibb. Free use of this software is granted under the
+Copyright \(C) 2023 Steve Dibb. Free use of this software is granted under the
 terms of the GNU General Public License, version 2 (GPL).
