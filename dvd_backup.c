@@ -160,7 +160,8 @@ int main(int argc, char **argv) {
 	printf("* Opening device %s\n", device_filename);
 
 	dvd_reader_t *dvdread_dvd = NULL;
-	dvdread_dvd = DVDOpen(device_filename);
+	dvd_logger_cb dvdread_logger_cb = { dvd_info_logger_cb };
+	dvdread_dvd = DVDOpen2(NULL, &dvdread_logger_cb, device_filename);
 	if(!dvdread_dvd) {
 		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
 		return 1;

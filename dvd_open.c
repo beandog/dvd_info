@@ -1,5 +1,33 @@
 #include "dvd_open.h"
 
+/**
+  * By default, libdvdread prints out a lot of messages, and sends to stdout.
+  * This callback function captures the log messages, and sends them to stderr
+  * instead. Also, only interesting logs should be spit out, ones that indicate
+  * that something is probably very wrong with the source.
+  *
+  * libdvdread error levels:
+  * DVD_LOGGER_LEVEL_INFO
+  * DVD_LOGGER_LEVEL_ERROR
+  * DVD_LOGGER_LEVEL_WARN
+  * DVD_LOGGER_LEVEL_DEBUG (original default)
+  *
+  */
+
+void dvd_info_logger_cb(void *p, dvd_logger_level_t dvdread_log_level, const char *msg, va_list dvd_log_va) {
+
+	if(dvdread_log_level == DVD_LOGGER_LEVEL_WARN || dvdread_log_level == DVD_LOGGER_LEVEL_ERROR) {
+
+		char dvd_log[2048] = {'\0'};
+
+		vsnprintf(dvd_log, 2048, msg, dvd_log_va);
+
+		fprintf(stderr, "libdvdread: %s\n", dvd_log);
+
+	}
+
+}
+
 int device_open(const char *device_filename) {
 
 #ifdef __linux__
