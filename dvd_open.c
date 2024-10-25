@@ -18,9 +18,11 @@ void dvd_info_logger_cb(void *p, dvd_logger_level_t dvdread_log_level, const cha
 
 	if(dvdread_log_level == DVD_LOGGER_LEVEL_WARN || dvdread_log_level == DVD_LOGGER_LEVEL_ERROR) {
 
-		char dvd_log[2048] = {'\0'};
+		char dvd_log[2048];
 
-		vsnprintf(dvd_log, 2048, msg, dvd_log_va);
+		memset(dvd_log, '\0', sizeof(dvd_log));
+
+		vsnprintf(dvd_log, sizeof(dvd_log), msg, dvd_log_va);
 
 		fprintf(stderr, "libdvdread: %s\n", dvd_log);
 
