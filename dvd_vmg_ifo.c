@@ -64,8 +64,10 @@ bool dvd_dvdread_id(char *dest_str, dvd_reader_t *dvdread_dvd) {
 	if(dvdread_retval == -1)
 		return false;
 
+	// Set character length to the correct size
+	// https://github.com/beandog/dvd_info/issues/12
 	for(x = 0; x < (DVD_DVDREAD_ID / 2); x++)
-		snprintf(&dvdread_id[x * 2], DVD_DVDREAD_ID + 1, "%02x", dvdread_ifo_md5[x]);
+		snprintf(&dvdread_id[x * 2], DVD_DVDREAD_MD5SUM_CHAR + 1, "%02x", dvdread_ifo_md5[x]);
 
 	strncpy(dest_str, dvdread_id, DVD_DVDREAD_ID);
 
