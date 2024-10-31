@@ -282,7 +282,7 @@ int main(int argc, char **argv) {
 					strcpy(dvd_rip.vcodec, "libx265");
 					x265 = true;
 				} else if(strncmp(optarg, "vpx", 3) == 0) {
-					strcpy(dvd_rip.vcodec, "libvpx-vp9");
+					strcpy(dvd_rip.vcodec, "libvpx");
 					vpx = true;
 				}
 				break;
@@ -330,8 +330,8 @@ int main(int argc, char **argv) {
 				printf("See the man page for more details.\n");
 				printf("\n");
 				printf("  .mp4 - H.264 video, AAC audio\n");
-				printf("  .mkv - HEVC video, AAC audio\n");
-				printf("  .webm - VPX9 video, Opus audio\n");
+				printf("  .mkv - H.265 video, AAC audio\n");
+				printf("  .webm - VPX8 video, Opus audio\n");
 				printf("\n");
 				printf("Other:\n");
 				printf("  -h, --help                    Show this help text and exit\n");
@@ -716,7 +716,7 @@ int main(int argc, char **argv) {
 	else if(x265)
 		strcpy(dvd_rip.vcodec, "libx265");
 	else if (vpx) {
-		strcpy(dvd_rip.vcodec, "libvpx-vp9");
+		strcpy(dvd_rip.vcodec, "libvpx");
 	}
 
 	mpv_set_option_string(dvd_mpv, "ovc", dvd_rip.vcodec);

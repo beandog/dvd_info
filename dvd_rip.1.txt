@@ -24,8 +24,8 @@ presets are used as selected by the codecs as well. Note that mpv must already
 be built with support for these codecs, or dvd_rip will quit.
 
 	.mp4 - H.264 video, AAC audio
-	.mkv - HEVC video, AAC audio
-	.webm - VPX9 video, Opus audio
+	.mkv - H.265 video, AAC audio
+	.webm - VPX8 video, Opus audio
 
 With no options, the largest track will be ripped with the first audio track,
 to a file named dvd_track_#.mp4, where # is a zero-padded name of the track
