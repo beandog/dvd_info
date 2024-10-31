@@ -5,6 +5,7 @@
 * Require libdvdread minimum version 6.1.0 for new DVD logging functionality
 * Fix segfault on creating md5sum of dvdread id on newer systems with gcc
   (bug #12, thanks to yzu1103309 for patch)
+* dvd_rip: Switch AAC encoder to native ffmpeg since FDK is non-free
 
 1.16
 
