@@ -322,7 +322,7 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("Defaults:\n");
 				printf("\n");
-				printf("By default, dvd_rip will encode source to HEVC video with AAC audio in a\n");
+				printf("By default, dvd_rip will encode source to H.264 video with AAC audio in a\n");
 				printf("Matroska container. If an output filename is given with a different extension,\n");
 				printf("it will use the default settings. for those instead. In each case, the default\n");
 				printf("presets are used as selected by the codecs as well. Note that mpv must already\n");
