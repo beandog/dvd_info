@@ -20,17 +20,17 @@ Includes:
 
 Requirements:
 
-* libdvdread >= 4.2.1 (libdvdcss required for decryption)
+* libdvdread >= 6.1.0 (libdvdcss required for decryption)
 
 Documentation:
 
   * See man pages for each program
   * https://github.com/beandog/dvd_info/wiki
 
-The git repo on github is intended to build from a straight pull. There
-are programs I'm working on that are not in the Makefile.am yet (or there are
-more than are in the repo). You can, of course, try to build it, but I don't
-target releases here.
+The git repo on github is intended to build from a straight pull. Documentation
+for building from source for Ubuntu is on the github wiki above.
+
+Caching:
 
 If you're going to do a lot of reads on a disc drive, I'd recommend mounting it
 so the access can be cached -- this is especially helpful when using / testing
@@ -38,12 +38,7 @@ dvd_copy a lot to get chapters, titles, etc.
 
   # mount /dev/sr0 -o ro -t udf /mnt/dvd
 
-Depending on your luck / region / disc drive / disc / local alien invasion, you
-may or may not be able to make an ISO directly from a disc.
-
-If you want to give it a whirl, I recommend ddrescue:
-
-  $ ddrescue -b 2048 -n /dev/sr0 dvd.iso ddrescue.log
+Compatability:
 
 I try porting my code to other systems, and in addition to popular Linux
 distros, it runs fine on BSD systems as well.
@@ -53,10 +48,6 @@ See also:
   * http://github.com/beandog/bluray_info - similar tools for Blu-ray discs
   * http://dvds.beandog.org - my site all about DVDs
   * http://bluray.beandog.org - I store some source tarballs here
-  * http://nx.beandog - my *n*x wiki
-  * https://twitter.com/beandog76 - my twitter feed
-  * http://wonkabar.org - my *very old* blog with some multimedia content
-  * https://forums.gentoo.org/viewforum-f-33.html - Gentoo Linux Multimedia
 
 Support:
 
