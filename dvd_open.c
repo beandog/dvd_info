@@ -12,6 +12,23 @@
   * DVD_LOGGER_LEVEL_WARN
   * DVD_LOGGER_LEVEL_DEBUG (original default)
   *
+  * DVD_LOGGER_LEVEL_INFO examples:
+  * libdvdread: Attempting to retrieve all CSS keys
+  * libdvdread: This can take a _long_ time, please be patient
+  *
+  * DVD_LOGGER_LEVEL_ERROR is set when there are problems with memory or
+  * with libdvdcss or file can't be opened (see libdvdread/src/dvd_input.c)
+  *
+  * DVD_LOGGER_LEVEL_WARN examples:
+  * libdvdread: Error cracking CSS key for /VIDEO_TS/VTS_03_0.VOB (0x0000047a)
+  * libdvdread: CHECK_VALUE failed in libdvdread-6.1.3/src/ifo_read.c:917 for
+  *   pgc->cell_playback_offset != 0
+  *
+  * DVD_LOGGER_LEVEL_DEBUG examples:
+  * libdvdread: Get key for /VIDEO_TS/VIDEO_TS.VOB at 0x000001fe
+  * libdvdread: Elapsed time 0
+  * libdvdread: Found 18 VTS's
+  *
   */
 
 void dvd_info_logger_cb(void *p, dvd_logger_level_t dvdread_log_level, const char *msg, va_list dvd_log_va) {
@@ -24,7 +41,10 @@ void dvd_info_logger_cb(void *p, dvd_logger_level_t dvdread_log_level, const cha
 
 		vsnprintf(dvd_log, sizeof(dvd_log), msg, dvd_log_va);
 
-		fprintf(stderr, "libdvdread: %s\n", dvd_log);
+		if(dvdread_log_level == DVD_LOGGER_LEVEL_WARN)
+			fprintf(stderr, "[WARNING] libdvdread: %s\n", dvd_log);
+		else if(dvdread_log_level == DVD_LOGGER_LEVEL_ERROR)
+			fprintf(stderr, "[ERROR] libdvdread: %s\n", dvd_log);
 
 	}
 
