@@ -12,9 +12,10 @@
 #include "dvd_vmg_ifo.h"
 #include "dvd_info.h"
 
-void dvd_info_logger_cb(void *p, dvd_logger_level_t dvdread_log_level, const char *msg, va_list dvd_log_va);
+extern bool log_verbose;
+extern bool log_debug;
 
-void dvd_info_logger_cb_debug(void *p, dvd_logger_level_t dvdread_log_level, const char *msg, va_list dvd_log_va);
+void dvd_info_logger_cb(void *p, dvd_logger_level_t dvdread_log_level, const char *msg, va_list dvd_log_va);
 
 int device_open(const char *device_filename);
 

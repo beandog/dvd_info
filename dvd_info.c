@@ -63,7 +63,10 @@ int main(int argc, char **argv) {
 	bool d_title_sets = false;
 
 	// How much output
+	bool verbose = false;
 	bool debug = false;
+	log_verbose = false;
+	log_debug = false;
 
 	// limit results
 	bool d_has_audio = false;
@@ -118,7 +121,7 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	int opt = 0;
 	bool invalid_opt = false;
-	const char p_short_opts[] = "aAcdeE:gG:hijlLM:N:sST:t:uVvxz";
+	const char p_short_opts[] = "aAcdeE:gG:hijlLM:N:sST:t:uVvxyz";
 	struct option p_long_opts[] = {
 
 		{ "track", required_argument, NULL, 't' },
@@ -148,6 +151,7 @@ int main(int argc, char **argv) {
 
 		{ "help", no_argument, NULL, 'h' },
 		{ "version", no_argument, NULL, 'V' },
+		{ "verbose", no_argument, NULL, 'y' },
 		{ "debug", no_argument, NULL, 'z' },
 		{ 0, 0, 0, 0 }
 
@@ -285,8 +289,16 @@ int main(int argc, char **argv) {
 				d_cells = true;
 				break;
 
+			case 'y':
+				verbose = true;
+				log_verbose = true;
+				break;
+
 			case 'z':
+				verbose = true;
 				debug = true;
+				log_verbose = true;
+				log_debug = true;
 				break;
 
 			// ignore unknown arguments
@@ -326,6 +338,8 @@ int main(int argc, char **argv) {
 				printf("  -u, --volume		Display DVD UDF volume name only (for ISO or disc)\n");
 				printf("  -g, --xchap           Display title's chapter format for mkvmerge\n");
 				printf("  -h, --help            Display these help options\n");
+				printf("  -v, --verbose         Display verbose output\n");
+				printf("  -z, --debug           Display debugging output\n");
 				printf("      --version         Display version\n");
 				printf("\n");
 				printf("DVD path can be a device name, a single file, or a directory (default: %s)\n", DEFAULT_DVD_DEVICE);
@@ -358,13 +372,9 @@ int main(int argc, char **argv) {
 
 	// Use a custom function to send logs to (and shut up the annoying ones)
 	dvd_logger_cb dvdread_logger_cb = { dvd_info_logger_cb };
-	dvd_logger_cb dvdread_logger_cb_debug = { dvd_info_logger_cb_debug };
 
 	// Open the DVD
-	if(debug)
-		dvdread_dvd = DVDOpen2(NULL, &dvdread_logger_cb_debug, device_filename);
-	else
-		dvdread_dvd = DVDOpen2(NULL, &dvdread_logger_cb, device_filename);
+	dvdread_dvd = DVDOpen2(NULL, &dvdread_logger_cb, device_filename);
 
 	if(!dvdread_dvd) {
 		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
@@ -464,7 +474,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Count valid, invalid tracks and title sets
-	if(debug || opt_vts || d_title_sets) {
+	if(verbose || opt_vts || d_title_sets) {
 
 		for(ix = 1; ix <= dvd_info.tracks; ix++) {
 			dvd_vts[dvd_tracks[ix].vts].tracks++;
@@ -480,7 +490,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Print the valid and invalid VTSs
-	if(debug || d_title_sets) {
+	if(verbose || d_title_sets) {
 
 		printf("        Tracks: %*" PRIu16 ", ", 2, dvd_info.tracks);
 		printf("Valid: %*" PRIu16 ", ", 2, dvd_info.valid_tracks);
