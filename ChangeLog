@@ -7,6 +7,8 @@
   (bug #12, thanks to yzu1103309 for patch)
 * dvd_rip: Switch AAC encoder to native ffmpeg since FDK is non-free
 * dvd_rip: Switch VPX codec from 9 to 8
+* dvd_backup: Fix -i / --ifos to not copy VOBs, and always overwrite existing
+  backup files
 
 1.16
 
