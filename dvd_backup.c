@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
 	struct option p_long_opts[] = {
 		{ "help", no_argument, NULL, 'h' },
 		{ "name", required_argument, NULL, 'n' },
-		{ "ifos", required_argument, NULL, 'i' },
+		{ "ifos", no_argument, NULL, 'i' },
 		{ "vts", required_argument, NULL, 'T' },
 		{ "version", no_argument, NULL, 'V' },
 		{ 0, 0, 0, 0 },
@@ -314,36 +314,30 @@ int main(int argc, char **argv) {
 				snprintf(dvd_backup_filename, PATH_MAX - 1, "%s/%s", dvd_backup_dir, vts_filename);
 			}
 
-			// file handlers
-
-			if(access(dvd_backup_filename, F_OK) != 0) {
-
-				printf("* Writing to %s\n", vts_filename);
-				ifo_fd = open(dvd_backup_filename, O_WRONLY|O_CREAT|O_TRUNC, 0666);
-				if(ifo_fd == -1) {
-					printf("* Could not create %s\n", vts_filename);
-					return 1;
-				}
-
-				// Read / write IFO or BUP
-				memset(ifo_buffer, '\0', DVD_VIDEO_LB_LEN);
-				dvd_block = 0;
-				ifo_bytes_read = 0;
-				ifo_bytes_written = 0;
-
-				// In the case of IFOs and BUPs, be pedantic and read only one block at a time plus
-				// always count one as written
-				while(dvd_block < dvd_backup_blocks) {
-					ifo_bytes_read = DVDReadBytes(dvdread_ifo_file, ifo_buffer, DVD_VIDEO_LB_LEN);
-					if(ifo_bytes_read < 0)
-						memset(ifo_buffer, '\0', DVD_VIDEO_LB_LEN);
-					ifo_bytes_written = write(ifo_fd, ifo_buffer, DVD_VIDEO_LB_LEN);
-					dvd_block++;
-				}
-
-				retval = close(ifo_fd);
-
+			printf("* Writing to %s\n", vts_filename);
+			ifo_fd = open(dvd_backup_filename, O_WRONLY|O_CREAT|O_TRUNC, 0666);
+			if(ifo_fd == -1) {
+				printf("* Could not create %s\n", vts_filename);
+				return 1;
 			}
+
+			// Read / write IFO or BUP
+			memset(ifo_buffer, '\0', DVD_VIDEO_LB_LEN);
+			dvd_block = 0;
+			ifo_bytes_read = 0;
+			ifo_bytes_written = 0;
+
+			// In the case of IFOs and BUPs, be pedantic and read only one block at a time plus
+			// always count one as written
+			while(dvd_block < dvd_backup_blocks) {
+				ifo_bytes_read = DVDReadBytes(dvdread_ifo_file, ifo_buffer, DVD_VIDEO_LB_LEN);
+				if(ifo_bytes_read < 0)
+					memset(ifo_buffer, '\0', DVD_VIDEO_LB_LEN);
+				ifo_bytes_written = write(ifo_fd, ifo_buffer, DVD_VIDEO_LB_LEN);
+				dvd_block++;
+			}
+
+			retval = close(ifo_fd);
 
 			// Switch to next one
 			if(info_file) {
@@ -360,6 +354,7 @@ int main(int argc, char **argv) {
 
 	}
 
+	// Exit if only writing IFO / BUP files
 	if(opt_title_sets == false)
 		return 0;
 
