@@ -14,6 +14,8 @@
 
 void dvd_info_logger_cb(void *p, dvd_logger_level_t dvdread_log_level, const char *msg, va_list dvd_log_va);
 
+void dvd_info_logger_cb_debug(void *p, dvd_logger_level_t dvdread_log_level, const char *msg, va_list dvd_log_va);
+
 int device_open(const char *device_filename);
 
 struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, const char *device_filename);

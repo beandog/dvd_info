@@ -33,20 +33,26 @@
 
 void dvd_info_logger_cb(void *p, dvd_logger_level_t dvdread_log_level, const char *msg, va_list dvd_log_va) {
 
-	if(dvdread_log_level == DVD_LOGGER_LEVEL_WARN || dvdread_log_level == DVD_LOGGER_LEVEL_ERROR) {
+	return;
 
-		char dvd_log[2048];
+}
 
-		memset(dvd_log, '\0', sizeof(dvd_log));
+void dvd_info_logger_cb_debug(void *p, dvd_logger_level_t dvdread_log_level, const char *msg, va_list dvd_log_va) {
 
-		vsnprintf(dvd_log, sizeof(dvd_log), msg, dvd_log_va);
+	char dvd_log[2048];
 
-		if(dvdread_log_level == DVD_LOGGER_LEVEL_WARN)
-			fprintf(stderr, "[WARNING] libdvdread: %s\n", dvd_log);
-		else if(dvdread_log_level == DVD_LOGGER_LEVEL_ERROR)
-			fprintf(stderr, "[ERROR] libdvdread: %s\n", dvd_log);
+	memset(dvd_log, '\0', sizeof(dvd_log));
 
-	}
+	vsnprintf(dvd_log, sizeof(dvd_log), msg, dvd_log_va);
+
+	if(dvdread_log_level == DVD_LOGGER_LEVEL_INFO)
+		fprintf(stderr, "[INFO] libdvdread: %s\n", dvd_log);
+	else if(dvdread_log_level == DVD_LOGGER_LEVEL_WARN)
+		fprintf(stderr, "[WARNING] libdvdread: %s\n", dvd_log);
+	else if(dvdread_log_level == DVD_LOGGER_LEVEL_ERROR)
+		fprintf(stderr, "[ERROR] libdvdread: %s\n", dvd_log);
+	else if(dvdread_log_level == DVD_LOGGER_LEVEL_DEBUG)
+		fprintf(stderr, "[DEBUG] libdvdread: %s\n", dvd_log);
 
 }
 

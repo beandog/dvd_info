@@ -358,9 +358,13 @@ int main(int argc, char **argv) {
 
 	// Use a custom function to send logs to (and shut up the annoying ones)
 	dvd_logger_cb dvdread_logger_cb = { dvd_info_logger_cb };
+	dvd_logger_cb dvdread_logger_cb_debug = { dvd_info_logger_cb_debug };
 
 	// Open the DVD
-	dvdread_dvd = DVDOpen2(NULL, &dvdread_logger_cb, device_filename);
+	if(debug)
+		dvdread_dvd = DVDOpen2(NULL, &dvdread_logger_cb_debug, device_filename);
+	else
+		dvdread_dvd = DVDOpen2(NULL, &dvdread_logger_cb, device_filename);
 
 	if(!dvdread_dvd) {
 		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
