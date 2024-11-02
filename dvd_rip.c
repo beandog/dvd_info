@@ -660,7 +660,7 @@ int main(int argc, char **argv) {
 		if(mp4)
 			x264 = true;
 		else if(mkv)
-			x265 = true;
+			x264 = true;
 		else if(webm && !vp9)
 			vp8 = true;
 	}
