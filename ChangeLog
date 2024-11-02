@@ -11,6 +11,7 @@
 * dvd_rip: Switch VPX codec from 9 to 8
 * dvd_backup: Fix -i / --ifos to not copy VOBs, and always overwrite existing
   backup files
+* dvd_rip: support VP9
 
 1.16
 
