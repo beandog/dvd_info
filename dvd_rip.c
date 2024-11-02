@@ -700,9 +700,9 @@ int main(int argc, char **argv) {
 	if((vp8 || vp9) && crf > 63)
 		crf = 63;
 	if(x264 && crf == -1)
-		crf = 23;
+		crf = 20;
 	if(x265 && crf == -1)
-		crf = 28;
+		crf = 22;
 	if(crf > -1 && (x264 || x265)) {
 		snprintf(dvd_rip.vcodec_opts, 9, "crf=%i", crf);
 	}
@@ -827,7 +827,10 @@ int main(int argc, char **argv) {
 	retval = 0;
 
 	fprintf(stderr, "[dvd_rip] saving to filename \'%s\'\n", dvd_rip.filename);
-	fprintf(stderr, "[dvd_rip] using video codec %s and CRF %i\n", dvd_rip.vcodec, crf);
+	if(x264 || x265)
+		fprintf(stderr, "[dvd_rip] using video codec %s and CRF %i\n", dvd_rip.vcodec, crf);
+	if(vp8 || vp9)
+		fprintf(stderr, "[dvd_rip] using video codec %s\n", dvd_rip.vcodec);
 	fprintf(stderr, "[dvd_rip] using audio codec %s\n", dvd_rip.acodec);
 	if(detelecine)
 		printf("[dvd_rip] detelecining video using pullup, dejudder, fps filters\n");
