@@ -11,7 +11,8 @@
 * dvd_rip: Switch VPX codec from 9 to 8
 * dvd_backup: Fix -i / --ifos to not copy VOBs, and always overwrite existing
   backup files
-* dvd_rip: support VP9
+* dvd_rip: Support VP9
+* dvd_rip: Set video codec to x264 by default for Matroska
 
 1.16
 
