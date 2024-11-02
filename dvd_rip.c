@@ -316,7 +316,7 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("  -v, --vcodec <vcodec>         Video codec <x264|x265|vp8|vp9>, default: x264\n");
 				printf("  -a, --acodec <acodec>         Audio codec (aac|opus), default: aac\n");
-				printf("  -q, --crf <#>			Video encoder CRF\n");
+				printf("  -q, --crf <#>			Video encoder CRF (x264 and x265)\n");
 				printf("  -D, --no-detelecine           Do not detelecine video\n");
 				printf("\n");
 				printf("Defaults:\n");
@@ -708,16 +708,37 @@ int main(int argc, char **argv) {
 		snprintf(dvd_rip.vcodec_opts, 9, "crf=%i", crf);
 	}
 
+	if(vp8 || vp9) {
 
-	// VPX prefers two-pass encodes, and doesn't set a CRF by default. Setting one
-	// here that will give decent, comparable quality to the other two.
-	if(crf == -1 && (vp8 || vp9))
-		crf = 20;
-	if(crf > -1 && (vp8 || vp9)) {
-		// sprintf(dvd_rip.vcodec_opts, "b=0,crf=%i,keyint_min=0,g=360", crf);
-		// Bitrate must be set to 0 to let constant quality option work
-		// libvpx by default uses *one* core, so use total number possible
-		sprintf(dvd_rip.vcodec_opts, "crf=%i,b=0,cpu-used=%d", crf, get_nprocs());
+		/* Trying to set encoding parameters for VPX is a pain, because I can't
+		 * tell if I've got the syntax wrong or not, though everything from ffmpeg
+		 * docs looks like I'm doing it right. That being said, setting a CRF
+		 * does not work, so I'm trying to set a relevantly decent bitrate for
+		 * both vp8 and vp9.
+		 *
+		 * I would like to use qmin and qmax as my second choice, but that's not
+		 * working either. Using ffmpeg docs as reference:
+		 * https://trac.ffmpeg.org/wiki/Encode/VP8
+		 * https://ffmpeg.org//ffmpeg-all.html#libvpx
+		 *
+		 * Here's all the things I've tested that *don't* work:
+		 * - crf=20,b=0
+		 * - qmin=0,qmax=50
+		 * - qmin=0,qmax=50,crf=20
+		 *
+		 * Another issue is that libvpx encodes using *one* processor at a time,
+		 * so I'm overriding it here to actual # available (see sysinfo.h). It's
+		 * obviously much faster now.
+		 *
+		 * So here you go, me guessing at bitrates. Hopefully in the future
+		 * I'll figure this out, but for now, this is it.
+		 */
+
+		if(vp8)
+			sprintf(dvd_rip.vcodec_opts, "b=1500k,cpu-used=%d", get_nprocs());
+		else
+			sprintf(dvd_rip.vcodec_opts, "b=1200k,cpu-used=%d", get_nprocs());
+
 	}
 
 	// Video codecs and encoding options
