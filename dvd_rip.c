@@ -663,7 +663,6 @@ int main(int argc, char **argv) {
 			vp8 = true;
 	}
 
-
 	if(webm && !vp8 && !vp9)
 		vp8 = true;
 
