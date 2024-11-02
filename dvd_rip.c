@@ -83,7 +83,8 @@ int main(int argc, char **argv) {
 	bool opt_filename = false;
 	bool x264 = false;
 	bool x265 = false;
-	bool vpx = false;
+	bool vp8 = false;
+	bool vp9 = false;
 	bool opus = false;
 	bool aac = false;
 	bool mkv = false;
@@ -276,14 +277,13 @@ int main(int argc, char **argv) {
 
 			case 'v':
 				if(strncmp(optarg, "x264", 4) == 0) {
-					strcpy(dvd_rip.vcodec, "libx264");
 					x264 = true;
 				} else if(strncmp(optarg, "x265", 4) == 0) {
-					strcpy(dvd_rip.vcodec, "libx265");
 					x265 = true;
-				} else if(strncmp(optarg, "vpx", 3) == 0) {
-					strcpy(dvd_rip.vcodec, "libvpx");
-					vpx = true;
+				} else if(strncmp(optarg, "vp8", 3) == 0) {
+					vp8 = true;
+				} else if(strncmp(optarg, "vp9", 3) == 0) {
+					vp9 = true;
 				}
 				break;
 
@@ -315,23 +315,19 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("Encoding options:\n");
 				printf("\n");
-				printf("  -v, --vcodec <x264|x265|vpx>	Video codec (defaut: x264)\n");
-				printf("  -a, --acodec <aac|opus>	Audio codec (default: AAC)\n");
-				printf("  -q, --crf <#>			Video encoder CRF (default: use codec baseline)\n");
+				printf("  -v, --vcodec <vcodec>         Video codec <x264|x265|vp8|vp9>, default: x264\n");
+				printf("  -a, --acodec <acodec>         Audio codec (aac|opus), default: aac\n");
+				printf("  -q, --crf <#>			Video encoder CRF\n");
 				printf("  -d, --detelecine		Detelecine video\n");
 				printf("\n");
 				printf("Defaults:\n");
 				printf("\n");
-				printf("By default, dvd_rip will encode source to H.264 video with AAC audio in a\n");
-				printf("Matroska container. If an output filename is given with a different extension,\n");
+				printf("By default, dvd_rip will encode source to H.264 video with AAC audio in an\n");
+				printf("MP4 container. If an output filename is given with a different extension,\n");
 				printf("it will use the default settings. for those instead. In each case, the default\n");
 				printf("presets are used as selected by the codecs as well. Note that mpv must already\n");
 				printf("be built with support for these codecs, or dvd_rip will quit.\n\n");
 				printf("See the man page for more details.\n");
-				printf("\n");
-				printf("  .mp4 - H.264 video, AAC audio\n");
-				printf("  .mkv - H.265 video, AAC audio\n");
-				printf("  .webm - VPX8 video, Opus audio\n");
 				printf("\n");
 				printf("Other:\n");
 				printf("  -h, --help                    Show this help text and exit\n");
@@ -652,7 +648,7 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 
 	/** Default codecs and containers **/
-	if(x264 == false && x265 == false && vpx == false) {
+	if(x264 == false && x265 == false && vp8 == false && vp9 == false) {
 		aac = true;
 	}
 
@@ -660,14 +656,18 @@ int main(int argc, char **argv) {
 		mp4 = true;
 	}
 
-	if(x264 == false && x265 == false && vpx == false) {
+	if(x264 == false && x265 == false && vp8 == false && vp9 == false) {
 		if(mp4)
 			x264 = true;
 		else if(mkv)
 			x265 = true;
-		else if(webm)
-			vpx = true;
+		else if(webm && !vp9)
+			vp8 = true;
 	}
+
+
+	if(webm && !vp8 && !vp9)
+		vp8 = true;
 
 	if(webm && !opus) {
 		aac = false;
@@ -677,20 +677,25 @@ int main(int argc, char **argv) {
 	if(webm && (x264 || x265)) {
 		x264 = false;
 		x265 = false;
-		vpx = true;
+		if(!vp8 && !vp9)
+			vp8 = true;
 	}
 
-	// If no audio option is given on vpx for video, vorbis is used as audio by default,
-	// switch to opus here.
-	if(mkv && vpx && !aac && !opus)
+	if(mkv && !aac && !opus && (vp8 || vp9))
 		opus = true;
+
+	if(!aac && !opus && (vp8 || vp9))
+		opus = true;
+
+	if(!aac && !opus && !webm)
+		aac = true;
 
 	/** Video **/
 
 	// Fix input CRF if needed
 	if((x264 || x265) && crf > 51)
 		crf = 51;
-	if(vpx && crf > 63)
+	if((vp8 || vp9) && crf > 63)
 		crf = 63;
 	if(x264 && crf == -1)
 		crf = 23;
@@ -702,9 +707,9 @@ int main(int argc, char **argv) {
 
 	// VPX prefers two-pass encodes, and doesn't set a CRF by default. Setting one
 	// here that will give decent, comparable quality to the other two.
-	if(crf == -1 && vpx)
+	if(crf == -1 && (vp8 || vp9))
 		crf = 20;
-	if(crf > -1 && vpx) {
+	if(crf > -1 && (vp8 || vp9)) {
 		// sprintf(dvd_rip.vcodec_opts, "b=0,crf=%i,keyint_min=0,g=360", crf);
 		// Bitrate must be set to 0 to let constant quality option work
 		sprintf(dvd_rip.vcodec_opts, "crf=%i,b=0", crf);
@@ -715,8 +720,10 @@ int main(int argc, char **argv) {
 		strcpy(dvd_rip.vcodec, "libx264");
 	else if(x265)
 		strcpy(dvd_rip.vcodec, "libx265");
-	else if (vpx) {
+	else if (vp8) {
 		strcpy(dvd_rip.vcodec, "libvpx");
+	} else if (vp9) {
+		strcpy(dvd_rip.vcodec, "libvpx-vp9");
 	}
 
 	mpv_set_option_string(dvd_mpv, "ovc", dvd_rip.vcodec);
