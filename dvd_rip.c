@@ -644,45 +644,53 @@ int main(int argc, char **argv) {
 	sprintf(dvd_mpv_last_chapter, "#%" PRIu8, dvd_rip.last_chapter + 1);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 
-	/** Default codecs and containers **/
-	if(x264 == false && x265 == false && vp8 == false && vp9 == false) {
-		aac = true;
-	}
-
-	if(mkv == false && mp4 == false && webm == false) {
+	// Default container MP4
+	if(!mp4 && !mkv && !webm)
 		mp4 = true;
-	}
 
-	if(x264 == false && x265 == false && vp8 == false && vp9 == false) {
-		if(mp4 || mkv)
-			x264 = true;
-		else if(webm && !vp9)
-			vp8 = true;
-	}
+	// Default video codec for MP4 and MKV
+	if(!x264 && !x265 && !vp8 && !vp9)
+		x264 = true;
 
-	if(webm && !vp8 && !vp9)
-		vp8 = true;
-
-	if(webm && !opus) {
-		aac = false;
-		opus = true;
-	}
-
-	if(webm && (x264 || x265)) {
-		x264 = false;
-		x265 = false;
-		if(!vp8 && !vp9)
-			vp8 = true;
-	}
-
-	if(mkv && !aac && !opus && (vp8 || vp9))
+	// Default audio codec for WebM
+	if(webm && !aac && !opus)
 		opus = true;
 
-	if(!aac && !opus && (vp8 || vp9))
-		opus = true;
-
-	if(!aac && !opus && !webm)
+	// Default audio codec for MP4
+	if(mp4 && !aac && !opus)
 		aac = true;
+
+	// Default audio codec for MKV
+	if(mkv && !aac && !opus)
+		aac = true;
+
+	// Default video codec for WebM
+	if(webm && !vp8 && !vp9) {
+		x264 = false;
+		vp8 = true;
+	}
+
+	// Default audio codec for WebM
+	if(webm && !aac && !opus)
+		opus = true;
+
+	// MP4 can't support VP8 or VP9
+	if(mp4 && (vp8 || vp9)) {
+		fprintf(stderr, "[dvd_rip] MP4 doesn't support VP8 or VP9 video codecs, quitting\n");
+		return 1;
+	}
+
+	// WebM can't support x264 or x265
+	if(webm && (x264 || x265)) {
+		fprintf(stderr, "[dvd_rip] WebM only supports VP8 and VP9 video codecs, quitting\n");
+		return 1;
+	}
+
+	// WebM can't support AAC
+	if(webm && aac) {
+		fprintf(stderr, "[dvd_rip] WebM only supports Opus audio codec, quitting\n");
+		return 1;
+	}
 
 	/** Video **/
 
