@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/sysinfo.h>
 #include <fcntl.h>
 #include <stdbool.h>
 #include <getopt.h>
@@ -715,7 +716,8 @@ int main(int argc, char **argv) {
 	if(crf > -1 && (vp8 || vp9)) {
 		// sprintf(dvd_rip.vcodec_opts, "b=0,crf=%i,keyint_min=0,g=360", crf);
 		// Bitrate must be set to 0 to let constant quality option work
-		sprintf(dvd_rip.vcodec_opts, "crf=%i,b=0", crf);
+		// libvpx by default uses *one* core, so use total number possible
+		sprintf(dvd_rip.vcodec_opts, "crf=%i,b=0,cpu-used=%d", crf, get_nprocs());
 	}
 
 	// Video codecs and encoding options
