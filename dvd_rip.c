@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
 	bool mkv = false;
 	bool mp4 = false;
 	bool webm = false;
-	bool detelecine = false;
+	bool detelecine = true;
 	int8_t crf = -1;
 	char str_crf[10];
 	uint16_t arg_track_number = 1;
@@ -149,7 +149,7 @@ int main(int argc, char **argv) {
 
 		{ "output", required_argument, 0, 'o' },
 
-		{ "detelecine", no_argument, 0, 'd' },
+		{ "no-detelecine", no_argument, 0, 'D' },
 
 		{ "vcodec", required_argument, 0, 'v'},
 		{ "acodec", required_argument, 0, 'a'},
@@ -164,16 +164,14 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "a:B:c:dhL:o:q:s:S:t:Vv:xz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "a:B:c:DhL:o:q:s:S:t:Vv:xz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
 			case 'a':
 				if(strncmp(optarg, "aac", 3) == 0) {
-					strcpy(dvd_rip.acodec, "aac");
 					aac = true;
 				} else if(strncmp(optarg, "opus", 4) == 0) {
-					strcpy(dvd_rip.acodec, "libopus");
 					opus = true;
 				}
 				break;
@@ -220,8 +218,8 @@ int main(int argc, char **argv) {
 
 				break;
 
-			case 'd':
-				detelecine = true;
+			case 'D':
+				detelecine = false;
 				break;
 
 			case 'L':
@@ -318,7 +316,7 @@ int main(int argc, char **argv) {
 				printf("  -v, --vcodec <vcodec>         Video codec <x264|x265|vp8|vp9>, default: x264\n");
 				printf("  -a, --acodec <acodec>         Audio codec (aac|opus), default: aac\n");
 				printf("  -q, --crf <#>			Video encoder CRF\n");
-				printf("  -d, --detelecine		Detelecine video\n");
+				printf("  -D, --no-detelecine           Do not detelecine video\n");
 				printf("\n");
 				printf("Defaults:\n");
 				printf("\n");
@@ -618,7 +616,6 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 	mpv_set_option_string(dvd_mpv, "o", dvd_rip.filename);
-	fprintf(stderr, "[dvd_rip] outputting to \"%s\"\n", dvd_rip.filename);
 	mpv_set_option_string(dvd_mpv, "config-dir", dvd_rip.mpv_config_dir);
 	mpv_set_option_string(dvd_mpv, "config", "yes");
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
@@ -702,6 +699,7 @@ int main(int argc, char **argv) {
 		snprintf(dvd_rip.vcodec_opts, 9, "crf=%i", crf);
 	}
 
+
 	// VPX prefers two-pass encodes, and doesn't set a CRF by default. Setting one
 	// here that will give decent, comparable quality to the other two.
 	if(crf == -1 && (vp8 || vp9))
@@ -740,10 +738,8 @@ int main(int argc, char **argv) {
 		mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
 
 	// Detelecining
-	if(detelecine) {
-		printf("[dvd_rip] detelecining video using pullup, dejudder, fps filters\n");
+	if(detelecine)
 		strcat(dvd_rip.vf_opts, "pullup,dejudder,fps=fps=24000/1001");
-	}
 
 	mpv_set_option_string(dvd_mpv, "vf", dvd_rip.vf_opts);
 
@@ -754,9 +750,8 @@ int main(int argc, char **argv) {
 		mpv_set_option_string(dvd_mpv, "aid", dvd_rip.audio_stream_id);
 
 	// Container
-	if(aac) {
-		mpv_set_option_string(dvd_mpv, "oac", "aac");
-	}
+	if(aac)
+		strcpy(dvd_rip.acodec, "aac");
 
 	if(opus) {
 		// Opus audio codec can support surround sound. Arguments here would need to know how
@@ -765,13 +760,17 @@ int main(int argc, char **argv) {
 		// track selected, and then parsing its attributes. Mapping the audio track in ffmpeg / mpv
 		// and dvd_info isn't supported either, which makes this part of a bigger feature.
 		// If it were working, mpv 'audio-channels' option would be used here
-		mpv_set_option_string(dvd_mpv, "oac", "libopus");
+		// strcpy(dvd_rip.acodec, "libopus");
+		// mpv_set_option_string(dvd_mpv, "oac", "libopus");
 		/*
 		sprintf(dvd_rip.acodec_opts, "application=audio,vbr=off,b=%" PRIu32"000", dvd_rip.audio_bitrate);
 		mpv_set_option_string(dvd_mpv, "oacopts", dvd_rip.acodec_opts);
 		mpv_set_option_string(dvd_mpv, "audio-channels", mpv_audio_channels);
 		*/
+		strcpy(dvd_rip.acodec, "libopus");
 	}
+
+	mpv_set_option_string(dvd_mpv, "oac", dvd_rip.acodec);
 
 	/** Subtitles **/
 	if(strlen(dvd_rip.subtitles_lang)) {
@@ -818,6 +817,12 @@ int main(int argc, char **argv) {
 	struct mpv_event_end_file *dvd_mpv_eof = NULL;
 
 	retval = 0;
+
+	fprintf(stderr, "[dvd_rip] saving to filename \'%s\'\n", dvd_rip.filename);
+	fprintf(stderr, "[dvd_rip] using video codec %s and CRF %i\n", dvd_rip.vcodec, crf);
+	fprintf(stderr, "[dvd_rip] using audio codec %s\n", dvd_rip.acodec);
+	if(detelecine)
+		printf("[dvd_rip] detelecining video using pullup, dejudder, fps filters\n");
 
 	while(true) {
 
