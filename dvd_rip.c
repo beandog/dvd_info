@@ -500,12 +500,6 @@ int main(int argc, char **argv) {
 
 	}
 
-	/** Filename **/
-	if(!opt_filename) {
-		strcpy(dvd_rip.container, "mp4");
-		sprintf(dvd_rip.filename, "dvd_track_%02" PRIu16 ".mp4", dvd_rip.track);
-	}
-
 	// Track
 	struct dvd_track dvd_track;
 	dvd_track.track = dvd_rip.track;
@@ -616,7 +610,6 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "[dvd_rip] could not create an mpv instance\n");
 		return 1;
 	}
-	mpv_set_option_string(dvd_mpv, "o", dvd_rip.filename);
 	mpv_set_option_string(dvd_mpv, "config-dir", dvd_rip.mpv_config_dir);
 	mpv_set_option_string(dvd_mpv, "config", "yes");
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
@@ -644,6 +637,12 @@ int main(int argc, char **argv) {
 	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
 	sprintf(dvd_mpv_last_chapter, "#%" PRIu8, dvd_rip.last_chapter + 1);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
+
+	// Default container if using specific codecs
+	if(!mp4 && !mkv && !webm && (x264 || x265))
+		mp4 = true;
+	if(!mp4 && !mkv && !webm && (vp8 || vp9))
+		webm = true;
 
 	// Default container MP4
 	if(!mp4 && !mkv && !webm)
@@ -692,6 +691,21 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "[dvd_rip] WebM only supports Opus audio codec, quitting\n");
 		return 1;
 	}
+
+	/** Filename **/
+	if(!opt_filename) {
+		if(mp4)
+			strcpy(dvd_rip.container, "mp4");
+		else if(mkv)
+			strcpy(dvd_rip.container, "mkv");
+		else if(webm)
+			strcpy(dvd_rip.container, "webm");
+		sprintf(dvd_rip.filename, "dvd_track_%02" PRIu16 ".%s", dvd_rip.track, dvd_rip.container);
+	}
+
+	mpv_set_option_string(dvd_mpv, "o", dvd_rip.filename);
+
+	fprintf(stderr, "[dvd_rip] saving to filename \'%s\'\n", dvd_rip.filename);
 
 	/** Video **/
 
@@ -849,7 +863,6 @@ int main(int argc, char **argv) {
 
 	retval = 0;
 
-	fprintf(stderr, "[dvd_rip] saving to filename \'%s\'\n", dvd_rip.filename);
 	if(x264 || x265)
 		fprintf(stderr, "[dvd_rip] using video codec %s and CRF %i\n", dvd_rip.vcodec, crf);
 	if(vp8 || vp9)
