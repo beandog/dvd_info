@@ -1,7 +1,14 @@
-You will need libdvdread installed, along with libdvdcss for decryption.
+Installation instructions for specific distros are at https://github.com/beandog/dvd_info/wiki
 
-$ ./configure
-$ make
+Assuming you have 'libdvdread' and libdvdcss installed, it should build and run just fine:
 
-To build dvd_player and dvd_rip, you will need mpv libraries installed.
-$ ./configure --with-libmpv
+$ ./configure && make && sudo make install
+
+If you want 'dvd_rip' and 'dvd_player', you'll need libmpv (part of 'mpv' package) installed as well:
+
+$ ./configure --with-libmpv && make && sudo make install
+
+If you are having problems with the configure script or makefiles, you can rebuild them. You will need 'autoconf' and 'automake' installed first:
+
+$ autoreconf -fi
+$ ./configure && make && sudo make install
