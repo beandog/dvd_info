@@ -13,6 +13,7 @@
   backup files
 * dvd_rip: Support VP9
 * dvd_rip: Set video codec to x264 by default for Matroska
+* dvd_player: fix playing at starting chapter (and range)
 
 1.16
 
