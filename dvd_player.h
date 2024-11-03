@@ -17,7 +17,8 @@ struct dvd_playback {
 	bool subtitles;
 	char subtitles_lang[3];
 	char subtitles_stream_id[4];
-	char mpv_chapters_range[32];
+	char mpv_first_chapter[4];
+	char mpv_last_chapter[4];
 };
 
 #endif

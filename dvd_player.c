@@ -85,6 +85,8 @@ int main(int argc, char **argv) {
 	memset(dvd_playback.audio_stream_id, '\0', sizeof(dvd_playback.audio_stream_id));
 	memset(dvd_playback.subtitles_lang, '\0', sizeof(dvd_playback.subtitles_lang));
 	memset(dvd_playback.subtitles_stream_id, '\0', sizeof(dvd_playback.subtitles_stream_id));
+	memset(dvd_playback.mpv_first_chapter, '\0', sizeof(dvd_playback.mpv_first_chapter));
+	memset(dvd_playback.mpv_last_chapter, '\0', sizeof(dvd_playback.mpv_last_chapter));
 
 	int long_index = 0;
 	int opt = 0;
@@ -502,9 +504,16 @@ int main(int argc, char **argv) {
 	 * By default, MPV will just play all chapters of the selected track.
 	 */
 	if(opt_chapter_number) {
-		memset(dvd_playback.mpv_chapters_range, '\0', sizeof(dvd_playback.mpv_chapters_range));
-		sprintf(dvd_playback.mpv_chapters_range, "%" PRIu8 "-%" PRIu8, dvd_playback.first_chapter, dvd_playback.last_chapter + 1);
-		mpv_set_option_string(dvd_mpv, "chapter", dvd_playback.mpv_chapters_range);
+
+		if(dvd_playback.last_chapter == dvd_playback.first_chapter)
+			dvd_playback.last_chapter += 1;
+
+		snprintf(dvd_playback.mpv_first_chapter, sizeof(dvd_playback.mpv_first_chapter), "#%" PRIu8, dvd_playback.first_chapter);
+		mpv_set_option_string(dvd_mpv, "start", dvd_playback.mpv_first_chapter);
+
+		snprintf(dvd_playback.mpv_last_chapter, sizeof(dvd_playback.mpv_last_chapter), "#%" PRIu8, dvd_playback.last_chapter);
+		mpv_set_option_string(dvd_mpv, "end", dvd_playback.mpv_last_chapter);
+
 	}
 
 	// Playback options and default configuration
@@ -592,6 +601,9 @@ int main(int argc, char **argv) {
 	}
 
 	fprintf(stderr, "[dvd_player] Track: %" PRIu16 ", Length: %s, Chapters: %" PRIu8 ", Filesize: %.0lf MBs\n", dvd_playback.track, dvd_track.length, dvd_track.chapters, dvd_track.filesize_mbs);
+
+	if(opt_chapter_number)
+		fprintf(stderr, "[dvd_player] starting at chapter #%" PRIu8 "\n", dvd_playback.first_chapter);
 
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
 	mpv_event *dvd_mpv_event = NULL;
