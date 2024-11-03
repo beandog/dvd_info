@@ -69,8 +69,8 @@ OPTIONS
 *-q, --crf*='#'
 	Video encoder CRF to use. The default is the baseline for the codec.
 
-*-d, --detelecine*
-	Detelecine video (recommended on most sources).
+*-D, --no-detelecine*
+	Do not Detelecine video.
 
 *-h, --help*
 	Display help output.
