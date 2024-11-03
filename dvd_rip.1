@@ -2,12 +2,12 @@
 .\"     Title: dvd_rip
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.18
-.\"      Date: 2024-10-31
+.\"      Date: 2024-11-03
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_RIP" "1" "2024-10-31" "\ \&" "\ \&"
+.TH "DVD_RIP" "1" "2024-11-03" "\ \&" "\ \&"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -109,6 +109,13 @@ Display help output.
 .sp
 dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1)
 .SH "BUGS"
+.sp
+\fBdvd_rip\fP uses libmpv, but does not always act exactly how mpv would for
+some reason. Because of that, it is considered buggy by default until the
+issues can be tracked down.
+.sp
+\fBdvd_rip\fP sometimes breaks on tracks that libdvdnav moves around on, and so
+it can be unpredictable, or encode past a track\(cqs actual length.
 .sp
 \fBdvd_rip\fP does not wait for an optical device to be ready. Wait for it to
 finish "polling" before running the program.

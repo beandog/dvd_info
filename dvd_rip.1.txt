@@ -81,6 +81,13 @@ dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1)
 
 BUGS
 ----
+*dvd_rip* uses libmpv, but does not always act exactly how mpv would for
+some reason. Because of that, it is considered buggy by default until the
+issues can be tracked down.
+
+*dvd_rip* sometimes breaks on tracks that libdvdnav moves around on, and so
+it can be unpredictable, or encode past a track's actual length.
+
 *dvd_rip* does not wait for an optical device to be ready. Wait for it to
 finish "polling" before running the program.
 
