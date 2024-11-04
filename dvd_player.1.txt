@@ -49,6 +49,9 @@ OPTIONS
 *-v, --verbose*
 	Enable verbose output.
 
+*-z, --debug*
+	Enable debugging output.
+
 *-V, --version*
 	Display version number.
 

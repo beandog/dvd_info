@@ -229,7 +229,8 @@ int main(int argc, char **argv) {
 				printf("  -s, --slang <language>        Select subtitles language, two character code (default: no subtitles)\n");
 				printf("  -S, --sid <#>                 Select subtitles track ID\n");
 				printf("  -d, --detelecine              Detelecine video\n");
-				printf("  -v, --verbose                 Verbose output\n");
+				printf("  -v, --verbose                 Show verbose output\n");
+				printf("  -z, --debug                   Show debugging output\n");
 				printf("  -h, --help			Show this help text and exit\n");
 				printf("\n");
 				printf("DVD path can be a device name, a single file, or directory (default: %s)\n", DEFAULT_DVD_DEVICE);
