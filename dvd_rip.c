@@ -627,7 +627,6 @@ int main(int argc, char **argv) {
 	} else {
 		mpv_request_log_messages(dvd_mpv, "info");
 		strcpy(dvd_rip.vcodec_log_level, "info");
-		mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
 	}
 
 	/** DVD **/
