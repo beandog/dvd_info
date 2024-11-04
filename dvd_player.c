@@ -447,7 +447,6 @@ int main(int argc, char **argv) {
 
 	// Terminal output
 	mpv_set_option_string(dvd_mpv, "terminal", "yes");
-	mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
 
 	// [ffmpeg/audio] 'frame sync errors' which are normal when seeking on DVDs
 	if(debug) {
