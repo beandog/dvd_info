@@ -44,18 +44,18 @@ OPTIONS
 *-c, --chapter*='CHAPTER[-[CHAPTER]]'
 	Encode chapter number or range. Default is all chapters.
 
-*-a, --alang*='LANGUAGE'
+*--alang*='LANGUAGE'
 	Select audio track by language code, two letters. Default is first
 	audio track.
 
-*-A, --aid*='#'
+*--aid*='#'
 	Select audio track by stream ID.
 
-*-s, --slang*='LANGUAGE'
+*--slang*='LANGUAGE'
 	Select subtitle track by language code, two letters. Default is no
 	subtitles.
 
-*-S, --sid*='#'
+*--sid*='#'
 	Select subtitles track by stream ID.
 
 *-v, --vcodec*='x264|x265|vpx'
@@ -72,6 +72,12 @@ OPTIONS
 *-D, --no-detelecine*
 	Do not Detelecine video.
 
+*--verbose*
+	Display verbose output.
+
+*--debug*
+	Display debug output.
+
 *-h, --help*
 	Display help output.
 
@@ -82,17 +88,13 @@ dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1)
 BUGS
 ----
 *dvd_rip* uses libmpv, but does not always act exactly how mpv would for
-some reason. Because of that, it is considered buggy by default until the
-issues can be tracked down.
+some reason. Because of that, there are some issues still.
 
 *dvd_rip* sometimes breaks on tracks that libdvdnav moves around on, and so
 it can be unpredictable, or encode past a track's actual length.
 
 *dvd_rip* does not wait for an optical device to be ready. Wait for it to
 finish "polling" before running the program.
-
-When ripping a specific set of chapters, libmpv will display in the progress
-bar the length of the entire video.
 
 Please file bugs at <https://github.com/beandog/dvd_info/issues>
 

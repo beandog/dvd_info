@@ -335,8 +335,10 @@ int main(int argc, char **argv) {
 				printf("See the man page for more details.\n");
 				printf("\n");
 				printf("Other:\n");
-				printf("  -h, --help                    Show this help text and exit\n");
+				printf("  --verbose                     Show verbose output\n");
+				printf("  --debug                       Show debugging output\n");
 				printf("  --version                     Show version info and exit\n");
+				printf("  -h, --help                    Show this help text and exit\n");
 				printf("\n");
 				printf("DVD path can be a device name, a single file, or directory (default: %s)\n", DEFAULT_DVD_DEVICE);
 				printf("\n");

@@ -75,18 +75,18 @@ Encode track number. Default is longest valid track.
 \fB\-c, \-\-chapter\fP=\fICHAPTER[\-[CHAPTER]]\fP
 Encode chapter number or range. Default is all chapters.
 .sp
-\fB\-a, \-\-alang\fP=\fILANGUAGE\fP
+\fB\-\-alang\fP=\fILANGUAGE\fP
 Select audio track by language code, two letters. Default is first
 audio track.
 .sp
-\fB\-A, \-\-aid\fP=\fI#\fP
+\fB\-\-aid\fP=\fI#\fP
 Select audio track by stream ID.
 .sp
-\fB\-s, \-\-slang\fP=\fILANGUAGE\fP
+\fB\-\-slang\fP=\fILANGUAGE\fP
 Select subtitle track by language code, two letters. Default is no
 subtitles.
 .sp
-\fB\-S, \-\-sid\fP=\fI#\fP
+\fB\-\-sid\fP=\fI#\fP
 Select subtitles track by stream ID.
 .sp
 \fB\-v, \-\-vcodec\fP=\fIx264|x265|vpx\fP
@@ -103,6 +103,12 @@ Video encoder CRF to use. The default is the baseline for the codec.
 \fB\-D, \-\-no\-detelecine\fP
 Do not Detelecine video.
 .sp
+\fB\-\-verbose\fP
+Display verbose output.
+.sp
+\fB\-\-debug\fP
+Display debug output.
+.sp
 \fB\-h, \-\-help\fP
 Display help output.
 .SH "SEE ALSO"
@@ -111,17 +117,13 @@ dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1)
 .SH "BUGS"
 .sp
 \fBdvd_rip\fP uses libmpv, but does not always act exactly how mpv would for
-some reason. Because of that, it is considered buggy by default until the
-issues can be tracked down.
+some reason. Because of that, there are some issues still.
 .sp
 \fBdvd_rip\fP sometimes breaks on tracks that libdvdnav moves around on, and so
 it can be unpredictable, or encode past a track\(cqs actual length.
 .sp
 \fBdvd_rip\fP does not wait for an optical device to be ready. Wait for it to
 finish "polling" before running the program.
-.sp
-When ripping a specific set of chapters, libmpv will display in the progress
-bar the length of the entire video.
 .sp
 Please file bugs at \c
 .URL "https://github.com/beandog/dvd_info/issues" "" ""
