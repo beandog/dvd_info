@@ -104,6 +104,7 @@ int main(int argc, char **argv) {
 	char dvd_mpv_first_chapter[4] = {'\0'};
 	char dvd_mpv_last_chapter[4] = {'\0'};
 	const char *home_dir = getenv("HOME");
+	char dvd_mpv_args[64];
 	int retval = 0;
 
 	// Video Title Set
@@ -133,6 +134,10 @@ int main(int argc, char **argv) {
 	memset(dvd_rip.of_opts, '\0', sizeof(dvd_rip.of_opts));
 	memset(str_crf, '\0', sizeof(str_crf));
 	snprintf(dvd_rip.config_dir, PATH_MAX - 1, "/.config/dvd_rip");
+	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
+	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
+	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
+
 	if(home_dir != NULL)
 		snprintf(dvd_rip.mpv_config_dir, PATH_MAX - 1, "%s%s", home_dir, dvd_rip.config_dir);
 
@@ -547,14 +552,14 @@ int main(int argc, char **argv) {
 	// Set the proper chapter range
 	if(opt_chapter_number) {
 		if(arg_first_chapter > dvd_track.chapters) {
-			dvd_rip.first_chapter = dvd_track.chapters;
-			fprintf(stderr, "[dvd_rip] resetting first chapter to %" PRIu8 "\n", dvd_rip.first_chapter);
+			fprintf(stderr, "[dvd_rip] Starting chapter cannot be larger than %" PRIu8 "\n", dvd_track.chapters);
+			return 1;
 		} else
 			dvd_rip.first_chapter = arg_first_chapter;
 
 		if(arg_last_chapter > dvd_track.chapters) {
-			dvd_rip.last_chapter = dvd_track.chapters;
-			fprintf(stderr, "[dvd_rip] resetting last chapter to %" PRIu8 "\n", dvd_rip.last_chapter);
+			fprintf(stderr, "[dvd_rip] Final chapter cannot be larger than %" PRIu8 "\n", dvd_track.chapters);
+			return 1;
 		} else
 			dvd_rip.last_chapter = arg_last_chapter;
 	} else {
@@ -622,20 +627,18 @@ int main(int argc, char **argv) {
 	} else {
 		mpv_request_log_messages(dvd_mpv, "info");
 		strcpy(dvd_rip.vcodec_log_level, "info");
-		mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
 	}
 
 	/** DVD **/
-	char dvd_mpv_args[13];
-	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
-	sprintf(dvd_mpv_args, "dvd://%" PRIu16, dvd_rip.track - 1);
+	snprintf(dvd_mpv_args, sizeof(dvd_mpv_args), "dvd://%" PRIu16, dvd_rip.track - 1);
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
-	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
-	sprintf(dvd_mpv_first_chapter, "#%" PRIu8, dvd_rip.first_chapter);
+
+	/// Chapters
+	snprintf(dvd_mpv_first_chapter, sizeof(dvd_mpv_first_chapter), "#%" PRIu8, dvd_rip.first_chapter);
 	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
-	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
-	sprintf(dvd_mpv_last_chapter, "#%" PRIu8, dvd_rip.last_chapter + 1);
+
+	snprintf(dvd_mpv_last_chapter, sizeof(dvd_mpv_last_chapter), "#%" PRIu8, dvd_rip.last_chapter + 1);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 
 	// Default container if using specific codecs
