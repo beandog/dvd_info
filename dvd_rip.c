@@ -104,6 +104,7 @@ int main(int argc, char **argv) {
 	char dvd_mpv_first_chapter[4] = {'\0'};
 	char dvd_mpv_last_chapter[4] = {'\0'};
 	const char *home_dir = getenv("HOME");
+	char dvd_mpv_args[64];
 	int retval = 0;
 
 	// Video Title Set
@@ -135,6 +136,7 @@ int main(int argc, char **argv) {
 	snprintf(dvd_rip.config_dir, PATH_MAX - 1, "/.config/dvd_rip");
 	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
 	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
+	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
 
 	if(home_dir != NULL)
 		snprintf(dvd_rip.mpv_config_dir, PATH_MAX - 1, "%s%s", home_dir, dvd_rip.config_dir);
@@ -629,8 +631,6 @@ int main(int argc, char **argv) {
 	}
 
 	/** DVD **/
-	char dvd_mpv_args[13];
-	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
 	snprintf(dvd_mpv_args, sizeof(dvd_mpv_args), "dvd://%" PRIu16, dvd_rip.track - 1);
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
