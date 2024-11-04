@@ -92,6 +92,7 @@ int main(int argc, char **argv) {
 	bool mp4 = false;
 	bool webm = false;
 	bool detelecine = true;
+	bool pal_video = false;
 	int8_t crf = -1;
 	char str_crf[10];
 	uint16_t arg_track_number = 1;
@@ -786,8 +787,10 @@ int main(int argc, char **argv) {
 		mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
 
 	// Detelecining
-	if(detelecine)
-		strcat(dvd_rip.vf_opts, "pullup,dejudder,fps=fps=24000/1001");
+	if(detelecine && pal_video)
+		strcat(dvd_rip.vf_opts, "pullup,dejudder,fps=25");
+	else if(detelecine && !pal_video)
+		strcat(dvd_rip.vf_opts, "pullup,dejudder,fps=fps=30000/1001");
 
 	mpv_set_option_string(dvd_mpv, "vf", dvd_rip.vf_opts);
 
