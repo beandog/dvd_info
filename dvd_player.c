@@ -482,7 +482,7 @@ int main(int argc, char **argv) {
 	 *
 	 */
 	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
-	sprintf(dvd_mpv_args, "dvd://%" PRIu16, dvd_playback.track - 1);
+	snprintf(dvd_mpv_args, sizeof(dvd_mpv_args), "dvd://%" PRIu16, dvd_playback.track - 1);
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 
 	// Load user's mpv configuration in ~/.config/dvd_player/mpv.conf (and friends)

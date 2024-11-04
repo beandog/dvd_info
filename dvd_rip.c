@@ -631,7 +631,7 @@ int main(int argc, char **argv) {
 	/** DVD **/
 	char dvd_mpv_args[13];
 	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
-	sprintf(dvd_mpv_args, "dvd://%" PRIu16, dvd_rip.track - 1);
+	snprintf(dvd_mpv_args, sizeof(dvd_mpv_args), "dvd://%" PRIu16, dvd_rip.track - 1);
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
 
