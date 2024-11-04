@@ -421,11 +421,15 @@ int main(int argc, char **argv) {
 	if(opt_chapter_number) {
 		if(arg_first_chapter > dvd_track.chapters) {
 			dvd_playback.first_chapter = dvd_track.chapters;
+			fprintf(stderr, "[dvd_player] Starting chapter cannot be larger than %" PRIu8 "\n", dvd_track.chapters);
+			return 1;
 		} else
 			dvd_playback.first_chapter = arg_first_chapter;
 
 		if(arg_last_chapter > dvd_track.chapters) {
 			dvd_playback.last_chapter = dvd_track.chapters;
+			fprintf(stderr, "[dvd_player] Final chapter cannot be larger than %" PRIu8 "\n", dvd_track.chapters);
+			return 1;
 		} else
 			dvd_playback.last_chapter = arg_last_chapter;
 	} else {
