@@ -70,7 +70,7 @@ bool dvd_subtitle_active(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t 
 	if(pgc->subp_control[subtitle_track - 1] & 0x80000000)
 		return true;
 
-	return 0;
+	return false;
 
 }
 
