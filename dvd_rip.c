@@ -104,7 +104,6 @@ int main(int argc, char **argv) {
 	char dvd_mpv_first_chapter[4] = {'\0'};
 	char dvd_mpv_last_chapter[4] = {'\0'};
 	const char *home_dir = getenv("HOME");
-	char dvd_mpv_args[64];
 	int retval = 0;
 
 	// Video Title Set
@@ -134,10 +133,6 @@ int main(int argc, char **argv) {
 	memset(dvd_rip.of_opts, '\0', sizeof(dvd_rip.of_opts));
 	memset(str_crf, '\0', sizeof(str_crf));
 	snprintf(dvd_rip.config_dir, PATH_MAX - 1, "/.config/dvd_rip");
-	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
-	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
-	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
-
 	if(home_dir != NULL)
 		snprintf(dvd_rip.mpv_config_dir, PATH_MAX - 1, "%s%s", home_dir, dvd_rip.config_dir);
 
@@ -190,7 +185,7 @@ int main(int argc, char **argv) {
 				opt_chapter_number = true;
 				token = strtok(optarg, "-");
 				if(strlen(token) > 2) {
-					printf("[dvd_rip] Chapter range must be between 1 and 99\n");
+					fprintf(stderr, "[dvd_rip] Chapter range must be between 1 and 99\n");
 					return 1;
 				}
 				arg_number = strtoul(token, NULL, 10);
@@ -204,7 +199,7 @@ int main(int argc, char **argv) {
 				token = strtok(NULL, "-");
 				if(token != NULL) {
 					if(strlen(token) > 2) {
-						printf("[dvd_rip] Chapter range must be between 1 and 99\n");
+						fprintf(stderr, "[dvd_rip] Chapter range must be between 1 and 99\n");
 						return 1;
 					}
 					arg_number = strtoul(token, NULL, 10);
@@ -364,7 +359,7 @@ int main(int argc, char **argv) {
 	/** Begin dvd_rip :) */
 
 	if(access(device_filename, F_OK) != 0) {
-		printf("[dvd_rip] cannot access %s\n", device_filename);
+		fprintf(stderr, "[dvd_rip] cannot access %s\n", device_filename);
 		return 1;
 	}
 
@@ -381,7 +376,7 @@ int main(int argc, char **argv) {
 	dvd_reader_t *dvdread_dvd = NULL;
 	dvdread_dvd = DVDOpen(device_filename);
 	if(!dvdread_dvd) {
-		printf("[dvd_rip] Opening DVD %s failed\n", device_filename);
+		fprintf(stderr, "[dvd_rip] Opening DVD %s failed\n", device_filename);
 		return 1;
 	}
 
@@ -390,7 +385,7 @@ int main(int argc, char **argv) {
 	memset(dvdread_id, '\0', sizeof(dvdread_id));
 	dvd_dvdread_id(dvdread_id, dvdread_dvd);
 	if(strlen(dvdread_id) == 0) {
-		printf("[dvd_rip] Opening DVD %s failed\n", device_filename);
+		fprintf(stderr, "[dvd_rip] Opening DVD %s failed\n", device_filename);
 		return 1;
 	}
 
@@ -398,7 +393,7 @@ int main(int argc, char **argv) {
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
 	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo)) {
-		printf("[dvd_rip] Opening VMG IFO failed\n");
+		fprintf(stderr, "[dvd_rip] Opening VMG IFO failed\n");
 		DVDClose(dvdread_dvd);
 		return 1;
 	}
@@ -415,7 +410,7 @@ int main(int argc, char **argv) {
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
 
 	if(num_ifos < 1) {
-		printf("[dvd_rip] DVD has no title IFOs\n");
+		fprintf(stderr, "[dvd_rip] DVD has no title IFOs\n");
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -434,7 +429,7 @@ int main(int argc, char **argv) {
 
 	vts_ifo = ifoOpen(dvdread_dvd, vts);
 	if(vts_ifo == NULL) {
-		printf("[dvd_rip] Could not open primary VTS_IFO\n");
+		fprintf(stderr, "[dvd_rip] Could not open primary VTS_IFO\n");
 		return 1;
 	}
 	ifoClose(vts_ifo);
@@ -472,8 +467,8 @@ int main(int argc, char **argv) {
 
 	// Exit if track number requested does not exist
 	if(opt_track_number && (arg_track_number > dvd_info.tracks)) {
-		printf("[dvd_rip] Invalid track number %" PRIu16 "\n", arg_track_number);
-		printf("[dvd_rip] Valid track numbers: 1 to %" PRIu16 "\n", dvd_info.tracks);
+		fprintf(stderr, "[dvd_rip] Invalid track number %" PRIu16 "\n", arg_track_number);
+		fprintf(stderr, "[dvd_rip] Valid track numbers: 1 to %" PRIu16 "\n", dvd_info.tracks);
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -547,19 +542,19 @@ int main(int argc, char **argv) {
 	dvd_rip.audio_bitrate = dvd_bitrate[audio_max_channels];
 
 	if(debug)
-		printf("[dvd_rip] setting max audio channels to %" PRIu8 "\n", audio_max_channels);
+		fprintf(stderr, "[dvd_rip] setting max audio channels to %" PRIu8 "\n", audio_max_channels);
 
 	// Set the proper chapter range
 	if(opt_chapter_number) {
 		if(arg_first_chapter > dvd_track.chapters) {
-			printf("[dvd_rip] Starting chapter cannot be larger than %" PRIu8 "\n", dvd_track.chapters);
-			return 1;
+			dvd_rip.first_chapter = dvd_track.chapters;
+			fprintf(stderr, "[dvd_rip] resetting first chapter to %" PRIu8 "\n", dvd_rip.first_chapter);
 		} else
 			dvd_rip.first_chapter = arg_first_chapter;
 
 		if(arg_last_chapter > dvd_track.chapters) {
-			printf("[dvd_rip] Final chapter cannot be larger than %" PRIu8 "\n", dvd_track.chapters);
-			return 1;
+			dvd_rip.last_chapter = dvd_track.chapters;
+			fprintf(stderr, "[dvd_rip] resetting last chapter to %" PRIu8 "\n", dvd_rip.last_chapter);
 		} else
 			dvd_rip.last_chapter = arg_last_chapter;
 	} else {
@@ -579,10 +574,10 @@ int main(int argc, char **argv) {
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
 
 	if(strlen(dvd_info.title))
-		printf("[dvd_rip] Disc title: '%s'\n", dvd_info.title);
+		fprintf(stderr, "[dvd_rip] Disc title: '%s'\n", dvd_info.title);
 	if(strlen(dvdread_id))
-		printf("[dvd_rip] Disc ID: '%s'\n", dvdread_id);
-	printf("[dvd_rip] Track: %*" PRIu16 ", Length: %s, Chapters: %*" PRIu8 ", Cells: %*" PRIu8 ", Audio streams: %*" PRIu8 ", Subpictures: %*" PRIu8 "\n", 2, dvd_track.track, dvd_track.length, 2, dvd_track.chapters, 2, dvd_track.cells, 2, dvd_track.audio_tracks, 2, dvd_track.subtitles);
+		fprintf(stderr, "[dvd_rip] Disc ID: '%s'\n", dvdread_id);
+	fprintf(stderr, "[dvd_rip] Track: %*" PRIu16 ", Length: %s, Chapters: %*" PRIu8 ", Cells: %*" PRIu8 ", Audio streams: %*" PRIu8 ", Subpictures: %*" PRIu8 "\n", 2, dvd_track.track, dvd_track.length, 2, dvd_track.chapters, 2, dvd_track.cells, 2, dvd_track.audio_tracks, 2, dvd_track.subtitles);
 
 	// Check for track issues
 	if(dvd_vts[vts].valid == false) {
@@ -590,29 +585,29 @@ int main(int argc, char **argv) {
 	}
 
 	if(dvd_track.msecs == 0) {
-		printf("[dvd_rip] invalid track - track has zero length\n");
+		fprintf(stderr, "[dvd_rip] invalid track - track has zero length\n");
 		dvd_track.valid = false;
 	}
 
 	if(dvd_track.chapters == 0) {
-		printf("[dvd_rip] invalid track - zero chapters\n");
+		fprintf(stderr, "[dvd_rip] invalid track - zero chapters\n");
 		dvd_track.valid = false;
 	}
 
 	if(dvd_track.cells == 0) {
-		printf("[dvd_rip] invalid track - zero cells\n");
+		fprintf(stderr, "[dvd_rip] invalid track - zero cells\n");
 		dvd_track.valid = false;
 	}
 
 	if(!dvd_track.valid) {
-		printf("[dvd_rip] track %" PRIu16 "has been flagged as invalid, and encoding it could cause strange problems\b", dvd_rip.track);
+		fprintf(stderr, "[dvd_rip] track %" PRIu16 "has been flagged as invalid, and encoding it could cause strange problems\b", dvd_rip.track);
 	}
 
 	// MPV instance
 	mpv_handle *dvd_mpv = NULL;
 	dvd_mpv = mpv_create();
 	if(dvd_mpv == NULL) {
-		printf("[dvd_rip] could not create an mpv instance\n");
+		fprintf(stderr, "[dvd_rip] could not create an mpv instance\n");
 		return 1;
 	}
 	mpv_set_option_string(dvd_mpv, "config-dir", dvd_rip.mpv_config_dir);
@@ -627,18 +622,20 @@ int main(int argc, char **argv) {
 	} else {
 		mpv_request_log_messages(dvd_mpv, "info");
 		strcpy(dvd_rip.vcodec_log_level, "info");
+		mpv_set_option_string(dvd_mpv, "term-osd-bar", "yes");
 	}
 
 	/** DVD **/
-	snprintf(dvd_mpv_args, sizeof(dvd_mpv_args), "dvd://%" PRIu16, dvd_rip.track - 1);
+	char dvd_mpv_args[13];
+	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
+	sprintf(dvd_mpv_args, "dvd://%" PRIu16, dvd_rip.track - 1);
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
-
-	/// Chapters
-	snprintf(dvd_mpv_first_chapter, sizeof(dvd_mpv_first_chapter), "#%" PRIu8, dvd_rip.first_chapter);
+	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
+	sprintf(dvd_mpv_first_chapter, "#%" PRIu8, dvd_rip.first_chapter);
 	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
-
-	snprintf(dvd_mpv_last_chapter, sizeof(dvd_mpv_last_chapter), "#%" PRIu8, dvd_rip.last_chapter + 1);
+	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
+	sprintf(dvd_mpv_last_chapter, "#%" PRIu8, dvd_rip.last_chapter + 1);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 
 	// Default container if using specific codecs
@@ -679,19 +676,19 @@ int main(int argc, char **argv) {
 
 	// MP4 can't support VP8 or VP9
 	if(mp4 && (vp8 || vp9)) {
-		printf("[dvd_rip] MP4 doesn't support VP8 or VP9 video codecs, quitting\n");
+		fprintf(stderr, "[dvd_rip] MP4 doesn't support VP8 or VP9 video codecs, quitting\n");
 		return 1;
 	}
 
 	// WebM can't support x264 or x265
 	if(webm && (x264 || x265)) {
-		printf("[dvd_rip] WebM only supports VP8 and VP9 video codecs, quitting\n");
+		fprintf(stderr, "[dvd_rip] WebM only supports VP8 and VP9 video codecs, quitting\n");
 		return 1;
 	}
 
 	// WebM can't support AAC
 	if(webm && aac) {
-		printf("[dvd_rip] WebM only supports Opus audio codec, quitting\n");
+		fprintf(stderr, "[dvd_rip] WebM only supports Opus audio codec, quitting\n");
 		return 1;
 	}
 
@@ -708,7 +705,7 @@ int main(int argc, char **argv) {
 
 	mpv_set_option_string(dvd_mpv, "o", dvd_rip.filename);
 
-	printf("[dvd_rip] saving to filename \'%s\'\n", dvd_rip.filename);
+	fprintf(stderr, "[dvd_rip] saving to filename \'%s\'\n", dvd_rip.filename);
 
 	/** Video **/
 
@@ -822,23 +819,23 @@ int main(int argc, char **argv) {
 
 	/** Subtitles **/
 	if(strlen(dvd_rip.subtitles_lang)) {
-		printf("[dvd_rip] burn-in subtitles lang %s\n", dvd_rip.subtitles_lang);
+		fprintf(stderr, "[dvd_rip] burn-in subtitles lang %s\n", dvd_rip.subtitles_lang);
 		mpv_set_option_string(dvd_mpv, "slang", dvd_rip.subtitles_lang);
 	} else if(strlen(dvd_rip.subtitles_stream_id)) {
-		printf("[dvd_rip] burn-in subtitles stream %s\n", dvd_rip.subtitles_stream_id);
+		fprintf(stderr, "[dvd_rip] burn-in subtitles stream %s\n", dvd_rip.subtitles_stream_id);
 		mpv_set_option_string(dvd_mpv, "sid", dvd_rip.subtitles_stream_id);
 	}
 
 	// ** All encoding and user config options must be set before initialize **
 	retval = mpv_initialize(dvd_mpv);
 	if(retval) {
-		printf("[dvd_rip] mpv_initialize() failed\n");
+		fprintf(stderr, "[dvd_rip] mpv_initialize() failed\n");
 		return 1;
 	}
 
 	retval = mpv_command(dvd_mpv, dvd_mpv_commands);
 	if(retval) {
-		printf("[dvd_rip] mpv_command() failed\n");
+		fprintf(stderr, "[dvd_rip] mpv_command() failed\n");
 		return 1;
 	}
 
@@ -867,10 +864,10 @@ int main(int argc, char **argv) {
 	retval = 0;
 
 	if(x264 || x265)
-		printf("[dvd_rip] using video codec %s and CRF %i\n", dvd_rip.vcodec, crf);
+		fprintf(stderr, "[dvd_rip] using video codec %s and CRF %i\n", dvd_rip.vcodec, crf);
 	if(vp8 || vp9)
-		printf("[dvd_rip] using video codec %s\n", dvd_rip.vcodec);
-	printf("[dvd_rip] using audio codec %s\n", dvd_rip.acodec);
+		fprintf(stderr, "[dvd_rip] using video codec %s\n", dvd_rip.vcodec);
+	fprintf(stderr, "[dvd_rip] using audio codec %s\n", dvd_rip.acodec);
 	if(detelecine)
 		printf("[dvd_rip] detelecining video using pullup, dejudder, fps filters\n");
 
@@ -887,7 +884,7 @@ int main(int argc, char **argv) {
 
 			if(dvd_mpv_eof->reason == MPV_END_FILE_REASON_QUIT) {
 
-				printf("[dvd_rip] stopping encode\n");
+				fprintf(stderr, "[dvd_rip] stopping encode\n");
 				break;
 
 			}
@@ -895,10 +892,10 @@ int main(int argc, char **argv) {
 			if(dvd_mpv_eof->reason == MPV_END_FILE_REASON_ERROR) {
 
 				retval = 1;
-				printf("[dvd_rip] libmpv hit end of file error, video may have problems at end\n");
+				fprintf(stderr, "[dvd_rip] libmpv hit end of file error, video may have problems at end\n");
 
 				if(dvd_mpv_eof->error == MPV_ERROR_NOTHING_TO_PLAY) {
-					printf("[dvd_rip] no audio or video data to play\n");
+					fprintf(stderr, "[dvd_rip] no audio or video data to play\n");
 				}
 
 			}
@@ -917,12 +914,12 @@ int main(int argc, char **argv) {
 
 	mpv_terminate_destroy(dvd_mpv);
 
-	printf("[dvd_rip] encode finished\n");
+	fprintf(stderr, "[dvd_rip] encode finished\n");
 
 	if(retval == 0) {
-		printf("[dvd_rip] file saved to '%s'\n", dvd_rip.filename);
+		fprintf(stderr, "[dvd_rip] file saved to '%s'\n", dvd_rip.filename);
 	} else {
-		printf("[dvd_rip] encoding errors, file may be incomplete: '%s'\n", dvd_rip.filename);
+		fprintf(stderr, "[dvd_rip] encoding errors, file may be incomplete: '%s'\n", dvd_rip.filename);
 	}
 
 	DVDCloseFile(dvdread_vts_file);
