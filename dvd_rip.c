@@ -217,11 +217,15 @@ int main(int argc, char **argv) {
 						arg_last_chapter = (uint8_t)arg_number;
 				}
 
-				if(arg_last_chapter < arg_first_chapter)
-					arg_last_chapter = arg_first_chapter;
+				if(arg_last_chapter < arg_first_chapter) {
+					fprintf(stderr, "[dvd_rip] Last chapter must be a greater number than first chapter\n");
+					return 1;
+				}
 
-				if(arg_first_chapter > arg_last_chapter)
-					arg_first_chapter = arg_last_chapter;
+				if(arg_first_chapter > arg_last_chapter) {
+					fprintf(stderr, "[dvd_rip] First chapter must be a lower number than first chapter\n");
+					return 1;
+				}
 
 				break;
 
