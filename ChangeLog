@@ -13,6 +13,8 @@
   backup files
 * dvd_player: fix playing at starting chapter (and range)
 * dvd_player, dvd_rip: fix going past last possible chapter on track
+* dvd_player, dvd_rip: if chapter ranges given are incorrect, don't fix for
+  the user, and instead quit
 
 1.16
 
