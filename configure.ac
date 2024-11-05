@@ -6,9 +6,6 @@ AC_CONFIG_HEADERS([config.h])
 dnl This is not a GNU package, so ignore required files / format
 AM_INIT_AUTOMAKE([foreign])
 
-dnl Check for C99 support
-AC_PROG_CC_C99
-
 dnl need math.h to do MBs calculations
 AC_CHECK_HEADERS([math.h])
 
