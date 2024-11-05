@@ -2,17 +2,17 @@
 
 * Fix logging of libdvdread to be less verbose, and output to stderr (bug #11,
   thanks to koorogi for reporting)
-* dvd_info: Add options for verbose and debugging output to display any errors
-  from libdvdread
 * Require libdvdread minimum version 6.1.0 for new DVD logging functionality
 * Fix segfault on creating md5sum of dvdread id on newer systems with gcc
   (bug #12, thanks to yzu1103309 for patch)
-* dvd_rip: Switch AAC encoder to native ffmpeg since FDK is non-free
+* dvd_info: Add options for verbose and debugging output to display any errors
+  from libdvdread
 * dvd_rip: Switch default VPX codec from 9 to 8
 * dvd_rip: Set video codec to x264 by default for Matroska
 * dvd_backup: Fix -i / --ifos to not copy VOBs, and always overwrite existing
   backup files
 * dvd_player: fix playing at starting chapter (and range)
+* dvd_player, dvd_rip: fix going past last possible chapter on track
 
 1.16
 
