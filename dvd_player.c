@@ -509,7 +509,7 @@ int main(int argc, char **argv) {
 	 */
 	if(opt_chapter_number) {
 
-		if(dvd_playback.last_chapter == dvd_playback.first_chapter)
+		if(dvd_playback.last_chapter == dvd_playback.first_chapter && dvd_playback.last_chapter < dvd_track.chapters)
 			dvd_playback.last_chapter += 1;
 
 		snprintf(dvd_playback.mpv_first_chapter, sizeof(dvd_playback.mpv_first_chapter), "#%" PRIu8, dvd_playback.first_chapter);

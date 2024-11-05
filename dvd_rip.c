@@ -641,7 +641,9 @@ int main(int argc, char **argv) {
 	snprintf(dvd_mpv_first_chapter, sizeof(dvd_mpv_first_chapter), "#%" PRIu8, dvd_rip.first_chapter);
 	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
 
-	snprintf(dvd_mpv_last_chapter, sizeof(dvd_mpv_last_chapter), "#%" PRIu8, dvd_rip.last_chapter + 1);
+	if(dvd_rip.last_chapter == dvd_rip.first_chapter && dvd_rip.last_chapter < dvd_track.chapters)
+		dvd_rip.last_chapter += 1;
+	snprintf(dvd_mpv_last_chapter, sizeof(dvd_mpv_last_chapter), "#%" PRIu8, dvd_rip.last_chapter);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 
 	// Default container if using specific codecs
