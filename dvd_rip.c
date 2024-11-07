@@ -639,41 +639,23 @@ int main(int argc, char **argv) {
 	snprintf(dvd_mpv_last_chapter, sizeof(dvd_mpv_last_chapter), "#%" PRIu8, dvd_rip.last_chapter);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 
-	// Default container if using specific codecs
-	if(!mp4 && !mkv && !webm && (x264 || x265))
-		mp4 = true;
-	if(!mp4 && !mkv && !webm && (vp8 || vp9))
-		webm = true;
-
-	// Default container MP4
+	// Default container MKV
 	if(!mp4 && !mkv && !webm)
-		mp4 = true;
+		mkv = true;
 
 	// Default video codec for MP4 and MKV
 	if(!x264 && !x265 && !vp8 && !vp9)
 		x264 = true;
 
 	// Default audio codec for WebM
-	if(webm && !aac && !opus)
+	if(!aac && !opus)
 		opus = true;
-
-	// Default audio codec for MP4
-	if(mp4 && !aac && !opus)
-		aac = true;
-
-	// Default audio codec for MKV
-	if(mkv && !aac && !opus)
-		aac = true;
 
 	// Default video codec for WebM
 	if(webm && !vp8 && !vp9) {
 		x264 = false;
 		vp8 = true;
 	}
-
-	// Default audio codec for WebM
-	if(webm && !aac && !opus)
-		opus = true;
 
 	// MP4 can't support VP8 or VP9
 	if(mp4 && (vp8 || vp9)) {
@@ -814,15 +796,15 @@ int main(int argc, char **argv) {
 	if(aac && audio_max_channels > 2)
 		audio_max_channels = 2;
 	fprintf(stderr, "[dvd_rip] setting audio channels to %" PRIu8 "\n", audio_max_channels);
-	snprintf(dvd_mpv_oacopts, sizeof(dvd_mpv_oacopts), "b=256k,ac=%" PRIu8, audio_max_channels);
+	snprintf(dvd_mpv_oacopts, sizeof(dvd_mpv_oacopts), "b=128k,ac=%" PRIu8, audio_max_channels);
 	if(verbose)
 		fprintf(stderr, "[dvd_rip] libmpv oacopts: %s\n", dvd_mpv_oacopts);
 	// mpv_set_option_string(dvd_mpv, "oacopts", dvd_mpv_oacopts);
-	mpv_set_option_string(dvd_mpv, "oacopts", "b=256k");
+	mpv_set_option_string(dvd_mpv, "oacopts", "b=128k");
 	*/
 
 	// Use a high bitrate by default to guarantee good sound quality
-	mpv_set_option_string(dvd_mpv, "oacopts", "b=256k");
+	mpv_set_option_string(dvd_mpv, "oacopts", "b=128k");
 
 	/** Subtitles **/
 	if(strlen(dvd_rip.subtitles_lang)) {
@@ -879,7 +861,7 @@ int main(int argc, char **argv) {
 		printf("[dvd_rip] detelecining video using pullup, dejudder, fps filters\n");
 
 	fprintf(stderr, "[dvd_rip] using audio codec %s\n", dvd_rip.acodec);
-	fprintf(stderr, "[dvd_rip] setting audio bitrate to 256k\n");
+	fprintf(stderr, "[dvd_rip] setting audio bitrate to 128k\n");
 
 	while(true) {
 
