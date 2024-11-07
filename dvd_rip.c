@@ -52,7 +52,7 @@
 	 *
 	 * Just running "dvd_rip" alone with no arguments or options will fetch the longest track
 	 * on the DVD, select the first English audio track, and encode it to H.264 using libx264 with
-	 * its default preset and CRF, and AAC audio using libfdk-aac.
+	 * its default preset and CRF, and AAC audio.
 	 *
 	 * Because it is so tiny, some options it doesn't have that larger DVD ripper applications
 	 * would are: encoding multiple audio streams, audio passthrough, subtitle support (VOBSUB and
@@ -810,7 +810,7 @@ int main(int argc, char **argv) {
 
 	// Container
 	if(aac)
-		strcpy(dvd_rip.acodec, "libfdk_aac");
+		strcpy(dvd_rip.acodec, "aac");
 
 	if(opus) {
 		// Opus audio codec can support surround sound. Arguments here would need to know how
