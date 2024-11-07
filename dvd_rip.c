@@ -808,28 +808,16 @@ int main(int argc, char **argv) {
 	else if(strlen(dvd_rip.audio_stream_id))
 		mpv_set_option_string(dvd_mpv, "aid", dvd_rip.audio_stream_id);
 
-	// Container
+	// Audio codec
 	if(aac)
 		strcpy(dvd_rip.acodec, "aac");
-
-	if(opus) {
-		// Opus audio codec can support surround sound. Arguments here would need to know how
-		// many channels to pass in. Opus encodes to stereo by default.
-		// Getting the number of channels of the requested stream would mean scanning the audio
-		// track selected, and then parsing its attributes. Mapping the audio track in ffmpeg / mpv
-		// and dvd_info isn't supported either, which makes this part of a bigger feature.
-		// If it were working, mpv 'audio-channels' option would be used here
-		// strcpy(dvd_rip.acodec, "libopus");
-		// mpv_set_option_string(dvd_mpv, "oac", "libopus");
-		/*
-		sprintf(dvd_rip.acodec_opts, "application=audio,vbr=off,b=%" PRIu32"000", dvd_rip.audio_bitrate);
-		mpv_set_option_string(dvd_mpv, "oacopts", dvd_rip.acodec_opts);
-		mpv_set_option_string(dvd_mpv, "audio-channels", mpv_audio_channels);
-		*/
+	else if(opus)
 		strcpy(dvd_rip.acodec, "libopus");
-	}
 
 	mpv_set_option_string(dvd_mpv, "oac", dvd_rip.acodec);
+
+	// Use a high bitrate by default to guarantee good sound quality
+	mpv_set_option_string(dvd_mpv, "oacopts", "b=256k");
 
 	/** Subtitles **/
 	if(strlen(dvd_rip.subtitles_lang)) {
