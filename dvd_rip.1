@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: dvd_rip
 .\"    Author: [see the "AUTHOR(S)" section]
-.\" Generator: Asciidoctor 2.0.18
-.\"      Date: 2024-11-03
+.\" Generator: Asciidoctor 2.0.20
+.\"      Date: 2024-11-06
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_RIP" "1" "2024-11-03" "\ \&" "\ \&"
+.TH "DVD_RIP" "1" "2024-11-06" "\ \&" "\ \&"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -39,8 +39,8 @@ A tiny DVD ripper that has a small set of options for encoding.
 Options and switches can be set in ~/.config/dvd_rip/mpv.conf. See the mpv
 documentation for details.
 .sp
-By default, dvd_rip will encode source to H.264 video with AAC audio in an
-MPEG\-4 container. If an output filename is given with a different extension,
+By default, dvd_rip will encode source to H.264 video with Opus audio in an
+MKV container. If an output filename is given with a different extension,
 it will use the default settings for those instead. In each case, the default
 presets are used as selected by the codecs as well. Note that mpv must already
 be built with support for these codecs, or dvd_rip will quit.
@@ -49,20 +49,20 @@ be built with support for these codecs, or dvd_rip will quit.
 .nf
 .fam C
 \&.mp4 \- H.264 video, AAC audio
-\&.mkv \- H.265 video, AAC audio
+\&.mkv \- H.264 video, Opus audio
 \&.webm \- VPX8 video, Opus audio
 .fam
 .fi
 .if n .RE
 .sp
 With no options, the largest track will be ripped with the first audio track,
-to a file named dvd_track_#.mp4, where # is a zero\-padded name of the track
+to a file named dvd_track_#.mkv, where # is a zero\-padded name of the track
 number.
 .SH "OPTIONS"
 .sp
 \fB\-o, \-\-output\fP=\fIFILENAME\fP
 .RS 4
-Save to filename (default: \fIdvd_track_#.mp4\fP),
+Save to filename (default: \fIdvd_track_#.mkv\fP),
 where default track is longest one on DVD, and ## is zero\-padded
 track number.
 .RE
