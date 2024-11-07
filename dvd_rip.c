@@ -530,10 +530,9 @@ int main(int argc, char **argv) {
 	dvd_track.blocks = dvd_track_blocks(vmg_ifo, vts_ifo, dvd_rip.track);
 	dvd_track.filesize = dvd_track_filesize(vmg_ifo, vts_ifo, dvd_rip.track);
 
-	// Calculating the number of output chapters and bitrate
-	// It's a cheap workaround, but to guarantee that for lossless audio codecs
-	// all the channels are included. Since I can't accurately map ffmpeg, mpv and dvd_info
-	// audio indexes, simply loop through all of them and see what the highest value is.
+	// Calculating the number of output chapters. Loop through all the audio tracks that
+	// are on the title track, and simply choose what's the highest so we definitely get
+	// whatever the greatest source is. In some cases, this will mean upmixing to more channels.
 	uint8_t audio_track_ix;
 	uint8_t audio_max_channels = 1;
 	uint8_t audio_track_channels = 1;
@@ -545,16 +544,6 @@ int main(int argc, char **argv) {
 			audio_max_channels = audio_track_channels;
 
 	}
-
-	// Choose audio bitrates of DVDs based on num. of channels for Dolby Digital
-	// I've seen source audio bitrates of 384 to 448 for 4, 5, and 6 channels. Use
-	// 448k if higher than 3. Used as an array in case I change my mind in the future.
-	// I haven't found any DVDs with 3 channels of audio on valid tracks.
-	uint32_t dvd_bitrate[7] = { 0, 192, 192, 384, 448, 448, 448 };
-	dvd_rip.audio_bitrate = dvd_bitrate[audio_max_channels];
-
-	if(debug)
-		fprintf(stderr, "[dvd_rip] setting max audio channels to %" PRIu8 "\n", audio_max_channels);
 
 	// Set the proper chapter range
 	if(opt_chapter_number) {
@@ -816,6 +805,22 @@ int main(int argc, char **argv) {
 
 	mpv_set_option_string(dvd_mpv, "oac", dvd_rip.acodec);
 
+	// Audio channels
+	/** I thought I could set channels to 6 for opus, but I can't get it working, so we're stuck at stereo */
+	/*
+	char dvd_mpv_oacopts[64];
+	memset(dvd_mpv_oacopts, '\0', sizeof(dvd_mpv_oacopts));
+	// ffmpeg aac encoder cannot support more than 2-channel stereo, so drop it if needed
+	if(aac && audio_max_channels > 2)
+		audio_max_channels = 2;
+	fprintf(stderr, "[dvd_rip] setting audio channels to %" PRIu8 "\n", audio_max_channels);
+	snprintf(dvd_mpv_oacopts, sizeof(dvd_mpv_oacopts), "b=256k,ac=%" PRIu8, audio_max_channels);
+	if(verbose)
+		fprintf(stderr, "[dvd_rip] libmpv oacopts: %s\n", dvd_mpv_oacopts);
+	// mpv_set_option_string(dvd_mpv, "oacopts", dvd_mpv_oacopts);
+	mpv_set_option_string(dvd_mpv, "oacopts", "b=256k");
+	*/
+
 	// Use a high bitrate by default to guarantee good sound quality
 	mpv_set_option_string(dvd_mpv, "oacopts", "b=256k");
 
@@ -865,13 +870,16 @@ int main(int argc, char **argv) {
 
 	retval = 0;
 
+	// Display output
 	if(x264 || x265)
 		fprintf(stderr, "[dvd_rip] using video codec %s and CRF %i\n", dvd_rip.vcodec, crf);
 	if(vp8 || vp9)
 		fprintf(stderr, "[dvd_rip] using video codec %s\n", dvd_rip.vcodec);
-	fprintf(stderr, "[dvd_rip] using audio codec %s\n", dvd_rip.acodec);
 	if(detelecine)
 		printf("[dvd_rip] detelecining video using pullup, dejudder, fps filters\n");
+
+	fprintf(stderr, "[dvd_rip] using audio codec %s\n", dvd_rip.acodec);
+	fprintf(stderr, "[dvd_rip] setting audio bitrate to 256k\n");
 
 	while(true) {
 
