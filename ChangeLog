@@ -9,10 +9,12 @@
   from libdvdread
 * dvd_rip: Switch default VPX codec from 9 to 8
 * dvd_rip: Set video codec to x264 by default for Matroska
+* dvd_rip: Set default audio audio codec to opus, container to Matroska
+* dvd_rip: Use native ffmpeg AAC audio encoder
 * dvd_backup: Fix -i / --ifos to not copy VOBs, and always overwrite existing
   backup files
 * dvd_player: fix playing at starting chapter (and range)
-* dvd_player, dvd_rip: fix going past last possible chapter on track
+* dvd_player, dvd_rip: fix stopping at wrong end point for chapters
 * dvd_player, dvd_rip: if chapter ranges given are incorrect, don't fix for
   the user, and instead quit
 
