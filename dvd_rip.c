@@ -694,6 +694,11 @@ int main(int argc, char **argv) {
 
 	fprintf(stderr, "[dvd_rip] saving to filename \'%s\'\n", dvd_rip.filename);
 
+	/** Encoding Notes **/
+
+	// I'm not going to output the exact mpv commands for defaults, but this is vp8 and opus (as of right now)
+	// mpv dvd://0 --dvd-device=1.000.PRIME_SAMPLE.iso --ovc=libvpx --ovcopts=b=2048k,cpu-used=8 --oac=libopus --oacopts=b=256k -o test.mkv
+
 	/** Video **/
 
 	// Fix input CRF if needed
