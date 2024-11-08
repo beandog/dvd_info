@@ -7,6 +7,7 @@
   (bug #12, thanks to yzu1103309 for patch)
 * dvd_info: Add options for verbose and debugging output to display any errors
   from libdvdread
+* Support FreeBSD 14.1 - see https://github.com/beandog/dvd_info/wiki
 * dvd_rip: Switch default VPX codec from 9 to 8
 * dvd_rip: Set video codec to x264 by default for Matroska
 * dvd_rip: Set default audio codec to opus, container to Matroska
