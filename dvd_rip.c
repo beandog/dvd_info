@@ -553,21 +553,30 @@ int main(int argc, char **argv) {
 	}
 
 	// Set the proper chapter range
-	if(opt_chapter_number) {
+	if(opt_chapter_number && !opt_last_chapter) {
+
 		if(arg_first_chapter > dvd_track.chapters) {
 			fprintf(stderr, "[dvd_rip] Starting chapter cannot be larger than %" PRIu8 "\n", dvd_track.chapters);
 			return 1;
-		} else
-			dvd_rip.first_chapter = arg_first_chapter;
+		}
+
+		dvd_rip.first_chapter = arg_first_chapter;
+
+		dvd_rip.last_chapter = arg_first_chapter;
+
+	}
+
+	if(opt_chapter_number && opt_last_chapter) {
 
 		if(arg_last_chapter > dvd_track.chapters) {
 			fprintf(stderr, "[dvd_rip] Final chapter cannot be larger than %" PRIu8 "\n", dvd_track.chapters);
 			return 1;
-		} else
-			dvd_rip.last_chapter = arg_last_chapter;
-	} else {
-		dvd_rip.first_chapter = 1;
-		dvd_rip.last_chapter = dvd_track.chapters;
+		}
+
+		dvd_rip.first_chapter = arg_first_chapter;
+
+		dvd_rip.last_chapter = arg_last_chapter;
+
 	}
 
 	/**
