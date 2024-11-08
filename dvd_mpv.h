@@ -37,7 +37,7 @@ struct dvd_rip {
 	char audio_stream_id[4];
 	char acodec[256];
 	char acodec_opts[256];
-	uint32_t audio_bitrate;
+	uint16_t audio_bitrate;
 	bool encode_subtitles;
 	char subtitles_lang[3];
 	char subtitles_stream_id[4];

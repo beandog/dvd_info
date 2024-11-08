@@ -127,7 +127,6 @@ int main(int argc, char **argv) {
 	memset(dvd_rip.acodec_opts, '\0', sizeof(dvd_rip.acodec_opts));
 	memset(dvd_rip.audio_lang, '\0', sizeof(dvd_rip.audio_lang));
 	memset(dvd_rip.audio_stream_id, '\0', sizeof(dvd_rip.audio_stream_id));
-	dvd_rip.audio_bitrate = 0;
 	dvd_rip.encode_subtitles = false;
 	memset(dvd_rip.subtitles_lang, '\0', sizeof(dvd_rip.subtitles_lang));
 	memset(dvd_rip.subtitles_stream_id, '\0', sizeof(dvd_rip.subtitles_stream_id));
@@ -138,6 +137,7 @@ int main(int argc, char **argv) {
 	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
 	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
 	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
+	dvd_rip.audio_bitrate = 256;
 
 	if(home_dir != NULL)
 		snprintf(dvd_rip.mpv_config_dir, PATH_MAX - 1, "%s%s", home_dir, dvd_rip.config_dir);
@@ -804,7 +804,9 @@ int main(int argc, char **argv) {
 	*/
 
 	// Use a high bitrate by default to guarantee good sound quality
-	mpv_set_option_string(dvd_mpv, "oacopts", "b=128k");
+	snprintf(dvd_rip.acodec_opts, sizeof(dvd_rip.acodec_opts), "b=%" PRIu16 "k", dvd_rip.audio_bitrate);
+	printf("oacopts: %s\n", dvd_rip.acodec_opts);
+	mpv_set_option_string(dvd_mpv, "oacopts", dvd_rip.acodec_opts);
 
 	/** Subtitles **/
 	if(strlen(dvd_rip.subtitles_lang)) {
@@ -861,7 +863,7 @@ int main(int argc, char **argv) {
 		printf("[dvd_rip] detelecining video using pullup, dejudder, fps filters\n");
 
 	fprintf(stderr, "[dvd_rip] using audio codec %s\n", dvd_rip.acodec);
-	fprintf(stderr, "[dvd_rip] setting audio bitrate to 128k\n");
+	fprintf(stderr, "[dvd_rip] setting audio bitrate to %" PRIu16 "\n", dvd_rip.audio_bitrate);
 
 	while(true) {
 
