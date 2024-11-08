@@ -140,6 +140,7 @@ int main(int argc, char **argv) {
 	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
 	memset(dvd_mpv_last_chapter, '\0', sizeof(dvd_mpv_last_chapter));
 	memset(dvd_mpv_args, '\0', sizeof(dvd_mpv_args));
+	dvd_rip.video_bitrate = 2048;
 	dvd_rip.audio_bitrate = 256;
 
 	if(home_dir != NULL)
@@ -710,6 +711,12 @@ int main(int argc, char **argv) {
 
 	if(vp8 || vp9) {
 
+		// Set some high quality defaults for libvpx
+		if(vp8)
+			dvd_rip.video_bitrate = 2048;
+		else
+			dvd_rip.video_bitrate = 1536;
+
 		/* Trying to set encoding parameters for VPX is a pain, because I can't
 		 * tell if I've got the syntax wrong or not, though everything from ffmpeg
 		 * docs looks like I'm doing it right. That being said, setting a CRF
@@ -746,10 +753,7 @@ int main(int argc, char **argv) {
 			nprocs = get_nprocs();
 #endif
 
-			if(vp8)
-				sprintf(dvd_rip.vcodec_opts, "b=1500k,cpu-used=%i", nprocs);
-			else
-				sprintf(dvd_rip.vcodec_opts, "b=1200k,cpu-used=%i", nprocs);
+			snprintf(dvd_rip.vcodec_opts, sizeof(dvd_rip.vcodec_opts), "b=%" PRIu16 "k,cpu-used=%i", dvd_rip.video_bitrate, nprocs);
 
 		}
 
@@ -881,7 +885,7 @@ int main(int argc, char **argv) {
 	if(x264 || x265)
 		fprintf(stderr, "[dvd_rip] using video codec %s and CRF %i\n", dvd_rip.vcodec, crf);
 	if(vp8 || vp9)
-		fprintf(stderr, "[dvd_rip] using video codec %s\n", dvd_rip.vcodec);
+		fprintf(stderr, "[dvd_rip] using video codec %s and bitrate %ik\n", dvd_rip.vcodec, dvd_rip.video_bitrate);
 	if(detelecine)
 		printf("[dvd_rip] detelecining video using pullup, dejudder, fps filters\n");
 
