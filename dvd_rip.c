@@ -886,6 +886,10 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "[dvd_rip] using video codec %s and CRF %i\n", dvd_rip.vcodec, crf);
 	if(vp8 || vp9)
 		fprintf(stderr, "[dvd_rip] using video codec %s and bitrate %ik\n", dvd_rip.vcodec, dvd_rip.video_bitrate);
+	if(verbose) {
+		fprintf(stderr, "[dvd_rip] mpv vcodecopts=%s\n", dvd_rip.vcodec_opts);
+		fprintf(stderr, "[dvd_rip] mpv acodecopts=%s\n", dvd_rip.acodec_opts);
+	}
 	if(detelecine)
 		printf("[dvd_rip] detelecining video using pullup, dejudder, fps filters\n");
 
