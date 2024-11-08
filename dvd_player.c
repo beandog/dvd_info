@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
 	dvd_playback.first_chapter = 1;
 	dvd_playback.last_chapter = 99;
 	dvd_playback.fullscreen = false;
-	dvd_playback.detelecine = false;
+	dvd_playback.detelecine = true;
 	dvd_playback.subtitles = false;
 	memset(dvd_playback.audio_lang, '\0', sizeof(dvd_playback.audio_lang));
 	memset(dvd_playback.audio_stream_id, '\0', sizeof(dvd_playback.audio_stream_id));
@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
 		{ "alang", required_argument, 0, 'a' },
 		{ "aid", required_argument, 0, 'A' },
 		{ "chapters", required_argument, 0, 'c' },
-		{ "detelecine", no_argument, 0, 'd' },
+		{ "no-detelecine", no_argument, 0, 'D' },
 		{ "fullscreen", no_argument, 0, 'f' },
 		{ "help", no_argument, 0, 'h' },
 		{ "slang", required_argument, 0, 's' },
@@ -168,8 +168,8 @@ int main(int argc, char **argv) {
 				}
 				break;
 
-			case 'd':
-				dvd_playback.detelecine = true;
+			case 'D':
+				dvd_playback.detelecine = false;
 				break;
 
 			case 'f':
@@ -232,7 +232,7 @@ int main(int argc, char **argv) {
 				printf("  -A, --aid <#>                 Select audio track ID\n");
 				printf("  -s, --slang <language>        Select subtitles language, two character code (default: no subtitles)\n");
 				printf("  -S, --sid <#>                 Select subtitles track ID\n");
-				printf("  -d, --detelecine              Detelecine video\n");
+				printf("  -D, --no-detelecine           Do not detelecine video\n");
 				printf("  -v, --verbose                 Show verbose output\n");
 				printf("  -z, --debug                   Show debugging output\n");
 				printf("  -h, --help			Show this help text and exit\n");
@@ -546,6 +546,10 @@ int main(int argc, char **argv) {
 	 * If the user wants video always disabled, it can be set in 'mpv.conf'.
 	 */
 
+	// Detelecine video by default
+	if(dvd_playback.detelecine)
+		mpv_set_option_string(dvd_mpv, "vf", "pullup,dejudder");
+
 	/** Audio Playback */
 	/*
 	 * Order of operations for choosing an audio track is: user's mpv.conf, argument
@@ -583,16 +587,6 @@ int main(int argc, char **argv) {
 		mpv_set_option_string(dvd_mpv, "slang", dvd_playback.subtitles_lang);
 	else if(dvd_playback.subtitles && strlen(dvd_playback.subtitles_stream_id))
 		mpv_set_option_string(dvd_mpv, "sid", dvd_playback.subtitles_stream_id);
-
-	/** Deinterlacing Video */
-
-	/*
-	 * MPV has a --deinterlace option, but I haven't seen it actually work.
-	 * Instead, I'm enabling the pullup and dejudder filters, the combination
-	 * which I've had good results in working with telecined interlacing.
-	 */
-	if(dvd_playback.detelecine)
-		mpv_set_option_string(dvd_mpv, "vf", "pullup,dejudder");
 
 	// setup mpv
 	retval = mpv_initialize(dvd_mpv);

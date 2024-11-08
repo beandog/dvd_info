@@ -43,8 +43,8 @@ OPTIONS
 *-f, --fullscreen*
 	Display in fullscreen mode.
 
-*-d, --detelecine*
-	Detelecine video.
+*-D, --no-detelecine*
+	Do not detelecine video.
 
 *-v, --verbose*
 	Enable verbose output.
