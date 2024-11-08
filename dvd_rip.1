@@ -2,12 +2,12 @@
 .\"     Title: dvd_rip
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.20
-.\"      Date: 2024-11-06
+.\"      Date: 2024-11-08
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_RIP" "1" "2024-11-06" "\ \&" "\ \&"
+.TH "DVD_RIP" "1" "2024-11-08" "\ \&" "\ \&"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -89,19 +89,19 @@ subtitles.
 \fB\-\-sid\fP=\fI#\fP
 Select subtitles track by stream ID.
 .sp
-\fB\-v, \-\-vcodec\fP=\fIx264|x265|vpx\fP
+\fB\-v, \-\-vcodec\fP=\fIx264|x265|vp8|vp9\fP
 Video codec to use. H.264 (x264) has widest support, including
-HTML5. H.265 (x265) videos will be smaller than H.264. VPX 8 can also
-be played back with HTML5.
+HTML5. H.265 (x265) videos will be smaller than H.264. VP8 and 9 can
+also be played back with HTML5.
 .sp
 \fB\-a, \-\-acodec\fP=\fIaac|opus\fP
 Audio codec to use. Both options will downmix to 2 channels (stereo).
 .sp
 \fB\-q, \-\-crf\fP=\fI#\fP
-Video encoder CRF to use. The default is the baseline for the codec.
+Video encoder CRF to use. The default is a high quality value.
 .sp
 \fB\-D, \-\-no\-detelecine\fP
-Do not Detelecine video.
+Do not detelecine video.
 .sp
 \fB\-\-verbose\fP
 Display verbose output.
@@ -115,9 +115,6 @@ Display help output.
 .sp
 dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1)
 .SH "BUGS"
-.sp
-\fBdvd_rip\fP uses libmpv, but does not always act exactly how mpv would for
-some reason. Because of that, there are some issues still.
 .sp
 \fBdvd_rip\fP sometimes breaks on tracks that libdvdnav moves around on, and so
 it can be unpredictable, or encode past a track\(cqs actual length.
