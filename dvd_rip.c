@@ -119,7 +119,6 @@ int main(int argc, char **argv) {
 
 	dvd_rip.track = 1;
 	dvd_rip.first_chapter = 1;
-	dvd_rip.last_chapter = 99;
 	memset(dvd_rip.filename, '\0', PATH_MAX);
 	memset(dvd_rip.config_dir, '\0', PATH_MAX);
 	memset(dvd_rip.mpv_config_dir, '\0', PATH_MAX);
@@ -552,6 +551,9 @@ int main(int argc, char **argv) {
 
 	}
 
+	// Default last chapter to the number of chapters
+	dvd_rip.last_chapter = dvd_track.chapters;
+
 	// Set the proper chapter range
 	if(opt_chapter_number && !opt_last_chapter) {
 
@@ -646,13 +648,26 @@ int main(int argc, char **argv) {
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
 
-	/// Chapters
-	snprintf(dvd_mpv_first_chapter, sizeof(dvd_mpv_first_chapter), "#%" PRIu8, dvd_rip.first_chapter);
-	mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
+	// Chapters
+	if(opt_chapter_number && dvd_rip.first_chapter > 1) {
+		snprintf(dvd_mpv_first_chapter, sizeof(dvd_mpv_first_chapter), "#%" PRIu8, dvd_rip.first_chapter);
+		mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
+	}
 
-	if(dvd_rip.last_chapter == dvd_rip.first_chapter && dvd_rip.last_chapter < dvd_track.chapters)
-		dvd_rip.last_chapter += 1;
-	snprintf(dvd_mpv_last_chapter, sizeof(dvd_mpv_last_chapter), "#%" PRIu8, dvd_rip.last_chapter);
+	// End chapter to encode *has* to be set, or mpv will wrap around to the same one or something else
+	fprintf(stderr, "[dvd_rip] starting chapter #%" PRIu8 "\n", dvd_rip.first_chapter);
+	fprintf(stderr, "[dvd_rip] stopping chapter #%" PRIu8 "\n", dvd_rip.last_chapter);
+
+	// To play a chapter range in MPV, the end chapter needs to be incremented to the final one plus one
+	// *unless* selecting just the final chapter. dvd_rip -c 1-1 would be mpv --start=#1 --end=#2
+	if(dvd_rip.last_chapter != dvd_track.chapters)
+		dvd_rip.mpv_last_chapter = dvd_rip.last_chapter + 1;
+
+	// For the final chapter, you do *not* increment it: --start=#7 --end=#7
+	if(dvd_rip.last_chapter == dvd_track.chapters)
+		dvd_rip.mpv_last_chapter = dvd_rip.last_chapter;
+
+	snprintf(dvd_mpv_last_chapter, sizeof(dvd_mpv_last_chapter), "#%" PRIu8, dvd_rip.mpv_last_chapter);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
 
 	// Default container MKV

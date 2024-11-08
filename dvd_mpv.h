@@ -24,6 +24,7 @@ struct dvd_rip {
 	uint16_t track;
 	uint8_t first_chapter;
 	uint8_t last_chapter;
+	uint8_t mpv_last_chapter;
 	char filename[PATH_MAX];
 	char config_dir[PATH_MAX];
 	char mpv_config_dir[PATH_MAX];
