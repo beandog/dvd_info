@@ -15,6 +15,9 @@
 #else
 #include <limits.h>
 #endif
+#if defined (__FreeBSD__)
+#include <sys/sysctl.h>
+#endif
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 #include "config.h"
@@ -731,10 +734,24 @@ int main(int argc, char **argv) {
 		 * I'll figure this out, but for now, this is it.
 		 */
 
-		if(vp8)
-			sprintf(dvd_rip.vcodec_opts, "b=1500k,cpu-used=%d", get_nprocs());
-		else
-			sprintf(dvd_rip.vcodec_opts, "b=1200k,cpu-used=%d", get_nprocs());
+		if(vp8 || vp9) {
+
+			int nprocs = 1;
+
+#if defined (__FreeBSD__)
+			int mib[2] = { CTL_HW, HW_NCPU };
+			size_t len = sizeof(nprocs);
+			sysctl(mib, 2, &nprocs, &len, NULL, 0);
+#else
+			nprocs = get_nprocs();
+#endif
+
+			if(vp8)
+				sprintf(dvd_rip.vcodec_opts, "b=1500k,cpu-used=%i", nprocs);
+			else
+				sprintf(dvd_rip.vcodec_opts, "b=1200k,cpu-used=%i", nprocs);
+
+		}
 
 	}
 
