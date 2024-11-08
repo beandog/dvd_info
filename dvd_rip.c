@@ -738,6 +738,13 @@ int main(int argc, char **argv) {
 
 	}
 
+	/**
+	 * For some reason, when passing a chapter range that does *not* start with the
+	 * first one, the output file puts the audio stream first (and it is driving me
+	 * crazy). mpv-0.37.0
+	 * See: ./dvd_rip 1.000.PRIME_SAMPLE.iso -c 2-2
+	 */
+
 	// Video codecs and encoding options
 	if (x264)
 		strcpy(dvd_rip.vcodec, "libx264");
@@ -805,7 +812,6 @@ int main(int argc, char **argv) {
 
 	// Use a high bitrate by default to guarantee good sound quality
 	snprintf(dvd_rip.acodec_opts, sizeof(dvd_rip.acodec_opts), "b=%" PRIu16 "k", dvd_rip.audio_bitrate);
-	printf("oacopts: %s\n", dvd_rip.acodec_opts);
 	mpv_set_option_string(dvd_mpv, "oacopts", dvd_rip.acodec_opts);
 
 	/** Subtitles **/
