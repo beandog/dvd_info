@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Accept first argument as DVD device, or use /dev/dvd as default
+# Accept first argument as DVD device, or use /dev/sr0 as default
 device=$1
 if [[ -z "$1" ]]; then
-  device=/dev/dvd
+  device=/dev/sr0
 fi
 
 # Run dvd_drive_status, and dump all output to /dev/null for silence
