@@ -970,7 +970,7 @@ int main(int argc, char **argv) {
 		// Logging output
 		if((verbose || debug) && dvd_mpv_event->event_id == MPV_EVENT_LOG_MESSAGE) {
 			dvd_mpv_log_message = (struct mpv_event_log_message *)dvd_mpv_event->data;
-			printf("[dvd_rip] mpv event log message - %s", dvd_mpv_log_message->text);
+			fprintf(stderr, "[dvd_rip] mpv event log message - %s", dvd_mpv_log_message->text);
 		}
 
 	}
