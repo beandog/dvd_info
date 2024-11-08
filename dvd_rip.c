@@ -85,6 +85,7 @@ int main(int argc, char **argv) {
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
 	bool opt_last_chapter = false;
+	bool opt_arg_first_chapter_only = false;
 	bool opt_filename = false;
 	bool x264 = false;
 	bool x265 = false;
@@ -221,6 +222,8 @@ int main(int argc, char **argv) {
 						opt_last_chapter = true;
 						arg_last_chapter = (uint8_t)arg_number;
 					}
+				} else {
+					opt_arg_first_chapter_only = true;
 				}
 
 				if(arg_last_chapter < arg_first_chapter) {
@@ -565,6 +568,10 @@ int main(int argc, char **argv) {
 		dvd_rip.first_chapter = arg_first_chapter;
 
 		dvd_rip.last_chapter = arg_first_chapter;
+
+		// Support passing open range to the end: dvd_rip -c 2-
+		if(opt_arg_first_chapter_only)
+			dvd_rip.last_chapter = dvd_track.chapters;
 
 	}
 
