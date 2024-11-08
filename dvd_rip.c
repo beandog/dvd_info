@@ -932,8 +932,7 @@ int main(int argc, char **argv) {
 	if(detelecine)
 		printf("[dvd_rip] detelecining video using pullup, dejudder, fps filters\n");
 
-	fprintf(stderr, "[dvd_rip] using audio codec %s\n", dvd_rip.acodec);
-	fprintf(stderr, "[dvd_rip] setting audio bitrate to %" PRIu16 "\n", dvd_rip.audio_bitrate);
+	fprintf(stderr, "[dvd_rip] using audio codec %s and bitrate %" PRIu16 "k\n", dvd_rip.acodec, dvd_rip.audio_bitrate);
 
 	while(true) {
 
