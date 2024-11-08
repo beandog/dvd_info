@@ -54,6 +54,7 @@ int main(int argc, char **argv) {
 	bool invalid_opts = false;
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
+	bool opt_last_chapter = false;
 	unsigned long int arg_number = 0;
 	uint16_t arg_track_number = 0;
 	uint8_t arg_first_chapter = 1;
@@ -153,8 +154,11 @@ int main(int argc, char **argv) {
 						arg_last_chapter = 99;
 					if(arg_number == 0)
 						arg_last_chapter = arg_first_chapter;
-					else
+					else {
+						opt_last_chapter = true;
 						arg_last_chapter = (uint8_t)arg_number;
+					}
+
 				}
 
 				if(arg_last_chapter < arg_first_chapter) {
@@ -513,8 +517,11 @@ int main(int argc, char **argv) {
 	 */
 	if(opt_chapter_number) {
 
-		if(dvd_playback.last_chapter == dvd_playback.first_chapter && dvd_playback.last_chapter < dvd_track.chapters)
+		if(dvd_playback.last_chapter == dvd_playback.first_chapter && dvd_playback.last_chapter < dvd_track.chapters && opt_last_chapter)
 			dvd_playback.last_chapter += 1;
+
+		if(!opt_last_chapter)
+			dvd_playback.last_chapter = dvd_track.chapters + 1;
 
 		snprintf(dvd_playback.mpv_first_chapter, sizeof(dvd_playback.mpv_first_chapter), "#%" PRIu8, dvd_playback.first_chapter);
 		mpv_set_option_string(dvd_mpv, "start", dvd_playback.mpv_first_chapter);
