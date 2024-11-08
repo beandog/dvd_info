@@ -84,6 +84,7 @@ int main(int argc, char **argv) {
 	bool invalid_opts = false;
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
+	bool opt_last_chapter = false;
 	bool opt_filename = false;
 	bool x264 = false;
 	bool x265 = false;
@@ -217,8 +218,10 @@ int main(int argc, char **argv) {
 						arg_last_chapter = 99;
 					if(arg_number == 0)
 						arg_last_chapter = arg_first_chapter;
-					else
+					else {
+						opt_last_chapter = true;
 						arg_last_chapter = (uint8_t)arg_number;
+					}
 				}
 
 				if(arg_last_chapter < arg_first_chapter) {
