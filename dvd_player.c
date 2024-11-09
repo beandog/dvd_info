@@ -526,10 +526,18 @@ int main(int argc, char **argv) {
 		snprintf(dvd_playback.mpv_first_chapter, sizeof(dvd_playback.mpv_first_chapter), "#%" PRIu8, dvd_playback.first_chapter);
 		mpv_set_option_string(dvd_mpv, "start", dvd_playback.mpv_first_chapter);
 
-		snprintf(dvd_playback.mpv_last_chapter, sizeof(dvd_playback.mpv_last_chapter), "#%" PRIu8, dvd_playback.last_chapter);
-		mpv_set_option_string(dvd_mpv, "end", dvd_playback.mpv_last_chapter);
+	} else {
+
+		// Work around libmpv oddities -- based on whether you seek by fast forwarding or by chapter
+		// number, it *might* wrap around. So by default, tell it to quit at the last chapter.
+		// Also note that if going to the last chapter, it does *not* get padded by 1
+		dvd_playback.last_chapter = dvd_track.chapters;
 
 	}
+
+	// Always set last chapter
+	snprintf(dvd_playback.mpv_last_chapter, sizeof(dvd_playback.mpv_last_chapter), "#%" PRIu8, dvd_playback.last_chapter);
+	mpv_set_option_string(dvd_mpv, "end", dvd_playback.mpv_last_chapter);
 
 	// Playback options and default configuration
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
