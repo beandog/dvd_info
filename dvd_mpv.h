@@ -1,6 +1,8 @@
 #ifndef DVD_INFO_MPV_H
 #define DVD_INFO_MPV_H
 
+#define DVD_INFO_MPV_TIME_POSITION 12
+
 struct dvd_player {
 	char config_dir[PATH_MAX];
 	char mpv_config_dir[PATH_MAX];
@@ -43,8 +45,8 @@ struct dvd_rip {
 	bool encode_subtitles;
 	char subtitles_lang[3];
 	char subtitles_stream_id[4];
-	char start[24];
-	char stop[24];
+	char start[DVD_INFO_MPV_TIME_POSITION + 1];
+	char stop[DVD_INFO_MPV_TIME_POSITION + 1];
 	char vf_opts[256];
 	char of_opts[256];
 	uint8_t crf;

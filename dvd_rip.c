@@ -89,6 +89,8 @@ int main(int argc, char **argv) {
 	bool opt_filename = false;
 	bool opt_start = false;
 	bool opt_stop = false;
+	char start[DVD_INFO_MPV_TIME_POSITION + 1] = {'\0'};
+	char stop[DVD_INFO_MPV_TIME_POSITION + 1] = {'\0'};
 	bool x264 = false;
 	bool x265 = false;
 	bool vp8 = false;
@@ -141,6 +143,8 @@ int main(int argc, char **argv) {
 	memset(dvd_rip.of_opts, '\0', sizeof(dvd_rip.of_opts));
 	memset(dvd_rip.start, '\0', sizeof(dvd_rip.start));
 	memset(dvd_rip.stop, '\0', sizeof(dvd_rip.stop));
+	memset(start, '\0', sizeof(start));
+	memset(stop, '\0', sizeof(stop));
 	memset(str_crf, '\0', sizeof(str_crf));
 	snprintf(dvd_rip.config_dir, PATH_MAX - 1, "/.config/dvd_rip");
 	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
@@ -278,7 +282,7 @@ int main(int argc, char **argv) {
 						return 1;
 					}
 				}
-				strncpy(dvd_rip.stop, optarg, sizeof(dvd_rip.stop) - 1);
+				strncpy(stop, optarg, sizeof(stop) - 1);
 				break;
 
 			case 'q':
@@ -296,7 +300,7 @@ int main(int argc, char **argv) {
 						return 1;
 					}
 				}
-				strncpy(dvd_rip.start, optarg, sizeof(dvd_rip.start) - 1);
+				strncpy(start, optarg, sizeof(start) - 1);
 				break;
 
 
@@ -689,45 +693,64 @@ int main(int argc, char **argv) {
 	const char *dvd_mpv_commands[] = { "loadfile", dvd_mpv_args, NULL };
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
 
-	// Chapters
-	if(opt_chapter_number && dvd_rip.first_chapter > 1 && !opt_start) {
-		snprintf(dvd_mpv_first_chapter, sizeof(dvd_mpv_first_chapter), "#%" PRIu8, dvd_rip.first_chapter);
-		mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
+	/* Chapters */
+
+	// Starting chapter or time point
+	// Don't need to change the start point string (--start), just add # to chapter number string
+	if(opt_chapter_number && opt_start) {
+		fprintf(stderr, "[dvd_rip] starting position must be either chapter number or time length format\n");
+		return 1;
 	}
 
-	// End chapter to encode *has* to be set, or mpv will wrap around to the same one or something else
-	if(opt_start)
-		fprintf(stderr, "[dvd_rip] starting position '%s'\n", dvd_rip.start);
-	else
-		fprintf(stderr, "[dvd_rip] starting chapter #%" PRIu8 "\n", dvd_rip.first_chapter);
-	if(opt_stop)
-		fprintf(stderr, "[dvd_rip] stopping position '%s'\n", dvd_rip.stop);
-	else
-		fprintf(stderr, "[dvd_rip] stopping chapter #%" PRIu8 "\n", dvd_rip.last_chapter);
+	// Set first chapter if given
+	if(!opt_start && !opt_chapter_number) {
+		dvd_rip.first_chapter = 1;
+		fprintf(stderr, "[dvd_rip] starting chapter: %" PRIu8 "\n", dvd_rip.first_chapter);
+	} else if(opt_chapter_number && dvd_rip.first_chapter > 1) {
+		snprintf(dvd_rip.start, sizeof(dvd_rip.start), "#%" PRIu8, dvd_rip.first_chapter);
+		fprintf(stderr, "[dvd_rip] starting chapter: %" PRIu8 "\n", dvd_rip.first_chapter);
+	} else {
+		if(!strlen(start))
+			strncpy(start, "0", 2);
+		strncpy(dvd_rip.start, start, sizeof(dvd_rip.start));
+		fprintf(stderr, "[dvd_rip] starting position: #%s\n", dvd_rip.start);
+	}
+	mpv_set_option_string(dvd_mpv, "start", dvd_rip.start);
+
+	// Don't allow setting last chapter and stop position
+	if(opt_last_chapter && opt_stop) {
+		fprintf(stderr, "[dvd_rip] stopping position must be either chapter number or time length format\n");
+		return 1;
+	}
 
 	// To play a chapter range in MPV, the end chapter needs to be incremented to the final one plus one
 	// *unless* selecting just the final chapter. dvd_rip -c 1-1 would be mpv --start=#1 --end=#2
 	if(dvd_rip.last_chapter != dvd_track.chapters)
 		dvd_rip.mpv_last_chapter = dvd_rip.last_chapter + 1;
 
-	// For the final chapter, you do *not* increment it: --start=#7 --end=#7
-	if(dvd_rip.last_chapter == dvd_track.chapters)
-		dvd_rip.mpv_last_chapter = dvd_rip.last_chapter;
+	// Stop at either length given, or last chapter passed
+	if(!opt_stop) {
 
-	snprintf(dvd_mpv_last_chapter, sizeof(dvd_mpv_last_chapter), "#%" PRIu8, dvd_rip.mpv_last_chapter);
-	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
+		if(dvd_rip.last_chapter == dvd_track.chapters)
+			dvd_rip.mpv_last_chapter = dvd_rip.last_chapter;
 
-	// Starting can begin with chapter or time position
-	if(opt_chapter_number && opt_start) {
-		fprintf(stderr, "[dvd_rip] must start at either chapter number or specific time position\n");
-		return 1;
-	} else if(opt_start) {
-		mpv_set_option_string(dvd_mpv, "start", dvd_rip.start);
+		snprintf(dvd_rip.stop, sizeof(dvd_rip.stop), "#%" PRIu8, dvd_rip.mpv_last_chapter);
+		mpv_set_option_string(dvd_mpv, "end", dvd_rip.stop);
+		fprintf(stderr, "[dvd_rip] stopping chapter: %" PRIu8 "\n", dvd_rip.last_chapter);
+
+	} else {
+
+		strncpy(dvd_rip.stop, stop, sizeof(dvd_rip.stop));
+		mpv_set_option_string(dvd_mpv, "length", dvd_rip.stop);
+		fprintf(stderr, "[dvd_rip] stopping position: %s\n", dvd_rip.stop);
+
 	}
 
-	// mpv can support both seeking to end chapters *and* length, and will simply quit whichever ends first
-	if(opt_stop)
-		mpv_set_option_string(dvd_mpv, "length", dvd_rip.stop);
+	// If you pass a stop parameter that goes past *the chapter stop position*, then it's going to do
+	// who knows what.
+	if(verbose && opt_stop && dvd_rip.last_chapter == dvd_track.chapters) {
+		fprintf(stderr, "[dvd_rip] WARNING: if --stop position given is past the last chapter, libmpv could do something unexpected\n");
+	}
 
 	// Default container MKV
 	if(!mp4 && !mkv && !webm)
