@@ -44,6 +44,12 @@ OPTIONS
 *-c, --chapter*='CHAPTER[-[CHAPTER]]'
 	Encode chapter number or range. Default is all chapters.
 
+*--start*='[\+|-][[hh:]mm:]ss[.ms]'
+        Start at time length in format in [+|-][[hh:]mm:]ss[.ms] or <percent>%
+
+*--stop*='[\+|-][[hh:]mm:]ss[.ms]'
+        Stop at time length in format in [+|-][[hh:]mm:]ss[.ms] or <percent>%
+
 *--alang*='LANGUAGE'
 	Select audio track by language code, two letters. Default is first
 	audio track.
