@@ -12,7 +12,7 @@
 * dvd_rip: Set video codec to x264 by default for Matroska
 * dvd_rip: Set default audio codec to opus, container to Matroska
 * dvd_rip: Use native ffmpeg AAC audio encoder
-* dvd_rip: Fix passing empty final chapter (-c 4-)
+* dvd_rip: Add --start and --stop options
 * dvd_backup: Fix -i / --ifos to not copy VOBs, and always overwrite existing
   backup files
 * dvd_player: fix playing at starting chapter (and range)
