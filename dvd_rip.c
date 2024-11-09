@@ -90,6 +90,7 @@ int main(int argc, char **argv) {
 	bool opt_stop = false;
 	char start[DVD_INFO_MPV_TIME_POSITION + 1] = {'\0'};
 	char stop[DVD_INFO_MPV_TIME_POSITION + 1] = {'\0'};
+	char length[DVD_INFO_MPV_TIME_POSITION + 1] = {'\0'};
 	bool x264 = false;
 	bool x265 = false;
 	bool vp8 = false;
@@ -142,6 +143,7 @@ int main(int argc, char **argv) {
 	memset(dvd_rip.of_opts, '\0', sizeof(dvd_rip.of_opts));
 	memset(dvd_rip.start, '\0', sizeof(dvd_rip.start));
 	memset(dvd_rip.stop, '\0', sizeof(dvd_rip.stop));
+	memset(length, '\0', sizeof(length));
 	memset(start, '\0', sizeof(start));
 	memset(stop, '\0', sizeof(stop));
 	memset(str_crf, '\0', sizeof(str_crf));
@@ -273,13 +275,15 @@ int main(int argc, char **argv) {
 
 			case 'p':
 				opt_stop = true;
-				for(s = 0; s < strlen(optarg); s++) {
-					if(!isdigit(optarg[s]) && !(optarg[s] == '-' || optarg[s] == '+' || optarg[s] == ':' || optarg[s] == '.' || optarg[s] == '%')) {
+				strncpy(length, optarg, DVD_INFO_MPV_TIME_POSITION);
+
+				for(s = 0; s < strlen(length); s++) {
+					if(!isdigit(length[s]) && !(length[s] == '-' || length[s] == '+' || length[s] == ':' || length[s] == '.' || length[s] == '%')) {
 						fprintf(stderr, "[dvd_rip] Invalid length format, use [+|-][[hh:]mm:]ss[.ms] or <percent>%%\n");
 						return 1;
 					}
 				}
-				strncpy(stop, optarg, sizeof(stop) - 1);
+				strncpy(stop, length, DVD_INFO_MPV_TIME_POSITION);
 				break;
 
 			case 'q':
@@ -291,13 +295,15 @@ int main(int argc, char **argv) {
 
 			case 's':
 				opt_start = true;
-				for(s = 0; s < strlen(optarg); s++) {
-					if(!isdigit(optarg[s]) && !(optarg[s] == '-' || optarg[s] == '+' || optarg[s] == ':' || optarg[s] == '.' || optarg[s] == '%')) {
+				strncpy(length, optarg, DVD_INFO_MPV_TIME_POSITION);
+
+				for(s = 0; s < strlen(length); s++) {
+					if(!isdigit(length[s]) && !(length[s] == '-' || length[s] == '+' || length[s] == ':' || length[s] == '.' || length[s] == '%')) {
 						fprintf(stderr, "[dvd_rip] Invalid length format, use [+|-][[hh:]mm:]ss[.ms] or <percent>%%\n");
 						return 1;
 					}
 				}
-				strncpy(start, optarg, sizeof(start) - 1);
+				strncpy(start, length, DVD_INFO_MPV_TIME_POSITION);
 				break;
 
 
