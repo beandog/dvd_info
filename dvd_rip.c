@@ -87,6 +87,8 @@ int main(int argc, char **argv) {
 	bool opt_last_chapter = false;
 	bool opt_arg_first_chapter_only = false;
 	bool opt_filename = false;
+	bool opt_start = false;
+	bool opt_stop = false;
 	bool x264 = false;
 	bool x265 = false;
 	bool vp8 = false;
@@ -103,6 +105,7 @@ int main(int argc, char **argv) {
 	uint16_t arg_track_number = 1;
 	int long_index = 0;
 	int opt = 0;
+	size_t s = 0;
 	unsigned long int arg_number = 0;
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
@@ -136,6 +139,8 @@ int main(int argc, char **argv) {
 	memset(dvd_rip.subtitles_stream_id, '\0', sizeof(dvd_rip.subtitles_stream_id));
 	memset(dvd_rip.vf_opts, '\0', sizeof(dvd_rip.vf_opts));
 	memset(dvd_rip.of_opts, '\0', sizeof(dvd_rip.of_opts));
+	memset(dvd_rip.start, '\0', sizeof(dvd_rip.start));
+	memset(dvd_rip.stop, '\0', sizeof(dvd_rip.stop));
 	memset(str_crf, '\0', sizeof(str_crf));
 	snprintf(dvd_rip.config_dir, PATH_MAX - 1, "/.config/dvd_rip");
 	memset(dvd_mpv_first_chapter, '\0', sizeof(dvd_mpv_first_chapter));
@@ -153,11 +158,13 @@ int main(int argc, char **argv) {
 		{ "alang", required_argument, 0, 'L' },
 		{ "aid", required_argument, 0, 'B' },
 
-		{ "slang", required_argument, 0, 's' },
+		{ "slang", required_argument, 0, 'l' },
 		{ "sid", required_argument, 0, 'S' },
 
 		{ "track", required_argument, 0, 't' },
 		{ "chapters", required_argument, 0, 'c' },
+		{ "start", required_argument, 0, 's' },
+		{ "stop", required_argument, 0, 'p' },
 
 		{ "output", required_argument, 0, 'o' },
 
@@ -176,7 +183,7 @@ int main(int argc, char **argv) {
 
 	};
 
-	while((opt = getopt_long(argc, argv, "a:B:c:DhL:o:q:s:S:t:Vv:xz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "a:B:c:DhL:l:o:p:q:s:S:t:T:Vv:xz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -246,6 +253,10 @@ int main(int argc, char **argv) {
 				strncpy(dvd_rip.audio_lang, optarg, 2);
 				break;
 
+			case 'l':
+				strncpy(dvd_rip.subtitles_lang, optarg, 2);
+				break;
+
 			case 'o':
 				opt_filename = true;
 				strncpy(dvd_rip.filename, optarg, PATH_MAX - 1);
@@ -259,6 +270,17 @@ int main(int argc, char **argv) {
 				}
 				break;
 
+			case 'p':
+				opt_stop = true;
+				for(s = 0; s < strlen(optarg); s++) {
+					if(!isdigit(optarg[s]) && !(optarg[s] == '-' || optarg[s] == '+' || optarg[s] == ':' || optarg[s] == '.' || optarg[s] == '%')) {
+						fprintf(stderr, "[dvd_rip] Invalid length format, use [+|-][[hh:]mm:]ss[.ms] or <percent>%%\n");
+						return 1;
+					}
+				}
+				strncpy(dvd_rip.stop, optarg, sizeof(dvd_rip.stop) - 1);
+				break;
+
 			case 'q':
 				arg_number = strtoul(optarg, NULL, 10);
 				if(arg_number > 63)
@@ -267,8 +289,16 @@ int main(int argc, char **argv) {
 				break;
 
 			case 's':
-				strncpy(dvd_rip.subtitles_lang, optarg, 2);
+				opt_start = true;
+				for(s = 0; s < strlen(optarg); s++) {
+					if(!isdigit(optarg[s]) && !(optarg[s] == '-' || optarg[s] == '+' || optarg[s] == ':' || optarg[s] == '.' || optarg[s] == '%')) {
+						fprintf(stderr, "[dvd_rip] Invalid length format, use [+|-][[hh:]mm:]ss[.ms] or <percent>%%\n");
+						return 1;
+					}
+				}
+				strncpy(dvd_rip.start, optarg, sizeof(dvd_rip.start) - 1);
 				break;
+
 
 			case 'S':
 				strncpy(dvd_rip.subtitles_stream_id, optarg, 3);
@@ -323,7 +353,11 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("Track selection:\n");
 				printf("  -t, --track <#>          	Encode selected track (default: longest)\n");
-				printf("  -c, --chapter <#>[-[#]]         Encode chapter number or range (default: all)\n");
+				printf("  -c, --chapter <#>[-[#]]       Encode chapter number or range (default: all)\n");
+				printf("\n");
+				printf("Time duration:\n");
+				printf("  -s, --start <format>          Start at time length in format in [+|-][[hh:]mm:]ss[.ms] or <percent>%%\n");
+				printf("  -p, --stop <format>           Stop at time length in format in [+|-][[hh:]mm:]ss[.ms] or <percent>%%\n");
 				printf("\n");
 				printf("Language selection:\n");
 				printf("  --alang <language>            Select audio language, two character code (default: first audio track)\n");
@@ -656,7 +690,7 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
 
 	// Chapters
-	if(opt_chapter_number && dvd_rip.first_chapter > 1) {
+	if(opt_chapter_number && dvd_rip.first_chapter > 1 && !opt_start) {
 		snprintf(dvd_mpv_first_chapter, sizeof(dvd_mpv_first_chapter), "#%" PRIu8, dvd_rip.first_chapter);
 		mpv_set_option_string(dvd_mpv, "start", dvd_mpv_first_chapter);
 	}
@@ -676,6 +710,18 @@ int main(int argc, char **argv) {
 
 	snprintf(dvd_mpv_last_chapter, sizeof(dvd_mpv_last_chapter), "#%" PRIu8, dvd_rip.mpv_last_chapter);
 	mpv_set_option_string(dvd_mpv, "end", dvd_mpv_last_chapter);
+
+	// Starting can begin with chapter or time position
+	if(opt_chapter_number && opt_start) {
+		fprintf(stderr, "[dvd_rip] must start at either chapter number or specific time position\n");
+		return 1;
+	} else if(opt_start) {
+		mpv_set_option_string(dvd_mpv, "start", dvd_rip.start);
+	}
+
+	// mpv can support both seeking to end chapters *and* length, and will simply quit whichever ends first
+	if(opt_stop)
+		mpv_set_option_string(dvd_mpv, "length", dvd_rip.stop);
 
 	// Default container MKV
 	if(!mp4 && !mkv && !webm)

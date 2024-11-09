@@ -43,6 +43,8 @@ struct dvd_rip {
 	bool encode_subtitles;
 	char subtitles_lang[3];
 	char subtitles_stream_id[4];
+	char start[24];
+	char stop[24];
 	char vf_opts[256];
 	char of_opts[256];
 	uint8_t crf;
