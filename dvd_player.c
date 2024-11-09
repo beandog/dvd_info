@@ -520,8 +520,9 @@ int main(int argc, char **argv) {
 		if(dvd_playback.last_chapter == dvd_playback.first_chapter && dvd_playback.last_chapter < dvd_track.chapters && opt_last_chapter)
 			dvd_playback.last_chapter += 1;
 
+		// Do *not* pad last chapter (see dvd_rip.c for same logic)
 		if(!opt_last_chapter)
-			dvd_playback.last_chapter = dvd_track.chapters + 1;
+			dvd_playback.last_chapter = dvd_track.chapters;
 
 		snprintf(dvd_playback.mpv_first_chapter, sizeof(dvd_playback.mpv_first_chapter), "#%" PRIu8, dvd_playback.first_chapter);
 		mpv_set_option_string(dvd_mpv, "start", dvd_playback.mpv_first_chapter);
