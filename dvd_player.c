@@ -621,6 +621,7 @@ int main(int argc, char **argv) {
 	fprintf(stderr, "[dvd_player] Track: %" PRIu16 ", Length: %s, Chapters: %" PRIu8 ", Filesize: %.0lf MBs\n", dvd_playback.track, dvd_track.length, dvd_track.chapters, dvd_track.filesize_mbs);
 
 	fprintf(stderr, "[dvd_player] starting at chapter #%" PRIu8 "\n", dvd_playback.first_chapter);
+	fprintf(stderr, "[dvd_player] stopping at chapter #%" PRIu8 "\n", dvd_playback.last_chapter);
 
 	struct mpv_event_log_message *dvd_mpv_log_message = NULL;
 	mpv_event *dvd_mpv_event = NULL;
