@@ -696,8 +696,14 @@ int main(int argc, char **argv) {
 	}
 
 	// End chapter to encode *has* to be set, or mpv will wrap around to the same one or something else
-	fprintf(stderr, "[dvd_rip] starting chapter #%" PRIu8 "\n", dvd_rip.first_chapter);
-	fprintf(stderr, "[dvd_rip] stopping chapter #%" PRIu8 "\n", dvd_rip.last_chapter);
+	if(opt_start)
+		fprintf(stderr, "[dvd_rip] starting position '%s'\n", dvd_rip.start);
+	else
+		fprintf(stderr, "[dvd_rip] starting chapter #%" PRIu8 "\n", dvd_rip.first_chapter);
+	if(opt_stop)
+		fprintf(stderr, "[dvd_rip] stopping position '%s'\n", dvd_rip.stop);
+	else
+		fprintf(stderr, "[dvd_rip] stopping chapter #%" PRIu8 "\n", dvd_rip.last_chapter);
 
 	// To play a chapter range in MPV, the end chapter needs to be incremented to the final one plus one
 	// *unless* selecting just the final chapter. dvd_rip -c 1-1 would be mpv --start=#1 --end=#2
