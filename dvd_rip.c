@@ -375,7 +375,7 @@ int main(int argc, char **argv) {
 				printf("Encoding options:\n");
 				printf("\n");
 				printf("  -v, --vcodec <vcodec>         Video codec <x264|x265|vp8|vp9>, default: x264\n");
-				printf("  -a, --acodec <acodec>         Audio codec (aac|opus), default: opus\n");
+				printf("  -a, --acodec <acodec>         Audio codec (aac|opus), default: aac\n");
 				printf("  -q, --crf <#>			Video encoder CRF (x264 and x265)\n");
 				printf("  -D, --no-detelecine           Do not detelecine video\n");
 				printf("\n");
@@ -758,10 +758,6 @@ int main(int argc, char **argv) {
 	if(!x264 && !x265 && !vp8 && !vp9)
 		x264 = true;
 
-	// Default audio codec for WebM
-	if(!aac && !opus)
-		opus = true;
-
 	// Default video codec for WebM
 	if(webm && !vp8 && !vp9) {
 		x264 = false;
@@ -785,6 +781,8 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "[dvd_rip] WebM only supports Opus audio codec, quitting\n");
 		return 1;
 	}
+	if(!aac && !opus && !webm)
+		aac = true;
 
 	/** Filename **/
 	if(!opt_filename) {

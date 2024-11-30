@@ -2,12 +2,12 @@
 .\"     Title: dvd_rip
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.20
-.\"      Date: 2024-11-08
+.\"      Date: 2024-11-30
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_RIP" "1" "2024-11-08" "\ \&" "\ \&"
+.TH "DVD_RIP" "1" "2024-11-30" "\ \&" "\ \&"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -39,7 +39,7 @@ A tiny DVD ripper that has a small set of options for encoding.
 Options and switches can be set in ~/.config/dvd_rip/mpv.conf. See the mpv
 documentation for details.
 .sp
-By default, dvd_rip will encode source to H.264 video with Opus audio in an
+By default, dvd_rip will encode source to H.264 video with AAC audio in an
 MKV container. If an output filename is given with a different extension,
 it will use the default settings for those instead. In each case, the default
 presets are used as selected by the codecs as well. Note that mpv must already
@@ -49,7 +49,7 @@ be built with support for these codecs, or dvd_rip will quit.
 .nf
 .fam C
 \&.mp4 \- H.264 video, AAC audio
-\&.mkv \- H.264 video, Opus audio
+\&.mkv \- H.264 video, AAC audio
 \&.webm \- VPX8 video, Opus audio
 .fam
 .fi
