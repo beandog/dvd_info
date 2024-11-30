@@ -751,9 +751,9 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "[dvd_rip] WARNING: if --stop position given is past the last chapter, libmpv could do something unexpected\n");
 	}
 
-	// Default container MKV
+	// Default container MP4
 	if(!mp4 && !mkv && !webm)
-		mkv = true;
+		mp4 = true;
 
 	// Default video codec for MP4 and MKV
 	if(!x264 && !x265 && !vp8 && !vp9)
