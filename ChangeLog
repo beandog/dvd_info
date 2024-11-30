@@ -13,6 +13,7 @@
 * dvd_rip: Set default audio codec to AAC, container to MP4
 * dvd_rip: Use native ffmpeg AAC audio encoder
 * dvd_rip: Add --start and --stop options
+* dvd_rip: Fix setting faststart on mp4s
 * dvd_backup: Fix -i / --ifos to not copy VOBs, and always overwrite existing
   backup files
 * dvd_player: fix playing at starting chapter (and range)
