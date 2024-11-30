@@ -891,18 +891,13 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "ovc", dvd_rip.vcodec);
 
 	// Containers
-	// FIXME, this may need to be changed to movflags=+faststart, see mpv's
-	// etc/encoding-profiles.conf.
-	// Also see https://ffmpeg.org/ffmpeg-all.html#mov_002c-mp4_002c-ismv
-	// for setting it in ffmpeg. Needs testing.
-	if(mp4)
-		strcpy(dvd_rip.of_opts, "movflags=empty_moov");
+	if(mp4) {
+		strcpy(dvd_rip.of_opts, "movflags=+faststart");
+		mpv_set_option_string(dvd_mpv, "ofopts", dvd_rip.of_opts);
+	}
 
 	if(strlen(dvd_rip.vcodec_opts))
 		mpv_set_option_string(dvd_mpv, "ovcopts", dvd_rip.vcodec_opts);
-
-	if(strlen(dvd_rip.of_opts))
-		mpv_set_option_string(dvd_mpv, "ofopts", "movflags=empty_moov");
 
 	// Detelecining
 	if(detelecine && pal_video)
