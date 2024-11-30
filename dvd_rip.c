@@ -136,6 +136,7 @@ int main(int argc, char **argv) {
 	memset(dvd_rip.acodec_opts, '\0', sizeof(dvd_rip.acodec_opts));
 	memset(dvd_rip.audio_lang, '\0', sizeof(dvd_rip.audio_lang));
 	memset(dvd_rip.audio_stream_id, '\0', sizeof(dvd_rip.audio_stream_id));
+	memset(dvd_rip.audio_channels, '\0', sizeof(dvd_rip.audio_channels));
 	dvd_rip.encode_subtitles = false;
 	memset(dvd_rip.subtitles_lang, '\0', sizeof(dvd_rip.subtitles_lang));
 	memset(dvd_rip.subtitles_stream_id, '\0', sizeof(dvd_rip.subtitles_stream_id));
@@ -912,38 +913,32 @@ int main(int argc, char **argv) {
 	mpv_set_option_string(dvd_mpv, "vf", dvd_rip.vf_opts);
 
 	/** Audio **/
-	if(strlen(dvd_rip.audio_lang))
-		mpv_set_option_string(dvd_mpv, "alang", dvd_rip.audio_lang);
-	else if(strlen(dvd_rip.audio_stream_id))
-		mpv_set_option_string(dvd_mpv, "aid", dvd_rip.audio_stream_id);
 
-	// Audio codec
-	if(aac)
-		strcpy(dvd_rip.acodec, "aac");
-	else if(opus)
-		strcpy(dvd_rip.acodec, "libopus");
+	// There are some DVD tracks with no audio channels, and mpv will die if number is set
+	if(audio_track_channels) {
 
-	mpv_set_option_string(dvd_mpv, "oac", dvd_rip.acodec);
+		if(strlen(dvd_rip.audio_lang))
+			mpv_set_option_string(dvd_mpv, "alang", dvd_rip.audio_lang);
+		else if(strlen(dvd_rip.audio_stream_id))
+			mpv_set_option_string(dvd_mpv, "aid", dvd_rip.audio_stream_id);
 
-	// Audio channels
-	/** I thought I could set channels to 6 for opus, but I can't get it working, so we're stuck at stereo */
-	/*
-	char dvd_mpv_oacopts[64];
-	memset(dvd_mpv_oacopts, '\0', sizeof(dvd_mpv_oacopts));
-	// ffmpeg aac encoder cannot support more than 2-channel stereo, so drop it if needed
-	if(aac && audio_max_channels > 2)
-		audio_max_channels = 2;
-	fprintf(stderr, "[dvd_rip] setting audio channels to %" PRIu8 "\n", audio_max_channels);
-	snprintf(dvd_mpv_oacopts, sizeof(dvd_mpv_oacopts), "b=128k,ac=%" PRIu8, audio_max_channels);
-	if(verbose)
-		fprintf(stderr, "[dvd_rip] libmpv oacopts: %s\n", dvd_mpv_oacopts);
-	// mpv_set_option_string(dvd_mpv, "oacopts", dvd_mpv_oacopts);
-	mpv_set_option_string(dvd_mpv, "oacopts", "b=128k");
-	*/
+		// Audio codec
+		if(aac)
+			strcpy(dvd_rip.acodec, "aac");
+		else if(opus)
+			strcpy(dvd_rip.acodec, "libopus");
 
-	// Use a high bitrate by default to guarantee good sound quality
-	snprintf(dvd_rip.acodec_opts, sizeof(dvd_rip.acodec_opts), "b=%" PRIu16 "k", dvd_rip.audio_bitrate);
-	mpv_set_option_string(dvd_mpv, "oacopts", dvd_rip.acodec_opts);
+		mpv_set_option_string(dvd_mpv, "oac", dvd_rip.acodec);
+
+		// Use same channel layout as source; AAC and Opus both support 5.1
+		snprintf(dvd_rip.audio_channels, sizeof(dvd_rip.audio_channels), "%" PRIu8, audio_track_channels);
+		mpv_set_option_string(dvd_mpv, "audio-channels", dvd_rip.audio_channels);
+
+		// Use a high bitrate by default to guarantee good sound quality
+		snprintf(dvd_rip.acodec_opts, sizeof(dvd_rip.acodec_opts), "b=%" PRIu16 "k", dvd_rip.audio_bitrate);
+		mpv_set_option_string(dvd_mpv, "oacopts", dvd_rip.acodec_opts);
+
+	}
 
 	/** Subtitles **/
 	if(strlen(dvd_rip.subtitles_lang)) {

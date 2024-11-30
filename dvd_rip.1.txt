@@ -70,7 +70,7 @@ OPTIONS
 	also be played back with HTML5.
 
 *-a, --acodec*='aac|opus'
-	Audio codec to use. Both options will downmix to 2 channels (stereo).
+	Audio codec to use.
 
 *-q, --crf*='#'
 	Video encoder CRF to use. The default is a high quality value.
