@@ -40,7 +40,7 @@ Options and switches can be set in ~/.config/dvd_rip/mpv.conf. See the mpv
 documentation for details.
 .sp
 By default, dvd_rip will encode source to H.264 video with AAC audio in an
-MKV container. If an output filename is given with a different extension,
+MP4 container. If an output filename is given with a different extension,
 it will use the default settings for those instead. In each case, the default
 presets are used as selected by the codecs as well. Note that mpv must already
 be built with support for these codecs, or dvd_rip will quit.
@@ -62,7 +62,7 @@ number.
 .sp
 \fB\-o, \-\-output\fP=\fIFILENAME\fP
 .RS 4
-Save to filename (default: \fIdvd_track_#.mkv\fP),
+Save to filename (default: \fIdvd_track_#.mp4\fP),
 where default track is longest one on DVD, and ## is zero\-padded
 track number.
 .RE
