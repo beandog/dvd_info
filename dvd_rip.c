@@ -114,6 +114,7 @@ int main(int argc, char **argv) {
 	char *token = NULL;
 	char dvd_mpv_first_chapter[4] = {'\0'};
 	char dvd_mpv_last_chapter[4] = {'\0'};
+	char dvd_mpv_audio_channels[2] = {'\0'};
 	const char *home_dir = getenv("HOME");
 	char dvd_mpv_args[64];
 	int retval = 0;
@@ -134,9 +135,9 @@ int main(int argc, char **argv) {
 	memset(dvd_rip.vcodec_log_level, '\0', sizeof(dvd_rip.vcodec_log_level));
 	memset(dvd_rip.acodec, '\0', sizeof(dvd_rip.acodec));
 	memset(dvd_rip.acodec_opts, '\0', sizeof(dvd_rip.acodec_opts));
+	memset(dvd_rip.mpv_audio_channels, '\0', sizeof(dvd_rip.mpv_audio_channels));
 	memset(dvd_rip.audio_lang, '\0', sizeof(dvd_rip.audio_lang));
 	memset(dvd_rip.audio_stream_id, '\0', sizeof(dvd_rip.audio_stream_id));
-	memset(dvd_rip.audio_channels, '\0', sizeof(dvd_rip.audio_channels));
 	dvd_rip.encode_subtitles = false;
 	memset(dvd_rip.subtitles_lang, '\0', sizeof(dvd_rip.subtitles_lang));
 	memset(dvd_rip.subtitles_stream_id, '\0', sizeof(dvd_rip.subtitles_stream_id));
@@ -585,14 +586,13 @@ int main(int argc, char **argv) {
 	// are on the title track, and simply choose what's the highest so we definitely get
 	// whatever the greatest source is. In some cases, this will mean upmixing to more channels.
 	uint8_t audio_track_ix;
-	uint8_t audio_max_channels = 1;
-	uint8_t audio_track_channels = 1;
+	uint8_t audio_max_channels = 0;
 	for(audio_track_ix = 0; audio_track_ix < dvd_track.audio_tracks; audio_track_ix++) {
 
-		audio_track_channels = dvd_audio_channels(vts_ifo, audio_track_ix);
+		dvd_rip.audio_channels = dvd_audio_channels(vts_ifo, audio_track_ix);
 
-		if(audio_track_channels > audio_max_channels)
-			audio_max_channels = audio_track_channels;
+		if(dvd_rip.audio_channels > audio_max_channels)
+			audio_max_channels = dvd_rip.audio_channels;
 
 	}
 
@@ -915,7 +915,7 @@ int main(int argc, char **argv) {
 	/** Audio **/
 
 	// There are some DVD tracks with no audio channels, and mpv will die if number is set
-	if(audio_track_channels) {
+	if(audio_max_channels) {
 
 		if(strlen(dvd_rip.audio_lang))
 			mpv_set_option_string(dvd_mpv, "alang", dvd_rip.audio_lang);
@@ -931,8 +931,8 @@ int main(int argc, char **argv) {
 		mpv_set_option_string(dvd_mpv, "oac", dvd_rip.acodec);
 
 		// Use same channel layout as source; AAC and Opus both support 5.1
-		snprintf(dvd_rip.audio_channels, sizeof(dvd_rip.audio_channels), "%" PRIu8, audio_track_channels);
-		mpv_set_option_string(dvd_mpv, "audio-channels", dvd_rip.audio_channels);
+		snprintf(dvd_rip.mpv_audio_channels, sizeof(dvd_rip.mpv_audio_channels), "%" PRIu8, audio_max_channels);
+		mpv_set_option_string(dvd_mpv, "audio-channels", dvd_rip.mpv_audio_channels);
 
 		// Use a high bitrate by default to guarantee good sound quality
 		snprintf(dvd_rip.acodec_opts, sizeof(dvd_rip.acodec_opts), "b=%" PRIu16 "k", dvd_rip.audio_bitrate);
