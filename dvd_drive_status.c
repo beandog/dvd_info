@@ -33,7 +33,7 @@
 	 *
 	 * See also setcd program
 	 *
-	 * See http://dvds.beandog.org/doku.php/dvd_drive_status for justification :)
+	 * See https://dvds.beandog.org/doku.php?id=dvd_drive_status for justification :)
 	 *
 	 * This does do strict error checking to see if the device exists, is a DVD
 	 * drive, is accessible, and so on.
@@ -48,6 +48,7 @@
 	 * 5 - device exists, but is NOT a DVD drive
 	 * 6 - cannot access device
 	 * 7 - cannot find a device
+	 * 8 - cannot find any drive info
 	 *
 	 * - Returns an exit code similar to CDROM_DRIVE_STATUS in cdrom.h
 	 */
