@@ -29,7 +29,7 @@
 	 *
 	 * ** Linux tool to get get the status of the disc tray **
 	 *
-	 * See Documentation/cdrom/cdrom-standard.rst in linux kernel
+	 * See https://www.kernel.org/doc/Documentation/cdrom/cdrom-standard.rst
 	 *
 	 * See also setcd program
 	 *
