@@ -29,6 +29,10 @@
 	 *
 	 * ** Linux tool to get get the status of the disc tray **
 	 *
+	 * See Documentation/cdrom/cdrom-standard.rst in linux kernel
+	 *
+	 * See also setcd program
+	 *
 	 * See http://dvds.beandog.org/doku.php/dvd_drive_status for justification :)
 	 *
 	 * This does do strict error checking to see if the device exists, is a DVD
@@ -92,6 +96,7 @@ int main(int argc, char **argv) {
 		printf("  5 - device exists, but is NOT a DVD drive\n");
 		printf("  6 - cannot access device\n");
 		printf("  7 - cannot find a device\n");
+		printf("  8 - could not find any drive info\n");
 
 		return 0;
 
@@ -124,7 +129,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Try opening device
-	cdrom = open(device_filename, O_RDONLY);
+	cdrom = open(device_filename, O_RDONLY | O_NONBLOCK);
 	if(cdrom < 0) {
 		fprintf(stderr, "error opening %s\n", device_filename);
 		return 6;
@@ -143,6 +148,13 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "%s is not a DVD drive\n", device_filename);
 		close(cdrom);
 		return 5;
+	}
+
+
+	if(drive_status == CDS_NO_INFO) {
+		status = "could not find any drive info";
+		printf("%s\n", status);
+		return 8;
 	}
 
 	switch(drive_status) {
