@@ -22,6 +22,7 @@
 * dvd_player, dvd_rip: fix stopping at wrong end point for chapters
 * dvd_player, dvd_rip: if chapter ranges given are incorrect, don't fix for
   the user, and instead quit
+* dvd_drive_status: use nonblock when opening device
 
 1.16
 
