@@ -75,17 +75,17 @@
 	 * anything that is a sure fire solution.
 	 *
 	 * The basic logic of this program and reason for it is this: Opening and
-	 * closing a disc tray is trivial.  The issue this one works around, however,
+	 * closing a disc tray is trivial. The issue this one works around, however,
 	 * is that just because a tray is *closed*, does not mean that it is *ready* to
-	 * acess the media in it.  This can cause issues when you do something like
-	 * "lsdvd /dev/dvd" and the tray is open.  The tray will close by the call made
+	 * acess the media in it. This can cause issues when you do something like
+	 * "lsdvd /dev/dvd" and the tray is open. The tray will close by the call made
 	 * through libdvdread / libdvdcss to access the device, but will fail because
-	 * the device is not yet in a ready mode.  So there's a gap between "closing" and
-	 * "closed and ready".  Fortunately, the Linux kernel allows for checking those
+	 * the device is not yet in a ready mode. So there's a gap between "closing" and
+	 * "closed and ready". Fortunately, the Linux kernel allows for checking those
 	 * states, and that's the core of the logic here.
 	 *
 	 * With that in mind, all this does is close or open the tray, wait until it is
-	 * a "ready" state again, and then exits.  In addition, if it closes the tray,
+	 * a "ready" state again, and then exits. In addition, if it closes the tray,
 	 * it waits until the "ready" state and then decrypts the CSS using libdvdcss.
 	 *
 	 * If anecdotal evidence has any value ... it works for me. :)
@@ -118,14 +118,11 @@ int main(int argc, char **argv) {
 	bool p_dvd_close = false;
 	bool dvd_drive_opened = false;
 	bool dvd_drive_has_media = false;
-	// bool opt_retry = false;
 	bool opt_wait = true;
 	int max_waiting_times = 15;
 	int times_waited = 0;
 	int retval = -1;
 	bool d_help = false;
-	// dvdcss_t *dvdcss;
-	// dvd_reader_t *dvdread_dvd;
 
 	memset(umount_str, '\0', PATH_MAX);
 
@@ -134,7 +131,6 @@ int main(int argc, char **argv) {
 		{ "help", no_argument, 0, 'h' },
 		{ "no-wait", no_argument, 0, 'n' },
 		{ "version", no_argument, 0, 'V' },
-		// { "retry", no_argument, 0, 'r' },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -146,9 +142,6 @@ int main(int argc, char **argv) {
 			case 'n':
 				opt_wait = false;
 				break;
-			// case 'r':
-			//	opt_retry = true;
-			//	break;
 			case 't':
 				p_dvd_eject = false;
 				p_dvd_close = true;
@@ -173,7 +166,6 @@ int main(int argc, char **argv) {
 		printf("-h, --help	Display this help output\n");
 		printf("-t, --close	Close tray\n");
 		printf("-n, --no-wait	Don't wait for device to be ready when closing\n");
-		// printf("-r, --retry	Keep retrying to open / close a tray\n");
 		printf("\nDefault device is %s\n", DEFAULT_DVD_DEVICE);
 		return 0;
 	}
@@ -183,7 +175,7 @@ int main(int argc, char **argv) {
 	else
 		device_filename = DEFAULT_DVD_DEVICE;
 
-	dvd_fd = open(device_filename, O_RDONLY);
+	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
 
 	if(dvd_fd < 0) {
 		printf("error opening %s\n", device_filename);
@@ -376,6 +368,7 @@ int main(int argc, char **argv) {
 		// Open DVD device
 		/*
 		printf("* Opening device with dvdread ... ");
+		dvd_reader_t *dvdread_dvd = NULL;
 		dvdread_dvd = DVDOpen(device_filename);
 		if(!dvdread_dvd) {
 			printf("failed\n");
