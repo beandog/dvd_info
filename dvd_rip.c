@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <sys/sysinfo.h>
 #include <fcntl.h>
 #include <stdbool.h>
 #include <getopt.h>
@@ -846,7 +845,7 @@ int main(int argc, char **argv) {
 		 * - qmin=0,qmax=50,crf=20
 		 *
 		 * Another issue is that libvpx encodes using *one* processor at a time,
-		 * so I'm overriding it here to actual # available (see sysinfo.h). It's
+		 * so I'm overriding it here to actual # available (see sysctl.h). It's
 		 * obviously much faster now.
 		 *
 		 * So here you go, me guessing at bitrates. Hopefully in the future
