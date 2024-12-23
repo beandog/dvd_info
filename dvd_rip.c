@@ -10,6 +10,7 @@
 #ifdef __linux__
 #include <linux/cdrom.h>
 #include <linux/limits.h>
+#include <sys/sysinfo.h>
 #include "dvd_drive.h"
 #else
 #include <limits.h>
