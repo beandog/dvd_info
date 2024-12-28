@@ -17,14 +17,13 @@ AM_CONDITIONAL([DVD_DRIVE_STATUS], [false])
 AC_CANONICAL_HOST
 case "$host_os" in
 	*linux*)
+		dnl Need ioctl.h for checking drive status in programs
+		AC_CHECK_HEADERS([sys/ioctl.h], [], [])
 		AM_CONDITIONAL([DVD_DRIVE_STATUS], [true])
 		;;
 	*)
 		;;
 esac
-
-dnl Need ioctl.h for checking drive status in programs
-AC_CHECK_HEADERS([sys/ioctl.h], [], [])
 
 dnl Using libmpv for the player is optional, builds dvd_player
 AC_ARG_WITH([libmpv], [AS_HELP_STRING([--with-libmpv], [Enable mpv support to build dvd_player])], [with_libmpv=${withval}], [with_libmpv=no])
