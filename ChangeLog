@@ -23,6 +23,7 @@
 * dvd_player, dvd_rip: if chapter ranges given are incorrect, don't fix for
   the user, and instead quit
 * dvd_drive_status: use nonblock when opening device
+* Fix building on msys2
 
 1.16
 
