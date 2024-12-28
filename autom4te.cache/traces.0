@@ -1,4 +1,4 @@
-m4trace:/usr/share/aclocal/pkg.m4:58: -1- AC_DEFUN([PKG_PROG_PKG_CONFIG], [m4_pattern_forbid([^_?PKG_[A-Z_]+$])
+m4trace:/usr/share/aclocal/pkg.m4:64: -1- AC_DEFUN([PKG_PROG_PKG_CONFIG], [m4_pattern_forbid([^_?PKG_[A-Z_]+$])
 m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])
 m4_pattern_allow([^PKG_CONFIG_(DISABLE_UNINSTALLED|TOP_BUILD_DIR|DEBUG_SPEW)$])
 AC_ARG_VAR([PKG_CONFIG], [path to pkg-config utility])
@@ -17,23 +17,26 @@ if test -n "$PKG_CONFIG"; then
 		AC_MSG_RESULT([no])
 		PKG_CONFIG=""
 	fi
+fi
+if test -z "$PKG_CONFIG"; then
+	m4_default([$2], [AC_MSG_ERROR([pkg-config not found])])
 fi[]dnl
 ])
-m4trace:/usr/share/aclocal/pkg.m4:92: -1- AC_DEFUN([PKG_CHECK_EXISTS], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+m4trace:/usr/share/aclocal/pkg.m4:101: -1- AC_DEFUN([PKG_CHECK_EXISTS], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
 if test -n "$PKG_CONFIG" && \
     AC_RUN_LOG([$PKG_CONFIG --exists --print-errors "$1"]); then
   m4_default([$2], [:])
 m4_ifvaln([$3], [else
   $3])dnl
 fi])
-m4trace:/usr/share/aclocal/pkg.m4:121: -1- AC_DEFUN([_PKG_SHORT_ERRORS_SUPPORTED], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])
+m4trace:/usr/share/aclocal/pkg.m4:130: -1- AC_DEFUN([_PKG_SHORT_ERRORS_SUPPORTED], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
         _pkg_short_errors_supported=yes
 else
         _pkg_short_errors_supported=no
 fi[]dnl
 ])
-m4trace:/usr/share/aclocal/pkg.m4:139: -1- AC_DEFUN([PKG_CHECK_MODULES], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+m4trace:/usr/share/aclocal/pkg.m4:148: -1- AC_DEFUN([PKG_CHECK_MODULES], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
 AC_ARG_VAR([$1][_CFLAGS], [C compiler flags for $1, overriding pkg-config])dnl
 AC_ARG_VAR([$1][_LIBS], [linker flags for $1, overriding pkg-config])dnl
 
@@ -51,14 +54,14 @@ if test $pkg_failed = yes; then
         AC_MSG_RESULT([no])
         _PKG_SHORT_ERRORS_SUPPORTED
         if test $_pkg_short_errors_supported = yes; then
-	        $1[]_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "$2" 2>&1`
+                $1[]_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "$2" 2>&1`
         else
-	        $1[]_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "$2" 2>&1`
+                $1[]_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "$2" 2>&1`
         fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$$1[]_PKG_ERRORS" >&AS_MESSAGE_LOG_FD
+        # Put the nasty error message in config.log where it belongs
+        echo "$$1[]_PKG_ERRORS" >&AS_MESSAGE_LOG_FD
 
-	m4_default([$4], [AC_MSG_ERROR(
+        m4_default([$4], [AC_MSG_ERROR(
 [Package requirements ($2) were not met:
 
 $$1_PKG_ERRORS
@@ -70,7 +73,7 @@ _PKG_TEXT])[]dnl
         ])
 elif test $pkg_failed = untried; then
         AC_MSG_RESULT([no])
-	m4_default([$4], [AC_MSG_FAILURE(
+        m4_default([$4], [AC_MSG_FAILURE(
 [The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
 path to pkg-config.
@@ -80,19 +83,19 @@ _PKG_TEXT
 To get pkg-config, see <http://pkg-config.freedesktop.org/>.])[]dnl
         ])
 else
-	$1[]_CFLAGS=$pkg_cv_[]$1[]_CFLAGS
-	$1[]_LIBS=$pkg_cv_[]$1[]_LIBS
+        $1[]_CFLAGS=$pkg_cv_[]$1[]_CFLAGS
+        $1[]_LIBS=$pkg_cv_[]$1[]_LIBS
         AC_MSG_RESULT([yes])
-	$3
+        $3
 fi[]dnl
 ])
-m4trace:/usr/share/aclocal/pkg.m4:208: -1- AC_DEFUN([PKG_CHECK_MODULES_STATIC], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+m4trace:/usr/share/aclocal/pkg.m4:217: -1- AC_DEFUN([PKG_CHECK_MODULES_STATIC], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
 _save_PKG_CONFIG=$PKG_CONFIG
 PKG_CONFIG="$PKG_CONFIG --static"
 PKG_CHECK_MODULES($@)
 PKG_CONFIG=$_save_PKG_CONFIG[]dnl
 ])
-m4trace:/usr/share/aclocal/pkg.m4:226: -1- AC_DEFUN([PKG_INSTALLDIR], [m4_pushdef([pkg_default], [m4_default([$1], ['${libdir}/pkgconfig'])])
+m4trace:/usr/share/aclocal/pkg.m4:235: -1- AC_DEFUN([PKG_INSTALLDIR], [m4_pushdef([pkg_default], [m4_default([$1], ['${libdir}/pkgconfig'])])
 m4_pushdef([pkg_description],
     [pkg-config installation directory @<:@]pkg_default[@:>@])
 AC_ARG_WITH([pkgconfigdir],
@@ -102,7 +105,7 @@ AC_SUBST([pkgconfigdir], [$with_pkgconfigdir])
 m4_popdef([pkg_default])
 m4_popdef([pkg_description])
 ])
-m4trace:/usr/share/aclocal/pkg.m4:248: -1- AC_DEFUN([PKG_NOARCH_INSTALLDIR], [m4_pushdef([pkg_default], [m4_default([$1], ['${datadir}/pkgconfig'])])
+m4trace:/usr/share/aclocal/pkg.m4:257: -1- AC_DEFUN([PKG_NOARCH_INSTALLDIR], [m4_pushdef([pkg_default], [m4_default([$1], ['${datadir}/pkgconfig'])])
 m4_pushdef([pkg_description],
     [pkg-config arch-independent installation directory @<:@]pkg_default[@:>@])
 AC_ARG_WITH([noarch-pkgconfigdir],
@@ -112,7 +115,7 @@ AC_SUBST([noarch_pkgconfigdir], [$with_noarch_pkgconfigdir])
 m4_popdef([pkg_default])
 m4_popdef([pkg_description])
 ])
-m4trace:/usr/share/aclocal/pkg.m4:267: -1- AC_DEFUN([PKG_CHECK_VAR], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+m4trace:/usr/share/aclocal/pkg.m4:276: -1- AC_DEFUN([PKG_CHECK_VAR], [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
 AC_ARG_VAR([$1], [value of $3 for $2, overriding pkg-config])dnl
 
 _PKG_CONFIG([$1], [variable="][$3]["], [$2])
@@ -120,13 +123,54 @@ AS_VAR_COPY([$1], [pkg_cv_][$1])
 
 AS_VAR_IF([$1], [""], [$5], [$4])dnl
 ])
+m4trace:/usr/share/aclocal/pkg.m4:294: -1- AC_DEFUN([PKG_WITH_MODULES], [
+m4_pushdef([with_arg], m4_tolower([$1]))
+
+m4_pushdef([description],
+           [m4_default([$5], [build with ]with_arg[ support])])
+
+m4_pushdef([def_arg], [m4_default([$6], [auto])])
+m4_pushdef([def_action_if_found], [AS_TR_SH([with_]with_arg)=yes])
+m4_pushdef([def_action_if_not_found], [AS_TR_SH([with_]with_arg)=no])
+
+m4_case(def_arg,
+            [yes],[m4_pushdef([with_without], [--without-]with_arg)],
+            [m4_pushdef([with_without],[--with-]with_arg)])
+
+AC_ARG_WITH(with_arg,
+     AS_HELP_STRING(with_without, description[ @<:@default=]def_arg[@:>@]),,
+    [AS_TR_SH([with_]with_arg)=def_arg])
+
+AS_CASE([$AS_TR_SH([with_]with_arg)],
+            [yes],[PKG_CHECK_MODULES([$1],[$2],$3,$4)],
+            [auto],[PKG_CHECK_MODULES([$1],[$2],
+                                        [m4_n([def_action_if_found]) $3],
+                                        [m4_n([def_action_if_not_found]) $4])])
+
+m4_popdef([with_arg])
+m4_popdef([description])
+m4_popdef([def_arg])
+
+])
+m4trace:/usr/share/aclocal/pkg.m4:331: -1- AC_DEFUN([PKG_HAVE_WITH_MODULES], [
+PKG_WITH_MODULES([$1],[$2],,,[$3],[$4])
+
+AM_CONDITIONAL([HAVE_][$1],
+               [test "$AS_TR_SH([with_]m4_tolower([$1]))" = "yes"])
+])
+m4trace:/usr/share/aclocal/pkg.m4:346: -1- AC_DEFUN([PKG_HAVE_DEFINE_WITH_MODULES], [
+PKG_HAVE_WITH_MODULES([$1],[$2],[$3],[$4])
+
+AS_IF([test "$AS_TR_SH([with_]m4_tolower([$1]))" = "yes"],
+        [AC_DEFINE([HAVE_][$1], 1, [Enable ]m4_tolower([$1])[ support])])
+])
 m4trace:/usr/share/aclocal-1.16/amversion.m4:14: -1- AC_DEFUN([AM_AUTOMAKE_VERSION], [am__api_version='1.16'
 dnl Some users find AM_AUTOMAKE_VERSION and mistake it for a way to
 dnl require some minimum version.  Point them to the right macro.
-m4_if([$1], [1.16.1], [],
+m4_if([$1], [1.16.5], [],
       [AC_FATAL([Do not call $0, use AM_INIT_AUTOMAKE([$1]).])])dnl
 ])
-m4trace:/usr/share/aclocal-1.16/amversion.m4:33: -1- AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION], [AM_AUTOMAKE_VERSION([1.16.1])dnl
+m4trace:/usr/share/aclocal-1.16/amversion.m4:33: -1- AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION], [AM_AUTOMAKE_VERSION([1.16.5])dnl
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
 _AM_AUTOCONF_VERSION(m4_defn([AC_AUTOCONF_VERSION]))])
@@ -335,7 +379,9 @@ m4trace:/usr/share/aclocal-1.16/depout.m4:11: -1- AC_DEFUN([_AM_OUTPUT_DEPENDENC
   done
   if test $am_rc -ne 0; then
     AC_MSG_FAILURE([Something went wrong bootstrapping makefile fragments
-    for automatic dependency tracking.  Try re-running configure with the
+    for automatic dependency tracking.  If GNU make was not used, consider
+    re-running the configure script with MAKE="gmake" (or whatever is
+    necessary).  You can also try re-running configure with the
     '--disable-dependency-tracking' option to at least be able to build
     the package (albeit without support for automatic dependency tracking).])
   fi
@@ -346,10 +392,14 @@ m4trace:/usr/share/aclocal-1.16/depout.m4:11: -1- AC_DEFUN([_AM_OUTPUT_DEPENDENC
   rm -f conftest-deps.mk
 }
 ])
-m4trace:/usr/share/aclocal-1.16/depout.m4:62: -1- AC_DEFUN([AM_OUTPUT_DEPENDENCY_COMMANDS], [AC_CONFIG_COMMANDS([depfiles],
+m4trace:/usr/share/aclocal-1.16/depout.m4:64: -1- AC_DEFUN([AM_OUTPUT_DEPENDENCY_COMMANDS], [AC_CONFIG_COMMANDS([depfiles],
      [test x"$AMDEP_TRUE" != x"" || _AM_OUTPUT_DEPENDENCY_COMMANDS],
      [AMDEP_TRUE="$AMDEP_TRUE" MAKE="${MAKE-make}"])])
 m4trace:/usr/share/aclocal-1.16/init.m4:29: -1- AC_DEFUN([AM_INIT_AUTOMAKE], [AC_PREREQ([2.65])dnl
+m4_ifdef([_$0_ALREADY_INIT],
+  [m4_fatal([$0 expanded multiple times
+]m4_defn([_$0_ALREADY_INIT]))],
+  [m4_define([_$0_ALREADY_INIT], m4_expansion_stack)])dnl
 dnl Autoconf wants to disallow AM_ names.  We explicitly allow
 dnl the ones we care about.
 m4_pattern_allow([^AM_[A-Z]+FLAGS$])dnl
@@ -386,7 +436,7 @@ m4_ifval([$3], [_AM_SET_OPTION([no-define])])dnl
 [_AM_SET_OPTIONS([$1])dnl
 dnl Diagnose old-style AC_INIT with new-style AM_AUTOMAKE_INIT.
 m4_if(
-  m4_ifdef([AC_PACKAGE_NAME], [ok]):m4_ifdef([AC_PACKAGE_VERSION], [ok]),
+  m4_ifset([AC_PACKAGE_NAME], [ok]):m4_ifset([AC_PACKAGE_VERSION], [ok]),
   [ok:ok],,
   [m4_fatal([AC_INIT should be called with package and version arguments])])dnl
  AC_SUBST([PACKAGE], ['AC_PACKAGE_TARNAME'])dnl
@@ -438,6 +488,20 @@ AC_PROVIDE_IFELSE([AC_PROG_OBJCXX],
 		  [m4_define([AC_PROG_OBJCXX],
 			     m4_defn([AC_PROG_OBJCXX])[_AM_DEPENDENCIES([OBJCXX])])])dnl
 ])
+# Variables for tags utilities; see am/tags.am
+if test -z "$CTAGS"; then
+  CTAGS=ctags
+fi
+AC_SUBST([CTAGS])
+if test -z "$ETAGS"; then
+  ETAGS=etags
+fi
+AC_SUBST([ETAGS])
+if test -z "$CSCOPE"; then
+  CSCOPE=cscope
+fi
+AC_SUBST([CSCOPE])
+
 AC_REQUIRE([AM_SILENT_RULES])dnl
 dnl The testsuite driver may need to know about EXEEXT, so add the
 dnl 'am__EXEEXT' conditional if _AM_COMPILER_EXEEXT was seen.  This
@@ -491,7 +555,7 @@ dnl The trailing newline in this macro's definition is deliberate, for
 dnl backward compatibility and to allow trailing 'dnl'-style comments
 dnl after the AM_INIT_AUTOMAKE invocation. See automake bug#16841.
 ])
-m4trace:/usr/share/aclocal-1.16/init.m4:186: -1- AC_DEFUN([_AC_AM_CONFIG_HEADER_HOOK], [# Compute $1's index in $config_headers.
+m4trace:/usr/share/aclocal-1.16/init.m4:204: -1- AC_DEFUN([_AC_AM_CONFIG_HEADER_HOOK], [# Compute $1's index in $config_headers.
 _am_arg=$1
 _am_stamp_count=1
 for _am_header in $config_headers :; do
@@ -557,12 +621,7 @@ AC_SUBST($1)])
 m4trace:/usr/share/aclocal-1.16/missing.m4:20: -1- AC_DEFUN([AM_MISSING_HAS_RUN], [AC_REQUIRE([AM_AUX_DIR_EXPAND])dnl
 AC_REQUIRE_AUX_FILE([missing])dnl
 if test x"${MISSING+set}" != xset; then
-  case $am_aux_dir in
-  *\ * | *\	*)
-    MISSING="\${SHELL} \"$am_aux_dir/missing\"" ;;
-  *)
-    MISSING="\${SHELL} $am_aux_dir/missing" ;;
-  esac
+  MISSING="\${SHELL} '$am_aux_dir/missing'"
 fi
 # Use eval to expand $SHELL
 if eval "$MISSING --is-lightweight"; then
@@ -910,8 +969,8 @@ m4trace:configure.ac:1: -1- m4_pattern_allow([^target_alias$])
 m4trace:configure.ac:7: -1- AM_INIT_AUTOMAKE([foreign])
 m4trace:configure.ac:7: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
 m4trace:configure.ac:7: -1- AM_SET_CURRENT_AUTOMAKE_VERSION
-m4trace:configure.ac:7: -1- AM_AUTOMAKE_VERSION([1.16.1])
-m4trace:configure.ac:7: -1- _AM_AUTOCONF_VERSION([2.69])
+m4trace:configure.ac:7: -1- AM_AUTOMAKE_VERSION([1.16.5])
+m4trace:configure.ac:7: -1- _AM_AUTOCONF_VERSION([2.71])
 m4trace:configure.ac:7: -1- m4_pattern_allow([^INSTALL_PROGRAM$])
 m4trace:configure.ac:7: -1- m4_pattern_allow([^INSTALL_SCRIPT$])
 m4trace:configure.ac:7: -1- m4_pattern_allow([^INSTALL_DATA$])
@@ -979,6 +1038,9 @@ AC_PROVIDE_IFELSE([AC_PROG_OBJCXX],
 			     m4_defn([AC_PROG_OBJCXX])[_AM_DEPENDENCIES([OBJCXX])])])dnl
 ])
 m4trace:configure.ac:7: -2- _AM_MANGLE_OPTION([no-dependencies])
+m4trace:configure.ac:7: -1- m4_pattern_allow([^CTAGS$])
+m4trace:configure.ac:7: -1- m4_pattern_allow([^ETAGS$])
+m4trace:configure.ac:7: -1- m4_pattern_allow([^CSCOPE$])
 m4trace:configure.ac:7: -1- AM_SILENT_RULES
 m4trace:configure.ac:7: -1- m4_pattern_allow([^AM_V$])
 m4trace:configure.ac:7: -1- AM_SUBST_NOTMAKE([AM_V])
@@ -999,6 +1061,7 @@ m4trace:configure.ac:10: -1- m4_pattern_allow([^CC$])
 m4trace:configure.ac:10: -1- m4_pattern_allow([^CC$])
 m4trace:configure.ac:10: -1- m4_pattern_allow([^CC$])
 m4trace:configure.ac:10: -1- m4_pattern_allow([^ac_ct_CC$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^CC$])
 m4trace:configure.ac:10: -1- m4_pattern_allow([^EXEEXT$])
 m4trace:configure.ac:10: -1- m4_pattern_allow([^OBJEXT$])
 m4trace:configure.ac:10: -1- _AM_PROG_CC_C_O
@@ -1028,107 +1091,98 @@ m4trace:configure.ac:10: -1- m4_pattern_allow([^am__fastdepCC_TRUE$])
 m4trace:configure.ac:10: -1- m4_pattern_allow([^am__fastdepCC_FALSE$])
 m4trace:configure.ac:10: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_TRUE])
 m4trace:configure.ac:10: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_FALSE])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^CPP$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^CPPFLAGS$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^CPP$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^GREP$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^EGREP$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^STDC_HEADERS$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^HAVE_MATH_H$])
-m4trace:configure.ac:16: -1- PKG_CHECK_MODULES([DVDREAD], [dvdread >= 4.2.1])
-m4trace:configure.ac:16: -1- PKG_PROG_PKG_CONFIG
-m4trace:configure.ac:16: -1- m4_pattern_forbid([^_?PKG_[A-Z_]+$])
-m4trace:configure.ac:16: -1- m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])
-m4trace:configure.ac:16: -1- m4_pattern_allow([^PKG_CONFIG_(DISABLE_UNINSTALLED|TOP_BUILD_DIR|DEBUG_SPEW)$])
-m4trace:configure.ac:16: -1- m4_pattern_allow([^PKG_CONFIG$])
-m4trace:configure.ac:16: -1- m4_pattern_allow([^PKG_CONFIG_PATH$])
-m4trace:configure.ac:16: -1- m4_pattern_allow([^PKG_CONFIG_LIBDIR$])
-m4trace:configure.ac:16: -1- m4_pattern_allow([^PKG_CONFIG$])
-m4trace:configure.ac:16: -1- m4_pattern_allow([^DVDREAD_CFLAGS$])
-m4trace:configure.ac:16: -1- m4_pattern_allow([^DVDREAD_LIBS$])
-m4trace:configure.ac:16: -1- PKG_CHECK_EXISTS([dvdread >= 4.2.1], [pkg_cv_[]DVDREAD_CFLAGS=`$PKG_CONFIG --[]cflags "dvdread >= 4.2.1" 2>/dev/null`
+m4trace:configure.ac:10: -1- AC_DEFUN([_AC_Header_stdio_h], [m4_divert_text([INIT_PREPARE],
+  [AS_VAR_APPEND([ac_header_]]_AC_LANG_ABBREV[[_list],
+  [" stdio.h ]AS_TR_SH([stdio.h]) AS_TR_CPP([HAVE_stdio.h])["])])_AC_HEADERS_EXPANSION(_AC_LANG_ABBREV)])
+m4trace:configure.ac:10: -1- AC_DEFUN([_AC_Header_stdlib_h], [m4_divert_text([INIT_PREPARE],
+  [AS_VAR_APPEND([ac_header_]]_AC_LANG_ABBREV[[_list],
+  [" stdlib.h ]AS_TR_SH([stdlib.h]) AS_TR_CPP([HAVE_stdlib.h])["])])_AC_HEADERS_EXPANSION(_AC_LANG_ABBREV)])
+m4trace:configure.ac:10: -1- AC_DEFUN([_AC_Header_string_h], [m4_divert_text([INIT_PREPARE],
+  [AS_VAR_APPEND([ac_header_]]_AC_LANG_ABBREV[[_list],
+  [" string.h ]AS_TR_SH([string.h]) AS_TR_CPP([HAVE_string.h])["])])_AC_HEADERS_EXPANSION(_AC_LANG_ABBREV)])
+m4trace:configure.ac:10: -1- AC_DEFUN([_AC_Header_inttypes_h], [m4_divert_text([INIT_PREPARE],
+  [AS_VAR_APPEND([ac_header_]]_AC_LANG_ABBREV[[_list],
+  [" inttypes.h ]AS_TR_SH([inttypes.h]) AS_TR_CPP([HAVE_inttypes.h])["])])_AC_HEADERS_EXPANSION(_AC_LANG_ABBREV)])
+m4trace:configure.ac:10: -1- AC_DEFUN([_AC_Header_stdint_h], [m4_divert_text([INIT_PREPARE],
+  [AS_VAR_APPEND([ac_header_]]_AC_LANG_ABBREV[[_list],
+  [" stdint.h ]AS_TR_SH([stdint.h]) AS_TR_CPP([HAVE_stdint.h])["])])_AC_HEADERS_EXPANSION(_AC_LANG_ABBREV)])
+m4trace:configure.ac:10: -1- AC_DEFUN([_AC_Header_strings_h], [m4_divert_text([INIT_PREPARE],
+  [AS_VAR_APPEND([ac_header_]]_AC_LANG_ABBREV[[_list],
+  [" strings.h ]AS_TR_SH([strings.h]) AS_TR_CPP([HAVE_strings.h])["])])_AC_HEADERS_EXPANSION(_AC_LANG_ABBREV)])
+m4trace:configure.ac:10: -1- AC_DEFUN([_AC_Header_sys_stat_h], [m4_divert_text([INIT_PREPARE],
+  [AS_VAR_APPEND([ac_header_]]_AC_LANG_ABBREV[[_list],
+  [" sys/stat.h ]AS_TR_SH([sys/stat.h]) AS_TR_CPP([HAVE_sys/stat.h])["])])_AC_HEADERS_EXPANSION(_AC_LANG_ABBREV)])
+m4trace:configure.ac:10: -1- AC_DEFUN([_AC_Header_sys_types_h], [m4_divert_text([INIT_PREPARE],
+  [AS_VAR_APPEND([ac_header_]]_AC_LANG_ABBREV[[_list],
+  [" sys/types.h ]AS_TR_SH([sys/types.h]) AS_TR_CPP([HAVE_sys/types.h])["])])_AC_HEADERS_EXPANSION(_AC_LANG_ABBREV)])
+m4trace:configure.ac:10: -1- AC_DEFUN([_AC_Header_unistd_h], [m4_divert_text([INIT_PREPARE],
+  [AS_VAR_APPEND([ac_header_]]_AC_LANG_ABBREV[[_list],
+  [" unistd.h ]AS_TR_SH([unistd.h]) AS_TR_CPP([HAVE_unistd.h])["])])_AC_HEADERS_EXPANSION(_AC_LANG_ABBREV)])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^STDC_HEADERS$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^HAVE_MATH_H$])
+m4trace:configure.ac:13: -1- PKG_CHECK_MODULES([DVDREAD], [dvdread >= 6.1.0])
+m4trace:configure.ac:13: -1- PKG_PROG_PKG_CONFIG
+m4trace:configure.ac:13: -1- m4_pattern_forbid([^_?PKG_[A-Z_]+$])
+m4trace:configure.ac:13: -1- m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])
+m4trace:configure.ac:13: -1- m4_pattern_allow([^PKG_CONFIG_(DISABLE_UNINSTALLED|TOP_BUILD_DIR|DEBUG_SPEW)$])
+m4trace:configure.ac:13: -1- m4_pattern_allow([^PKG_CONFIG$])
+m4trace:configure.ac:13: -1- m4_pattern_allow([^PKG_CONFIG_PATH$])
+m4trace:configure.ac:13: -1- m4_pattern_allow([^PKG_CONFIG_LIBDIR$])
+m4trace:configure.ac:13: -1- m4_pattern_allow([^PKG_CONFIG$])
+m4trace:configure.ac:13: -1- m4_pattern_allow([^DVDREAD_CFLAGS$])
+m4trace:configure.ac:13: -1- m4_pattern_allow([^DVDREAD_LIBS$])
+m4trace:configure.ac:13: -1- PKG_CHECK_EXISTS([dvdread >= 6.1.0], [pkg_cv_[]DVDREAD_CFLAGS=`$PKG_CONFIG --[]cflags "dvdread >= 6.1.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:16: -1- PKG_CHECK_EXISTS([dvdread >= 4.2.1], [pkg_cv_[]DVDREAD_LIBS=`$PKG_CONFIG --[]libs "dvdread >= 4.2.1" 2>/dev/null`
+m4trace:configure.ac:13: -1- PKG_CHECK_EXISTS([dvdread >= 6.1.0], [pkg_cv_[]DVDREAD_LIBS=`$PKG_CONFIG --[]libs "dvdread >= 6.1.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:16: -1- _PKG_SHORT_ERRORS_SUPPORTED
-m4trace:configure.ac:19: -1- AM_CONDITIONAL([DVD_DRIVE_STATUS], [false])
-m4trace:configure.ac:19: -1- m4_pattern_allow([^DVD_DRIVE_STATUS_TRUE$])
-m4trace:configure.ac:19: -1- m4_pattern_allow([^DVD_DRIVE_STATUS_FALSE$])
-m4trace:configure.ac:19: -1- _AM_SUBST_NOTMAKE([DVD_DRIVE_STATUS_TRUE])
-m4trace:configure.ac:19: -1- _AM_SUBST_NOTMAKE([DVD_DRIVE_STATUS_FALSE])
-m4trace:configure.ac:20: -1- AM_CONDITIONAL([DVD_EJECT], [false])
-m4trace:configure.ac:20: -1- m4_pattern_allow([^DVD_EJECT_TRUE$])
-m4trace:configure.ac:20: -1- m4_pattern_allow([^DVD_EJECT_FALSE$])
-m4trace:configure.ac:20: -1- _AM_SUBST_NOTMAKE([DVD_EJECT_TRUE])
-m4trace:configure.ac:20: -1- _AM_SUBST_NOTMAKE([DVD_EJECT_FALSE])
-m4trace:configure.ac:21: -1- m4_pattern_allow([^build$])
-m4trace:configure.ac:21: -1- m4_pattern_allow([^build_cpu$])
-m4trace:configure.ac:21: -1- m4_pattern_allow([^build_vendor$])
-m4trace:configure.ac:21: -1- m4_pattern_allow([^build_os$])
-m4trace:configure.ac:21: -1- m4_pattern_allow([^host$])
-m4trace:configure.ac:21: -1- m4_pattern_allow([^host_cpu$])
-m4trace:configure.ac:21: -1- m4_pattern_allow([^host_vendor$])
-m4trace:configure.ac:21: -1- m4_pattern_allow([^host_os$])
-m4trace:configure.ac:24: -1- AM_CONDITIONAL([DVD_DRIVE_STATUS], [true])
-m4trace:configure.ac:24: -1- m4_pattern_allow([^DVD_DRIVE_STATUS_TRUE$])
-m4trace:configure.ac:24: -1- m4_pattern_allow([^DVD_DRIVE_STATUS_FALSE$])
-m4trace:configure.ac:24: -1- _AM_SUBST_NOTMAKE([DVD_DRIVE_STATUS_TRUE])
-m4trace:configure.ac:24: -1- _AM_SUBST_NOTMAKE([DVD_DRIVE_STATUS_FALSE])
-m4trace:configure.ac:25: -1- PKG_CHECK_MODULES([DVDCSS], [libdvdcss > 1.4.1], [AM_CONDITIONAL([DVD_EJECT], [true])], [AM_CONDITIONAL([DVD_EJECT], [false])])
-m4trace:configure.ac:25: -1- m4_pattern_allow([^DVDCSS_CFLAGS$])
-m4trace:configure.ac:25: -1- m4_pattern_allow([^DVDCSS_LIBS$])
-m4trace:configure.ac:25: -1- PKG_CHECK_EXISTS([libdvdcss > 1.4.1], [pkg_cv_[]DVDCSS_CFLAGS=`$PKG_CONFIG --[]cflags "libdvdcss > 1.4.1" 2>/dev/null`
+m4trace:configure.ac:13: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:16: -1- AM_CONDITIONAL([DVD_DRIVE_STATUS], [false])
+m4trace:configure.ac:16: -1- m4_pattern_allow([^DVD_DRIVE_STATUS_TRUE$])
+m4trace:configure.ac:16: -1- m4_pattern_allow([^DVD_DRIVE_STATUS_FALSE$])
+m4trace:configure.ac:16: -1- _AM_SUBST_NOTMAKE([DVD_DRIVE_STATUS_TRUE])
+m4trace:configure.ac:16: -1- _AM_SUBST_NOTMAKE([DVD_DRIVE_STATUS_FALSE])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^build$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^build_cpu$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^build_vendor$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^build_os$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^host$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^host_cpu$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^host_vendor$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^host_os$])
+m4trace:configure.ac:21: -1- m4_pattern_allow([^HAVE_SYS_IOCTL_H$])
+m4trace:configure.ac:22: -1- AM_CONDITIONAL([DVD_DRIVE_STATUS], [true])
+m4trace:configure.ac:22: -1- m4_pattern_allow([^DVD_DRIVE_STATUS_TRUE$])
+m4trace:configure.ac:22: -1- m4_pattern_allow([^DVD_DRIVE_STATUS_FALSE$])
+m4trace:configure.ac:22: -1- _AM_SUBST_NOTMAKE([DVD_DRIVE_STATUS_TRUE])
+m4trace:configure.ac:22: -1- _AM_SUBST_NOTMAKE([DVD_DRIVE_STATUS_FALSE])
+m4trace:configure.ac:31: -1- m4_pattern_allow([^HAVE_LIBMPV$])
+m4trace:configure.ac:31: -1- PKG_CHECK_MODULES([MPV], [mpv])
+m4trace:configure.ac:31: -1- m4_pattern_allow([^MPV_CFLAGS$])
+m4trace:configure.ac:31: -1- m4_pattern_allow([^MPV_LIBS$])
+m4trace:configure.ac:31: -1- PKG_CHECK_EXISTS([mpv], [pkg_cv_[]MPV_CFLAGS=`$PKG_CONFIG --[]cflags "mpv" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:25: -1- PKG_CHECK_EXISTS([libdvdcss > 1.4.1], [pkg_cv_[]DVDCSS_LIBS=`$PKG_CONFIG --[]libs "libdvdcss > 1.4.1" 2>/dev/null`
+m4trace:configure.ac:31: -1- PKG_CHECK_EXISTS([mpv], [pkg_cv_[]MPV_LIBS=`$PKG_CONFIG --[]libs "mpv" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:25: -1- _PKG_SHORT_ERRORS_SUPPORTED
-m4trace:configure.ac:25: -1- AM_CONDITIONAL([DVD_EJECT], [false])
-m4trace:configure.ac:25: -1- m4_pattern_allow([^DVD_EJECT_TRUE$])
-m4trace:configure.ac:25: -1- m4_pattern_allow([^DVD_EJECT_FALSE$])
-m4trace:configure.ac:25: -1- _AM_SUBST_NOTMAKE([DVD_EJECT_TRUE])
-m4trace:configure.ac:25: -1- _AM_SUBST_NOTMAKE([DVD_EJECT_FALSE])
-m4trace:configure.ac:25: -1- AM_CONDITIONAL([DVD_EJECT], [false])
-m4trace:configure.ac:25: -1- m4_pattern_allow([^DVD_EJECT_TRUE$])
-m4trace:configure.ac:25: -1- m4_pattern_allow([^DVD_EJECT_FALSE$])
-m4trace:configure.ac:25: -1- _AM_SUBST_NOTMAKE([DVD_EJECT_TRUE])
-m4trace:configure.ac:25: -1- _AM_SUBST_NOTMAKE([DVD_EJECT_FALSE])
-m4trace:configure.ac:25: -1- AM_CONDITIONAL([DVD_EJECT], [true])
-m4trace:configure.ac:25: -1- m4_pattern_allow([^DVD_EJECT_TRUE$])
-m4trace:configure.ac:25: -1- m4_pattern_allow([^DVD_EJECT_FALSE$])
-m4trace:configure.ac:25: -1- _AM_SUBST_NOTMAKE([DVD_EJECT_TRUE])
-m4trace:configure.ac:25: -1- _AM_SUBST_NOTMAKE([DVD_EJECT_FALSE])
-m4trace:configure.ac:32: -1- m4_pattern_allow([^HAVE_SYS_IOCTL_H$])
-m4trace:configure.ac:35: -1- PKG_CHECK_MODULES([MPV], [mpv >= 1.101.0], [
-	with_libmpv=yes
-	AC_DEFINE(HAVE_LIBMPV, [], [libmpv])
-])
-m4trace:configure.ac:35: -1- m4_pattern_allow([^MPV_CFLAGS$])
-m4trace:configure.ac:35: -1- m4_pattern_allow([^MPV_LIBS$])
-m4trace:configure.ac:35: -1- PKG_CHECK_EXISTS([mpv >= 1.101.0], [pkg_cv_[]MPV_CFLAGS=`$PKG_CONFIG --[]cflags "mpv >= 1.101.0" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:35: -1- PKG_CHECK_EXISTS([mpv >= 1.101.0], [pkg_cv_[]MPV_LIBS=`$PKG_CONFIG --[]libs "mpv >= 1.101.0" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:35: -1- _PKG_SHORT_ERRORS_SUPPORTED
-m4trace:configure.ac:35: -1- m4_pattern_allow([^HAVE_LIBMPV$])
-m4trace:configure.ac:39: -1- AM_CONDITIONAL([DVD_PLAYER], [test "x$with_libmpv" = xyes])
-m4trace:configure.ac:39: -1- m4_pattern_allow([^DVD_PLAYER_TRUE$])
-m4trace:configure.ac:39: -1- m4_pattern_allow([^DVD_PLAYER_FALSE$])
-m4trace:configure.ac:39: -1- _AM_SUBST_NOTMAKE([DVD_PLAYER_TRUE])
-m4trace:configure.ac:39: -1- _AM_SUBST_NOTMAKE([DVD_PLAYER_FALSE])
-m4trace:configure.ac:40: -1- AM_CONDITIONAL([DVD_RIPPER], [test "x$with_libmpv" = xyes])
-m4trace:configure.ac:40: -1- m4_pattern_allow([^DVD_RIPPER_TRUE$])
-m4trace:configure.ac:40: -1- m4_pattern_allow([^DVD_RIPPER_FALSE$])
-m4trace:configure.ac:40: -1- _AM_SUBST_NOTMAKE([DVD_RIPPER_TRUE])
-m4trace:configure.ac:40: -1- _AM_SUBST_NOTMAKE([DVD_RIPPER_FALSE])
-m4trace:configure.ac:44: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:44: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:44: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:44: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:44: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:44: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:44: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:44: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
-m4trace:configure.ac:44: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
-m4trace:configure.ac:44: -1- AM_RUN_LOG([cd "$am_dirpart" \
+m4trace:configure.ac:31: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:38: -1- AM_CONDITIONAL([DVD_PLAYER], [test "x$with_libmpv" != "xno"])
+m4trace:configure.ac:38: -1- m4_pattern_allow([^DVD_PLAYER_TRUE$])
+m4trace:configure.ac:38: -1- m4_pattern_allow([^DVD_PLAYER_FALSE$])
+m4trace:configure.ac:38: -1- _AM_SUBST_NOTMAKE([DVD_PLAYER_TRUE])
+m4trace:configure.ac:38: -1- _AM_SUBST_NOTMAKE([DVD_PLAYER_FALSE])
+m4trace:configure.ac:39: -1- AM_CONDITIONAL([DVD_RIPPER], [test "x$with_libmpv" != "xno"])
+m4trace:configure.ac:39: -1- m4_pattern_allow([^DVD_RIPPER_TRUE$])
+m4trace:configure.ac:39: -1- m4_pattern_allow([^DVD_RIPPER_FALSE$])
+m4trace:configure.ac:39: -1- _AM_SUBST_NOTMAKE([DVD_RIPPER_TRUE])
+m4trace:configure.ac:39: -1- _AM_SUBST_NOTMAKE([DVD_RIPPER_FALSE])
+m4trace:configure.ac:43: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:43: -1- m4_pattern_allow([^LTLIBOBJS$])
+m4trace:configure.ac:43: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.ac:43: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.ac:43: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.ac:43: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.ac:43: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.ac:43: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
+m4trace:configure.ac:43: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.ac:43: -1- AM_RUN_LOG([cd "$am_dirpart" \
       && sed -e '/# am--include-marker/d' "$am_filepart" \
         | $MAKE -f - am--depfiles])

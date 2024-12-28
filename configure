@@ -1902,9 +1902,7 @@ struct stat;
 /* Most of the following tests are stolen from RCS 5.7 src/conf.sh.  */
 struct buf { int x; };
 struct buf * (*rcsopen) (struct buf *, struct stat *, int);
-static char *e (p, i)
-     char **p;
-     int i;
+static char *e (char **p, int i)
 {
   return p[i];
 }
@@ -1955,6 +1953,7 @@ extern int puts (const char *);
 extern int printf (const char *, ...);
 extern int dprintf (int, const char *, ...);
 extern void *malloc (size_t);
+extern void free (void *);
 
 // Check varargs macros.  These examples are taken from C99 6.10.3.5.
 // dprintf is used instead of fprintf to avoid needing to declare
@@ -4410,6 +4409,9 @@ printf "%s\n" "no" >&6; }
 		PKG_CONFIG=""
 	fi
 fi
+if test -z "$PKG_CONFIG"; then
+	as_fn_error $? "pkg-config not found" "$LINENO" 5
+fi
 
 pkg_failed=no
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for dvdread >= 6.1.0" >&5
@@ -4587,6 +4589,13 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 
 case "$host_os" in
 	*linux*)
+				ac_fn_c_check_header_compile "$LINENO" "sys/ioctl.h" "ac_cv_header_sys_ioctl_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_ioctl_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_SYS_IOCTL_H 1" >>confdefs.h
+
+fi
+
 		 if true; then
   DVD_DRIVE_STATUS_TRUE=
   DVD_DRIVE_STATUS_FALSE='#'
@@ -4599,14 +4608,6 @@ fi
 	*)
 		;;
 esac
-
-ac_fn_c_check_header_compile "$LINENO" "sys/ioctl.h" "ac_cv_header_sys_ioctl_h" "$ac_includes_default"
-if test "x$ac_cv_header_sys_ioctl_h" = xyes
-then :
-  printf "%s\n" "#define HAVE_SYS_IOCTL_H 1" >>confdefs.h
-
-fi
-
 
 
 # Check whether --with-libmpv was given.
