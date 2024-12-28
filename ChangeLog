@@ -24,6 +24,7 @@
   the user, and instead quit
 * dvd_drive_status: use nonblock when opening device
 * Fix building on msys2
+* Include header to get nprocs on Linux, thanks to har7an for bug report
 
 1.16
 
