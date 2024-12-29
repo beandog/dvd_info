@@ -785,6 +785,8 @@ int main(int argc, char **argv) {
 	}
 	if(!aac && !opus && !webm)
 		aac = true;
+	if(!aac && !opus && webm)
+		opus = true;
 
 	/** Filename **/
 	if(!opt_filename) {
@@ -910,6 +912,12 @@ int main(int argc, char **argv) {
 
 	/** Audio **/
 
+	// Audio codec
+	if(aac)
+		strcpy(dvd_rip.acodec, "aac");
+	else if(opus)
+		strcpy(dvd_rip.acodec, "libopus");
+
 	// There are some DVD tracks with no audio channels, and mpv will die if number is set
 	if(audio_max_channels) {
 
@@ -917,12 +925,6 @@ int main(int argc, char **argv) {
 			mpv_set_option_string(dvd_mpv, "alang", dvd_rip.audio_lang);
 		else if(strlen(dvd_rip.audio_stream_id))
 			mpv_set_option_string(dvd_mpv, "aid", dvd_rip.audio_stream_id);
-
-		// Audio codec
-		if(aac)
-			strcpy(dvd_rip.acodec, "aac");
-		else if(opus)
-			strcpy(dvd_rip.acodec, "libopus");
 
 		mpv_set_option_string(dvd_mpv, "oac", dvd_rip.acodec);
 
