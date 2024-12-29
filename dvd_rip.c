@@ -938,10 +938,10 @@ int main(int argc, char **argv) {
 
 	/** Subtitles **/
 	if(strlen(dvd_rip.subtitles_lang)) {
-		fprintf(stderr, "[dvd_rip] burn-in subtitles lang %s\n", dvd_rip.subtitles_lang);
+		fprintf(stderr, "[dvd_rip] burn-in subtitles lang '%s'\n", dvd_rip.subtitles_lang);
 		mpv_set_option_string(dvd_mpv, "slang", dvd_rip.subtitles_lang);
 	} else if(strlen(dvd_rip.subtitles_stream_id)) {
-		fprintf(stderr, "[dvd_rip] burn-in subtitles stream %s\n", dvd_rip.subtitles_stream_id);
+		fprintf(stderr, "[dvd_rip] burn-in subtitles stream '%s'\n", dvd_rip.subtitles_stream_id);
 		mpv_set_option_string(dvd_mpv, "sid", dvd_rip.subtitles_stream_id);
 	}
 
@@ -984,17 +984,17 @@ int main(int argc, char **argv) {
 
 	// Display output
 	if(x264 || x265)
-		fprintf(stderr, "[dvd_rip] using video codec %s and CRF %i\n", dvd_rip.vcodec, crf);
+		fprintf(stderr, "[dvd_rip] using video codec '%s' and CRF '%i'\n", dvd_rip.vcodec, crf);
 	if(vp8 || vp9)
-		fprintf(stderr, "[dvd_rip] using video codec %s and bitrate %ik\n", dvd_rip.vcodec, dvd_rip.video_bitrate);
+		fprintf(stderr, "[dvd_rip] using video codec '%s' and bitrate '%ik'\n", dvd_rip.vcodec, dvd_rip.video_bitrate);
 	if(verbose) {
-		fprintf(stderr, "[dvd_rip] mpv vcodecopts=%s\n", dvd_rip.vcodec_opts);
-		fprintf(stderr, "[dvd_rip] mpv acodecopts=%s\n", dvd_rip.acodec_opts);
+		fprintf(stderr, "[dvd_rip] mpv 'vcodecopts=%s'\n", dvd_rip.vcodec_opts);
+		fprintf(stderr, "[dvd_rip] mpv 'acodecopts=%s'\n", dvd_rip.acodec_opts);
 	}
 	if(detelecine)
-		printf("[dvd_rip] detelecining video using pullup, dejudder, fps filters\n");
+		printf("[dvd_rip] detelecining video using 'pullup', 'dejudder', and 'fps' filters\n");
 
-	fprintf(stderr, "[dvd_rip] using audio codec %s and bitrate %" PRIu16 "k\n", dvd_rip.acodec, dvd_rip.audio_bitrate);
+	fprintf(stderr, "[dvd_rip] using audio codec '%s' and bitrate '%" PRIu16 "k'\n", dvd_rip.acodec, dvd_rip.audio_bitrate);
 
 	while(true) {
 
