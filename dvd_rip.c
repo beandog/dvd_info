@@ -705,10 +705,8 @@ int main(int argc, char **argv) {
 	// Set first chapter if given
 	if(!opt_start && !opt_chapter_number) {
 		dvd_rip.first_chapter = 1;
-		fprintf(stderr, "[dvd_rip] starting chapter: %" PRIu8 "\n", dvd_rip.first_chapter);
 	} else if(opt_chapter_number && dvd_rip.first_chapter > 1) {
 		snprintf(dvd_rip.start, sizeof(dvd_rip.start), "#%" PRIu8, dvd_rip.first_chapter);
-		fprintf(stderr, "[dvd_rip] starting chapter: %" PRIu8 "\n", dvd_rip.first_chapter);
 	} else {
 		if(!strlen(start))
 			strncpy(start, "0", 2);
