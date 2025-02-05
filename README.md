@@ -16,6 +16,31 @@ The dvd_info project is a set of utilities for accessing DVDs:
 * libdvdcss for decryption
 * libmpv for `dvd_rip` and `dvd_player`
 
+# Installation
+
+For ``dvd_info``, ``dvd_copy``, ``dvd_drive_status``, and ``dvd_debug`` only:
+
+```
+./configure
+make
+sudo make install
+```
+
+Building ``dvd_player`` and ``dvd_rip`` requires ``mpv`` to be installed with libmpv support first.
+
+```
+./configure --with-libmpv
+make
+sudo make install
+```
+
+If there are issues for some reason with running ``configure``, rebuild the autotools files first, and then configure and build like normal. This requires the ``autoconf`` package to be installed first (which is probably already there):
+
+```
+autoreconf -f -i -v
+
+```
+
 # Documentation
 
 Run ``--help`` for each program to see its options.
