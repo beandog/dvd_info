@@ -38,7 +38,6 @@ If there are issues for some reason with running ``configure``, rebuild the auto
 
 ```
 autoreconf -f -i -v
-
 ```
 
 # Documentation
