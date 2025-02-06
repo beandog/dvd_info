@@ -28,7 +28,7 @@ be built with support for these codecs, or dvd_rip will quit.
 	.webm - VPX8 video, Opus audio
 
 With no options, the largest track will be ripped with the first audio track,
-to a file named dvd_track_#.mkv, where # is a zero-padded name of the track
+to a file named dvd_track_#.mp4, where # is a zero-padded name of the track
 number.
 
 OPTIONS
