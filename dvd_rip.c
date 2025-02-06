@@ -63,7 +63,7 @@
 	 *
 	 * However(!), if you want more features when ripping the DVD, you can use "dvd_copy" instead,
 	 * and output the track to stdout. Using ffmpeg can detect the streams and encode, crop,
-	 * copy, and so on directly. Example: dvd_copy -o - | ffprobe -i -
+	 * copy, and so on directly. Example: dvd_copy -o - | ffmpeg -i - dvd_track.mp4
 	 *
 	 * Presets
 	 *
