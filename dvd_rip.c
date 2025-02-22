@@ -358,7 +358,7 @@ int main(int argc, char **argv) {
 				printf("Usage:\n");
 				printf("  dvd_rip [path] [options]\n");
 				printf("\n");
-				printf("  -o, --output <filename>       Save to filename (default: dvd_track_##.mkv)\n");
+				printf("  -o, --output <filename>       Save to filename (default: dvd_track_##.mp4)\n");
 				printf("\n");
 				printf("Track selection:\n");
 				printf("  -t, --track <#>          	Encode selected track (default: longest)\n");
