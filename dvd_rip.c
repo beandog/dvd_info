@@ -774,6 +774,12 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	// Use MKV if using VP8 or VP9 and nothing is specificed
+	if((vp8 || vp9) && aac) {
+		webm = false;
+		mkv = true;
+	}
+
 	// WebM can't support x264 or x265
 	if(webm && (x264 || x265)) {
 		fprintf(stderr, "[dvd_rip] WebM only supports VP8 and VP9 video codecs, use MKV instead.\n");
