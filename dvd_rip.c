@@ -766,19 +766,19 @@ int main(int argc, char **argv) {
 
 	// MP4 can't support VP8 or VP9
 	if(mp4 && (vp8 || vp9)) {
-		fprintf(stderr, "[dvd_rip] MP4 doesn't support VP8 or VP9 video codecs, quitting\n");
+		fprintf(stderr, "[dvd_rip] MP4 doesn't support VP8 or VP9 video codecs, use MKV instead.\n");
 		return 1;
 	}
 
 	// WebM can't support x264 or x265
 	if(webm && (x264 || x265)) {
-		fprintf(stderr, "[dvd_rip] WebM only supports VP8 and VP9 video codecs, quitting\n");
+		fprintf(stderr, "[dvd_rip] WebM only supports VP8 and VP9 video codecs, use MKV instead.\n");
 		return 1;
 	}
 
 	// WebM can't support AAC
 	if(webm && aac) {
-		fprintf(stderr, "[dvd_rip] WebM only supports Opus audio codec, quitting\n");
+		fprintf(stderr, "[dvd_rip] WebM only supports Opus audio codec.\n");
 		return 1;
 	}
 	if(!aac && !opus && !webm)
