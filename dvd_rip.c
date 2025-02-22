@@ -751,7 +751,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Default container MP4
-	if(!mp4 && !mkv && !webm)
+	if(!mp4 && !mkv && !webm && !vp8 && !vp9)
 		mp4 = true;
 
 	// Default video codec for MP4 and MKV
@@ -763,6 +763,10 @@ int main(int argc, char **argv) {
 		x264 = false;
 		vp8 = true;
 	}
+
+	// If using vp8 or vp9 with no container, use webm
+	if((vp8 || vp9) && !mkv && !mp4)
+		webm = true;
 
 	// MP4 can't support VP8 or VP9
 	if(mp4 && (vp8 || vp9)) {
