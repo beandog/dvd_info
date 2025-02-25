@@ -12,6 +12,9 @@ AC_CHECK_HEADERS([math.h])
 dnl Use pkg-config to check for libdvdread
 PKG_CHECK_MODULES([DVDREAD], [dvdread >= 6.1.0])
 
+dnl Build dvd_backup by default
+AM_CONDITIONAL([DVD_BACKUP], [true])
+
 dnl The DVD drive tools are OS-specific
 AM_CONDITIONAL([DVD_DRIVE_STATUS], [false])
 AC_CANONICAL_HOST
@@ -20,6 +23,11 @@ case "$host_os" in
 		dnl Need ioctl.h for checking drive status in programs
 		AC_CHECK_HEADERS([sys/ioctl.h], [], [])
 		AM_CONDITIONAL([DVD_DRIVE_STATUS], [true])
+		;;
+	cygwin*|*mingw*)
+		dnl dvd_backup builds on msys2, but does not work because
+		dnl libdvdread reports that there are no VOB files
+		AM_CONDITIONAL([DVD_BACKUP], [false])
 		;;
 	*)
 		;;
