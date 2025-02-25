@@ -88,15 +88,17 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = dvd_info$(EXEEXT) dvd_copy$(EXEEXT) dvd_backup$(EXEEXT) \
-	dvd_debug$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
-	$(am__EXEEXT_3)
-@DVD_DRIVE_STATUS_TRUE@am__append_1 = dvd_drive_status
-@DVD_DRIVE_STATUS_TRUE@am__append_2 = dvd_drive_status.1
-@DVD_PLAYER_TRUE@am__append_3 = dvd_player
-@DVD_PLAYER_TRUE@am__append_4 = dvd_player.1
-@DVD_RIPPER_TRUE@am__append_5 = dvd_rip
-@DVD_RIPPER_TRUE@am__append_6 = dvd_rip.1
+bin_PROGRAMS = dvd_info$(EXEEXT) dvd_copy$(EXEEXT) $(am__EXEEXT_1) \
+	dvd_debug$(EXEEXT) $(am__EXEEXT_2) $(am__EXEEXT_3) \
+	$(am__EXEEXT_4)
+@DVD_BACKUP_TRUE@am__append_1 = dvd_backup
+@DVD_BACKUP_TRUE@am__append_2 = dvd_backup.1
+@DVD_DRIVE_STATUS_TRUE@am__append_3 = dvd_drive_status
+@DVD_DRIVE_STATUS_TRUE@am__append_4 = dvd_drive_status.1
+@DVD_PLAYER_TRUE@am__append_5 = dvd_player
+@DVD_PLAYER_TRUE@am__append_6 = dvd_player.1
+@DVD_RIPPER_TRUE@am__append_7 = dvd_rip
+@DVD_RIPPER_TRUE@am__append_8 = dvd_rip.1
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -110,18 +112,24 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@DVD_DRIVE_STATUS_TRUE@am__EXEEXT_1 = dvd_drive_status$(EXEEXT)
-@DVD_PLAYER_TRUE@am__EXEEXT_2 = dvd_player$(EXEEXT)
-@DVD_RIPPER_TRUE@am__EXEEXT_3 = dvd_rip$(EXEEXT)
+@DVD_BACKUP_TRUE@am__EXEEXT_1 = dvd_backup$(EXEEXT)
+@DVD_DRIVE_STATUS_TRUE@am__EXEEXT_2 = dvd_drive_status$(EXEEXT)
+@DVD_PLAYER_TRUE@am__EXEEXT_3 = dvd_player$(EXEEXT)
+@DVD_RIPPER_TRUE@am__EXEEXT_4 = dvd_rip$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_dvd_backup_OBJECTS = dvd_backup-dvd_backup.$(OBJEXT) \
-	dvd_backup-dvd_drive.$(OBJEXT) dvd_backup-dvd_open.$(OBJEXT) \
-	dvd_backup-dvd_vmg_ifo.$(OBJEXT) dvd_backup-dvd_vts.$(OBJEXT) \
-	dvd_backup-dvd_vob.$(OBJEXT)
+am__dvd_backup_SOURCES_DIST = dvd_backup.c dvd_drive.c dvd_open.c \
+	dvd_vmg_ifo.c dvd_vts.c dvd_vob.c
+@DVD_BACKUP_TRUE@am_dvd_backup_OBJECTS =  \
+@DVD_BACKUP_TRUE@	dvd_backup-dvd_backup.$(OBJEXT) \
+@DVD_BACKUP_TRUE@	dvd_backup-dvd_drive.$(OBJEXT) \
+@DVD_BACKUP_TRUE@	dvd_backup-dvd_open.$(OBJEXT) \
+@DVD_BACKUP_TRUE@	dvd_backup-dvd_vmg_ifo.$(OBJEXT) \
+@DVD_BACKUP_TRUE@	dvd_backup-dvd_vts.$(OBJEXT) \
+@DVD_BACKUP_TRUE@	dvd_backup-dvd_vob.$(OBJEXT)
 dvd_backup_OBJECTS = $(am_dvd_backup_OBJECTS)
 am__DEPENDENCIES_1 =
-dvd_backup_DEPENDENCIES = $(am__DEPENDENCIES_1)
+@DVD_BACKUP_TRUE@dvd_backup_DEPENDENCIES = $(am__DEPENDENCIES_1)
 dvd_backup_LINK = $(CCLD) $(dvd_backup_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_dvd_copy_OBJECTS = dvd_copy-dvd_copy.$(OBJEXT) \
@@ -293,7 +301,7 @@ am__v_CCLD_1 =
 SOURCES = $(dvd_backup_SOURCES) $(dvd_copy_SOURCES) \
 	$(dvd_debug_SOURCES) $(dvd_drive_status_SOURCES) \
 	$(dvd_info_SOURCES) $(dvd_player_SOURCES) $(dvd_rip_SOURCES)
-DIST_SOURCES = $(dvd_backup_SOURCES) $(dvd_copy_SOURCES) \
+DIST_SOURCES = $(am__dvd_backup_SOURCES_DIST) $(dvd_copy_SOURCES) \
 	$(dvd_debug_SOURCES) $(am__dvd_drive_status_SOURCES_DIST) \
 	$(dvd_info_SOURCES) $(am__dvd_player_SOURCES_DIST) \
 	$(am__dvd_rip_SOURCES_DIST)
@@ -476,17 +484,17 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-man1_MANS = dvd_info.1 dvd_copy.1 dvd_backup.1 $(am__append_2) \
-	$(am__append_4) $(am__append_6)
+man1_MANS = dvd_info.1 dvd_copy.1 $(am__append_2) $(am__append_4) \
+	$(am__append_6) $(am__append_8)
 dvd_info_SOURCES = dvd_info.c dvd_open.c dvd_drive.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_video.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_json.c dvd_chapter.c dvd_xchap.c dvd_init.c
 dvd_info_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_info_LDADD = -lm $(DVDREAD_LIBS)
 dvd_copy_SOURCES = dvd_copy.c dvd_drive.c dvd_open.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c
 dvd_copy_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_copy_LDADD = -lm $(DVDREAD_LIBS)
-dvd_backup_SOURCES = dvd_backup.c dvd_drive.c dvd_open.c dvd_vmg_ifo.c dvd_vts.c dvd_vob.c
-dvd_backup_CFLAGS = $(DVDREAD_CFLAGS)
-dvd_backup_LDADD = -lm $(DVDREAD_LIBS)
+@DVD_BACKUP_TRUE@dvd_backup_SOURCES = dvd_backup.c dvd_drive.c dvd_open.c dvd_vmg_ifo.c dvd_vts.c dvd_vob.c
+@DVD_BACKUP_TRUE@dvd_backup_CFLAGS = $(DVDREAD_CFLAGS)
+@DVD_BACKUP_TRUE@dvd_backup_LDADD = -lm $(DVDREAD_LIBS)
 dvd_debug_SOURCES = dvd_debug.c
 dvd_debug_CFLAGS = $(DVDREAD_CFLAGS)
 dvd_debug_LDADD = $(DVDREAD_LIBS)
