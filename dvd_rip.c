@@ -865,7 +865,7 @@ int main(int argc, char **argv) {
 
 		if(vp8 || vp9) {
 
-			int nprocs = 1;
+			int nprocs = 4;
 
 #if defined (__FreeBSD__)
 			int mib[2] = { CTL_HW, HW_NCPU };
