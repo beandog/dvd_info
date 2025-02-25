@@ -18,6 +18,9 @@
 #if defined (__FreeBSD__)
 #include <sys/sysctl.h>
 #endif
+#if defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
+#include <sysinfoapi.h>
+#endif
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 #include "config.h"
@@ -871,8 +874,10 @@ int main(int argc, char **argv) {
 			int mib[2] = { CTL_HW, HW_NCPU };
 			size_t len = sizeof(nprocs);
 			sysctl(mib, 2, &nprocs, &len, NULL, 0);
-#else
-			nprocs = get_nprocs();
+#elif defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
+			SYSTEM_INFO sysinfo;
+			GetSystemInfo(&sysinfo);
+			nprocs = sysinfo.dwNumberOfProcessors;
 #endif
 
 			snprintf(dvd_rip.vcodec_opts, sizeof(dvd_rip.vcodec_opts), "b=%" PRIu16 "k,cpu-used=%i", dvd_rip.video_bitrate, nprocs);
