@@ -919,7 +919,7 @@ int main(int argc, char **argv) {
 	if(detelecine && pal_video)
 		strcat(dvd_rip.vf_opts, "pullup,dejudder,fps=25");
 	else if(detelecine && !pal_video)
-		strcat(dvd_rip.vf_opts, "pullup,dejudder,fps=fps=30000/1001");
+		strcat(dvd_rip.vf_opts, "pullup,dejudder,fps=fps=24000/1001");
 
 	mpv_set_option_string(dvd_mpv, "vf", dvd_rip.vf_opts);
 
