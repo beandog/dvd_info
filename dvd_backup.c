@@ -387,7 +387,7 @@ int main(int argc, char **argv) {
 			continue;
 		}
 
-		if(!ifo_is_vmg(vts_ifos[vts]) && !ifo_is_vts(vts_ifos[vts])) {
+		if(!ifo_is_vts(vts_ifos[vts])) {
 			ifoClose(vts_ifos[vts]);
 			vts_ifos[vts] = NULL;
 			continue;
