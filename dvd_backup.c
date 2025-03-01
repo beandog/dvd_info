@@ -371,7 +371,7 @@ int main(int argc, char **argv) {
 	uint16_t vob = 0;
 
 	// Scan VTS for invalid data
-	for(vts = 0; vts < dvd_info.video_title_sets + 1; vts++) {
+	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
 
 		dvd_vts[vts].vts = vts;
 		dvd_vts[vts].valid = false;
