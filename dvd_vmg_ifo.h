@@ -24,8 +24,10 @@
  * Check if the IFO is a VMG or not.
  *
  * libdvdread populates the ifo_handle with various data, but the structure is
- * the same for both a VMG IFO and a VTS one.  This does a few checks to make
- * sure that the ifo_handle passed in is a VMG.
+ * the same for both a VMG IFO and a VTS one. The only thing that needs to be
+ * checked, however, is if vmgi_mat pointer is NULL. Avoid using this helper
+ * function, since if the VMG IFO is broken, you never should have gotten this
+ * far to begin with.
  */
 bool ifo_is_vmg(ifo_handle_t *ifo);
 
