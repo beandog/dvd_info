@@ -98,7 +98,7 @@ struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, const char *device_file
 
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
-	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo)) {
+	if(vmg_ifo == NULL || vmg_ifo->vmgi_mat == NULL) {
 		fprintf(stderr, "Opening VMG IFO failed\n");
 		dvd_info.valid = 0;
 		return dvd_info;

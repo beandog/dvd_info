@@ -290,7 +290,7 @@ int main(int argc, char **argv) {
 	ifo_handle_t *vmg_ifo = NULL;
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
-	if(vmg_ifo == NULL || !ifo_is_vmg(vmg_ifo)) {
+	if(vmg_ifo == NULL || vmg_ifo->vmgi_mat == NULL) {
 		fprintf(stderr, "[dvd_player] Opening VMG IFO failed\n");
 		DVDClose(dvdread_dvd);
 		return 1;
