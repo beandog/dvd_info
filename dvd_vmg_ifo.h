@@ -23,11 +23,12 @@
 /**
  * Check if the IFO is a VMG or not.
  *
- * libdvdread populates the ifo_handle with various data, but the structure is
- * the same for both a VMG IFO and a VTS one. The only thing that needs to be
- * checked, however, is if vmgi_mat pointer is NULL. Avoid using this helper
- * function, since if the VMG IFO is broken, you never should have gotten this
- * far to begin with.
+ * The VMG IFO is the first one on the DVD, and is populated with special
+ * data that all the VTS ones do not, such as number of tracks, provider ID,
+ * and so on. This is a helper function which looks just to see if one
+ * pointer is NULL or not. The programs need to catch this before it triggers,
+ * so if the VMG can't be opened, then it's not a valid DVD. Leaving this in
+ * here as a point of reference only. Don't use it.
  */
 bool ifo_is_vmg(ifo_handle_t *ifo);
 
