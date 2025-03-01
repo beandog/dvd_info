@@ -86,7 +86,7 @@ bool ifo_is_vmg(ifo_handle_t *ifo) {
 
 uint16_t dvd_tracks(ifo_handle_t *vmg_ifo) {
 
-	if(ifo_is_vmg(vmg_ifo) && vmg_ifo->tt_srpt != NULL)
+	if(vmg_ifo != NULL && vmg_ifo->tt_srpt != NULL)
 		return vmg_ifo->tt_srpt->nr_of_srpts;
 	else
 		return 0;
@@ -95,7 +95,7 @@ uint16_t dvd_tracks(ifo_handle_t *vmg_ifo) {
 
 uint16_t dvd_video_title_sets(ifo_handle_t *vmg_ifo) {
 
-	if(ifo_is_vmg(vmg_ifo) && vmg_ifo->vts_atrt != NULL)
+	if(vmg_ifo != NULL && vmg_ifo->vts_atrt != NULL)
 		return vmg_ifo->vts_atrt->nr_of_vtss;
 	else
 		return 0;
@@ -103,7 +103,7 @@ uint16_t dvd_video_title_sets(ifo_handle_t *vmg_ifo) {
 
 bool dvd_provider_id(char *dest_str, ifo_handle_t *vmg_ifo) {
 
-	if(ifo_is_vmg(vmg_ifo))
+	if(vmg_ifo != NULL && vmg_ifo->vmgi_mat != NULL)
 		strncpy(dest_str, vmg_ifo->vmgi_mat->provider_identifier, DVD_PROVIDER_ID);
 
 	return true;
@@ -112,7 +112,7 @@ bool dvd_provider_id(char *dest_str, ifo_handle_t *vmg_ifo) {
 
 bool dvd_vmg_id(char *dest_str, ifo_handle_t *vmg_ifo) {
 
-	if(ifo_is_vmg(vmg_ifo))
+	if(vmg_ifo != NULL && vmg_ifo->vmgi_mat != NULL)
 		strncpy(dest_str, vmg_ifo->vmgi_mat->vmg_identifier, DVD_VMG_ID);
 
 	return true;
@@ -121,7 +121,7 @@ bool dvd_vmg_id(char *dest_str, ifo_handle_t *vmg_ifo) {
 
 uint8_t dvd_info_side(ifo_handle_t *vmg_ifo) {
 
-	if(ifo_is_vmg(vmg_ifo)) {
+	if(vmg_ifo != NULL && vmg_ifo->vmgi_mat != NULL) {
 		if(vmg_ifo->vmgi_mat->disc_side == 2)
 			return 2;
 		else
@@ -134,7 +134,7 @@ uint8_t dvd_info_side(ifo_handle_t *vmg_ifo) {
 
 bool dvd_specification_version(char *dest_str, ifo_handle_t *vmg_ifo) {
 
-	if(ifo_is_vmg(vmg_ifo)) {
+	if(vmg_ifo != NULL && vmg_ifo->vmgi_mat != NULL) {
 		snprintf(dest_str, DVD_SPECIFICATION_VERSION + 1, "%01x.%01x", vmg_ifo->vmgi_mat->specification_version >> 4, vmg_ifo->vmgi_mat->specification_version & 0xf);
 		return true;
 	}
