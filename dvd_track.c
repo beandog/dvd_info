@@ -16,6 +16,10 @@ uint16_t dvd_vts_ifo_number(ifo_handle_t *vmg_ifo, uint16_t track_number) {
 	// Should these be the same number
 	// vts_ttn = vmg_ifo->tt_srpt->title[title_track_idx].vts_ttn;
 
+	// This really shouldn't happen
+	if(vmg_ifo->tt_srpt == NULL)
+		return 1;
+
 	uint16_t ifo_number = vmg_ifo->tt_srpt->title[track_number - 1].title_set_nr;
 
 	return ifo_number;
@@ -24,6 +28,10 @@ uint16_t dvd_vts_ifo_number(ifo_handle_t *vmg_ifo, uint16_t track_number) {
 
 uint8_t dvd_track_ttn(ifo_handle_t *vmg_ifo, uint16_t track_number) {
 
+	// This really shouldn't happen
+	if(vmg_ifo->tt_srpt == NULL)
+		return 1;
+
 	uint8_t ttn = vmg_ifo->tt_srpt->title[track_number - 1].vts_ttn;
 
 	return ttn;
@@ -31,6 +39,10 @@ uint8_t dvd_track_ttn(ifo_handle_t *vmg_ifo, uint16_t track_number) {
 }
 
 uint16_t dvd_track_title_parts(ifo_handle_t *vmg_ifo, uint16_t track_number) {
+
+	// This really shouldn't happen
+	if(vmg_ifo->tt_srpt == NULL)
+		return 1;
 
 	uint16_t nr_of_ptts = vmg_ifo->tt_srpt->title[track_number - 1].nr_of_ptts;
 
@@ -43,6 +55,10 @@ uint16_t dvd_track_title_parts(ifo_handle_t *vmg_ifo, uint16_t track_number) {
  * Possible that it's blank, usually set to DVDVIDEO-VTS otherwise.
  */
 bool dvd_vts_id(char *dest_str, ifo_handle_t *vts_ifo) {
+
+	// This really shouldn't happen
+	if(vts_ifo->vtsi_mat == NULL)
+		return false;
 
 	size_t i = 0;
 
