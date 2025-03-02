@@ -64,7 +64,6 @@ int main(int argc, char **argv) {
 
 	// How much output
 	bool verbose = false;
-	bool debug = false;
 	log_verbose = false;
 	log_debug = false;
 
@@ -296,7 +295,6 @@ int main(int argc, char **argv) {
 
 			case 'z':
 				verbose = true;
-				debug = true;
 				log_verbose = true;
 				log_debug = true;
 				break;
