@@ -98,6 +98,9 @@ uint64_t percent_completed(uint64_t src, uint64_t dest) {
 
 	uint64_t percent = ((float)dest / (float)src) * 100;
 
+	if(percent == 0)
+		return 1;
+
 	if(percent == 100)
 		return 99;
 
