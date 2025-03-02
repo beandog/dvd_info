@@ -286,7 +286,7 @@ int main(int argc, char **argv) {
 	ifo_handle_t *vmg_ifo = NULL;
 	vmg_ifo = ifoOpen(dvdread_dvd, 0);
 
-	if(vmg_ifo == NULL) {
+	if(vmg_ifo == NULL || vmg_ifo->vts_atrt == NULL) {
 		fprintf(stderr, "[dvd_copy] Could not open VMG IFO\n");
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -300,12 +300,12 @@ int main(int argc, char **argv) {
 	if(p_dvd_copy)
 		printf("Disc title: %s\n", dvd_info.title);
 
+
 	uint16_t num_ifos = 1;
 	num_ifos = vmg_ifo->vts_atrt->nr_of_vtss;
 
 	if(num_ifos < 1) {
-		fprintf(stderr, "[dvd_copy] DVD has no title IFOs?!\n");
-		fprintf(stderr, "[dvd_copy] Most likely problems reading the disc, quitting\n");
+		fprintf(stderr, "[dvd_copy] DVD has no title IFOs\n");
 		ifoClose(vmg_ifo);
 		DVDClose(dvdread_dvd);
 		return 1;
@@ -440,6 +440,12 @@ int main(int argc, char **argv) {
 
 	// Open the VTS VOB
 	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts, DVD_READ_TITLE_VOBS);
+	if(dvdread_vts_file == NULL) {
+		fprintf(stderr, "Could not open VTS VOB %" PRIu16 "\n", vts);
+		ifoClose(vts_ifo);
+		DVDClose(dvdread_dvd);
+		return 1;
+	}
 
 	if(p_dvd_copy)
 		printf("Track: %*" PRIu16 ", Length: %s, Chapters: %*" PRIu8 ", Cells: %*" PRIu8 ", Audio streams: %*" PRIu8 ", Subpictures: %*" PRIu8 ", Title set: %*" PRIu16 ", Filesize: %.0lf MBs\n", 2, dvd_track.track, dvd_track.length, 2, dvd_track.chapters, 2, dvd_track.cells, 2, dvd_track.audio_tracks, 2, dvd_track.subtitles, 2, vts, dvd_track.filesize_mbs);
