@@ -94,12 +94,12 @@ uint64_t blocks_to_mbs(double blocks) {
 uint64_t percent_completed(uint64_t src, uint64_t dest) {
 
 	if(dest >= src)
-		return 100.0;
+		return 100;
 
 	uint64_t percent = ((float)dest / (float)src) * 100;
 
 	if(percent == 100)
-		return 99.0;
+		return 99;
 
 	return percent;
 
