@@ -26,7 +26,7 @@ case "$host_os" in
 		;;
 	cygwin*|*mingw*)
 		dnl dvd_backup builds on msys2, but does not work because
-		dnl libdvdread reports that there are no VOB files
+		dnl libdvdread 6.1.3 reports that there are no VOB files
 		AM_CONDITIONAL([DVD_BACKUP], [false])
 		;;
 	*)
