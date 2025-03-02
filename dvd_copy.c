@@ -67,7 +67,6 @@ struct dvd_copy {
 
 int main(int argc, char **argv) {
 
-	bool debug = false;
 	char device_filename[PATH_MAX];
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
@@ -95,7 +94,6 @@ int main(int argc, char **argv) {
 		{ "track", required_argument, 0, 't' },
 		{ "help", no_argument, 0, 'h' },
 		{ "version", no_argument, 0, 'V' },
-		{ "debug", no_argument, 0, 'z' },
 		{ 0, 0, 0, 0 }
 
 	};
@@ -112,7 +110,7 @@ int main(int argc, char **argv) {
 	memset(dvd_copy.buffer, '\0', DVD_VIDEO_LB_LEN);
 	memset(dvd_copy.filename, '\0', PATH_MAX);
 
-	while((opt = getopt_long(argc, argv, "c:d:ho:t:Vz", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "c:d:ho:t:V", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -227,10 +225,6 @@ int main(int argc, char **argv) {
 			case 'V':
 				printf("dvd_copy %s\n", PACKAGE_VERSION);
 				return 0;
-
-			case 'z':
-				debug = true;
-				break;
 
 			// ignore unknown arguments
 			case '?':
@@ -569,17 +563,13 @@ int main(int argc, char **argv) {
 					percent_complete = 100;
 				else {
 					percent_complete = floor((mbs_written / dvd_copy.filesize_mbs) * 100.0);
-					if(percent_complete == 100.0)
+					if(percent_complete == 0.0)
+						percent_complete = 1.0;
+					else if(percent_complete == 100.0)
 						percent_complete = 99.0;
 				}
 
-				// FIXME causes bleeding on previous lines
-				/*
-				if(debug)
-					fprintf(stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)  Blocks: %li/%li\r", mbs_written, dvd_copy.filesize_mbs, percent_complete, total_blocks_read, dvd_copy.blocks);
-				else
-				*/
-					fprintf(stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
+				fprintf(stderr, "Progress: %.0lf/%.0lf MBs (%.0lf%%)\r", mbs_written, dvd_copy.filesize_mbs, percent_complete);
 
 				fflush(stderr);
 
