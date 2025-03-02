@@ -52,6 +52,8 @@
 
 int main(int, char **);
 int dvd_block_rw(dvd_file_t *, uint64_t, int);
+uint64_t blocks_to_mbs(double);
+uint64_t percent_completed(uint64_t, uint64_t);
 
 /**
  * Read and write to the backup file. If there is an error, quit, and
@@ -77,6 +79,32 @@ int dvd_block_rw(dvd_file_t *dvdread_vts_file, uint64_t offset, int fd) {
 
 }
 
+uint64_t blocks_to_mbs(double blocks) {
+
+	if(blocks < 1)
+		return 0;
+
+	uint64_t mbs;
+	mbs = (blocks * 2048 / 1048576.0) + 1;
+
+	return mbs;
+
+}
+
+uint64_t percent_completed(uint64_t src, uint64_t dest) {
+
+	if(dest >= src)
+		return 100.0;
+
+	uint64_t percent = ((float)dest / (float)src) * 100;
+
+	if(percent == 100)
+		return 99.0;
+
+	return percent;
+
+}
+
 int main(int argc, char **argv) {
 
 	int retval = 0;
@@ -87,6 +115,7 @@ int main(int argc, char **argv) {
 		{ "name", required_argument, NULL, 'n' },
 		{ "ifos", no_argument, NULL, 'i' },
 		{ "vts", required_argument, NULL, 'T' },
+		{ "verbose", no_argument, NULL, 'v' },
 		{ "version", no_argument, NULL, 'V' },
 		{ 0, 0, 0, 0 },
 	};
@@ -95,6 +124,8 @@ int main(int argc, char **argv) {
 	int ix = 0;
 	opterr = 1;
 
+	bool verbose = false;
+
 	bool opt_title_sets = true;
 	bool opt_vts_number = false;
 	uint16_t arg_vts_number = 0;
@@ -102,12 +133,12 @@ int main(int argc, char **argv) {
 	char dvd_custom_dir[PATH_MAX];
 	memset(dvd_custom_dir, '\0', PATH_MAX);
 
-	while((opt = getopt_long(argc, argv, "hin:T:V", p_long_opts, &ix)) != -1) {
+	while((opt = getopt_long(argc, argv, "hin:T:Vv", p_long_opts, &ix)) != -1) {
 
 		switch(opt) {
 
 			case 'h':
-				printf("dvd_backup - backup a DVD\n");
+				printf("dvd_backup - Create a DVD backup to filesystem\n");
 				printf("\n");
 				printf("Usage: dvd_backup [path] [options]\n");
 				printf("\n");
@@ -115,6 +146,7 @@ int main(int argc, char **argv) {
 				printf("  -n, --name            Set DVD name\n");
 				printf("  -i, --ifos            Back up only the IFO and BUP files\n");
 				printf("  -T, --vts <number>    Back up video title set number (default: all)\n");
+				printf("  -v, --verbose         Verbose output\n");
 				printf("\n");
 				printf("DVD path can be a device name, a single file, or a directory (default: %s)\n", DEFAULT_DVD_DEVICE);
 				return 0;
@@ -142,6 +174,10 @@ int main(int argc, char **argv) {
 				return 0;
 				break;
 
+			case 'v':
+				verbose = true;
+				break;
+
 			case 0:
 			default:
 				break;
@@ -157,7 +193,8 @@ int main(int argc, char **argv) {
 		strncpy(device_filename, DEFAULT_DVD_DEVICE, PATH_MAX - 1);
 
 	printf("[DVD]\n");
-	printf("* Opening device %s\n", device_filename);
+	if(verbose)
+		printf("* Opening device %s\n", device_filename);
 
 	dvd_reader_t *dvdread_dvd = NULL;
 	dvd_logger_cb dvdread_logger_cb = { dvd_info_logger_cb };
@@ -168,12 +205,13 @@ int main(int argc, char **argv) {
 	}
 
 	struct dvd_info dvd_info;
-	printf("* Opening VMG IFO\n");
+	if(verbose)
+		printf("* Opening VMG IFO\n");
 	dvd_info = dvd_info_open(dvdread_dvd, device_filename);
 	if(dvd_info.valid == 0)
 		return 1;
 
-	printf("* %d Video Title Sets present\n", dvd_info.video_title_sets);
+	printf("* %" PRIu16 " Video Title Sets\n", dvd_info.video_title_sets);
 
 	if(dvd_info.video_title_sets < 1) {
 		printf("* DVD has no title IFOs?!\n");
@@ -274,8 +312,10 @@ int main(int argc, char **argv) {
 
 		// TODO work around broken IFOs by copying contents directly to filesystem
 		if(ifo == NULL) {
-			// printf("* Opening IFO FAILED\n");
-			// printf("* Skipping IFO\n");
+			if(verbose) {
+				printf("* Opening IFO FAILED\n");
+				printf("* Skipping IFO\n");
+			}
 			continue;
 		}
 
@@ -286,8 +326,10 @@ int main(int argc, char **argv) {
 			dvdread_ifo_file = DVDOpenFile(dvdread_dvd, ifo_number, info_file ? DVD_READ_INFO_FILE : DVD_READ_INFO_BACKUP_FILE);
 
 			if(dvdread_ifo_file == 0) {
-				// printf("* Opening IFO FAILED\n");
-				// printf("* Skipping IFO\n");
+				if(verbose) {
+					printf("* Opening IFO FAILED\n");
+					printf("* Skipping IFO\n");
+				}
 				ifoClose(ifo);
 				ifo = NULL;
 				continue;
@@ -297,7 +339,8 @@ int main(int argc, char **argv) {
 			dvd_backup_blocks = DVDFileSize(dvdread_ifo_file);
 
 			if(dvd_backup_blocks < 0) {
-				// printf("* Could not determine IFO filesize, skipping\n");
+				if(verbose)
+					printf("* Could not determine IFO filesize, skipping\n");
 				ifoClose(ifo);
 				ifo = NULL;
 				continue;
@@ -314,7 +357,8 @@ int main(int argc, char **argv) {
 				snprintf(dvd_backup_filename, PATH_MAX - 1, "%s/%s", dvd_backup_dir, vts_filename);
 			}
 
-			printf("* Writing to %s\n", vts_filename);
+			if(verbose)
+				printf("* Writing to %s\n", vts_filename);
 			ifo_fd = open(dvd_backup_filename, O_WRONLY|O_CREAT|O_TRUNC, 0666);
 			if(ifo_fd == -1) {
 				printf("* Could not create %s\n", vts_filename);
@@ -398,12 +442,6 @@ int main(int argc, char **argv) {
 		dvd_vts[vts].filesize = dvd_vts_filesize(dvdread_dvd, vts);
 		dvd_vts[vts].filesize_mbs = dvd_vts_filesize_mbs(dvdread_dvd, vts);
 		dvd_vts[vts].vobs = dvd_vts_vobs(dvdread_dvd, vts);
-
-		/*
-		printf("* Blocks: %zu\n", dvd_vts[vts].blocks);
-		printf("* Filesize: %" PRIu64 "\n", dvd_vts[vts].filesize);
-		printf("* VOBs: %u\n", dvd_vts[vts].vobs);
-		*/
 
 		for(vob = 0; vob < dvd_vts[vts].vobs + 1; vob++) {
 			dvd_vts[vts].dvd_vobs[vob].vts = vts;
@@ -491,9 +529,18 @@ int main(int argc, char **argv) {
 
 	}
 
+	// In megabytes:
+	// 0 - total filesize of VTS
+	// 1 - total filesize of source VOB being copied
+	// 2 - total filesize of destination VOB backed up
+	// 3 - percent of VOB backed up
+	uint64_t filesize_mbs[4];
+
 	/** Backup VTS_01_1.VOB through VTS_99_9.VOB **/
 	ssize_t vob_blocks_skipped = 0;
 	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
+
+		filesize_mbs[0] = 0;
 
 		if(opt_vts_number && arg_vts_number != vts)
 			continue;
@@ -506,19 +553,24 @@ int main(int argc, char **argv) {
 		if(dvdread_vts_file == 0)
 			continue;
 
-		printf("[VTS %d]\n", vts);
-
-		printf("* Blocks: %" PRIu64 "\n", dvd_vts[vts].blocks);
-		printf("* Filesize: %zu\n", dvd_vts[vts].filesize);
-		printf("* VOBs: %u\n", dvd_vts[vts].vobs);
+		printf("[VTS %" PRIu16"]\n", vts);
 
 		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++)
-			if(dvd_vts[vts].dvd_vobs[vob].blocks)
-				printf("* VOB %i filesize: %zu\n", vob, dvd_vob_filesize(dvdread_dvd, vts, vob));
+			filesize_mbs[0] += blocks_to_mbs(dvd_vts[vts].dvd_vobs[vob].blocks);
 
+		printf("* %" PRIu16 " VOBs\n", dvd_vts[vts].vobs);
+		printf("* Filesize: %" PRIu64 " MBs\n", filesize_mbs[0]);
+
+		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++)
+			if(dvd_vts[vts].dvd_vobs[vob].blocks && verbose)
+				printf("* VOB %" PRIu16 " filesize: %.0f MBs\n", vob, ceil(dvd_vob_filesize_mbs(dvdread_dvd, vts, vob)));
 		dvd_blocks_offset = 0;
 
 		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++) {
+
+			filesize_mbs[1] = blocks_to_mbs(dvd_vts[vts].dvd_vobs[vob].blocks);
+			filesize_mbs[2] = 0;
+			filesize_mbs[3] = 0;
 
 			snprintf(vob_filename, PATH_MAX - 1, "%s/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", dvd_backup_dir, vts, vob);
 
@@ -541,7 +593,9 @@ int main(int argc, char **argv) {
 					return 1;
 				}
 
-				fprintf(stdout, "* %s blocks written: %" PRIu64 " of %" PRIu64 ", skipped: %" PRIu64 "\r", vob_filename, vob_block + 1, dvd_vts[vts].dvd_vobs[vob].blocks, vob_blocks_skipped);
+				filesize_mbs[2] = blocks_to_mbs(vob_block + 1);
+				filesize_mbs[3] = percent_completed(filesize_mbs[1], filesize_mbs[2]);
+				fprintf(stdout, "* %s: %" PRIu64 "/%" PRIu64 " MBs (%" PRIu64 "%%)\r", vob_filename, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3]);
 				fflush(stdout);
 
 				dvd_blocks_offset++;
