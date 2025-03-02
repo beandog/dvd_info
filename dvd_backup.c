@@ -381,6 +381,8 @@ int main(int argc, char **argv) {
 				if(ifo_bytes_read < 0)
 					memset(ifo_buffer, '\0', DVD_VIDEO_LB_LEN);
 				ifo_bytes_written = write(ifo_fd, ifo_buffer, DVD_VIDEO_LB_LEN);
+				if(ifo_bytes_written < 0)
+					fprintf(stderr, "* %s could not write block %zd, skipping\n", dvd_backup_filename, dvd_block);
 				dvd_block++;
 			}
 
