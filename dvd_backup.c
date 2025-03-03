@@ -464,6 +464,8 @@ int main(int argc, char **argv) {
 	int vob_fd = -1;
 	char vob_filename[PATH_MAX];
 	memset(vob_filename, '\0', PATH_MAX);
+	char vob_basename[13];
+	memset(vob_basename, '\0', 13);
 
 	/** Backup VIDEO_TS.VOB **/
 	snprintf(vob_filename, PATH_MAX - 1, "%s/VIDEO_TS.VOB", dvd_backup_dir);
@@ -540,6 +542,7 @@ int main(int argc, char **argv) {
 	// 2 - total filesize of destination VOB backed up
 	// 3 - percent of VOB backed up
 	uint64_t filesize_mbs[4];
+	uint64_t vob_mbs = 0;
 
 	/** Backup VTS_01_1.VOB through VTS_99_9.VOB **/
 	ssize_t vob_blocks_skipped = 0;
@@ -558,10 +561,15 @@ int main(int argc, char **argv) {
 		if(dvdread_vts_file == 0)
 			continue;
 
-		printf("[VTS %" PRIu16"]\n", vts);
+		printf("[Video Title Set #%" PRIu16"]\n", vts);
 
-		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++)
-			filesize_mbs[0] += blocks_to_mbs(dvd_vts[vts].dvd_vobs[vob].blocks);
+		// Get the total of the VTS from a sum of the VOBs, instead of the VTS directly
+		// so that the display output will match, regardless of whether a small VOB file
+		// under 1 MB would be raised using ceil().
+		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++) {
+			vob_mbs = blocks_to_mbs(dvd_vts[vts].dvd_vobs[vob].blocks);
+			filesize_mbs[0] += vob_mbs;
+		}
 
 		printf("* Filesize: %" PRIu64 " MBs\n", filesize_mbs[0]);
 
@@ -574,6 +582,7 @@ int main(int argc, char **argv) {
 			filesize_mbs[3] = 0;
 
 			snprintf(vob_filename, PATH_MAX - 1, "%s/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", dvd_backup_dir, vts, vob);
+			strncpy(vob_basename, basename(vob_filename), 13);
 
 			vob_fd = open(vob_filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 
@@ -596,7 +605,7 @@ int main(int argc, char **argv) {
 
 				filesize_mbs[2] = blocks_to_mbs(vob_block + 1);
 				filesize_mbs[3] = percent_completed(filesize_mbs[1], filesize_mbs[2]);
-				fprintf(stdout, "* %s: %" PRIu64 "/%" PRIu64 " MBs (%" PRIu64 "%%)\r", vob_filename, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3]);
+				fprintf(stdout, "* %s: %" PRIu64 "/%" PRIu64 " MBs (%" PRIu64 "%%)\r", vob_basename, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3]);
 				fflush(stdout);
 
 				dvd_blocks_offset++;
