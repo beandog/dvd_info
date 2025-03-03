@@ -94,8 +94,6 @@ uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
 	vts_vobs = dvdread_stat.nr_parts;
 
-	printf("dvdread_stat.nr_parts: %" PRIu16 "\n", dvdread_stat.nr_parts);
-
 	return vts_vobs;
 
 #endif
