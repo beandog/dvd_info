@@ -50,17 +50,23 @@ double dvd_vts_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 }
 
 /**
- * With libdvdread 6.1.3 on MSYS2, DVDFileStat() doesn't see the VOB files.
- * Another variable in the IFO stores the data, though, so pull it from there
- * instead.
+ * With libdvdread 6.1.3 on MSYS2, DVDFileStat() will see the VOB files, but
+ * the dvd_stat_t struct nr_parts value returns 0. Using the number inside of
+ * vts_ifo directly. However, on Linux and friends, this does *not* work for
+ * for some reason. Just accessing the variable causes strange problems, and
+ * the filesize can be completely incorrect. In addition, nr_of_vobs is one
+ * too many on Linux for some reason.
  *
- * Accessing the .VOB seems to work just fine regardless of whether it can stat
- * them or not. This can be tested by manually passing in a VOB # when doing a
- * backup in the code.
+ * I've spent a *lot* of time debugging it, but haven't been able to find any
+ * reasons why there is unusual behavior. Suffice it to say, this works. This
+ * is also how the original program 'dvdbackup' gets the number of vobs.
+ *
+ * Using DVDFileStat is safer anyway for dvd_backup, to make sure that the
+ * files are actually there and can be accessed.
  */
-int dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
+uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
-	int vts_vobs = 0;
+	uint16_t vts_vobs = 0;
 
 #if defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
 
@@ -87,6 +93,8 @@ int dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 		return 0;
 
 	vts_vobs = dvdread_stat.nr_parts;
+
+	printf("dvdread_stat.nr_parts: %" PRIu16 "\n", dvdread_stat.nr_parts);
 
 	return vts_vobs;
 

@@ -18,7 +18,7 @@ struct dvd_vts {
 	ssize_t blocks;
 	ssize_t filesize;
 	double filesize_mbs;
-	int vobs;
+	uint16_t vobs;
 	uint16_t tracks;
 	uint16_t valid_tracks;
 	uint16_t invalid_tracks;
@@ -31,7 +31,7 @@ ssize_t dvd_vts_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
 
 double dvd_vts_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
 
-int dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
+uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
 
 struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts);
 
