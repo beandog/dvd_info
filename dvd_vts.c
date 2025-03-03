@@ -49,7 +49,35 @@ double dvd_vts_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
 }
 
+/**
+ * With libdvdread 6.1.3 on MSYS2, DVDFileStat() doesn't see the VOB files.
+ * Another variable in the IFO stores the data, though, so pull it from there
+ * instead.
+ *
+ * Accessing the .VOB seems to work just fine regardless of whether it can stat
+ * them or not. This can be tested by manually passing in a VOB # when doing a
+ * backup in the code.
+ */
 int dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
+
+	int vts_vobs = 0;
+
+#if defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
+
+	ifo_handle_t *vts_ifo = NULL;
+	vts_ifo = ifoOpen(dvdread_dvd, vts_number);
+
+	if(vts_ifo == NULL)
+		return 0;
+
+	if(vts_ifo->vts_c_adt == NULL)
+		return 0;
+
+	vts_vobs = vts_ifo->vts_c_adt->nr_of_vobs;
+
+	return vts_vobs;
+
+#else
 
 	dvd_stat_t dvdread_stat;
 
@@ -58,10 +86,11 @@ int dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 	if(retval < 0)
 		return 0;
 
-	int vts_vobs = 0;
 	vts_vobs = dvdread_stat.nr_parts;
 
 	return vts_vobs;
+
+#endif
 
 }
 
