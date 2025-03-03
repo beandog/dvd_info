@@ -563,12 +563,8 @@ int main(int argc, char **argv) {
 		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++)
 			filesize_mbs[0] += blocks_to_mbs(dvd_vts[vts].dvd_vobs[vob].blocks);
 
-		printf("* %" PRIu16 " VOBs\n", dvd_vts[vts].vobs);
 		printf("* Filesize: %" PRIu64 " MBs\n", filesize_mbs[0]);
 
-		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++)
-			if(dvd_vts[vts].dvd_vobs[vob].blocks && verbose)
-				printf("* VOB %" PRIu16 " filesize: %.0f MBs\n", vob, ceil(dvd_vob_filesize_mbs(dvdread_dvd, vts, vob)));
 		dvd_blocks_offset = 0;
 
 		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++) {
