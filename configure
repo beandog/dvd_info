@@ -667,8 +667,6 @@ build_cpu
 build
 DVD_DRIVE_STATUS_FALSE
 DVD_DRIVE_STATUS_TRUE
-DVD_BACKUP_FALSE
-DVD_BACKUP_TRUE
 DVDREAD_LIBS
 DVDREAD_CFLAGS
 PKG_CONFIG_LIBDIR
@@ -4504,15 +4502,6 @@ printf "%s\n" "yes" >&6; }
 
 fi
 
- if true; then
-  DVD_BACKUP_TRUE=
-  DVD_BACKUP_FALSE='#'
-else
-  DVD_BACKUP_TRUE='#'
-  DVD_BACKUP_FALSE=
-fi
-
-
  if false; then
   DVD_DRIVE_STATUS_TRUE=
   DVD_DRIVE_STATUS_FALSE='#'
@@ -4611,16 +4600,6 @@ fi
 else
   DVD_DRIVE_STATUS_TRUE='#'
   DVD_DRIVE_STATUS_FALSE=
-fi
-
-		;;
-	cygwin*|*mingw*)
-						 if false; then
-  DVD_BACKUP_TRUE=
-  DVD_BACKUP_FALSE='#'
-else
-  DVD_BACKUP_TRUE='#'
-  DVD_BACKUP_FALSE=
 fi
 
 		;;
@@ -4892,20 +4871,12 @@ if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${DVD_BACKUP_TRUE}" && test -z "${DVD_BACKUP_FALSE}"; then
-  as_fn_error $? "conditional \"DVD_BACKUP\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
 if test -z "${DVD_DRIVE_STATUS_TRUE}" && test -z "${DVD_DRIVE_STATUS_FALSE}"; then
   as_fn_error $? "conditional \"DVD_DRIVE_STATUS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${DVD_DRIVE_STATUS_TRUE}" && test -z "${DVD_DRIVE_STATUS_FALSE}"; then
   as_fn_error $? "conditional \"DVD_DRIVE_STATUS\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${DVD_BACKUP_TRUE}" && test -z "${DVD_BACKUP_FALSE}"; then
-  as_fn_error $? "conditional \"DVD_BACKUP\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${DVD_PLAYER_TRUE}" && test -z "${DVD_PLAYER_FALSE}"; then
