@@ -12,7 +12,6 @@
 #include <getopt.h>
 #include <mntent.h>
 #include <dvdcss/dvdcss.h>
-#include "config.h"
 
 #define DEFAULT_DVD_DEVICE "/dev/sr0"
 
@@ -130,11 +129,10 @@ int main(int argc, char **argv) {
 		{ "close", no_argument, 0, 't' },
 		{ "help", no_argument, 0, 'h' },
 		{ "no-wait", no_argument, 0, 'n' },
-		{ "version", no_argument, 0, 'V' },
 		{ 0, 0, 0, 0 }
 	};
 
-	while((opt = getopt_long(argc, argv, "hnrtV", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "hnrt", long_options, &long_index )) != -1) {
 		switch(opt) {
 			case 'h':
 				d_help = true;
@@ -145,10 +143,6 @@ int main(int argc, char **argv) {
 			case 't':
 				p_dvd_eject = false;
 				p_dvd_close = true;
-				break;
-			case 'V':
-				printf("dvd_eject %s\n", PACKAGE_VERSION);
-				return 0;
 				break;
 			case '?':
 				d_help = true;
