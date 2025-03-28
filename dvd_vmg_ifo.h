@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/types.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 #include "dvd_specs.h"
@@ -68,6 +69,27 @@ bool ifo_is_vts(ifo_handle_t *ifo);
  * This whole function is mostly lifted from lsdvd.
  */
 bool dvd_title(char *dest_str, const char *device_filename);
+
+/*
+ * Get the DVD title, which maxes out at a 32-character string.
+ * Some DVDs will have one.
+ *
+ * The title is going to be alpha-numeric, all upper-case, up to 32
+ * characters in length.
+ *
+ * FIXME this adds an additional time that open() is used on the DVD
+ */
+bool dvd_alternative_title(char *dest_str, const char *device_filename);
+
+/**
+ * Get the DVD's "serial number" which is a string on the DVD volume. It is on
+ * right after the title and the alternate title.
+ *
+ * Most likely not a unique identifier.
+ *
+ * FIXME this adds an additional time that open() is used on the DVD
+ */
+bool dvd_serial_number(char *dest_str, const char *device_filename);
 
 /**
  * Get a unique identifier of the DVD.

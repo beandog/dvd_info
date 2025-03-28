@@ -52,6 +52,96 @@ bool dvd_title(char *dest_str, const char *device_filename) {
 
 }
 
+bool dvd_alternative_title(char *dest_str, const char *device_filename) {
+
+	char dvd_alternative_title[DVD_TITLE + 1] = {'\0'};
+	int fd = -1;
+
+	// If we can't even open the device, exit quietly
+	fd = open(device_filename, O_RDONLY);
+	if(fd == -1) {
+		return false;
+	}
+
+	// The DVD alternative title is on the volume, and doesn't need the dvdread or
+	// dvdnav library to access it.
+	if(lseek(fd, 65536, SEEK_SET) != 65536) {
+		close(fd);
+		return false;
+	}
+
+	char buffer[DVD_VIDEO_LB_LEN] = {'\0'};
+
+	if(read(fd, buffer, DVD_VIDEO_LB_LEN) != DVD_VIDEO_LB_LEN) {
+		close(fd);
+		return false;
+	}
+	snprintf(dvd_alternative_title, DVD_TITLE, "%s", buffer + 40);
+
+	close(fd);
+
+	// Right trim the string
+	size_t dvd_title_length = 0;
+	dvd_title_length = strlen(dvd_alternative_title);
+	while(dvd_title_length-- > 2) {
+		if(dvd_alternative_title[dvd_title_length] == ' ') {
+			dvd_alternative_title[dvd_title_length] = '\0';
+		}
+	}
+
+	strncpy(dest_str, dvd_alternative_title, DVD_TITLE);
+
+	return true;
+
+}
+
+bool dvd_serial_number(char *dest_str, const char *device_filename) {
+
+	char dvd_serial[DVD_SERIAL_NUMBER + 1] = {'\0'};
+	int fd = -1;
+
+	// If we can't even open the device, exit quietly
+	fd = open(device_filename, O_RDONLY);
+	if(fd == -1) {
+		return false;
+	}
+
+	// The DVD serial number is on the volume, and doesn't need the dvdread or
+	// dvdnav library to access it.
+	if(lseek(fd, 65536 + DVD_TITLE, SEEK_SET) != (65536 + DVD_TITLE)) {
+		printf("serial: lseek failed!\n");
+		close(fd);
+		return false;
+	}
+
+	char buffer[DVD_VIDEO_LB_LEN] = {'\0'};
+
+	if(read(fd, buffer, DVD_VIDEO_LB_LEN) != DVD_VIDEO_LB_LEN) {
+		close(fd);
+		return false;
+	}
+	// FIXME for some reason this first character is deleting the previous one when using offset of 40??
+	// Look at libdvndav/src/vm/vm.c dvd_read_name()
+	snprintf(dvd_serial, DVD_SERIAL_NUMBER + 1, "%s", buffer + 41);
+
+	close(fd);
+
+	// Right trim the string
+	// FIXME might not need trimming
+	size_t dvd_serial_str_length = 0;
+	dvd_serial_str_length = strlen(dvd_serial);
+	while(dvd_serial_str_length-- > 2) {
+		if(dvd_serial[dvd_serial_str_length] == ' ') {
+			dvd_serial[dvd_serial_str_length] = '\0';
+		}
+	}
+
+	strncpy(dest_str, dvd_serial, DVD_SERIAL_NUMBER + 1);
+
+	return true;
+
+}
+
 bool dvd_dvdread_id(char *dest_str, dvd_reader_t *dvdread_dvd) {
 
 	int dvdread_retval = 0;

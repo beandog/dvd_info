@@ -13,6 +13,8 @@ struct dvd_info {
 	uint16_t invalid_video_title_sets;
 	uint8_t side;
 	char title[DVD_TITLE + 1];
+	char alternative_title[DVD_TITLE + 1];
+	char serial_number[DVD_SERIAL_NUMBER + 1];
 	char provider_id[DVD_PROVIDER_ID + 1];
 	char vmg_id[DVD_VMG_ID + 1];
 	uint16_t tracks;

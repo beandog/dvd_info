@@ -107,6 +107,8 @@ struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, const char *device_file
 	// Initialize strings
 	memset(dvd_info.dvdread_id, '\0', sizeof(dvd_info.dvdread_id));
 	memset(dvd_info.title, '\0', sizeof(dvd_info.title));
+	memset(dvd_info.alternative_title, '\0', sizeof(dvd_info.alternative_title));
+	memset(dvd_info.serial_number, '\0', sizeof(dvd_info.serial_number));
 	memset(dvd_info.provider_id, '\0', sizeof(dvd_info.provider_id));
 	memset(dvd_info.vmg_id, '\0', sizeof(dvd_info.vmg_id));
 
@@ -121,6 +123,9 @@ struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, const char *device_file
 	dvd_info.video_title_sets = dvd_video_title_sets(vmg_ifo);
 	dvd_info.side = dvd_info_side(vmg_ifo);
 	dvd_title(dvd_info.title, device_filename);
+	// FIXME these are for debugging right now, since it adds opening the DVD two more times.
+		dvd_alternative_title(dvd_info.alternative_title, device_filename);
+		dvd_serial_number(dvd_info.serial_number, device_filename);
 	dvd_provider_id(dvd_info.provider_id, vmg_ifo);
 	dvd_vmg_id(dvd_info.vmg_id, vmg_ifo);
 	dvd_info.tracks = dvd_tracks(vmg_ifo);
