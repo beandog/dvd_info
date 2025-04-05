@@ -605,7 +605,10 @@ int main(int argc, char **argv) {
 
 				filesize_mbs[2] = blocks_to_mbs(vob_block + 1);
 				filesize_mbs[3] = percent_completed(filesize_mbs[1], filesize_mbs[2]);
-				fprintf(stdout, "* %s: %" PRIu64 "/%" PRIu64 " MBs (%" PRIu64 "%%)\r", vob_basename, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3]);
+				if(vob_blocks_skipped)
+					fprintf(stdout, "* %s: %" PRIu64 "/%" PRIu64 " MBs (%" PRIu64 "%%) Skipped blocks: %zd\r", vob_basename, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3], vob_blocks_skipped);
+				else
+					fprintf(stdout, "* %s: %" PRIu64 "/%" PRIu64 " MBs (%" PRIu64 "%%)\r", vob_basename, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3]);
 				fflush(stdout);
 
 				dvd_blocks_offset++;
