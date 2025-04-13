@@ -71,7 +71,7 @@
 	 * Presets
 	 *
 	 * To keep things simple, dvd_rip only has three presets which fit the most commonly used
-	 * codecs and formats when ripping DVDs: "mp4", "mkv", "webm".
+	 * codecs and formats when ripping DVDs: "mp4" and "mkv".
 	 *
 	 */
 
@@ -96,13 +96,10 @@ int main(int argc, char **argv) {
 	char length[DVD_INFO_MPV_TIME_POSITION + 1] = {'\0'};
 	bool x264 = false;
 	bool x265 = false;
-	bool vp8 = false;
-	bool vp9 = false;
 	bool opus = false;
 	bool aac = false;
 	bool mkv = false;
 	bool mp4 = false;
-	bool webm = false;
 	bool detelecine = true;
 	bool pal_video = false;
 	int8_t crf = -1;
@@ -271,8 +268,6 @@ int main(int argc, char **argv) {
 
 				if(strcmp(strrchr(optarg, '\0') - 4, ".mkv") == 0) {
 					mkv = true;
-				} else if(strcmp(strrchr(optarg, '\0') - 5, ".webm") == 0) {
-					webm = true;
 				} else if(strcmp(strrchr(optarg, '\0') - 4, ".mp4") == 0) {
 					mp4 = true;
 				}
@@ -340,10 +335,6 @@ int main(int argc, char **argv) {
 					x264 = true;
 				} else if(strncmp(optarg, "x265", 4) == 0) {
 					x265 = true;
-				} else if(strncmp(optarg, "vp8", 3) == 0) {
-					vp8 = true;
-				} else if(strncmp(optarg, "vp9", 3) == 0) {
-					vp9 = true;
 				}
 				break;
 
@@ -379,7 +370,7 @@ int main(int argc, char **argv) {
 				printf("\n");
 				printf("Encoding options:\n");
 				printf("\n");
-				printf("  -v, --vcodec <vcodec>         Video codec <x264|x265|vp8|vp9>, default: x264\n");
+				printf("  -v, --vcodec <vcodec>         Video codec <x264|x265>, default: x264\n");
 				printf("  -a, --acodec <acodec>         Audio codec (aac|opus), default: aac\n");
 				printf("  -q, --crf <#>			Video encoder CRF (x264 and x265)\n");
 				printf("  -D, --no-detelecine           Do not detelecine video\n");
@@ -754,50 +745,12 @@ int main(int argc, char **argv) {
 	}
 
 	// Default container MP4
-	if(!mp4 && !mkv && !webm && !vp8 && !vp9)
+	if(!mp4 && !mkv)
 		mp4 = true;
 
 	// Default video codec for MP4 and MKV
-	if(!x264 && !x265 && !vp8 && !vp9)
+	if(!x264 && !x265)
 		x264 = true;
-
-	// Default video codec for WebM
-	if(webm && !vp8 && !vp9) {
-		x264 = false;
-		vp8 = true;
-	}
-
-	// If using vp8 or vp9 with no container, use webm
-	if((vp8 || vp9) && !mkv && !mp4)
-		webm = true;
-
-	// MP4 can't support VP8 or VP9
-	if(mp4 && (vp8 || vp9)) {
-		fprintf(stderr, "[dvd_rip] MP4 doesn't support VP8 or VP9 video codecs, use MKV instead.\n");
-		return 1;
-	}
-
-	// Use MKV if using VP8 or VP9 and nothing is specificed
-	if((vp8 || vp9) && aac) {
-		webm = false;
-		mkv = true;
-	}
-
-	// WebM can't support x264 or x265
-	if(webm && (x264 || x265)) {
-		fprintf(stderr, "[dvd_rip] WebM only supports VP8 and VP9 video codecs, use MKV instead.\n");
-		return 1;
-	}
-
-	// WebM can't support AAC
-	if(webm && aac) {
-		fprintf(stderr, "[dvd_rip] WebM only supports Opus audio codec.\n");
-		return 1;
-	}
-	if(!aac && !opus && !webm)
-		aac = true;
-	if(!aac && !opus && webm)
-		opus = true;
 
 	/** Filename **/
 	if(!opt_filename) {
@@ -805,8 +758,6 @@ int main(int argc, char **argv) {
 			strcpy(dvd_rip.container, "mp4");
 		else if(mkv)
 			strcpy(dvd_rip.container, "mkv");
-		else if(webm)
-			strcpy(dvd_rip.container, "webm");
 		sprintf(dvd_rip.filename, "dvd_track_%02" PRIu16 ".%s", dvd_rip.track, dvd_rip.container);
 	}
 
@@ -814,76 +765,17 @@ int main(int argc, char **argv) {
 
 	fprintf(stderr, "[dvd_rip] saving to filename \'%s\'\n", dvd_rip.filename);
 
-	/** Encoding Notes **/
-
-	// I'm not going to output the exact mpv commands for defaults, but this is vp8 and opus (as of right now)
-	// mpv dvd://0 --dvd-device=1.000.PRIME_SAMPLE.iso --ovc=libvpx --ovcopts=b=2048k,cpu-used=8 --oac=libopus --oacopts=b=256k -o test.mkv
-
 	/** Video **/
 
 	// Fix input CRF if needed
 	if((x264 || x265) && crf > 51)
 		crf = 51;
-	if((vp8 || vp9) && crf > 63)
-		crf = 63;
 	if(x264 && crf == -1)
 		crf = 20;
 	if(x265 && crf == -1)
 		crf = 22;
 	if(crf > -1 && (x264 || x265)) {
 		snprintf(dvd_rip.vcodec_opts, 9, "crf=%i", crf);
-	}
-
-	if(vp8 || vp9) {
-
-		// Set some high quality defaults for libvpx
-		if(vp8)
-			dvd_rip.video_bitrate = 2048;
-		else
-			dvd_rip.video_bitrate = 1536;
-
-		/* Trying to set encoding parameters for VPX is a pain, because I can't
-		 * tell if I've got the syntax wrong or not, though everything from ffmpeg
-		 * docs looks like I'm doing it right. That being said, setting a CRF
-		 * does not work, so I'm trying to set a relevantly decent bitrate for
-		 * both vp8 and vp9.
-		 *
-		 * I would like to use qmin and qmax as my second choice, but that's not
-		 * working either. Using ffmpeg docs as reference:
-		 * https://trac.ffmpeg.org/wiki/Encode/VP8
-		 * https://ffmpeg.org//ffmpeg-all.html#libvpx
-		 *
-		 * Here's all the things I've tested that *don't* work:
-		 * - crf=20,b=0
-		 * - qmin=0,qmax=50
-		 * - qmin=0,qmax=50,crf=20
-		 *
-		 * Another issue is that libvpx encodes using *one* processor at a time,
-		 * so I'm overriding it here to actual # available (see sysctl.h). It's
-		 * obviously much faster now.
-		 *
-		 * So here you go, me guessing at bitrates. Hopefully in the future
-		 * I'll figure this out, but for now, this is it.
-		 */
-
-		if(vp8 || vp9) {
-
-			int nprocs = 4;
-
-#if defined (__FreeBSD__)
-			int mib[2] = { CTL_HW, HW_NCPU };
-			size_t len = sizeof(nprocs);
-			sysctl(mib, 2, &nprocs, &len, NULL, 0);
-#elif defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
-			SYSTEM_INFO sysinfo;
-			GetSystemInfo(&sysinfo);
-			nprocs = sysinfo.dwNumberOfProcessors;
-#endif
-
-			snprintf(dvd_rip.vcodec_opts, sizeof(dvd_rip.vcodec_opts), "b=%" PRIu16 "k,cpu-used=%i", dvd_rip.video_bitrate, nprocs);
-
-		}
-
 	}
 
 	/**
@@ -898,11 +790,6 @@ int main(int argc, char **argv) {
 		strcpy(dvd_rip.vcodec, "libx264");
 	else if(x265)
 		strcpy(dvd_rip.vcodec, "libx265");
-	else if (vp8) {
-		strcpy(dvd_rip.vcodec, "libvpx");
-	} else if (vp9) {
-		strcpy(dvd_rip.vcodec, "libvpx-vp9");
-	}
 
 	mpv_set_option_string(dvd_mpv, "ovc", dvd_rip.vcodec);
 
@@ -1000,8 +887,6 @@ int main(int argc, char **argv) {
 	// Display output
 	if(x264 || x265)
 		fprintf(stderr, "[dvd_rip] using video codec '%s' and CRF '%i'\n", dvd_rip.vcodec, crf);
-	if(vp8 || vp9)
-		fprintf(stderr, "[dvd_rip] using video codec '%s' and bitrate '%ik'\n", dvd_rip.vcodec, dvd_rip.video_bitrate);
 	if(verbose) {
 		fprintf(stderr, "[dvd_rip] mpv 'vcodecopts=%s'\n", dvd_rip.vcodec_opts);
 		fprintf(stderr, "[dvd_rip] mpv 'acodecopts=%s'\n", dvd_rip.acodec_opts);

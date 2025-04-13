@@ -25,7 +25,6 @@ be built with support for these codecs, or dvd_rip will quit.
 
 	.mp4 - H.264 video, AAC audio
 	.mkv - H.264 video, AAC audio
-	.webm - VPX8 video, Opus audio
 
 With no options, the largest track will be ripped with the first audio track,
 to a file named dvd_track_#.mp4, where # is a zero-padded name of the track
@@ -64,10 +63,9 @@ OPTIONS
 *--sid*='#'
 	Select subtitles track by stream ID.
 
-*-v, --vcodec*='x264|x265|vp8|vp9'
+*-v, --vcodec*='x264|x265'
 	Video codec to use. H.264 (x264) has widest support, including
-	HTML5. H.265 (x265) videos will be smaller than H.264. VP8 and 9 can
-	also be played back with HTML5.
+	HTML5. H.265 (x265) videos will be smaller than H.264.
 
 *-a, --acodec*='aac|opus'
 	Audio codec to use.

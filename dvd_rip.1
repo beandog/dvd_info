@@ -2,12 +2,12 @@
 .\"     Title: dvd_rip
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.20
-.\"      Date: 2025-02-05
+.\"      Date: 2025-04-13
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_RIP" "1" "2025-02-05" "\ \&" "\ \&"
+.TH "DVD_RIP" "1" "2025-04-13" "\ \&" "\ \&"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -50,7 +50,6 @@ be built with support for these codecs, or dvd_rip will quit.
 .fam C
 \&.mp4 \- H.264 video, AAC audio
 \&.mkv \- H.264 video, AAC audio
-\&.webm \- VPX8 video, Opus audio
 .fam
 .fi
 .if n .RE
@@ -95,10 +94,9 @@ subtitles.
 \fB\-\-sid\fP=\fI#\fP
 Select subtitles track by stream ID.
 .sp
-\fB\-v, \-\-vcodec\fP=\fIx264|x265|vp8|vp9\fP
+\fB\-v, \-\-vcodec\fP=\fIx264|x265\fP
 Video codec to use. H.264 (x264) has widest support, including
-HTML5. H.265 (x265) videos will be smaller than H.264. VP8 and 9 can
-also be played back with HTML5.
+HTML5. H.265 (x265) videos will be smaller than H.264.
 .sp
 \fB\-a, \-\-acodec\fP=\fIaac|opus\fP
 Audio codec to use.
