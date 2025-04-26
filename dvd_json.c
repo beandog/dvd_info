@@ -16,9 +16,6 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 	// DVD
 	printf(" \"dvd\": {\n");
 	printf("   \"title\": \"%s\",\n", dvd_info.title);
-	// FIXME these are for debugging right now, since it adds opening the DVD two more times.
-		printf("   \"alternative title\": \"%s\",\n", dvd_info.alternative_title);
-		printf("   \"serial number\": \"%s\",\n", dvd_info.serial_number);
 	printf("   \"side\": %" PRIu8 ",\n", dvd_info.side);
 	printf("   \"tracks\": %" PRIu16 ",\n", dvd_info.tracks);
 	printf("   \"longest track\": %u,\n", dvd_info.longest_track);
