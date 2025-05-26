@@ -317,7 +317,7 @@ fi
 
 # Ask user confirmation if output file exists
 if [[ -e "$output_filename" ]] && [[ $overwrite_filename != "yes" ]]; then
-	read -n 1 -p "File '$output_filename' already exists. Overwrite? [y/N] " write_filename
+	read -n 2 -p "File '$output_filename' already exists. Overwrite? [y/N] " write_filename
 fi
 
 # Run dvd_copy and output to pipe, while supressing stderr which displays copy progress
