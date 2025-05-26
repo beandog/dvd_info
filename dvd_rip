@@ -146,6 +146,7 @@ fi
 # --- DVD_RIP
 
 input_filename=""
+container="mp4"
 output_filename="dvd_rip.mp4"
 dvd_track=""
 dvd_chapters=""
@@ -258,6 +259,33 @@ if [[ "$acodec" == "opus" ]] && [[ "$has_opus" ]]; then
 	acodec="libopus"
 fi
 
+# Look to see if container can support video + audio codecs
+if [[ "${output_filename: -3}" == "mp4" ]]; then
+	container="mp4"
+elif [[ "${output_filename: -4}" == "webm" ]]; then
+	container="webm"
+fi
+
+if [[ "$container" == "mp4" ]]; then
+	if [[ $vcodec == "libvpx" ]]; then
+		echo "$output_filename cannot support vp8 video codec. Use x264 or x265 instead, or change filename extension to '.mkv' or '.webm'"
+		exit 1
+	elif [[ $vcodec == "libvpx-vp9" ]]; then
+		echo "$output_filename cannot support vp9 video codec. Use x264 or x265 instead, or change filename extension to '.mkv' or '.webm'"
+		exit 1
+	fi
+fi
+
+if [[ "$container" == "webm" ]]; then
+	if [[ $vcodec == "libx264" ]]; then
+		echo "$output_filename cannot support x264 codec. Use vp8 or vp9 as video codec, or change filename extension to '.mp4' or '.mkv'"
+		exit 1
+	elif [[ $vcodec == "libx265" ]]; then
+		echo "$output_filename cannot support x265 codec. Use vp8 or vp9 as video codec, or change filename extension to '.mp4' or '.mkv'"
+		exit 1
+	fi
+fi
+
 if [[ "$verbose" == "yes" ]]; then
 	ffmpeg_opts="-loglevel verbose"
 else
@@ -286,6 +314,10 @@ ffmpeg_opts="$ffmpeg_opts -map a"
 ffmpeg_opts="$ffmpeg_opts -acodec $acodec"
 
 # Map all subtitle streams - ffmpeg doesn't recognize language from piped input
+if [[ "$container" == "webm" ]] && [[ "$subtitles" == "yes" ]]; then
+	echo "WebM doesn't support VOBSUB subtitles, disabling."
+	subtitles="no"
+fi
 if [[ "$subtitles" == "yes" ]]; then
 	ffmpeg_opts="$ffmpeg_opts -map s?"
 	ffmpeg_opts="$ffmpeg_opts -scodec copy"
