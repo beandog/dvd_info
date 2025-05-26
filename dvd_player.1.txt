@@ -76,7 +76,7 @@ language, and play in fullscreen:
 
 SEE ALSO
 --------
-dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_rip(1)
+dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_trip(1)
 
 BUGS
 ----

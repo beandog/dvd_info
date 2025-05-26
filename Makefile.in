@@ -95,8 +95,8 @@ bin_PROGRAMS = dvd_info$(EXEEXT) dvd_copy$(EXEEXT) dvd_backup$(EXEEXT) \
 @DVD_DRIVE_STATUS_TRUE@am__append_2 = dvd_drive_status.1
 @DVD_PLAYER_TRUE@am__append_3 = dvd_player
 @DVD_PLAYER_TRUE@am__append_4 = dvd_player.1
-@DVD_RIPPER_TRUE@am__append_5 = dvd_rip
-@DVD_RIPPER_TRUE@am__append_6 = dvd_rip.1
+@DVD_RIPPER_TRUE@am__append_5 = dvd_trip
+@DVD_RIPPER_TRUE@am__append_6 = dvd_trip.1
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -112,7 +112,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 @DVD_DRIVE_STATUS_TRUE@am__EXEEXT_1 = dvd_drive_status$(EXEEXT)
 @DVD_PLAYER_TRUE@am__EXEEXT_2 = dvd_player$(EXEEXT)
-@DVD_RIPPER_TRUE@am__EXEEXT_3 = dvd_rip$(EXEEXT)
+@DVD_RIPPER_TRUE@am__EXEEXT_3 = dvd_trip$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_dvd_backup_OBJECTS = dvd_backup-dvd_backup.$(OBJEXT) \
@@ -178,27 +178,27 @@ dvd_player_OBJECTS = $(am_dvd_player_OBJECTS)
 @DVD_PLAYER_TRUE@	$(am__DEPENDENCIES_1)
 dvd_player_LINK = $(CCLD) $(dvd_player_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-am__dvd_rip_SOURCES_DIST = dvd_rip.c dvd_drive.c dvd_open.c \
+am__dvd_trip_SOURCES_DIST = dvd_trip.c dvd_drive.c dvd_open.c \
 	dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c \
 	dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c \
 	dvd_video.c
-@DVD_RIPPER_TRUE@am_dvd_rip_OBJECTS = dvd_rip-dvd_rip.$(OBJEXT) \
-@DVD_RIPPER_TRUE@	dvd_rip-dvd_drive.$(OBJEXT) \
-@DVD_RIPPER_TRUE@	dvd_rip-dvd_open.$(OBJEXT) \
-@DVD_RIPPER_TRUE@	dvd_rip-dvd_vmg_ifo.$(OBJEXT) \
-@DVD_RIPPER_TRUE@	dvd_rip-dvd_track.$(OBJEXT) \
-@DVD_RIPPER_TRUE@	dvd_rip-dvd_cell.$(OBJEXT) \
-@DVD_RIPPER_TRUE@	dvd_rip-dvd_vts.$(OBJEXT) \
-@DVD_RIPPER_TRUE@	dvd_rip-dvd_vob.$(OBJEXT) \
-@DVD_RIPPER_TRUE@	dvd_rip-dvd_audio.$(OBJEXT) \
-@DVD_RIPPER_TRUE@	dvd_rip-dvd_subtitles.$(OBJEXT) \
-@DVD_RIPPER_TRUE@	dvd_rip-dvd_time.$(OBJEXT) \
-@DVD_RIPPER_TRUE@	dvd_rip-dvd_chapter.$(OBJEXT) \
-@DVD_RIPPER_TRUE@	dvd_rip-dvd_video.$(OBJEXT)
-dvd_rip_OBJECTS = $(am_dvd_rip_OBJECTS)
-@DVD_RIPPER_TRUE@dvd_rip_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+@DVD_RIPPER_TRUE@am_dvd_trip_OBJECTS = dvd_trip-dvd_trip.$(OBJEXT) \
+@DVD_RIPPER_TRUE@	dvd_trip-dvd_drive.$(OBJEXT) \
+@DVD_RIPPER_TRUE@	dvd_trip-dvd_open.$(OBJEXT) \
+@DVD_RIPPER_TRUE@	dvd_trip-dvd_vmg_ifo.$(OBJEXT) \
+@DVD_RIPPER_TRUE@	dvd_trip-dvd_track.$(OBJEXT) \
+@DVD_RIPPER_TRUE@	dvd_trip-dvd_cell.$(OBJEXT) \
+@DVD_RIPPER_TRUE@	dvd_trip-dvd_vts.$(OBJEXT) \
+@DVD_RIPPER_TRUE@	dvd_trip-dvd_vob.$(OBJEXT) \
+@DVD_RIPPER_TRUE@	dvd_trip-dvd_audio.$(OBJEXT) \
+@DVD_RIPPER_TRUE@	dvd_trip-dvd_subtitles.$(OBJEXT) \
+@DVD_RIPPER_TRUE@	dvd_trip-dvd_time.$(OBJEXT) \
+@DVD_RIPPER_TRUE@	dvd_trip-dvd_chapter.$(OBJEXT) \
+@DVD_RIPPER_TRUE@	dvd_trip-dvd_video.$(OBJEXT)
+dvd_trip_OBJECTS = $(am_dvd_trip_OBJECTS)
+@DVD_RIPPER_TRUE@dvd_trip_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 @DVD_RIPPER_TRUE@	$(am__DEPENDENCIES_1)
-dvd_rip_LINK = $(CCLD) $(dvd_rip_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+dvd_trip_LINK = $(CCLD) $(dvd_trip_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -262,17 +262,19 @@ am__depfiles_remade = ./$(DEPDIR)/dvd_backup-dvd_backup.Po \
 	./$(DEPDIR)/dvd_player-dvd_video.Po \
 	./$(DEPDIR)/dvd_player-dvd_vmg_ifo.Po \
 	./$(DEPDIR)/dvd_player-dvd_vts.Po \
-	./$(DEPDIR)/dvd_rip-dvd_audio.Po \
-	./$(DEPDIR)/dvd_rip-dvd_cell.Po \
-	./$(DEPDIR)/dvd_rip-dvd_chapter.Po \
-	./$(DEPDIR)/dvd_rip-dvd_drive.Po \
-	./$(DEPDIR)/dvd_rip-dvd_open.Po ./$(DEPDIR)/dvd_rip-dvd_rip.Po \
-	./$(DEPDIR)/dvd_rip-dvd_subtitles.Po \
-	./$(DEPDIR)/dvd_rip-dvd_time.Po \
-	./$(DEPDIR)/dvd_rip-dvd_track.Po \
-	./$(DEPDIR)/dvd_rip-dvd_video.Po \
-	./$(DEPDIR)/dvd_rip-dvd_vmg_ifo.Po \
-	./$(DEPDIR)/dvd_rip-dvd_vob.Po ./$(DEPDIR)/dvd_rip-dvd_vts.Po
+	./$(DEPDIR)/dvd_trip-dvd_audio.Po \
+	./$(DEPDIR)/dvd_trip-dvd_cell.Po \
+	./$(DEPDIR)/dvd_trip-dvd_chapter.Po \
+	./$(DEPDIR)/dvd_trip-dvd_drive.Po \
+	./$(DEPDIR)/dvd_trip-dvd_open.Po \
+	./$(DEPDIR)/dvd_trip-dvd_subtitles.Po \
+	./$(DEPDIR)/dvd_trip-dvd_time.Po \
+	./$(DEPDIR)/dvd_trip-dvd_track.Po \
+	./$(DEPDIR)/dvd_trip-dvd_trip.Po \
+	./$(DEPDIR)/dvd_trip-dvd_video.Po \
+	./$(DEPDIR)/dvd_trip-dvd_vmg_ifo.Po \
+	./$(DEPDIR)/dvd_trip-dvd_vob.Po \
+	./$(DEPDIR)/dvd_trip-dvd_vts.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -292,11 +294,11 @@ am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(dvd_backup_SOURCES) $(dvd_copy_SOURCES) \
 	$(dvd_debug_SOURCES) $(dvd_drive_status_SOURCES) \
-	$(dvd_info_SOURCES) $(dvd_player_SOURCES) $(dvd_rip_SOURCES)
+	$(dvd_info_SOURCES) $(dvd_player_SOURCES) $(dvd_trip_SOURCES)
 DIST_SOURCES = $(dvd_backup_SOURCES) $(dvd_copy_SOURCES) \
 	$(dvd_debug_SOURCES) $(am__dvd_drive_status_SOURCES_DIST) \
 	$(dvd_info_SOURCES) $(am__dvd_player_SOURCES_DIST) \
-	$(am__dvd_rip_SOURCES_DIST)
+	$(am__dvd_trip_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -494,9 +496,9 @@ dvd_debug_LDADD = $(DVDREAD_LIBS)
 @DVD_PLAYER_TRUE@dvd_player_SOURCES = dvd_player.c dvd_drive.c dvd_open.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c dvd_video.c
 @DVD_PLAYER_TRUE@dvd_player_CFLAGS = $(DVDREAD_CFLAGS) $(MPV_CFLAGS)
 @DVD_PLAYER_TRUE@dvd_player_LDADD = -lm $(DVDREAD_LIBS) $(MPV_LIBS)
-@DVD_RIPPER_TRUE@dvd_rip_SOURCES = dvd_rip.c dvd_drive.c dvd_open.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c dvd_video.c
-@DVD_RIPPER_TRUE@dvd_rip_CFLAGS = $(DVDREAD_CFLAGS) $(MPV_CFLAGS)
-@DVD_RIPPER_TRUE@dvd_rip_LDADD = -lm $(DVDREAD_LIBS) $(MPV_LIBS)
+@DVD_RIPPER_TRUE@dvd_trip_SOURCES = dvd_trip.c dvd_drive.c dvd_open.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_vob.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c dvd_video.c
+@DVD_RIPPER_TRUE@dvd_trip_CFLAGS = $(DVDREAD_CFLAGS) $(MPV_CFLAGS)
+@DVD_RIPPER_TRUE@dvd_trip_LDADD = -lm $(DVDREAD_LIBS) $(MPV_LIBS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -617,9 +619,9 @@ dvd_player$(EXEEXT): $(dvd_player_OBJECTS) $(dvd_player_DEPENDENCIES) $(EXTRA_dv
 	@rm -f dvd_player$(EXEEXT)
 	$(AM_V_CCLD)$(dvd_player_LINK) $(dvd_player_OBJECTS) $(dvd_player_LDADD) $(LIBS)
 
-dvd_rip$(EXEEXT): $(dvd_rip_OBJECTS) $(dvd_rip_DEPENDENCIES) $(EXTRA_dvd_rip_DEPENDENCIES) 
-	@rm -f dvd_rip$(EXEEXT)
-	$(AM_V_CCLD)$(dvd_rip_LINK) $(dvd_rip_OBJECTS) $(dvd_rip_LDADD) $(LIBS)
+dvd_trip$(EXEEXT): $(dvd_trip_OBJECTS) $(dvd_trip_DEPENDENCIES) $(EXTRA_dvd_trip_DEPENDENCIES) 
+	@rm -f dvd_trip$(EXEEXT)
+	$(AM_V_CCLD)$(dvd_trip_LINK) $(dvd_trip_OBJECTS) $(dvd_trip_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -674,19 +676,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_player-dvd_video.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_player-dvd_vmg_ifo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_player-dvd_vts.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_audio.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_cell.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_chapter.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_drive.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_open.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_rip.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_subtitles.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_time.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_track.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_video.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_vmg_ifo.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_vob.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_rip-dvd_vts.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_audio.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_cell.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_chapter.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_drive.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_open.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_subtitles.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_time.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_track.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_trip.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_video.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_vmg_ifo.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_vob.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dvd_trip-dvd_vts.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -1352,187 +1354,187 @@ dvd_player-dvd_video.obj: dvd_video.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_player_CFLAGS) $(CFLAGS) -c -o dvd_player-dvd_video.obj `if test -f 'dvd_video.c'; then $(CYGPATH_W) 'dvd_video.c'; else $(CYGPATH_W) '$(srcdir)/dvd_video.c'; fi`
 
-dvd_rip-dvd_rip.o: dvd_rip.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_rip.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_rip.Tpo -c -o dvd_rip-dvd_rip.o `test -f 'dvd_rip.c' || echo '$(srcdir)/'`dvd_rip.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_rip.Tpo $(DEPDIR)/dvd_rip-dvd_rip.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_rip.c' object='dvd_rip-dvd_rip.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_trip.o: dvd_trip.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_trip.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_trip.Tpo -c -o dvd_trip-dvd_trip.o `test -f 'dvd_trip.c' || echo '$(srcdir)/'`dvd_trip.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_trip.Tpo $(DEPDIR)/dvd_trip-dvd_trip.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_trip.c' object='dvd_trip-dvd_trip.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_rip.o `test -f 'dvd_rip.c' || echo '$(srcdir)/'`dvd_rip.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_trip.o `test -f 'dvd_trip.c' || echo '$(srcdir)/'`dvd_trip.c
 
-dvd_rip-dvd_rip.obj: dvd_rip.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_rip.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_rip.Tpo -c -o dvd_rip-dvd_rip.obj `if test -f 'dvd_rip.c'; then $(CYGPATH_W) 'dvd_rip.c'; else $(CYGPATH_W) '$(srcdir)/dvd_rip.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_rip.Tpo $(DEPDIR)/dvd_rip-dvd_rip.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_rip.c' object='dvd_rip-dvd_rip.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_trip.obj: dvd_trip.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_trip.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_trip.Tpo -c -o dvd_trip-dvd_trip.obj `if test -f 'dvd_trip.c'; then $(CYGPATH_W) 'dvd_trip.c'; else $(CYGPATH_W) '$(srcdir)/dvd_trip.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_trip.Tpo $(DEPDIR)/dvd_trip-dvd_trip.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_trip.c' object='dvd_trip-dvd_trip.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_rip.obj `if test -f 'dvd_rip.c'; then $(CYGPATH_W) 'dvd_rip.c'; else $(CYGPATH_W) '$(srcdir)/dvd_rip.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_trip.obj `if test -f 'dvd_trip.c'; then $(CYGPATH_W) 'dvd_trip.c'; else $(CYGPATH_W) '$(srcdir)/dvd_trip.c'; fi`
 
-dvd_rip-dvd_drive.o: dvd_drive.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_drive.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_drive.Tpo -c -o dvd_rip-dvd_drive.o `test -f 'dvd_drive.c' || echo '$(srcdir)/'`dvd_drive.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_drive.Tpo $(DEPDIR)/dvd_rip-dvd_drive.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_drive.c' object='dvd_rip-dvd_drive.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_drive.o: dvd_drive.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_drive.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_drive.Tpo -c -o dvd_trip-dvd_drive.o `test -f 'dvd_drive.c' || echo '$(srcdir)/'`dvd_drive.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_drive.Tpo $(DEPDIR)/dvd_trip-dvd_drive.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_drive.c' object='dvd_trip-dvd_drive.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_drive.o `test -f 'dvd_drive.c' || echo '$(srcdir)/'`dvd_drive.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_drive.o `test -f 'dvd_drive.c' || echo '$(srcdir)/'`dvd_drive.c
 
-dvd_rip-dvd_drive.obj: dvd_drive.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_drive.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_drive.Tpo -c -o dvd_rip-dvd_drive.obj `if test -f 'dvd_drive.c'; then $(CYGPATH_W) 'dvd_drive.c'; else $(CYGPATH_W) '$(srcdir)/dvd_drive.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_drive.Tpo $(DEPDIR)/dvd_rip-dvd_drive.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_drive.c' object='dvd_rip-dvd_drive.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_drive.obj: dvd_drive.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_drive.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_drive.Tpo -c -o dvd_trip-dvd_drive.obj `if test -f 'dvd_drive.c'; then $(CYGPATH_W) 'dvd_drive.c'; else $(CYGPATH_W) '$(srcdir)/dvd_drive.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_drive.Tpo $(DEPDIR)/dvd_trip-dvd_drive.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_drive.c' object='dvd_trip-dvd_drive.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_drive.obj `if test -f 'dvd_drive.c'; then $(CYGPATH_W) 'dvd_drive.c'; else $(CYGPATH_W) '$(srcdir)/dvd_drive.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_drive.obj `if test -f 'dvd_drive.c'; then $(CYGPATH_W) 'dvd_drive.c'; else $(CYGPATH_W) '$(srcdir)/dvd_drive.c'; fi`
 
-dvd_rip-dvd_open.o: dvd_open.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_open.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_open.Tpo -c -o dvd_rip-dvd_open.o `test -f 'dvd_open.c' || echo '$(srcdir)/'`dvd_open.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_open.Tpo $(DEPDIR)/dvd_rip-dvd_open.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_open.c' object='dvd_rip-dvd_open.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_open.o: dvd_open.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_open.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_open.Tpo -c -o dvd_trip-dvd_open.o `test -f 'dvd_open.c' || echo '$(srcdir)/'`dvd_open.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_open.Tpo $(DEPDIR)/dvd_trip-dvd_open.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_open.c' object='dvd_trip-dvd_open.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_open.o `test -f 'dvd_open.c' || echo '$(srcdir)/'`dvd_open.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_open.o `test -f 'dvd_open.c' || echo '$(srcdir)/'`dvd_open.c
 
-dvd_rip-dvd_open.obj: dvd_open.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_open.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_open.Tpo -c -o dvd_rip-dvd_open.obj `if test -f 'dvd_open.c'; then $(CYGPATH_W) 'dvd_open.c'; else $(CYGPATH_W) '$(srcdir)/dvd_open.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_open.Tpo $(DEPDIR)/dvd_rip-dvd_open.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_open.c' object='dvd_rip-dvd_open.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_open.obj: dvd_open.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_open.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_open.Tpo -c -o dvd_trip-dvd_open.obj `if test -f 'dvd_open.c'; then $(CYGPATH_W) 'dvd_open.c'; else $(CYGPATH_W) '$(srcdir)/dvd_open.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_open.Tpo $(DEPDIR)/dvd_trip-dvd_open.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_open.c' object='dvd_trip-dvd_open.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_open.obj `if test -f 'dvd_open.c'; then $(CYGPATH_W) 'dvd_open.c'; else $(CYGPATH_W) '$(srcdir)/dvd_open.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_open.obj `if test -f 'dvd_open.c'; then $(CYGPATH_W) 'dvd_open.c'; else $(CYGPATH_W) '$(srcdir)/dvd_open.c'; fi`
 
-dvd_rip-dvd_vmg_ifo.o: dvd_vmg_ifo.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_vmg_ifo.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_vmg_ifo.Tpo -c -o dvd_rip-dvd_vmg_ifo.o `test -f 'dvd_vmg_ifo.c' || echo '$(srcdir)/'`dvd_vmg_ifo.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_vmg_ifo.Tpo $(DEPDIR)/dvd_rip-dvd_vmg_ifo.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_vmg_ifo.c' object='dvd_rip-dvd_vmg_ifo.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_vmg_ifo.o: dvd_vmg_ifo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_vmg_ifo.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_vmg_ifo.Tpo -c -o dvd_trip-dvd_vmg_ifo.o `test -f 'dvd_vmg_ifo.c' || echo '$(srcdir)/'`dvd_vmg_ifo.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_vmg_ifo.Tpo $(DEPDIR)/dvd_trip-dvd_vmg_ifo.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_vmg_ifo.c' object='dvd_trip-dvd_vmg_ifo.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_vmg_ifo.o `test -f 'dvd_vmg_ifo.c' || echo '$(srcdir)/'`dvd_vmg_ifo.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_vmg_ifo.o `test -f 'dvd_vmg_ifo.c' || echo '$(srcdir)/'`dvd_vmg_ifo.c
 
-dvd_rip-dvd_vmg_ifo.obj: dvd_vmg_ifo.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_vmg_ifo.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_vmg_ifo.Tpo -c -o dvd_rip-dvd_vmg_ifo.obj `if test -f 'dvd_vmg_ifo.c'; then $(CYGPATH_W) 'dvd_vmg_ifo.c'; else $(CYGPATH_W) '$(srcdir)/dvd_vmg_ifo.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_vmg_ifo.Tpo $(DEPDIR)/dvd_rip-dvd_vmg_ifo.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_vmg_ifo.c' object='dvd_rip-dvd_vmg_ifo.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_vmg_ifo.obj: dvd_vmg_ifo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_vmg_ifo.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_vmg_ifo.Tpo -c -o dvd_trip-dvd_vmg_ifo.obj `if test -f 'dvd_vmg_ifo.c'; then $(CYGPATH_W) 'dvd_vmg_ifo.c'; else $(CYGPATH_W) '$(srcdir)/dvd_vmg_ifo.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_vmg_ifo.Tpo $(DEPDIR)/dvd_trip-dvd_vmg_ifo.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_vmg_ifo.c' object='dvd_trip-dvd_vmg_ifo.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_vmg_ifo.obj `if test -f 'dvd_vmg_ifo.c'; then $(CYGPATH_W) 'dvd_vmg_ifo.c'; else $(CYGPATH_W) '$(srcdir)/dvd_vmg_ifo.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_vmg_ifo.obj `if test -f 'dvd_vmg_ifo.c'; then $(CYGPATH_W) 'dvd_vmg_ifo.c'; else $(CYGPATH_W) '$(srcdir)/dvd_vmg_ifo.c'; fi`
 
-dvd_rip-dvd_track.o: dvd_track.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_track.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_track.Tpo -c -o dvd_rip-dvd_track.o `test -f 'dvd_track.c' || echo '$(srcdir)/'`dvd_track.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_track.Tpo $(DEPDIR)/dvd_rip-dvd_track.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_track.c' object='dvd_rip-dvd_track.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_track.o: dvd_track.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_track.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_track.Tpo -c -o dvd_trip-dvd_track.o `test -f 'dvd_track.c' || echo '$(srcdir)/'`dvd_track.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_track.Tpo $(DEPDIR)/dvd_trip-dvd_track.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_track.c' object='dvd_trip-dvd_track.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_track.o `test -f 'dvd_track.c' || echo '$(srcdir)/'`dvd_track.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_track.o `test -f 'dvd_track.c' || echo '$(srcdir)/'`dvd_track.c
 
-dvd_rip-dvd_track.obj: dvd_track.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_track.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_track.Tpo -c -o dvd_rip-dvd_track.obj `if test -f 'dvd_track.c'; then $(CYGPATH_W) 'dvd_track.c'; else $(CYGPATH_W) '$(srcdir)/dvd_track.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_track.Tpo $(DEPDIR)/dvd_rip-dvd_track.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_track.c' object='dvd_rip-dvd_track.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_track.obj: dvd_track.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_track.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_track.Tpo -c -o dvd_trip-dvd_track.obj `if test -f 'dvd_track.c'; then $(CYGPATH_W) 'dvd_track.c'; else $(CYGPATH_W) '$(srcdir)/dvd_track.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_track.Tpo $(DEPDIR)/dvd_trip-dvd_track.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_track.c' object='dvd_trip-dvd_track.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_track.obj `if test -f 'dvd_track.c'; then $(CYGPATH_W) 'dvd_track.c'; else $(CYGPATH_W) '$(srcdir)/dvd_track.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_track.obj `if test -f 'dvd_track.c'; then $(CYGPATH_W) 'dvd_track.c'; else $(CYGPATH_W) '$(srcdir)/dvd_track.c'; fi`
 
-dvd_rip-dvd_cell.o: dvd_cell.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_cell.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_cell.Tpo -c -o dvd_rip-dvd_cell.o `test -f 'dvd_cell.c' || echo '$(srcdir)/'`dvd_cell.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_cell.Tpo $(DEPDIR)/dvd_rip-dvd_cell.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_cell.c' object='dvd_rip-dvd_cell.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_cell.o: dvd_cell.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_cell.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_cell.Tpo -c -o dvd_trip-dvd_cell.o `test -f 'dvd_cell.c' || echo '$(srcdir)/'`dvd_cell.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_cell.Tpo $(DEPDIR)/dvd_trip-dvd_cell.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_cell.c' object='dvd_trip-dvd_cell.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_cell.o `test -f 'dvd_cell.c' || echo '$(srcdir)/'`dvd_cell.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_cell.o `test -f 'dvd_cell.c' || echo '$(srcdir)/'`dvd_cell.c
 
-dvd_rip-dvd_cell.obj: dvd_cell.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_cell.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_cell.Tpo -c -o dvd_rip-dvd_cell.obj `if test -f 'dvd_cell.c'; then $(CYGPATH_W) 'dvd_cell.c'; else $(CYGPATH_W) '$(srcdir)/dvd_cell.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_cell.Tpo $(DEPDIR)/dvd_rip-dvd_cell.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_cell.c' object='dvd_rip-dvd_cell.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_cell.obj: dvd_cell.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_cell.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_cell.Tpo -c -o dvd_trip-dvd_cell.obj `if test -f 'dvd_cell.c'; then $(CYGPATH_W) 'dvd_cell.c'; else $(CYGPATH_W) '$(srcdir)/dvd_cell.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_cell.Tpo $(DEPDIR)/dvd_trip-dvd_cell.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_cell.c' object='dvd_trip-dvd_cell.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_cell.obj `if test -f 'dvd_cell.c'; then $(CYGPATH_W) 'dvd_cell.c'; else $(CYGPATH_W) '$(srcdir)/dvd_cell.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_cell.obj `if test -f 'dvd_cell.c'; then $(CYGPATH_W) 'dvd_cell.c'; else $(CYGPATH_W) '$(srcdir)/dvd_cell.c'; fi`
 
-dvd_rip-dvd_vts.o: dvd_vts.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_vts.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_vts.Tpo -c -o dvd_rip-dvd_vts.o `test -f 'dvd_vts.c' || echo '$(srcdir)/'`dvd_vts.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_vts.Tpo $(DEPDIR)/dvd_rip-dvd_vts.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_vts.c' object='dvd_rip-dvd_vts.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_vts.o: dvd_vts.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_vts.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_vts.Tpo -c -o dvd_trip-dvd_vts.o `test -f 'dvd_vts.c' || echo '$(srcdir)/'`dvd_vts.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_vts.Tpo $(DEPDIR)/dvd_trip-dvd_vts.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_vts.c' object='dvd_trip-dvd_vts.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_vts.o `test -f 'dvd_vts.c' || echo '$(srcdir)/'`dvd_vts.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_vts.o `test -f 'dvd_vts.c' || echo '$(srcdir)/'`dvd_vts.c
 
-dvd_rip-dvd_vts.obj: dvd_vts.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_vts.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_vts.Tpo -c -o dvd_rip-dvd_vts.obj `if test -f 'dvd_vts.c'; then $(CYGPATH_W) 'dvd_vts.c'; else $(CYGPATH_W) '$(srcdir)/dvd_vts.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_vts.Tpo $(DEPDIR)/dvd_rip-dvd_vts.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_vts.c' object='dvd_rip-dvd_vts.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_vts.obj: dvd_vts.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_vts.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_vts.Tpo -c -o dvd_trip-dvd_vts.obj `if test -f 'dvd_vts.c'; then $(CYGPATH_W) 'dvd_vts.c'; else $(CYGPATH_W) '$(srcdir)/dvd_vts.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_vts.Tpo $(DEPDIR)/dvd_trip-dvd_vts.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_vts.c' object='dvd_trip-dvd_vts.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_vts.obj `if test -f 'dvd_vts.c'; then $(CYGPATH_W) 'dvd_vts.c'; else $(CYGPATH_W) '$(srcdir)/dvd_vts.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_vts.obj `if test -f 'dvd_vts.c'; then $(CYGPATH_W) 'dvd_vts.c'; else $(CYGPATH_W) '$(srcdir)/dvd_vts.c'; fi`
 
-dvd_rip-dvd_vob.o: dvd_vob.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_vob.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_vob.Tpo -c -o dvd_rip-dvd_vob.o `test -f 'dvd_vob.c' || echo '$(srcdir)/'`dvd_vob.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_vob.Tpo $(DEPDIR)/dvd_rip-dvd_vob.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_vob.c' object='dvd_rip-dvd_vob.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_vob.o: dvd_vob.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_vob.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_vob.Tpo -c -o dvd_trip-dvd_vob.o `test -f 'dvd_vob.c' || echo '$(srcdir)/'`dvd_vob.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_vob.Tpo $(DEPDIR)/dvd_trip-dvd_vob.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_vob.c' object='dvd_trip-dvd_vob.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_vob.o `test -f 'dvd_vob.c' || echo '$(srcdir)/'`dvd_vob.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_vob.o `test -f 'dvd_vob.c' || echo '$(srcdir)/'`dvd_vob.c
 
-dvd_rip-dvd_vob.obj: dvd_vob.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_vob.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_vob.Tpo -c -o dvd_rip-dvd_vob.obj `if test -f 'dvd_vob.c'; then $(CYGPATH_W) 'dvd_vob.c'; else $(CYGPATH_W) '$(srcdir)/dvd_vob.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_vob.Tpo $(DEPDIR)/dvd_rip-dvd_vob.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_vob.c' object='dvd_rip-dvd_vob.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_vob.obj: dvd_vob.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_vob.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_vob.Tpo -c -o dvd_trip-dvd_vob.obj `if test -f 'dvd_vob.c'; then $(CYGPATH_W) 'dvd_vob.c'; else $(CYGPATH_W) '$(srcdir)/dvd_vob.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_vob.Tpo $(DEPDIR)/dvd_trip-dvd_vob.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_vob.c' object='dvd_trip-dvd_vob.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_vob.obj `if test -f 'dvd_vob.c'; then $(CYGPATH_W) 'dvd_vob.c'; else $(CYGPATH_W) '$(srcdir)/dvd_vob.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_vob.obj `if test -f 'dvd_vob.c'; then $(CYGPATH_W) 'dvd_vob.c'; else $(CYGPATH_W) '$(srcdir)/dvd_vob.c'; fi`
 
-dvd_rip-dvd_audio.o: dvd_audio.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_audio.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_audio.Tpo -c -o dvd_rip-dvd_audio.o `test -f 'dvd_audio.c' || echo '$(srcdir)/'`dvd_audio.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_audio.Tpo $(DEPDIR)/dvd_rip-dvd_audio.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_audio.c' object='dvd_rip-dvd_audio.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_audio.o: dvd_audio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_audio.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_audio.Tpo -c -o dvd_trip-dvd_audio.o `test -f 'dvd_audio.c' || echo '$(srcdir)/'`dvd_audio.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_audio.Tpo $(DEPDIR)/dvd_trip-dvd_audio.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_audio.c' object='dvd_trip-dvd_audio.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_audio.o `test -f 'dvd_audio.c' || echo '$(srcdir)/'`dvd_audio.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_audio.o `test -f 'dvd_audio.c' || echo '$(srcdir)/'`dvd_audio.c
 
-dvd_rip-dvd_audio.obj: dvd_audio.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_audio.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_audio.Tpo -c -o dvd_rip-dvd_audio.obj `if test -f 'dvd_audio.c'; then $(CYGPATH_W) 'dvd_audio.c'; else $(CYGPATH_W) '$(srcdir)/dvd_audio.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_audio.Tpo $(DEPDIR)/dvd_rip-dvd_audio.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_audio.c' object='dvd_rip-dvd_audio.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_audio.obj: dvd_audio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_audio.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_audio.Tpo -c -o dvd_trip-dvd_audio.obj `if test -f 'dvd_audio.c'; then $(CYGPATH_W) 'dvd_audio.c'; else $(CYGPATH_W) '$(srcdir)/dvd_audio.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_audio.Tpo $(DEPDIR)/dvd_trip-dvd_audio.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_audio.c' object='dvd_trip-dvd_audio.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_audio.obj `if test -f 'dvd_audio.c'; then $(CYGPATH_W) 'dvd_audio.c'; else $(CYGPATH_W) '$(srcdir)/dvd_audio.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_audio.obj `if test -f 'dvd_audio.c'; then $(CYGPATH_W) 'dvd_audio.c'; else $(CYGPATH_W) '$(srcdir)/dvd_audio.c'; fi`
 
-dvd_rip-dvd_subtitles.o: dvd_subtitles.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_subtitles.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_subtitles.Tpo -c -o dvd_rip-dvd_subtitles.o `test -f 'dvd_subtitles.c' || echo '$(srcdir)/'`dvd_subtitles.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_subtitles.Tpo $(DEPDIR)/dvd_rip-dvd_subtitles.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_subtitles.c' object='dvd_rip-dvd_subtitles.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_subtitles.o: dvd_subtitles.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_subtitles.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_subtitles.Tpo -c -o dvd_trip-dvd_subtitles.o `test -f 'dvd_subtitles.c' || echo '$(srcdir)/'`dvd_subtitles.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_subtitles.Tpo $(DEPDIR)/dvd_trip-dvd_subtitles.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_subtitles.c' object='dvd_trip-dvd_subtitles.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_subtitles.o `test -f 'dvd_subtitles.c' || echo '$(srcdir)/'`dvd_subtitles.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_subtitles.o `test -f 'dvd_subtitles.c' || echo '$(srcdir)/'`dvd_subtitles.c
 
-dvd_rip-dvd_subtitles.obj: dvd_subtitles.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_subtitles.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_subtitles.Tpo -c -o dvd_rip-dvd_subtitles.obj `if test -f 'dvd_subtitles.c'; then $(CYGPATH_W) 'dvd_subtitles.c'; else $(CYGPATH_W) '$(srcdir)/dvd_subtitles.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_subtitles.Tpo $(DEPDIR)/dvd_rip-dvd_subtitles.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_subtitles.c' object='dvd_rip-dvd_subtitles.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_subtitles.obj: dvd_subtitles.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_subtitles.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_subtitles.Tpo -c -o dvd_trip-dvd_subtitles.obj `if test -f 'dvd_subtitles.c'; then $(CYGPATH_W) 'dvd_subtitles.c'; else $(CYGPATH_W) '$(srcdir)/dvd_subtitles.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_subtitles.Tpo $(DEPDIR)/dvd_trip-dvd_subtitles.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_subtitles.c' object='dvd_trip-dvd_subtitles.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_subtitles.obj `if test -f 'dvd_subtitles.c'; then $(CYGPATH_W) 'dvd_subtitles.c'; else $(CYGPATH_W) '$(srcdir)/dvd_subtitles.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_subtitles.obj `if test -f 'dvd_subtitles.c'; then $(CYGPATH_W) 'dvd_subtitles.c'; else $(CYGPATH_W) '$(srcdir)/dvd_subtitles.c'; fi`
 
-dvd_rip-dvd_time.o: dvd_time.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_time.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_time.Tpo -c -o dvd_rip-dvd_time.o `test -f 'dvd_time.c' || echo '$(srcdir)/'`dvd_time.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_time.Tpo $(DEPDIR)/dvd_rip-dvd_time.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_time.c' object='dvd_rip-dvd_time.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_time.o: dvd_time.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_time.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_time.Tpo -c -o dvd_trip-dvd_time.o `test -f 'dvd_time.c' || echo '$(srcdir)/'`dvd_time.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_time.Tpo $(DEPDIR)/dvd_trip-dvd_time.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_time.c' object='dvd_trip-dvd_time.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_time.o `test -f 'dvd_time.c' || echo '$(srcdir)/'`dvd_time.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_time.o `test -f 'dvd_time.c' || echo '$(srcdir)/'`dvd_time.c
 
-dvd_rip-dvd_time.obj: dvd_time.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_time.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_time.Tpo -c -o dvd_rip-dvd_time.obj `if test -f 'dvd_time.c'; then $(CYGPATH_W) 'dvd_time.c'; else $(CYGPATH_W) '$(srcdir)/dvd_time.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_time.Tpo $(DEPDIR)/dvd_rip-dvd_time.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_time.c' object='dvd_rip-dvd_time.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_time.obj: dvd_time.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_time.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_time.Tpo -c -o dvd_trip-dvd_time.obj `if test -f 'dvd_time.c'; then $(CYGPATH_W) 'dvd_time.c'; else $(CYGPATH_W) '$(srcdir)/dvd_time.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_time.Tpo $(DEPDIR)/dvd_trip-dvd_time.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_time.c' object='dvd_trip-dvd_time.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_time.obj `if test -f 'dvd_time.c'; then $(CYGPATH_W) 'dvd_time.c'; else $(CYGPATH_W) '$(srcdir)/dvd_time.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_time.obj `if test -f 'dvd_time.c'; then $(CYGPATH_W) 'dvd_time.c'; else $(CYGPATH_W) '$(srcdir)/dvd_time.c'; fi`
 
-dvd_rip-dvd_chapter.o: dvd_chapter.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_chapter.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_chapter.Tpo -c -o dvd_rip-dvd_chapter.o `test -f 'dvd_chapter.c' || echo '$(srcdir)/'`dvd_chapter.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_chapter.Tpo $(DEPDIR)/dvd_rip-dvd_chapter.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_chapter.c' object='dvd_rip-dvd_chapter.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_chapter.o: dvd_chapter.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_chapter.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_chapter.Tpo -c -o dvd_trip-dvd_chapter.o `test -f 'dvd_chapter.c' || echo '$(srcdir)/'`dvd_chapter.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_chapter.Tpo $(DEPDIR)/dvd_trip-dvd_chapter.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_chapter.c' object='dvd_trip-dvd_chapter.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_chapter.o `test -f 'dvd_chapter.c' || echo '$(srcdir)/'`dvd_chapter.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_chapter.o `test -f 'dvd_chapter.c' || echo '$(srcdir)/'`dvd_chapter.c
 
-dvd_rip-dvd_chapter.obj: dvd_chapter.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_chapter.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_chapter.Tpo -c -o dvd_rip-dvd_chapter.obj `if test -f 'dvd_chapter.c'; then $(CYGPATH_W) 'dvd_chapter.c'; else $(CYGPATH_W) '$(srcdir)/dvd_chapter.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_chapter.Tpo $(DEPDIR)/dvd_rip-dvd_chapter.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_chapter.c' object='dvd_rip-dvd_chapter.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_chapter.obj: dvd_chapter.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_chapter.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_chapter.Tpo -c -o dvd_trip-dvd_chapter.obj `if test -f 'dvd_chapter.c'; then $(CYGPATH_W) 'dvd_chapter.c'; else $(CYGPATH_W) '$(srcdir)/dvd_chapter.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_chapter.Tpo $(DEPDIR)/dvd_trip-dvd_chapter.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_chapter.c' object='dvd_trip-dvd_chapter.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_chapter.obj `if test -f 'dvd_chapter.c'; then $(CYGPATH_W) 'dvd_chapter.c'; else $(CYGPATH_W) '$(srcdir)/dvd_chapter.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_chapter.obj `if test -f 'dvd_chapter.c'; then $(CYGPATH_W) 'dvd_chapter.c'; else $(CYGPATH_W) '$(srcdir)/dvd_chapter.c'; fi`
 
-dvd_rip-dvd_video.o: dvd_video.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_video.o -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_video.Tpo -c -o dvd_rip-dvd_video.o `test -f 'dvd_video.c' || echo '$(srcdir)/'`dvd_video.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_video.Tpo $(DEPDIR)/dvd_rip-dvd_video.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_video.c' object='dvd_rip-dvd_video.o' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_video.o: dvd_video.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_video.o -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_video.Tpo -c -o dvd_trip-dvd_video.o `test -f 'dvd_video.c' || echo '$(srcdir)/'`dvd_video.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_video.Tpo $(DEPDIR)/dvd_trip-dvd_video.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_video.c' object='dvd_trip-dvd_video.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_video.o `test -f 'dvd_video.c' || echo '$(srcdir)/'`dvd_video.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_video.o `test -f 'dvd_video.c' || echo '$(srcdir)/'`dvd_video.c
 
-dvd_rip-dvd_video.obj: dvd_video.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -MT dvd_rip-dvd_video.obj -MD -MP -MF $(DEPDIR)/dvd_rip-dvd_video.Tpo -c -o dvd_rip-dvd_video.obj `if test -f 'dvd_video.c'; then $(CYGPATH_W) 'dvd_video.c'; else $(CYGPATH_W) '$(srcdir)/dvd_video.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_rip-dvd_video.Tpo $(DEPDIR)/dvd_rip-dvd_video.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_video.c' object='dvd_rip-dvd_video.obj' libtool=no @AMDEPBACKSLASH@
+dvd_trip-dvd_video.obj: dvd_video.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -MT dvd_trip-dvd_video.obj -MD -MP -MF $(DEPDIR)/dvd_trip-dvd_video.Tpo -c -o dvd_trip-dvd_video.obj `if test -f 'dvd_video.c'; then $(CYGPATH_W) 'dvd_video.c'; else $(CYGPATH_W) '$(srcdir)/dvd_video.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dvd_trip-dvd_video.Tpo $(DEPDIR)/dvd_trip-dvd_video.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dvd_video.c' object='dvd_trip-dvd_video.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_rip_CFLAGS) $(CFLAGS) -c -o dvd_rip-dvd_video.obj `if test -f 'dvd_video.c'; then $(CYGPATH_W) 'dvd_video.c'; else $(CYGPATH_W) '$(srcdir)/dvd_video.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dvd_trip_CFLAGS) $(CFLAGS) -c -o dvd_trip-dvd_video.obj `if test -f 'dvd_video.c'; then $(CYGPATH_W) 'dvd_video.c'; else $(CYGPATH_W) '$(srcdir)/dvd_video.c'; fi`
 install-man1: $(man1_MANS)
 	@$(NORMAL_INSTALL)
 	@list1='$(man1_MANS)'; \
@@ -1895,19 +1897,19 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/dvd_player-dvd_video.Po
 	-rm -f ./$(DEPDIR)/dvd_player-dvd_vmg_ifo.Po
 	-rm -f ./$(DEPDIR)/dvd_player-dvd_vts.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_audio.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_cell.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_chapter.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_drive.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_open.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_rip.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_subtitles.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_time.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_track.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_video.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_vmg_ifo.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_vob.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_vts.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_audio.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_cell.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_chapter.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_drive.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_open.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_subtitles.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_time.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_track.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_trip.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_video.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_vmg_ifo.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_vob.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_vts.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-tags
@@ -2002,19 +2004,19 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/dvd_player-dvd_video.Po
 	-rm -f ./$(DEPDIR)/dvd_player-dvd_vmg_ifo.Po
 	-rm -f ./$(DEPDIR)/dvd_player-dvd_vts.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_audio.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_cell.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_chapter.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_drive.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_open.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_rip.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_subtitles.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_time.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_track.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_video.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_vmg_ifo.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_vob.Po
-	-rm -f ./$(DEPDIR)/dvd_rip-dvd_vts.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_audio.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_cell.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_chapter.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_drive.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_open.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_subtitles.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_time.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_track.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_trip.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_video.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_vmg_ifo.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_vob.Po
+	-rm -f ./$(DEPDIR)/dvd_trip-dvd_vts.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

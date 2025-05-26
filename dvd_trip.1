@@ -2,12 +2,12 @@
 .\"     Title: dvd_rip
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.20
-.\"      Date: 2025-04-13
+.\"      Date: 2025-05-26
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_RIP" "1" "2025-04-13" "\ \&" "\ \&"
+.TH "DVD_TRIP" "1" "2025-05-26" "\ \&" "\ \&"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -28,22 +28,22 @@
 .  LINKSTYLE blue R < >
 .\}
 .SH "NAME"
-dvd_rip \- a tiny DVD ripper using libmpv as backend
+dvd_trip \- a tiny DVD ripper using libmpv as backend
 .SH "SYNOPSIS"
 .sp
-\fBdvd_rip\fP [\fIPATH\fP] [\fIOPTIONS\fP]
+\fBdvd_trip\fP [\fIPATH\fP] [\fIOPTIONS\fP]
 .SH "DESCRIPTION"
 .sp
 A tiny DVD ripper that has a small set of options for encoding.
 .sp
-Options and switches can be set in ~/.config/dvd_rip/mpv.conf. See the mpv
+Options and switches can be set in ~/.config/dvd_trip/mpv.conf. See the mpv
 documentation for details.
 .sp
-By default, dvd_rip will encode source to H.264 video with AAC audio in an
+By default, dvd_trip will encode source to H.264 video with AAC audio in an
 MP4 container. If an output filename is given with a different extension,
 it will use the default settings for those instead. In each case, the default
 presets are used as selected by the codecs as well. Note that mpv must already
-be built with support for these codecs, or dvd_rip will quit.
+be built with support for these codecs, or dvd_trip will quit.
 .sp
 .if n .RS 4
 .nf
@@ -120,17 +120,17 @@ Display help output.
 dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1)
 .SH "BUGS"
 .sp
-\fBdvd_rip\fP sometimes breaks on tracks that libdvdnav moves around on, and so
+\fBdvd_trip\fP sometimes breaks on tracks that libdvdnav moves around on, and so
 it can be unpredictable, or encode past a track\(cqs actual length.
 .sp
-\fBdvd_rip\fP does not wait for an optical device to be ready. Wait for it to
+\fBdvd_trip\fP does not wait for an optical device to be ready. Wait for it to
 finish "polling" before running the program.
 .sp
 Please file bugs at \c
 .URL "https://github.com/beandog/dvd_info/issues" "" ""
 .SH "AUTHOR"
 .sp
-dvd_player was written by Steve Dibb \c
+dvd_trip was written by Steve Dibb \c
 .MTO "steve.dibb\(atgmail.com" "" ""
 .SH "RESOURCES"
 .sp
