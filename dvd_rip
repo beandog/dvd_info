@@ -286,7 +286,7 @@ ffmpeg_opts="$ffmpeg_opts -acodec $acodec"
 
 # Map all subtitle streams - ffmpeg doesn't recognize language from piped input
 if [[ "$subtitles" == "yes" ]]; then
-	ffmpeg_opts="$ffmpeg_opts -map s"
+	ffmpeg_opts="$ffmpeg_opts -map s?"
 	ffmpeg_opts="$ffmpeg_opts -scodec copy"
 fi
 
