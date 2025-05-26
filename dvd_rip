@@ -27,25 +27,25 @@ has_vp9=0
 ffmpeg_codecs=$(ffmpeg -hide_banner -codecs 2> /dev/null)
 
 # Check for libx264
-echo $ffmpeg_codecs | grep x264 | wc -l > /dev/null
+echo $ffmpeg_codecs | grep x264 > /dev/null
 if [[ $? -eq 0 ]]; then
 	has_x264=1
 fi
 
 # Check for libx265
-echo $ffmpeg_codecs | grep x265 | wc -l > /dev/null
+echo $ffmpeg_codecs | grep x265 > /dev/null
 if [[ $? -eq 0 ]]; then
 	has_x265=1
 fi
 
 # Check for libvpx
-echo $ffmpeg_codecs | grep vp8 | wc -l > /dev/null
+echo $ffmpeg_codecs | grep vp8 > /dev/null
 if [[ $? -eq 0 ]]; then
 	has_vp8=1
 fi
 
 # check for libvpx-vp9
-echo $ffmpeg_codecs | grep vp9 | wc -l > /dev/null
+echo $ffmpeg_codecs | grep vp9 > /dev/null
 if [[ $? -eq 0 ]]; then
 	has_vp9=1
 fi
@@ -69,25 +69,25 @@ has_opus=0
 has_vorbis=0
 
 # Prefer FDK AAC over native
-echo $ffmpeg_codecs | grep fdk_aac | wc -l > /dev/null
+echo $ffmpeg_codecs | grep fdk_aac > /dev/null
 if [[ $? -eq 0 ]]; then
 	has_fdk_aac=1
 fi
 
 # Check for native AAC
-echo $ffmpeg_codecs | grep aac | wc -l > /dev/null
+echo $ffmpeg_codecs | grep aac > /dev/null
 if [[ $? -eq 0 ]]; then
 	has_aac=1
 fi
 
 # Check for libopus (native opus needs experimental flag, so not checking)
-echo $ffmpeg_codecs | grep libopus | wc -l > /dev/null
+echo $ffmpeg_codecs | grep libopus > /dev/null
 if [[ $? -eq 0 ]]; then
 	has_opus=1
 fi
 
 # Check for libvorbis
-echo $ffmpeg_codecs | grep libvorbis | wc -l > /dev/null
+echo $ffmpeg_codecs | grep libvorbis > /dev/null
 if [[ $? -eq 0 ]]; then
 	has_vorbis=1
 fi
