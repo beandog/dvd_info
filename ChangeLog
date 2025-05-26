@@ -8,13 +8,14 @@
 * dvd_info: Add options for verbose and debugging output to display any errors
   from libdvdread
 * Support FreeBSD 14.1 - see https://github.com/beandog/dvd_info/wiki
-* Move dvd_rip to dvd_trip
+* Rename original dvd_rip which uses libmpv to dvd_trip
 * dvd_trip: Set video codec to x264 by default when using Matroska
 * dvd_trip: Set default audio codec to AAC, container to MP4
 * dvd_trip: Use native ffmpeg AAC audio encoder
 * dvd_trip: Add --start and --stop options
 * dvd_trip: Fix setting faststart on mp4s
 * dvd_trip: Encode same number of channels as source
+* Add new dvd_rip program that uses ffmpeg to rip
 * dvd_backup: Fix -i / --ifos to not copy VOBs, and always overwrite existing
   backup files
 * dvd_player: fix playing at starting chapter (and range)

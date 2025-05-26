@@ -42,3 +42,5 @@ dvd_trip_SOURCES = dvd_trip.c dvd_drive.c dvd_open.c dvd_vmg_ifo.c dvd_track.c d
 dvd_trip_CFLAGS = $(DVDREAD_CFLAGS) $(MPV_CFLAGS)
 dvd_trip_LDADD = -lm $(DVDREAD_LIBS) $(MPV_LIBS)
 endif
+
+bin_SCRIPTS = dvd_rip

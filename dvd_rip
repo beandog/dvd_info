@@ -1,0 +1,326 @@
+#!/bin/bash
+
+# --- Pre-flight instructions
+
+# Check for ffmpeg
+which ffmpeg &> /dev/null
+if [[ $? -ne 0 ]]; then
+	echo "ffmpeg is not installed"
+	exit 1
+fi
+
+# Check for dvd_copy which is needed to export the stream
+which dvd_copy &> /dev/null
+if [[ $? -ne 0 ]]; then
+	echo "dvd_copy is not installed"
+	exit 1
+fi
+
+# --- Get ffmpeg video codecs
+
+has_x264=0
+has_x265=0
+has_vp8=0
+has_vp9=0
+
+# Get all the codecs that ffmpeg supports
+ffmpeg_codecs=$(ffmpeg -hide_banner -codecs 2> /dev/null)
+
+# Check for libx264
+echo $ffmpeg_codecs | grep x264 | wc -l > /dev/null
+if [[ $? -eq 0 ]]; then
+	has_x264=1
+fi
+
+# Check for libx265
+echo $ffmpeg_codecs | grep x265 | wc -l > /dev/null
+if [[ $? -eq 0 ]]; then
+	has_x265=1
+fi
+
+# Check for libvpx
+echo $ffmpeg_codecs | grep vp8 | wc -l > /dev/null
+if [[ $? -eq 0 ]]; then
+	has_vp8=1
+fi
+
+# check for libvpx-vp9
+echo $ffmpeg_codecs | grep vp9 | wc -l > /dev/null
+if [[ $? -eq 0 ]]; then
+	has_vp9=1
+fi
+
+# Set default video codec
+if [[ $has_x264 -eq 1 ]]; then
+	default_vcodec=x264
+elif [[ $has_x265 -eq 1 ]]; then
+	default_vcodec=x265
+elif [[ $has_vp8 -eq 1 ]]; then
+	default_vcodec=vp8
+elif [[ $has_vp9 -eq 1 ]]; then
+	default_vcodec=vp9
+fi
+
+# --- Get ffmpeg audio codecs
+
+has_fdk_aac=0
+has_aac=0
+has_opus=0
+has_vorbis=0
+
+# Prefer FDK AAC over native
+echo $ffmpeg_codecs | grep fdk_aac | wc -l > /dev/null
+if [[ $? -eq 0 ]]; then
+	has_fdk_aac=1
+fi
+
+# Check for native AAC
+echo $ffmpeg_codecs | grep aac | wc -l > /dev/null
+if [[ $? -eq 0 ]]; then
+	has_aac=1
+fi
+
+# Check for libopus (native opus needs experimental flag, so not checking)
+echo $ffmpeg_codecs | grep libopus | wc -l > /dev/null
+if [[ $? -eq 0 ]]; then
+	has_opus=1
+fi
+
+# Check for either libvorbis or native vorbis
+echo $ffmpeg_codecs | grep vorbis | wc -l > /dev/null
+if [[ $? -eq 0 ]]; then
+	has_vorbis=1
+fi
+
+if [[ $has_fdk_aac -eq 1 ]]; then
+	default_acodec=libfdk_aac
+	display_acodec=aac
+elif [[ $has_aac -eq 1 ]]; then
+	default_acodec=aac
+	display_acodec=aac
+elif [[ $has_opus -eq 1 ]]; then
+	default_acodec=libopus
+	display_acodec=opus
+elif [[ $has_vorbis -eq 1 ]]; then
+	default_acodec=vorbis
+	display_acodec=vorbis
+fi
+
+function display_help {
+
+	binary=$(basename "$0")
+
+	echo "dvd_rip - a tiny DVD ripper using ffmpeg"
+	echo
+	echo "Usage:"
+	echo "  $binary [options]"
+	echo
+	echo "  -i <filename>           Input source - can be device, directory, or file [/dev/sr0]"
+	echo "  -o <filename>           Save to filename [dvd_rip.mp4]"
+	echo "  -t <#>                  Rip selected track [longest]"
+	echo "  -c <#[-#]>              Rip chapter number(s) [all]"
+	echo
+	echo "Encoding options:"
+	echo
+	echo "  -v <x264|x265|vp8|vp9>  Video codec [$default_vcodec]"
+	echo "  -q <#>                  Video quality CRF [ffmpeg default]"
+	echo "  -d <yes|no>             Deinterlace video [yes]"
+	echo "  -a <aac|opus|vorbis>    Audio codec [$display_acodec]"
+	echo "  -s <yes|no>             Copy subtitles [yes]"
+	echo
+	echo "Other options:"
+	echo "  -n                      Dry run: only show commands to run"
+	echo "  -r                      Run ffprobe only to display stream details"
+	echo "  -n                      Don't ask to ovewrite existing output file"
+	echo "  -z                      Display verbose output"
+	echo
+	echo "See 'man dvd_rip' for more information."
+
+}
+
+if [[ $1 == "--help" ]]; then
+	display_help
+	exit
+fi
+
+# --- DVD_RIP
+
+input_filename=""
+output_filename="dvd_rip.mp4"
+dvd_track=""
+dvd_chapters=""
+vcodec="libx264"
+acodec="aac"
+subtitles="yes"
+loglevel="info"
+dry_run="no"
+ffprobe="no"
+write_filename="yes"
+verbose="no"
+
+# --- GET OPTIONS
+
+optstring="hi:o:t:c:v:q:a:s:nryz"
+
+while getopts $optstring name; do
+
+	case $name in
+		h)
+			display_help
+			exit;;
+
+		i)
+			input_filename="$OPTARG";;
+
+		o)
+			output_filename="$OPTARG";;
+
+		t)
+			dvd_track="$OPTARG";;
+
+		c)
+			dvd_chapters="$OPTARG";;
+
+		v)
+			vcodec="$OPTARG";;
+
+		q)
+			crf="$OPTARG";;
+
+		a)
+			acodec="$OPTARG";;
+
+		s)
+			subtitles="$OPTARG";;
+
+		n)
+			dry_run="yes";;
+
+		r)
+			ffprobe="yes";;
+
+		y)
+			write_filename="yes";;
+
+		z)
+			verbose="yes";;
+
+		?)
+			display_help
+			exit;;
+
+	esac
+
+done
+
+# --- DVD_COPY
+
+dvd_copy_opts="-o -"
+if [[ -n "$input_filename" ]]; then
+	if [[ ! -e "$input_filename" ]]; then
+		echo "dvd_rip: cannot find filename '$input_filename'"
+		exit 1
+	fi
+	dvd_copy_opts="$dvd_copy_opts $input_filename"
+fi
+
+if [[ "$dvd_track" -gt 0 ]] && [[ "$dvd_track" -lt 100 ]]; then
+	dvd_copy_opts="$dvd_copy_opts -t $dvd_track"
+fi
+
+if [[ -n "$dvd_chapters" ]]; then
+	dvd_copy_opts="$dvd_copy_opts -c $dvd_chapters"
+fi
+
+# --- FFMPEG
+
+# Set codec names based on input
+if [[ "$vcodec" == "x264" ]]; then
+	vcodec="libx264"
+fi
+if [[ "$vcodec" == "x265" ]]; then
+	vcodec="libx265"
+fi
+if [[ "$vcodec" == "vp8" ]]; then
+	vcodec="libvpx"
+fi
+if [[ "$vcodec" == "vp9" ]]; then
+	vcodec="libvpx-vp9"
+fi
+if [[ "$acodec" == "aac" ]] && [[ "$has_fdk_aac" -eq 1 ]]; then
+	acodec="libfdk_aac"
+fi
+if [[ "$acodec" == "aac" ]] && [[ "$has_aac" -eq 1 ]]; then
+	acodec="aac"
+fi
+if [[ "$acodec" == "opus" ]] && [[ "$has_opus" ]]; then
+	acodec="libopus"
+fi
+
+if [[ "$verbose" == "yes" ]]; then
+	ffmpeg_opts="-loglevel verbose"
+else
+	ffmpeg_opts="-hide_banner"
+fi
+
+# Generate missing PTS - required for DVD streams piped to output
+ffmpeg_opts="$ffmpeg_opts -fflags +genpts"
+
+# Read input from stdout sent by dvd_copy
+ffmpeg_opts="$ffmpeg_opts -i -"
+
+# Encode video
+ffmpeg_opts="$ffmpeg_opts -map v"
+ffmpeg_opts="$ffmpeg_opts -vcodec $vcodec"
+if [[ -n "$crf" ]] && [[ "$crf" -gt 0 ]]; then
+	ffmpeg_opts="$ffmpeg_opts -crf $crf"
+fi
+
+# Always deinterlace video using bob weaver filter
+# https://ffmpeg.org/ffmpeg-filters.html#bwdif-1
+ffmpeg_opts="$ffmpeg_opts -vf bwdif"
+
+# Map all audio streams - ffmpeg doesn't recognize language from piped input
+ffmpeg_opts="$ffmpeg_opts -map a"
+ffmpeg_opts="$ffmpeg_opts -acodec $acodec"
+
+# Map all subtitle streams - ffmpeg doesn't recognize language from piped input
+if [[ "$subtitles" == "yes" ]]; then
+	ffmpeg_opts="$ffmpeg_opts -map s"
+	ffmpeg_opts="$ffmpeg_opts -scodec copy"
+fi
+
+# Overwrite existing file (will confirm later)
+ffmpeg_opts="$ffmpeg_opts -y"
+
+# Write to filename
+ffmpeg_opts="$ffmpeg_opts $output_filename"
+
+# --- RIPPING
+
+# Check for a 'dry run' to display commands
+if [[ "$dry_run" == "yes" ]]; then
+	if [[ "$ffprobe" == "yes" ]]; then
+		echo "dvd_copy $dvd_copy_opts 2> /dev/null | ffprobe -loglevel $loglevel -"
+	else
+		echo "dvd_copy $dvd_copy_opts 2> /dev/null | ffmpeg $ffmpeg_opts"
+	fi
+	exit
+fi
+
+# Just display what ffmpeg is looking at
+if [[ "$ffprobe" == "yes" ]]; then
+	dvd_copy $dvd_copy_opts 2> /dev/null | ffprobe -loglevel $loglevel -
+	exit
+fi
+
+# Ask user confirmation if output file exists
+if [[ -e "$output_filename" ]] && [[ $write_filename != "yes" ]]; then
+	read -n 1 -p "File '$output_filename' already exists. Overwrite? [y/N] " write_filename
+fi
+
+# Run dvd_copy and output to pipe, while supressing stderr which displays copy progress
+# Run ffmpeg with options given
+if [[ ${write_filename:0:1} == "y" ]] || [[ ${write_filename:0:1} == "Y" ]]; then
+	dvd_copy $dvd_copy_opts 2> /dev/null | ffmpeg $ffmpeg_opts
+fi

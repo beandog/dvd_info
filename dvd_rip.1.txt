@@ -1,0 +1,95 @@
+DVD_RIP(1)
+===========
+:doctype: manpage
+
+NAME
+----
+dvd_rip - a tiny DVD ripper using ffmpeg
+
+SYNOPSIS
+--------
+*dvd_rip* ['OPTIONS']
+
+DESCRIPTION
+-----------
+A tiny DVD ripper that has a small set of options for encoding.
+
+By default, dvd_rip will encode source to H.264 video with AAC audio in an
+MP4 container. If an output filename is given with a different extension,
+it will use the default settings for those instead. In each case, the default
+presets are used as selected by the codecs as well. Note that mpv must already
+be built with support for these codecs, or dvd_rip will quit.
+
+	.mp4 - H.264 video, AAC audio
+	.mkv - H.264 video, AAC audio
+	.webm - VP8 video, Opus audio
+
+With no options, the largest track will be ripped with all audio and subtitle
+tracks to a file named dvd_rip.mp4.
+
+OPTIONS
+-------
+
+*-i*
+	Input filename (default: operating system DVD drive device name).
+
+*-o*
+	Save to filename (default: 'dvd_rip.mp4').
+
+*-t*='TRACK NUMBER'
+	Rip track number. Default is longest valid track.
+
+*-c, --chapter*='CHAPTER[-[CHAPTER]]'
+	Rip chapter number or range. Default is all chapters.
+
+*-v* 'VIDEO CODEC'
+	Video codec to use. Options are x264, x265, vp8, and vp9. MP4 supports
+	x264 and x265. WebM supports VP8 and VP9. Matroska (MKV) supports all
+	four. Default is based on container and what ffmpeg has support for.
+
+*-q* 'VIDEO QUALITY CRF'
+	Set video quality CRF number. Use video codec value by default.
+
+*-a* 'AUDIO CODEC'
+	Audio codec to use. Options are aac, opus, and vorbis. MP4 and
+	Matroska (MKV) support all three. WebM supports Opus and Vorbis.
+	Default is based on container and what ffmpeg has support for.
+
+*-s* 'yes|no'
+	Rip all VOBSUB DVD subtitles. Enabled by default.
+
+*-n*
+	Show what dvd_copy and ffmpeg commands would be run, and exit.
+
+*-f*
+	Run ffprobe to see what streams ffmpeg is finding.
+
+*-z*
+	Display verbose output.
+
+*-h*
+	Display help output.
+
+SEE ALSO
+--------
+dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1)
+
+BUGS
+----
+*dvd_rip* does not wait for an optical device to be ready. Wait for it to
+finish "polling" before running the program.
+
+Please file bugs at <https://github.com/beandog/dvd_info/issues>
+
+AUTHOR
+------
+dvd_rip was written by Steve Dibb <steve.dibb@gmail.com>
+
+RESOURCES
+---------
+Source code available at GitHub: <https://github.com/beandog/dvd_info>
+
+COPYING
+-------
+Copyright \(C) 2025 Steve Dibb. Free use of this software is granted under the
+terms of the GNU General Public License, version 2 (GPL).
