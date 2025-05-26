@@ -146,7 +146,6 @@ fi
 # --- DVD_RIP
 
 input_filename=""
-container="mp4"
 output_filename="dvd_rip.mp4"
 dvd_track=""
 dvd_chapters=""
@@ -263,6 +262,7 @@ if [[ "$acodec" == "vorbis" ]] && [[ "$has_vorbis" ]]; then
 fi
 
 # Look to see if container can support video + audio codecs
+container=
 if [[ "${output_filename: -3}" == "mp4" ]]; then
 	container="mp4"
 elif [[ "${output_filename: -4}" == "webm" ]]; then
@@ -285,6 +285,9 @@ if [[ "$container" == "webm" ]]; then
 		exit 1
 	elif [[ $vcodec == "libx265" ]]; then
 		echo "$output_filename cannot support x265 codec. Use vp8 or vp9 as video codec, or change filename extension to '.mp4' or '.mkv'"
+		exit 1
+	elif [[ $acodec == "libfdk_aac" ]] || [[ $acodec == "aac" ]]; then
+		echo "$output_filename cannot support aac codec. Use opus or vorbis as audio codec."
 		exit 1
 	fi
 fi
