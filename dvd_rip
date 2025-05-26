@@ -86,8 +86,8 @@ if [[ $? -eq 0 ]]; then
 	has_opus=1
 fi
 
-# Check for either libvorbis or native vorbis
-echo $ffmpeg_codecs | grep vorbis | wc -l > /dev/null
+# Check for libvorbis
+echo $ffmpeg_codecs | grep libvorbis | wc -l > /dev/null
 if [[ $? -eq 0 ]]; then
 	has_vorbis=1
 fi
@@ -102,7 +102,7 @@ elif [[ $has_opus -eq 1 ]]; then
 	default_acodec=libopus
 	display_acodec=opus
 elif [[ $has_vorbis -eq 1 ]]; then
-	default_acodec=vorbis
+	default_acodec=libvorbis
 	display_acodec=vorbis
 fi
 
@@ -257,6 +257,9 @@ if [[ "$acodec" == "aac" ]] && [[ "$has_aac" -eq 1 ]]; then
 fi
 if [[ "$acodec" == "opus" ]] && [[ "$has_opus" ]]; then
 	acodec="libopus"
+fi
+if [[ "$acodec" == "vorbis" ]] && [[ "$has_vorbis" ]]; then
+	acodec="libvorbis"
 fi
 
 # Look to see if container can support video + audio codecs
