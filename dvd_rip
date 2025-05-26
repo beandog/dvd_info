@@ -131,7 +131,7 @@ function display_help {
 	echo "Other options:"
 	echo "  -n                      Dry run: only show commands to run"
 	echo "  -r                      Run ffprobe only to display stream details"
-	echo "  -n                      Don't ask to ovewrite existing output file"
+	echo "  -y                      Don't ask to ovewrite existing output file"
 	echo "  -z                      Display verbose output"
 	echo
 	echo "See 'man dvd_rip' for more information."
@@ -156,6 +156,7 @@ loglevel="info"
 dry_run="no"
 ffprobe="no"
 write_filename="yes"
+overwrite_filename="no"
 verbose="no"
 
 # --- GET OPTIONS
@@ -200,7 +201,7 @@ while getopts $optstring name; do
 			ffprobe="yes";;
 
 		y)
-			write_filename="yes";;
+			overwrite_filename="yes";;
 
 		z)
 			verbose="yes";;
@@ -315,7 +316,7 @@ if [[ "$ffprobe" == "yes" ]]; then
 fi
 
 # Ask user confirmation if output file exists
-if [[ -e "$output_filename" ]] && [[ $write_filename != "yes" ]]; then
+if [[ -e "$output_filename" ]] && [[ $overwrite_filename != "yes" ]]; then
 	read -n 1 -p "File '$output_filename' already exists. Overwrite? [y/N] " write_filename
 fi
 
