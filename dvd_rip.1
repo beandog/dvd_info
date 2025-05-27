@@ -69,17 +69,17 @@ Rip track number. Default is longest valid track.
 Rip chapter number or range. Default is all chapters.
 .sp
 \fB\-v\fP \fIVIDEO CODEC\fP
-Video codec to use. Options are x264, x265, vp8, and vp9. MP4 supports
-x264 and x265. WebM supports VP8 and VP9. Matroska (MKV) supports all
-four. Default is based on container and what ffmpeg has support for.
+Video codec to use. Default is x264 if installed. Any codec
+that ffmpeg has support for can be passed as a value. See
+\fIffmpeg \-codecs\fP for a full list.
 .sp
 \fB\-q\fP \fIVIDEO QUALITY CRF\fP
 Set video quality CRF number. Use video codec value by default.
 .sp
 \fB\-a\fP \fIAUDIO CODEC\fP
-Audio codec to use. Options are aac, opus, and vorbis. MP4 and
-Matroska (MKV) support all three. WebM supports Opus and Vorbis.
-Default is based on container and what ffmpeg has support for.
+Audio codec to use. Default is aac if installed. Any codec that
+ffmpeg can support can be passed as a value. See \fIffmpeg \-codecs\fP
+for a full list.
 .sp
 \fB\-s\fP \fIyes|no\fP
 Rip all VOBSUB DVD subtitles. Enabled by default.
