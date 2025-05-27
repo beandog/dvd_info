@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
 	dvd_playback.first_chapter = 1;
 	dvd_playback.last_chapter = 99;
 	dvd_playback.fullscreen = false;
-	dvd_playback.detelecine = true;
+	dvd_playback.deinterlace = true;
 	dvd_playback.subtitles = false;
 	memset(dvd_playback.audio_lang, '\0', sizeof(dvd_playback.audio_lang));
 	memset(dvd_playback.audio_stream_id, '\0', sizeof(dvd_playback.audio_stream_id));
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
 		{ "alang", required_argument, 0, 'a' },
 		{ "aid", required_argument, 0, 'A' },
 		{ "chapters", required_argument, 0, 'c' },
-		{ "no-detelecine", no_argument, 0, 'D' },
+		{ "no-deinterlace", no_argument, 0, 'D' },
 		{ "fullscreen", no_argument, 0, 'f' },
 		{ "help", no_argument, 0, 'h' },
 		{ "slang", required_argument, 0, 's' },
@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'D':
-				dvd_playback.detelecine = false;
+				dvd_playback.deinterlace = false;
 				break;
 
 			case 'f':
@@ -236,7 +236,7 @@ int main(int argc, char **argv) {
 				printf("  -A, --aid <#>                 Select audio track ID\n");
 				printf("  -s, --slang <language>        Select subtitles language, two character code (default: no subtitles)\n");
 				printf("  -S, --sid <#>                 Select subtitles track ID\n");
-				printf("  -D, --no-detelecine           Do not detelecine video\n");
+				printf("  -D, --no-deinterlace          Do not deinterlace video\n");
 				printf("  -v, --verbose                 Show verbose output\n");
 				printf("  -z, --debug                   Show debugging output\n");
 				printf("  -h, --help			Show this help text and exit\n");
@@ -562,9 +562,9 @@ int main(int argc, char **argv) {
 	 * If the user wants video always disabled, it can be set in 'mpv.conf'.
 	 */
 
-	// Detelecine video by default
-	if(dvd_playback.detelecine)
-		mpv_set_option_string(dvd_mpv, "vf", "pullup,dejudder");
+	// Deinterlace video by default
+	if(dvd_playback.deinterlace)
+		mpv_set_option_string(dvd_mpv, "vf", "bwdif");
 
 	/** Audio Playback */
 	/*

@@ -75,8 +75,8 @@ OPTIONS
 *-q, --crf*='#'
 	Video encoder CRF to use. The default is a high quality value.
 
-*-D, --no-detelecine*
-	Do not detelecine video.
+*-D, --no-deinterlace*
+	Do not deinterlace video.
 
 *--verbose*
 	Display verbose output.

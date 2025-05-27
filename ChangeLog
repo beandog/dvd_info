@@ -19,7 +19,7 @@
 * dvd_backup: Fix -i / --ifos to not copy VOBs, and always overwrite existing
   backup files
 * dvd_player: fix playing at starting chapter (and range)
-* dvd_player: detelecine video by default
+* dvd_player: deinterlace video by default using bwdif
 * dvd_player, dvd_rip: fix stopping at wrong end point for chapters
 * dvd_player, dvd_rip: if chapter ranges given are incorrect, don't fix for
   the user, and instead quit

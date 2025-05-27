@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 	bool aac = false;
 	bool mkv = false;
 	bool mp4 = false;
-	bool detelecine = true;
+	bool deinterlace = true;
 	bool pal_video = false;
 	int8_t crf = -1;
 	char str_crf[10];
@@ -169,7 +169,7 @@ int main(int argc, char **argv) {
 
 		{ "output", required_argument, 0, 'o' },
 
-		{ "no-detelecine", no_argument, 0, 'D' },
+		{ "no-deinterlace", no_argument, 0, 'D' },
 
 		{ "vcodec", required_argument, 0, 'v'},
 		{ "acodec", required_argument, 0, 'a'},
@@ -245,7 +245,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'D':
-				detelecine = false;
+				deinterlace = false;
 				break;
 
 			case 'L':
@@ -367,7 +367,7 @@ int main(int argc, char **argv) {
 				printf("  -v, --vcodec <vcodec>         Video codec <x264|x265>, default: x264\n");
 				printf("  -a, --acodec <acodec>         Audio codec (aac|opus), default: aac\n");
 				printf("  -q, --crf <#>			Video encoder CRF (x264 and x265)\n");
-				printf("  -D, --no-detelecine           Do not detelecine video\n");
+				printf("  -D, --no-deinterlace          Do not deinterlace video\n");
 				printf("\n");
 				printf("Defaults:\n");
 				printf("\n");
@@ -796,11 +796,11 @@ int main(int argc, char **argv) {
 	if(strlen(dvd_trip.vcodec_opts))
 		mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
 
-	// Detelecining
-	if(detelecine && pal_video)
-		strcat(dvd_trip.vf_opts, "pullup,dejudder,fps=25");
-	else if(detelecine && !pal_video)
-		strcat(dvd_trip.vf_opts, "pullup,dejudder,fps=fps=24000/1001");
+	// Deinterlacing
+	if(deinterlace && pal_video)
+		strcat(dvd_trip.vf_opts, "bwdif,fps=25");
+	else if(deinterlace && !pal_video)
+		strcat(dvd_trip.vf_opts, "bwdif,fps=24000/1001");
 
 	mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
 
@@ -885,8 +885,8 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "[dvd_trip] mpv 'vcodecopts=%s'\n", dvd_trip.vcodec_opts);
 		fprintf(stderr, "[dvd_trip] mpv 'acodecopts=%s'\n", dvd_trip.acodec_opts);
 	}
-	if(detelecine)
-		printf("[dvd_trip] detelecining video using 'pullup', 'dejudder', and 'fps' filters\n");
+	if(deinterlace)
+		printf("[dvd_trip] deinterlacing video using 'bwdif' filter\n");
 
 	fprintf(stderr, "[dvd_trip] using audio codec '%s' and bitrate '%" PRIu16 "k'\n", dvd_trip.acodec, dvd_trip.audio_bitrate);
 
