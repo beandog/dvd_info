@@ -803,10 +803,10 @@ int main(int argc, char **argv) {
 	/** Audio **/
 
 	// Audio codec
-	if(aac)
-		strcpy(dvd_trip.acodec, "aac");
-	else if(opus)
+	if(opus)
 		strcpy(dvd_trip.acodec, "libopus");
+	else
+		strcpy(dvd_trip.acodec, "aac");
 
 	// There are some DVD tracks with no audio channels, and mpv will die if number is set
 	if(audio_max_channels) {
