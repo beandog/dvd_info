@@ -797,11 +797,7 @@ int main(int argc, char **argv) {
 		mpv_set_option_string(dvd_mpv, "ovcopts", dvd_trip.vcodec_opts);
 
 	// Deinterlacing
-	if(deinterlace && pal_video)
-		strcat(dvd_trip.vf_opts, "bwdif,fps=25");
-	else if(deinterlace && !pal_video)
-		strcat(dvd_trip.vf_opts, "bwdif,fps=24000/1001");
-
+	strcat(dvd_trip.vf_opts, "bwdif");
 	mpv_set_option_string(dvd_mpv, "vf", dvd_trip.vf_opts);
 
 	/** Audio **/
