@@ -115,7 +115,7 @@ function display_help {
 	echo "Usage:"
 	echo "  $binary [options]"
 	echo
-	echo "  -i <filename>           Input source - can be device, directory, or file [/dev/sr0]"
+	echo "  -i <filename>           Input source - can be device, directory, or file [DVD drive]"
 	echo "  -o <filename>           Save to filename [dvd_rip.mp4]"
 	echo "  -t <#>                  Rip selected track [longest]"
 	echo "  -c <#[-#]>              Rip chapter number(s) [all]"
