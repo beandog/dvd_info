@@ -27,6 +27,8 @@ be built with support for these codecs, or dvd_rip will quit.
 With no options, the largest track will be ripped with all audio and subtitle
 tracks to a file named dvd_rip.mp4.
 
+Another option to rip DVDs is dvd_trip, which uses libmpv as backend.
+
 OPTIONS
 -------
 
@@ -72,7 +74,7 @@ OPTIONS
 
 SEE ALSO
 --------
-dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1)
+dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1), dvd_trip(1)
 
 BUGS
 ----

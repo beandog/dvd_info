@@ -38,6 +38,8 @@ An example using ffmpeg, remuxing a track into a Matroska file:
 
 $ dvd_copy -o - | ffmpeg -fflags +genpts -i - -c copy dvd_track.mkv
 
+Also see dvd_rip which rips DVDs using dvd_copy and ffmpeg.
+
 To backup an entire DVD, see dvd_backup(1).
 
 OPTIONS
@@ -64,7 +66,7 @@ OPTIONS
 
 SEE ALSO
 --------
-dvd_backup(1), dvd_drive_status(1), dvd_info(1), dvd_player(1), dvd_trip(1)
+dvd_backup(1), dvd_drive_status(1), dvd_info(1), dvd_player(1), dvd_rip(1), dvd_trip(1)
 
 BUGS
 ----

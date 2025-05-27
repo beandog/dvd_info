@@ -30,6 +30,8 @@ With no options, the largest track will be ripped with the first audio track,
 to a file named dvd_track_#.mp4, where # is a zero-padded name of the track
 number.
 
+Another alternative to rip DVDs is dvd_rip which is a wrapper to ffmpeg.
+
 OPTIONS
 -------
 
