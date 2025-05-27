@@ -95,7 +95,6 @@ int main(int argc, char **argv) {
 	bool mkv = false;
 	bool mp4 = false;
 	bool deinterlace = true;
-	bool pal_video = false;
 	int8_t crf = -1;
 	char str_crf[10];
 	uint16_t arg_track_number = 1;
