@@ -20,6 +20,7 @@
   backup files
 * dvd_player: fix playing at starting chapter (and range)
 * dvd_player: deinterlace video by default using bwdif
+* dvd_player: drop option to detelecine
 * dvd_player, dvd_rip: fix stopping at wrong end point for chapters
 * dvd_player, dvd_rip: if chapter ranges given are incorrect, don't fix for
   the user, and instead quit
