@@ -1,3 +1,7 @@
+1.18
+
+* dvd_rip: remove help option to deinterlace video
+
 1.17
 
 * Fix logging of libdvdread to be less verbose, and output to stderr (bug #11,
