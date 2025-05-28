@@ -1,4 +1,4 @@
-AC_INIT([dvd_info], [1.17], [https://github.com/beandog/dvd_info/issues], [], [https://github.com/beandog/dvd_info])
+AC_INIT([dvd_info], [1.18], [https://github.com/beandog/dvd_info/issues], [], [https://github.com/beandog/dvd_info])
 
 dnl Generate config header to store defines like version info
 AC_CONFIG_HEADERS([config.h])
