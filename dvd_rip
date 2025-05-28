@@ -124,7 +124,6 @@ function display_help {
 	echo
 	echo "  -v                      Video codec [$default_vcodec]"
 	echo "  -q <#>                  Video quality CRF [ffmpeg default]"
-	echo "  -d <yes|no>             Deinterlace video [yes]"
 	echo "  -a                      Audio codec [$display_acodec]"
 	echo "  -s <yes|no>             Copy subtitles [yes]"
 	echo
