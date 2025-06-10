@@ -63,16 +63,9 @@ fi
 
 # --- Get ffmpeg audio codecs
 
-has_fdk_aac=0
 has_aac=0
 has_opus=0
 has_vorbis=0
-
-# Prefer FDK AAC over native
-echo $ffmpeg_codecs | grep fdk_aac > /dev/null
-if [[ $? -eq 0 ]]; then
-	has_fdk_aac=1
-fi
 
 # Check for native AAC
 echo $ffmpeg_codecs | grep aac > /dev/null
@@ -92,10 +85,7 @@ if [[ $? -eq 0 ]]; then
 	has_vorbis=1
 fi
 
-if [[ $has_fdk_aac -eq 1 ]]; then
-	default_acodec=libfdk_aac
-	display_acodec=aac
-elif [[ $has_aac -eq 1 ]]; then
+if [[ $has_aac -eq 1 ]]; then
 	default_acodec=aac
 	display_acodec=aac
 elif [[ $has_opus -eq 1 ]]; then
@@ -247,9 +237,6 @@ fi
 if [[ "$vcodec" == "vp9" ]]; then
 	vcodec="libvpx-vp9"
 fi
-if [[ "$acodec" == "aac" ]] && [[ "$has_fdk_aac" -eq 1 ]]; then
-	acodec="libfdk_aac"
-fi
 if [[ "$acodec" == "aac" ]] && [[ "$has_aac" -eq 1 ]]; then
 	acodec="aac"
 fi
@@ -285,7 +272,7 @@ if [[ "$container" == "webm" ]]; then
 	elif [[ $vcodec == "libx265" ]]; then
 		echo "$output_filename cannot support x265 codec. Use vp8 or vp9 as video codec, or change filename extension to '.mp4' or '.mkv'"
 		exit 1
-	elif [[ $acodec == "libfdk_aac" ]] || [[ $acodec == "aac" ]]; then
+	elif [[ $acodec == "aac" ]]; then
 		echo "$output_filename cannot support aac codec. Use opus or vorbis as audio codec."
 		exit 1
 	fi
