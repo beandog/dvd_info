@@ -52,13 +52,13 @@ fi
 
 # Set default video codec
 if [[ $has_x264 -eq 1 ]]; then
-	default_vcodec=x264
+	default_vcodec=libx264
 elif [[ $has_x265 -eq 1 ]]; then
-	default_vcodec=x265
+	default_vcodec=libx265
 elif [[ $has_vp8 -eq 1 ]]; then
-	default_vcodec=vp8
+	default_vcodec=libvpx
 elif [[ $has_vp9 -eq 1 ]]; then
-	default_vcodec=vp9
+	default_vcodec=libvpx-vp9
 fi
 
 # --- Get ffmpeg audio codecs
@@ -87,13 +87,10 @@ fi
 
 if [[ $has_aac -eq 1 ]]; then
 	default_acodec=aac
-	display_acodec=aac
 elif [[ $has_opus -eq 1 ]]; then
 	default_acodec=libopus
-	display_acodec=opus
 elif [[ $has_vorbis -eq 1 ]]; then
 	default_acodec=libvorbis
-	display_acodec=vorbis
 fi
 
 function display_help {
@@ -114,7 +111,7 @@ function display_help {
 	echo
 	echo "  -v                      Video codec [$default_vcodec]"
 	echo "  -q <#>                  Video quality CRF [ffmpeg default]"
-	echo "  -a                      Audio codec [$display_acodec]"
+	echo "  -a                      Audio codec [$default_acodec]"
 	echo "  -s <yes|no>             Copy subtitles [yes]"
 	echo
 	echo "Other options:"
@@ -224,58 +221,12 @@ fi
 
 # --- FFMPEG
 
-# Set codec names based on input
-if [[ "$vcodec" == "x264" ]]; then
-	vcodec="libx264"
-fi
-if [[ "$vcodec" == "x265" ]]; then
-	vcodec="libx265"
-fi
-if [[ "$vcodec" == "vp8" ]]; then
-	vcodec="libvpx"
-fi
-if [[ "$vcodec" == "vp9" ]]; then
-	vcodec="libvpx-vp9"
-fi
-if [[ "$acodec" == "aac" ]] && [[ "$has_aac" -eq 1 ]]; then
-	acodec="aac"
-fi
-if [[ "$acodec" == "opus" ]] && [[ "$has_opus" ]]; then
-	acodec="libopus"
-fi
-if [[ "$acodec" == "vorbis" ]] && [[ "$has_vorbis" ]]; then
-	acodec="libvorbis"
-fi
-
 # Look to see if container can support video + audio codecs
 container=
 if [[ "${output_filename: -3}" == "mp4" ]]; then
 	container="mp4"
 elif [[ "${output_filename: -4}" == "webm" ]]; then
 	container="webm"
-fi
-
-if [[ "$container" == "mp4" ]]; then
-	if [[ $vcodec == "libvpx" ]]; then
-		echo "$output_filename cannot support vp8 video codec. Use x264 or x265 instead, or change filename extension to '.mkv' or '.webm'"
-		exit 1
-	elif [[ $vcodec == "libvpx-vp9" ]]; then
-		echo "$output_filename cannot support vp9 video codec. Use x264 or x265 instead, or change filename extension to '.mkv' or '.webm'"
-		exit 1
-	fi
-fi
-
-if [[ "$container" == "webm" ]]; then
-	if [[ $vcodec == "libx264" ]]; then
-		echo "$output_filename cannot support x264 codec. Use vp8 or vp9 as video codec, or change filename extension to '.mp4' or '.mkv'"
-		exit 1
-	elif [[ $vcodec == "libx265" ]]; then
-		echo "$output_filename cannot support x265 codec. Use vp8 or vp9 as video codec, or change filename extension to '.mp4' or '.mkv'"
-		exit 1
-	elif [[ $acodec == "aac" ]]; then
-		echo "$output_filename cannot support aac codec. Use opus or vorbis as audio codec."
-		exit 1
-	fi
 fi
 
 if [[ "$verbose" == "yes" ]]; then
