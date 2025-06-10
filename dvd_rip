@@ -59,6 +59,8 @@ elif [[ $has_vp8 -eq 1 ]]; then
 	default_vcodec=libvpx
 elif [[ $has_vp9 -eq 1 ]]; then
 	default_vcodec=libvpx-vp9
+else
+	default_vcodec="ffmpeg default"
 fi
 
 # --- Get ffmpeg audio codecs
@@ -91,6 +93,8 @@ elif [[ $has_opus -eq 1 ]]; then
 	default_acodec=libopus
 elif [[ $has_vorbis -eq 1 ]]; then
 	default_acodec=libvorbis
+else
+	default_acodec="ffmpeg default"
 fi
 
 function display_help {
