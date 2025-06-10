@@ -312,7 +312,9 @@ fi
 
 # Always deinterlace video using bob weaver filter
 # https://ffmpeg.org/ffmpeg-filters.html#bwdif-1
-ffmpeg_opts="$ffmpeg_opts -vf bwdif"
+if [[ "$vcodec" != "copy" ]]; then
+	ffmpeg_opts="$ffmpeg_opts -vf bwdif"
+fi
 
 # Map all audio streams - ffmpeg doesn't recognize language from piped input
 ffmpeg_opts="$ffmpeg_opts -map a"
