@@ -263,10 +263,6 @@ ffmpeg_opts="$ffmpeg_opts -map a"
 ffmpeg_opts="$ffmpeg_opts -acodec $acodec"
 
 # Map all subtitle streams - ffmpeg doesn't recognize language from piped input
-if [[ "$container" == "webm" ]] && [[ "$subtitles" == "yes" ]]; then
-	echo "WebM doesn't support VOBSUB subtitles, disabling."
-	subtitles="no"
-fi
 if [[ "$subtitles" == "yes" ]]; then
 	ffmpeg_opts="$ffmpeg_opts -map s?"
 	ffmpeg_opts="$ffmpeg_opts -scodec copy"
