@@ -6,6 +6,9 @@ AC_CONFIG_HEADERS([config.h])
 dnl This is not a GNU package, so ignore required files / format
 AM_INIT_AUTOMAKE([foreign])
 
+# Make maintainer mode optional (default is it is always enabled)
+AM_MAINTAINER_MODE([enable])
+
 dnl need math.h to do MBs calculations
 AC_CHECK_HEADERS([math.h])
 
