@@ -7,7 +7,7 @@ set(PROJECT_VERSION "1.18")
 configure_file("config.h.in" "config.h")
 
 # Display what compiler is doing
-set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
 
 # Don't check for c++ compiler
 project(dvd_info LANGUAGES C)
