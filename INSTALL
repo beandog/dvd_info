@@ -1,14 +1,27 @@
 Installation instructions for specific distros are at https://github.com/beandog/dvd_info/wiki
 
-Assuming you have 'libdvdread' and libdvdcss installed, it should build and run just fine:
+You will need cmake installed to build the programs:
 
-$ ./configure && make && sudo make install
+$ cmake .
 
-If you want 'dvd_rip' and 'dvd_player', you'll need libmpv (part of 'mpv' package) installed as well:
+After that, build and install:
 
-$ ./configure --with-libmpv && make && sudo make install
+$ make
+$ sudo make install
 
-If you are having problems with the configure script or makefiles, you can rebuild them. You will need 'autoconf' and 'automake' installed first:
+To remove:
+
+$ sudo make uninstall
+
+The Makefile will automatically check to see if you have libmpv installed, and then build and install dvd_player and dvd_trip.
+
+If don't have cmake or want to use it, you can use the old autotools scripts, but will need automake and autoconf installed.
 
 $ autoreconf -fi
-$ ./configure && make && sudo make install
+$ ./configure
+
+For dvd_player and dvd_trip, you will have to run --with-libmpv
+$ ./configure --with-libmpv
+
+$ make
+$ sudo make install
