@@ -14,8 +14,8 @@ project(dvd_info LANGUAGES C)
 
 # Look for include files and libraries outside of baseline /usr, but respecting install prefix first
 # This is needed on FreeBSD where non-system packages are in /usr/local
-include_directories(AFTER "${CMAKE_INSTALL_PREFIX}/include /usr/local")
-link_directories(AFTER "${CMAKE_INSTALL_PREFIX}/lib /usr/local")
+include_directories(AFTER "${CMAKE_INSTALL_PREFIX}/include")
+link_directories(AFTER "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Use pkg-config
 find_package(PkgConfig REQUIRED)
