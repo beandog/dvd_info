@@ -1,0 +1,85 @@
+'\" t
+.\"     Title: dvd_eject
+.\"    Author: [see the "AUTHOR(S)" section]
+.\" Generator: Asciidoctor 2.0.23
+.\"      Date: 2025-06-29
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "DVD_EJECT" "1" "2025-06-29" "\ \&" "\ \&"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.ss \n[.ss] 0
+.nh
+.ad l
+.de URL
+\fI\\$2\fP <\\$1>\\$3
+..
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
+.SH "NAME"
+dvd_eject \- eject or close an optical device tray
+.SH "SYNOPSIS"
+.sp
+\fBdvd_eject\fP [\fIOPTIONS\fP] [\fIDEVICE\fP]
+.SH "DESCRIPTION"
+.sp
+This will use the default optical device, unmount it, and eject it. You can pass
+an option to force an eject as well. If unmount doesn\(cqt work, it will
+continue anyway. Also has an option to close the tray.
+.sp
+For FreeBSD, there is a native program to eject drives as well:
+.sp
+$ cdcontrol cd0 eject
+.sp
+And close the tray:
+.sp
+$ cdcontrol cd0 close
+.sp
+You can see which drives you have:
+.sp
+$ camcontrol devlist
+.sp
+$ camcontrol identify cd0
+.SH "OPTIONS"
+.sp
+\fB\-f\fP
+Force unmount of device.
+.sp
+\fB\-t\fP
+Close tray instead of opening.
+.sp
+\fB\-v\fP
+Display verbose output.
+.sp
+\fB\-h\fP
+Display help output.
+.SH "SEE ALSO"
+.sp
+dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1), dvd_rip(1), dvd_trip(1)
+.SH "BUGS"
+.sp
+Please file bugs at \c
+.URL "https://github.com/beandog/dvd_info/issues" "" ""
+.SH "AUTHOR"
+.sp
+dvd_eject was written by Steve Dibb \c
+.MTO "steve.dibb\(atgmail.com" "" ""
+.SH "RESOURCES"
+.sp
+Source code available at GitHub: \c
+.URL "https://github.com/beandog/dvd_info" "" ""
+.SH "COPYING"
+.sp
+Copyright (C) 2025 Steve Dibb. Free use of this software is granted under the
+terms of the GNU General Public License, version 2 (GPL).

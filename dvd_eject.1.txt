@@ -1,0 +1,67 @@
+DVD_EJECT(1)
+============
+:doctype: manpage
+
+NAME
+----
+dvd_eject - eject or close an optical device tray
+
+SYNOPSIS
+--------
+*dvd_eject* ['OPTIONS'] ['DEVICE']
+
+DESCRIPTION
+-----------
+This will use the default optical device, unmount it, and eject it. You can pass
+an option to force an eject as well. If unmount doesn't work, it will 
+continue anyway. Also has an option to close the tray.
+
+For FreeBSD, there is a native program to eject drives as well:
+
+$ cdcontrol cd0 eject
+
+And close the tray:
+
+$ cdcontrol cd0 close
+
+You can see which drives you have:
+
+$ camcontrol devlist
+
+$ camcontrol identify cd0
+
+OPTIONS
+-------
+
+*-f*
+	Force unmount of device.
+
+*-t*
+	Close tray instead of opening.
+
+*-v*
+	Display verbose output.
+
+*-h*
+	Display help output.
+
+SEE ALSO
+--------
+dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1), dvd_rip(1), dvd_trip(1)
+
+BUGS
+----
+Please file bugs at <https://github.com/beandog/dvd_info/issues>
+
+AUTHOR
+------
+dvd_eject was written by Steve Dibb <steve.dibb@gmail.com>
+
+RESOURCES
+---------
+Source code available at GitHub: <https://github.com/beandog/dvd_info>
+
+COPYING
+-------
+Copyright \(C) 2025 Steve Dibb. Free use of this software is granted under the
+terms of the GNU General Public License, version 2 (GPL).
