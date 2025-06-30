@@ -66,11 +66,16 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	INSTALL(FILES dvd_drive_status.1 DESTINATION "${CMAKE_INSTALL_MANDIR}/man1")
 endif()
 
-# Build dvd_eject for FreeBSD
+# Build device utilities for FreeBSD
 if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
 	add_executable(dvd_eject bsd_eject.c)
 	INSTALL(FILES dvd_eject PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE DESTINATION bin)
 	INSTALL(FILES dvd_eject.1 DESTINATION "${CMAKE_INSTALL_MANDIR}/man1")
+
+	add_executable(dvd_drive_status bsd_drive_status.c)
+	target_link_libraries(dvd_drive_status PRIVATE dvdread)
+	INSTALL(FILES dvd_drive_status PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE DESTINATION bin)
+	# INSTALL(FILES dvd_drive_status.1 DESTINATION "${CMAKE_INSTALL_MANDIR}/man1")
 endif()
 
 # Documentation
