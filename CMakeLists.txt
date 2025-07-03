@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 set(PROJECT_NAME "dvd_info")
 # Can use a macro in the programs if config.h is included
 set(PROJECT_VERSION "2.0")
+set(CPACK_PACKAGE_VERSION "2.0")
 configure_file("config.h.in" "config.h")
 
 # Display what compiler is doing
@@ -106,3 +107,23 @@ add_custom_command(
 	COMMAND xargs < install_manifest.txt rm -v
 	COMMAND rmdir -v ${CMAKE_INSTALL_PREFIX}/share/doc/${PROJECT_NAME}
 )
+
+set(CPACK_PACKAGE_CONTACT "Steve Dibb <steve.dibb@gmail.com>")
+set(CPACK_PACKAGE_DESCRIPTION "DVD command-line utilities")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "DVD command-line utilities")
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/beandog/dvd_info")
+
+set(CPACK_DEBIAN_PACKAGE_NAME "dvdinfo")
+set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+set(CPACK_RPM_PACKAGE_DESCRIPTION "DVD command-line utilities")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libdvdread8, libmpv2")
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set(CPACK_DEBIAN_PACKAGE_SECTION "video")
+
+set(CPACK_RPM_PACKAGE_NAME "dvdinfo")
+set(CPACK_RPM_PACKAGE_LICENSE "GPLv2")
+set(CPACK_RPM_PACKAGE_ARCHITECTURE "amd64")
+set(CPACK_RPM_PACKAGE_REQUIRES "libdvdread mpv-libs")
+
+# must be last
+include(CPack)
