@@ -6,9 +6,6 @@ set(PROJECT_NAME "dvd_info")
 set(PROJECT_VERSION "2.0")
 configure_file("config.h.in" "config.h")
 
-# Get fancy variables
-include(GNUInstallDirs)
-
 # Display what compiler is doing
 set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
 
@@ -19,6 +16,9 @@ project(dvd_info LANGUAGES C)
 # This is needed on FreeBSD where non-system packages are in /usr/local
 include_directories(AFTER "${CMAKE_INSTALL_PREFIX}/include")
 link_directories(AFTER "${CMAKE_INSTALL_PREFIX}/lib")
+
+# Get fancy variables
+include(GNUInstallDirs)
 
 # Use pkg-config
 find_package(PkgConfig REQUIRED)
@@ -59,7 +59,7 @@ INSTALL(FILES dvd_debug PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_R
 INSTALL(FILES dvd_rip PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE DESTINATION bin)
 INSTALL(FILES dvd_rip.1 DESTINATION "${CMAKE_INSTALL_MANDIR}/man1")
 
-# Build dvd_drive_status, which is Linux only
+# Build dvd_drive_status for Linux
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	add_executable(dvd_drive_status dvd_drive_status.c)
 	INSTALL(FILES dvd_drive_status PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE DESTINATION bin)
