@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 # Yay! :D
 set(PROJECT_NAME "dvd_info")
 # Can use a macro in the programs if config.h is included
-set(PROJECT_VERSION "1.18")
+set(PROJECT_VERSION "2.0")
 configure_file("config.h.in" "config.h")
 
 # Get fancy variables

@@ -1,4 +1,4 @@
-1.18
+2.0
 
 * Switch to cmake build system
 * dvd_rip: remove help option to deinterlace video
