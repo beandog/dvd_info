@@ -161,40 +161,88 @@ while getopts $optstring name; do
 			exit;;
 
 		i)
-			input_filename="$OPTARG";;
+			input_filename="$OPTARG"
+			if [[ ${OPTARG:0:1} == "-" ]]; then
+				echo "Invalid value for -${name} '$OPTARG'"
+				exit
+			fi
+			;;
 
 		o)
-			output_filename="$OPTARG";;
+			output_filename="$OPTARG"
+			if [[ ${OPTARG:0:1} == "-" ]]; then
+				echo "Invalid value for -${name} '$OPTARG'"
+				exit
+			fi
+			;;
 
 		t)
-			dvd_track="$OPTARG";;
+			dvd_track="$OPTARG"
+			if [[ ${OPTARG:0:1} == "-" ]]; then
+				echo "Invalid value for -${name} '$OPTARG'"
+				exit
+			fi
+			;;
 
 		c)
-			dvd_chapters="$OPTARG";;
+			dvd_chapters="$OPTARG"
+			if [[ ${OPTARG:0:1} == "-" ]]; then
+				echo "Invalid value for -${name} '$OPTARG'"
+				exit
+			fi
+			;;
 
 		v)
-			vcodec="$OPTARG";;
+			vcodec="$OPTARG"
+			if [[ ${OPTARG:0:1} == "-" ]]; then
+				echo "Invalid value for -${name} '$OPTARG'"
+				exit
+			fi
+			;;
 
 		q)
-			crf="$OPTARG";;
+			crf="$OPTARG"
+			if [[ ${OPTARG:0:1} == "-" ]]; then
+				echo "Invalid value for -${name} '$OPTARG'"
+				exit
+			fi
+			;;
 
 		a)
-			acodec="$OPTARG";;
+			acodec="$OPTARG"
+			if [[ ${OPTARG:0:1} == "-" ]]; then
+				echo "Invalid value for -${name} '$OPTARG'"
+				exit
+			fi
+			;;
 
 		s)
-			subtitles="$OPTARG";;
+			subtitles="$OPTARG"
+			if [[ ${OPTARG:0:1} == "-" ]]; then
+				echo "Invalid value for -${name} '$OPTARG'"
+				exit
+			fi
+			;;
 
 		n)
-			dry_run="yes";;
+			dry_run="yes"
+			;;
 
 		r)
-			ffprobe="yes";;
+			ffprobe="yes"
+			;;
 
 		y)
-			overwrite_filename="yes";;
+			overwrite_filename="yes"
+			;;
 
 		z)
-			verbose="yes";;
+			verbose="yes"
+			;;
+
+		-)
+			display_help
+			exit;;
 
 		?)
 			display_help
