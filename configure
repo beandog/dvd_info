@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+which cmake &> /dev/null
+if [[ $? -ne 0 ]]; then
+	echo "CMake is needed to build dvd_info."
+	echo
+	echo "For cmake, run:"
+	echo "cmake ."
+	echo "make"
+	echo "sudo make install"
+	echo
+	echo "See https://github.com/beandog/dvd_info/wiki for more info"
+else
+	echo "CMake is needed to build dvd_info:"
+	echo "cmake ."
+	echo "make"
+	echo "sudo make install"
+fi
