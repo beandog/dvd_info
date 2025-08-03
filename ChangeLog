@@ -2,6 +2,7 @@
 
 * Switch to cmake build system
 * dvd_rip: remove help option to deinterlace video
+* Fix config.h creation (bug #17, thanks to samvv for reporting)
 
 1.17
 
