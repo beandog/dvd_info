@@ -7,7 +7,9 @@ The dvd_info project is a set of utilities for accessing DVDs:
 * `dvd_drive_status` - display drive status: open, closed, closed with disc, or polling (Linux only)
 * `dvd_backup` - back up an entire DVD to the filesystem
 * `dvd_player` - a small DVD player using libmpv as backend
-* `dvd_rip` - a small DVD ripper using libmpv as backend - supports x264, x265, vp8, vp9, aac, opus, mp4, mkv, and webm
+* `dvd_rip` - a shell script to rip DVDs using ffmpeg-7.0 and above
+* `dvd_debug` - display debugging information about a DVD provided by libdvdread
+* `dvd_trip` - a small DVD ripper using libmpv as backend - supports x264, x265, vp8, vp9, aac, opus, mp4, mkv, and webm
 * `dvd_debug` - display debugging information about a DVD provided by libdvdread
 
 # Requirements
@@ -15,30 +17,19 @@ The dvd_info project is a set of utilities for accessing DVDs:
 * libdvdread >= 6.1.0
 * libdvdcss for decryption
 * libmpv for `dvd_rip` and `dvd_player`
+* ffmpeg 7.0 or greater for dvd_rip
 
 # Installation
 
 For ``dvd_info``, ``dvd_copy``, ``dvd_drive_status``, and ``dvd_debug`` only:
 
 ```
-./configure
+cmake .
 make
 sudo make install
 ```
 
 Building ``dvd_player`` and ``dvd_rip`` requires ``mpv`` to be installed with libmpv support first.
-
-```
-./configure --with-libmpv
-make
-sudo make install
-```
-
-If there are issues for some reason with running ``configure``, rebuild the autotools files first, and then configure and build like normal. This requires the ``autoconf`` package to be installed first (which is probably already there):
-
-```
-autoreconf -f -i -v
-```
 
 # Documentation
 
@@ -66,8 +57,8 @@ I try porting my code to other systems, and in addition to Linux distros, it run
 
 # See also
 
-  * <http://dvds.beandog.org> - my site all about DVDs
-  * <http://github.com/beandog/bluray_info> - similar tools for Blu-ray discs
+  * <https://dvds.beandog.org> - my site all about DVDs
+  * <https://github.com/beandog/bluray_info> - similar tools for Blu-ray discs
 
 # Support
 
