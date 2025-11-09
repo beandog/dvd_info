@@ -572,6 +572,7 @@ int main(int argc, char **argv) {
 		}
 
 		printf("* Filesize: %" PRIu64 " MBs\n", filesize_mbs[0]);
+		printf("* Total VOBs: %" PRIu16 "\n", dvd_vts[vts].vobs);
 
 		dvd_blocks_offset = 0;
 
