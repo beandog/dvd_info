@@ -1,3 +1,8 @@
+2.1
+
+* Display more audio track details (bug #18, thanks to xmixahlx for reporing)
+* Display DVD region
+
 2.0
 
 * Switch to cmake build system
