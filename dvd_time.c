@@ -7,31 +7,31 @@
  * Regarding the bit-shifting in the function, I've broken down the
  * calculations to separate individual time metrics to make it a bit easier to
  * read, though I admittedly don't know enough about bit shifting to know what
- * it's doing or why it doesn't just do simple calculation.  It's worth seeing
+ * it's doing or why it doesn't just do simple calculation. It's worth seeing
  * ifo_print_time() from libdvdread as a comparative reference as well.
  *
  * Old notes:
  *
  * Though it is not implemented here, I have a theory that msecs should be a
  * floating value to a decimal point of 2, and that the framerate should be
- * a whole integer (30) instead of a floating point decimal (29.97).  The
- * rest of these notes explain that approach, thoough it is not used.  They
+ * a whole integer (30) instead of a floating point decimal (29.97). The
+ * rest of these notes explain that approach, thoough it is not used. They
  * are kept here for historical purposes for my own benefit.
  *
  * Originally, the title track length was calculated by looking at the PGC for
- * the track itself.  With that approach, the total length for the track did
- * not match the sum of the total length of all the individual cells.  The
+ * the track itself. With that approach, the total length for the track did
+ * not match the sum of the total length of all the individual cells. The
  * offset was small, in the range of -5 to +5 *milliseconds* and it did not
- * occur all the time.  To fix the title track length, I changed it to use the
- * total from all the cells.  That by itself changed the track lengths to msec
- * offsets that looked a little strange from their original parts.  Fex, 500
- * would change to 501, 900 to 898, etc.  Since it's far more likely that the
+ * occur all the time. To fix the title track length, I changed it to use the
+ * total from all the cells. That by itself changed the track lengths to msec
+ * offsets that looked a little strange from their original parts. Fex, 500
+ * would change to 501, 900 to 898, etc. Since it's far more likely that the
  * correct value was a whole integer (.500 seconds happens all the time), then
  * it needed to be changed.
  *
  * According to http://stnsoft.com/DVD/pgc.html it looks like the FPS values are
- * integers, either 25 or 30.  So this uses 3000 instead of 2997 for that reason.
- * as well.  With these two changes only does minor changes, and they are always
+ * integers, either 25 or 30. So this uses 3000 instead of 2997 for that reason.
+ * as well. With these two changes only does minor changes, and they are always
  * something like 734 to 733, 667 to 666, 834 to 833, and so on.
  *
  * Either way, it's probably safe to say that calculating the exact length of a

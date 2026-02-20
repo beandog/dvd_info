@@ -190,7 +190,7 @@ bool dvd_track_aspect_ratio_16x9(ifo_handle_t *vts_ifo) {
 }
 
 /**
- * Get the permitted_df field for a track.  Returns the uint8_t
+ * Get the permitted_df field for a track. Returns the uint8_t
  * directly, error checking should be done to see if it's valid or not.
  *
  * 0 = Pan and Scan or Letterbox
@@ -228,7 +228,7 @@ uint8_t dvd_video_df(ifo_handle_t *vts_ifo) {
 /**
  * Check for letterbox video
  *
- * This function looks at the permitted display format of the DVD.  Possible
+ * This function looks at the permitted display format of the DVD. Possible
  * values for this variable are:
  *
  * 0: Pan and Scan plus Letterbox
@@ -253,7 +253,7 @@ bool dvd_video_letterbox(ifo_handle_t *vts_ifo) {
 /**
  * Check for pan & scan video
  *
- * This function looks at the permitted display format of the DVD.  Possible
+ * This function looks at the permitted display format of the DVD. Possible
  * values for this variable are:
  *
  * 0: Pan & Scan plus Letterbox
@@ -262,7 +262,7 @@ bool dvd_video_letterbox(ifo_handle_t *vts_ifo) {
  * 3: ???
  *
  * This function returns true if either the first condition or the second one
- * is true.  This means that a video may be pan & scan, or it may be non-
+ * is true. This means that a video may be pan & scan, or it may be non-
  * anomorphic widescreen.
  */
 bool dvd_video_pan_scan(ifo_handle_t *vts_ifo) {

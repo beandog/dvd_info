@@ -3,11 +3,11 @@
 #include "dvd_chapter.h"
 
 /** It's a *safe guess* that if the program_map is NULL or there is no starting cell,
- * that the starting cell is actually the same as the chapter number.  See DVD id 79,
+ * that the starting cell is actually the same as the chapter number. See DVD id 79,
  * track #12 for an example where this matches (NULL values)
  *
  * TODO some closer examination to check that cells and chapters match up properly
- * is probably in order.  Some scenarios to look for would be where there are more
+ * is probably in order. Some scenarios to look for would be where there are more
  * chapters than cells, and the lengths of chapters don't exceed cells either. Doing
  * so would be a good fit for dvd_debug program.
  */

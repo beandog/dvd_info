@@ -88,11 +88,11 @@ bool dvd_drive_is_closed(const char *device_filename) {
 /**
  * Check if the DVD tray IS READY TO QUERY FOR STATUS
  *
- * Should be used internally only.  All other functions run this anytime it is
+ * Should be used internally only. All other functions run this anytime it is
  * doing a check to see if it's okay to query the status.
  *
  * This function is necessary for handling those states where a drive tray is
- * being opened or closed, and it hasn't finished initilization.  Once this
+ * being opened or closed, and it hasn't finished initilization. Once this
  * returns true, everything else has the green light to go.
  *
  */

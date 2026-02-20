@@ -18,7 +18,7 @@ uint8_t dvd_track_audio_tracks(ifo_handle_t *vts_ifo) {
 
 /**
  * Examine the PGC for the track IFO directly and see if there are any audio
- * control entries marked as active.  This is an alternative way of checking
+ * control entries marked as active. This is an alternative way of checking
  * for the number of audio streams, compared to looking at the VTS directly.
  * This is useful for debugging, and flushing out either badly mastered DVDs or
  * getting a closer identifier of how many streams this has.
@@ -107,7 +107,7 @@ bool dvd_audio_codec(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track)
 		return false;
 
 	char *audio_codecs[7] = { "ac3", "", "mpeg1", "mpeg2", "lpcm", "sdds", "dts" };
-	audio_attr_t *audio_attr =  &vts_ifo->vtsi_mat->vts_audio_attr[audio_track];
+	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_track];
 	uint8_t audio_codec = audio_attr->audio_format;
 
 	strncpy(dest_str, audio_codecs[audio_codec], DVD_AUDIO_CODEC);
@@ -140,7 +140,7 @@ uint8_t dvd_audio_channels(ifo_handle_t *vts_ifo, uint8_t audio_track) {
 /**
  * Get the quantization value for an audio track.
  *
- * Possible values: 16-bit, 20-bit, 24-bit, DRC
+ * Possible values: 16-bit, 20-bit, 24-bit, drc
  */
 bool dvd_audio_quantization(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track) {
 
@@ -180,7 +180,7 @@ bool dvd_audio_stream_id(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_tr
 }
 
 /**
- * Get the audio language code for a track.  A two-character string that is a
+ * Get the audio language code for a track. A two-character string that is a
  * short name for a language.
  *
  * Note: Remember that the language code is set in the IFO
