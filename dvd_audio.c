@@ -160,11 +160,11 @@ bool dvd_audio_quantization(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio
  * Get the content type of an audio track.
  *
  * lsdvd has first type as 'Undefined', and splits Commentary between
- * 'Comments1' and 'Comments2'.  I'm just going to keep it simple here, and
+ * 'Comments1' and 'Comments2'. I'm just going to keep it simple here, and
  * assume that no value is a normal type. For commentary tracks, I'm not going
  * to add an index.
  *
- * Possible values: 'Normal', 'Normal', 'Impaired', 'Commentary'
+ * Possible values: 'Normal', 'Impaired', 'Commentary'
  */
 bool dvd_audio_type(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track) {
 
