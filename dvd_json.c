@@ -80,6 +80,7 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 				printf("         \"codec\": \"%s\",\n", dvd_audio.codec);
 				printf("         \"channels\": %" PRIu8 ",\n", dvd_audio.channels);
 				printf("         \"quantization\": \"%s\",\n", dvd_audio.quantization);
+				printf("         \"type\": \"%s\",\n", dvd_audio.type);
 				printf("         \"stream id\": \"%s\"\n", dvd_audio.stream_id);
 				printf("       }");
 

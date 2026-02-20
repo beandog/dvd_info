@@ -10,6 +10,7 @@ struct dvd_audio {
 	char stream_id[DVD_AUDIO_STREAM_ID + 1];
 	char lang_code[DVD_AUDIO_LANG_CODE + 1];
 	char quantization[DVD_AUDIO_QUANTIZATION + 1];
+	char type[DVD_AUDIO_TYPE + 1];
 	char codec[DVD_AUDIO_CODEC + 1];
 	uint8_t channels;
 };
@@ -25,6 +26,8 @@ bool dvd_audio_codec(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track)
 uint8_t dvd_audio_channels(ifo_handle_t *vts_ifo, uint8_t audio_track);
 
 bool dvd_audio_quantization(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track);
+
+bool dvd_audio_type(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track);
 
 bool dvd_audio_stream_id(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track);
 

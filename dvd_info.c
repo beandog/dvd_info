@@ -630,6 +630,7 @@ int main(int argc, char **argv) {
 				printf("Codec: %s, ", dvd_audio.codec);
 				printf("Channels: %" PRIu8 ", ", dvd_audio.channels);
 				printf("Quantization: %s, ", dvd_audio.quantization);
+				printf("Type: '%s', ", dvd_audio.type);
 				printf("Stream id: %s, ", dvd_audio.stream_id);
 				printf("Active: %s", (dvd_audio.active ? "yes" : "no"));
 				printf("\n");

@@ -157,6 +157,30 @@ bool dvd_audio_quantization(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio
 }
 
 /**
+ * Get the content type of an audio track.
+ *
+ * lsdvd has first type as 'Undefined', and splits Commentary between
+ * 'Comments1' and 'Comments2'.  I'm just going to keep it simple here, and
+ * assume that no value is a normal type. For commentary tracks, I'm not going
+ * to add an index.
+ *
+ * Possible values: 'Normal', 'Normal', 'Impaired', 'Commentary'
+ */
+bool dvd_audio_type(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track) {
+
+	if(vts_ifo->vtsi_mat == NULL)
+		return false;
+
+	char *audio_types[5] = { "Normal", "Normal", "Impaired", "Commentary", "Commentary" };
+	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_track];
+	uint8_t audio_type = audio_attr->code_extension;
+
+	strncpy(dest_str, audio_types[audio_type], DVD_AUDIO_TYPE);
+	return true;
+
+}
+
+/**
  * Get the stream ID for an audio track
  *
  * AC3 = 0x80 to 0x87
