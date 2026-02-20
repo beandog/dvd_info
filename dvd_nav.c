@@ -13,11 +13,11 @@ int32_t dvd_info_region(dvdnav_t *dvdnav_dvd) {
 	int32_t dvdnav_region;
 	int32_t dvdnav_region_mask;
 
-	dvdnav_region = dvdnav_get_region_mask(dvdnav_dvd, &dvdnav_region_mask);
+	dvdnav_region = dvdnav_get_disk_region_mask(dvdnav_dvd, &dvdnav_region_mask);
 
-	if(dvdnav_region < 0 || dvdnav_region > 8)
+	if(dvdnav_region_mask < 0 || dvdnav_region_mask > 8)
 		return 0;
 
-	return dvdnav_region;
+	return dvdnav_region_mask;
 
 }

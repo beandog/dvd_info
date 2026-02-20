@@ -24,7 +24,7 @@ find_package(PkgConfig REQUIRED)
 # libdvdread 6.1.0 changed how files are accessed
 pkg_check_modules(DVDREAD REQUIRED dvdread>=6.1.0)
 # libdvdnav to get DVD region
-pkg_check_modules(DVDNAV dvdnav>=6.0.0)
+pkg_check_modules(DVDNAV dvdnav>=7.0.0)
 # libmpv doesn't have a specific version needed
 pkg_check_modules(MPV mpv)
 
