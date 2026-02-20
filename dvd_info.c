@@ -9,6 +9,7 @@
 #include "dvd_config.h"
 #include "dvd_info.h"
 #include "dvd_open.h"
+#include "dvd_nav.h"
 #include "dvd_device.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_vts.h"
@@ -371,11 +372,19 @@ int main(int argc, char **argv) {
 	// Use a custom function to send logs to (and shut up the annoying ones)
 	dvd_logger_cb dvdread_logger_cb = { dvd_info_logger_cb };
 
-	// Open the DVD
+	// Open the DVD with libdvdread
 	dvdread_dvd = DVDOpen2(NULL, &dvdread_logger_cb, device_filename);
-
 	if(!dvdread_dvd) {
-		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
+		fprintf(stderr, "Opening DVD with dvdread %s failed\n", device_filename);
+		return 1;
+	}
+
+	// Open the DVD with libvdnav
+	dvdnav_t *dvdnav_dvd = NULL;
+	dvdnav_status_t dvdnav_dvd_status;
+	dvdnav_dvd_status = dvdnav_open(&dvdnav_dvd, device_filename);
+	if(dvdnav_dvd_status != DVDNAV_STATUS_OK) {
+		fprintf(stderr, "Opening DVD with dvdnav %s failed\n", device_filename);
 		return 1;
 	}
 
@@ -387,7 +396,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	dvd_info = dvd_info_open(dvdread_dvd, device_filename);
+	dvd_info = dvd_info_open(dvdread_dvd, dvdnav_dvd, device_filename);
 	if(dvd_info.valid == 0)
 		return 1;
 
@@ -457,6 +466,7 @@ int main(int argc, char **argv) {
 	if(d_disc_title_header && !p_dvd_xchap) {
 		printf("Disc title: '%s', ", dvd_info.title);
 		printf("ID: '%s', ", dvd_info.dvdread_id);
+		printf("Region: %" PRId32 ", ", dvd_info.region);
 		printf("Tracks: %" PRIu16 ", ", dvd_info.tracks);
 		printf("Longest track: %" PRIu16, dvd_info.longest_track);
 		printf("\n");

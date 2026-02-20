@@ -271,9 +271,20 @@ int main(int argc, char **argv) {
 
 	dvd_reader_t *dvdread_dvd = NULL;
 	dvd_logger_cb dvdread_logger_cb = { dvd_info_logger_cb };
+
+	// Open the DVD with libdvdread
 	dvdread_dvd = DVDOpen2(NULL, &dvdread_logger_cb, device_filename);
 	if(!dvdread_dvd) {
-		fprintf(stderr, "Opening DVD %s failed\n", device_filename);
+		fprintf(stderr, "Opening DVD with dvdread %s failed\n", device_filename);
+		return 1;
+	}
+
+	// Open the DVD with libvdnav
+	dvdnav_t *dvdnav_dvd = NULL;
+	dvdnav_status_t dvdnav_dvd_status;
+	dvdnav_dvd_status = dvdnav_open(&dvdnav_dvd, device_filename);
+	if(dvdnav_dvd_status != DVDNAV_STATUS_OK) {
+		fprintf(stderr, "Opening DVD with dvdnav %s failed\n", device_filename);
 		return 1;
 	}
 
@@ -288,7 +299,7 @@ int main(int argc, char **argv) {
 
 	// DVD
 	struct dvd_info dvd_info;
-	dvd_info = dvd_info_open(dvdread_dvd, device_filename);
+	dvd_info = dvd_info_open(dvdread_dvd, dvdnav_dvd, device_filename);
 	if(dvd_info.valid == 0)
 		return 1;
 	if(p_dvd_copy)

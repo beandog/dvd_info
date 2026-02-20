@@ -17,6 +17,7 @@ void dvd_json(struct dvd_info dvd_info, struct dvd_track dvd_tracks[], uint16_t 
 	printf(" \"dvd\": {\n");
 	printf("   \"title\": \"%s\",\n", dvd_info.title);
 	printf("   \"side\": %" PRIu8 ",\n", dvd_info.side);
+	printf("   \"region\": %" PRId32 ",\n", dvd_info.region);
 	printf("   \"tracks\": %" PRIu16 ",\n", dvd_info.tracks);
 	printf("   \"longest track\": %u,\n", dvd_info.longest_track);
 	if(strlen(dvd_info.provider_id))

@@ -7,10 +7,12 @@
 #include <string.h>
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
+#include <dvdnav/dvdnav.h>
 #include "dvd_device.h"
 #include "dvd_drive.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_info.h"
+#include "dvd_nav.h"
 
 extern bool log_verbose;
 extern bool log_debug;
@@ -19,6 +21,6 @@ void dvd_info_logger_cb(void *p, dvd_logger_level_t dvdread_log_level, const cha
 
 int device_open(const char *device_filename);
 
-struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, const char *device_filename);
+struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, dvdnav_t *dvdnav_dvd, const char *device_filename);
 
 #endif
