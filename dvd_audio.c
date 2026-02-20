@@ -138,6 +138,31 @@ uint8_t dvd_audio_channels(ifo_handle_t *vts_ifo, uint8_t audio_track) {
 }
 
 /**
+ * ** This is a placeholder function **
+ *
+ * Get audio track frequency
+ *
+ * lsdvd looks at audio attribute 'sample_frequency'
+ * lsdvd only reports 48kHz for all audio, and only says there are 2 options
+ *
+ * ifo_print (libdvdread) looks at audio attribute 'sampling_frequency'
+ * ifo_print will return 0 (default) as 48kHz, 1 as unknown, and anything else
+ * as asking for a bug report.
+ *
+ * I assmume that a DVD-A (DVD-Audio) disc has different frequency values. But,
+ * since I don't have one, I can't test it, so I'm not going to hard code any
+ * values or guess. :(
+ *
+ */
+/*
+uint16_t dvd_audio_frequency(ifo_handle_t *vts_ifo, uint8_t audio_track) {
+
+	return 48000;
+
+}
+*/
+
+/**
  * Get the quantization value for an audio track.
  *
  * Possible values: 16-bit, 20-bit, 24-bit, drc
