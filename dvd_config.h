@@ -1,3 +1,3 @@
 #ifndef PACKAGE_VERSION
-#define PACKAGE_VERSION "2.0"
+#define PACKAGE_VERSION "2.1"
 #endif

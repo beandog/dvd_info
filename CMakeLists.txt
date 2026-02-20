@@ -2,8 +2,8 @@
 cmake_minimum_required(VERSION 3.10)
 # Yay! :D
 set(PROJECT_NAME "dvd_info")
-set(PROJECT_VERSION "2.0")
-set(CPACK_PACKAGE_VERSION "2.0")
+set(PROJECT_VERSION "2.1")
+set(CPACK_PACKAGE_VERSION "2.1")
 
 # Display what compiler is doing
 set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
