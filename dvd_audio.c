@@ -138,6 +138,25 @@ uint8_t dvd_audio_channels(ifo_handle_t *vts_ifo, uint8_t audio_track) {
 }
 
 /**
+ * Get the quantization value for an audio track.
+ *
+ * Possible values: 16-bit, 20-bit, 24-bit, DRC
+ */
+bool dvd_audio_quantization(char *dest_str, ifo_handle_t *vts_ifo, uint8_t audio_track) {
+
+	if(vts_ifo->vtsi_mat == NULL)
+		return false;
+
+	char *audio_quantizations[4] = { "16-bit", "20-bit", "24-bit", "drc" };
+	audio_attr_t *audio_attr = &vts_ifo->vtsi_mat->vts_audio_attr[audio_track];
+	uint8_t audio_quantization = audio_attr->quantization;
+
+	strncpy(dest_str, audio_quantizations[audio_quantization], DVD_AUDIO_QUANTIZATION);
+	return true;
+
+}
+
+/**
  * Get the stream ID for an audio track
  *
  * AC3 = 0x80 to 0x87

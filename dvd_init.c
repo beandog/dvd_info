@@ -127,6 +127,9 @@ struct dvd_track dvd_track_init(dvd_reader_t *dvdread_dvd, ifo_handle_t *vmg_ifo
 			memset(dvd_audio.codec, '\0', sizeof(dvd_audio.codec));
 			dvd_audio_codec(dvd_audio.codec, vts_ifo, ix);
 
+			memset(dvd_audio.quantization, '\0', sizeof(dvd_audio.quantization));
+			dvd_audio_quantization(dvd_audio.quantization, vts_ifo, ix);
+
 			dvd_track.dvd_audio_tracks[ix] = dvd_audio;
 
 		}
