@@ -17,7 +17,7 @@ struct dvd_info {
 	char serial_number[DVD_SERIAL_NUMBER + 1];
 	char provider_id[DVD_PROVIDER_ID + 1];
 	char vmg_id[DVD_VMG_ID + 1];
-	int32_t region;
+	uint32_t region;
 	uint16_t tracks;
 	uint16_t longest_track;
 	uint16_t valid_tracks;

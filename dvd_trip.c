@@ -434,15 +434,6 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// Open the DVD with libvdnav
-	dvdnav_t *dvdnav_dvd = NULL;
-	dvdnav_status_t dvdnav_dvd_status;
-	dvdnav_dvd_status = dvdnav_open(&dvdnav_dvd, device_filename);
-	if(dvdnav_dvd_status != DVDNAV_STATUS_OK) {
-		fprintf(stderr, "Opening DVD with dvdnav %s failed\n", device_filename);
-		return 1;
-	}
-
 	// Check if DVD has an identifier, fail otherwise
 	char dvdread_id[DVD_DVDREAD_ID + 1];
 	memset(dvdread_id, '\0', sizeof(dvdread_id));

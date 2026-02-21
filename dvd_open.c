@@ -87,7 +87,7 @@ int device_open(const char *device_filename) {
 
 }
 
-struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, dvdnav_t *dvdnav_dvd, const char *device_filename) {
+struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, const char *device_filename) {
 
 	struct dvd_info dvd_info;
 
@@ -122,8 +122,8 @@ struct dvd_info dvd_info_open(dvd_reader_t *dvdread_dvd, dvdnav_t *dvdnav_dvd, c
 	dvd_info.side = dvd_info_side(vmg_ifo);
 	dvd_title(dvd_info.title, device_filename);
 	dvd_provider_id(dvd_info.provider_id, vmg_ifo);
+	dvd_info.region = dvd_vmg_region_code(vmg_ifo);
 	dvd_vmg_id(dvd_info.vmg_id, vmg_ifo);
-	dvd_info.region = dvd_info_region(dvdnav_dvd);
 	dvd_info.tracks = dvd_tracks(vmg_ifo);
 
 	// FIXME either put longest_track in here, or remove it from the struct

@@ -132,6 +132,20 @@ uint8_t dvd_info_side(ifo_handle_t *vmg_ifo) {
 
 }
 
+int32_t dvd_vmg_region_code(ifo_handle_t *vmg_ifo) {
+
+	if(vmg_ifo == NULL && vmg_ifo->vmgi_mat == NULL)
+		return 0;
+
+	int32_t region_code = ((vmg_ifo->vmgi_mat->vmg_category >> 16) & 0xff) ^0xff;
+
+	if(region_code > 8)
+		return 0;
+
+	return region_code;
+
+}
+
 bool dvd_specification_version(char *dest_str, ifo_handle_t *vmg_ifo) {
 
 	if(vmg_ifo != NULL && vmg_ifo->vmgi_mat != NULL) {

@@ -175,6 +175,12 @@ bool dvd_vmg_id(char *dest_str, ifo_handle_t *vmg_ifo);
 uint8_t dvd_info_side(ifo_handle_t *vmg_ifo);
 
 /**
+ * Get the DVD region code
+ *
+ */
+int32_t dvd_vmg_region_code(ifo_handle_t *vmg_ifo);
+
+/**
  * Get the DVD specifiation version
  *
  * Example: 1.0
