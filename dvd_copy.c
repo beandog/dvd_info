@@ -460,7 +460,6 @@ int main(int argc, char **argv) {
 		dvd_copy.first_cell = dvd_chapter.first_cell;
 		dvd_copy.last_cell = dvd_chapter.last_cell;
 
-		// for(dvd_cell.cell = dvd_chapter.first_cell; dvd_cell.cell < dvd_chapter.last_cell + 1; dvd_cell.cell++) {
 		for(dvd_cell.cell = dvd_copy.first_cell; dvd_cell.cell < dvd_copy.last_cell + 1; dvd_cell.cell++) {
 
 			dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
