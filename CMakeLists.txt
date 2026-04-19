@@ -97,6 +97,10 @@ if(MPV_FOUND)
 	INSTALL(FILES dvd_trip.1 DESTINATION "${CMAKE_INSTALL_MANDIR}/man1")
 endif()
 
+target_include_directories(dvd_info PRIVATE "/usr/pkg/include")
+get_property(includeDirs TARGET dvd_info PROPERTY INCLUDE_DIRECTORIES)
+message("Include directories: ${includeDirs}")
+
 # cmake doesn't have a native uninstall option
 add_custom_target("uninstall")
 add_custom_command(
