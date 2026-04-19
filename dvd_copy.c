@@ -77,11 +77,11 @@ int main(int argc, char **argv) {
 	int long_index = 0;
 	int opt = 0;
 	bool invalid_opt = false;
+	bool verbose = false;
+	bool debug = false;
 	unsigned long int arg_number = 0;
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
-	uint8_t arg_first_cell = 1;
-	uint8_t arg_last_cell = 99;
 	char *token = NULL;
 	struct dvd_copy dvd_copy;
 
@@ -93,6 +93,8 @@ int main(int argc, char **argv) {
 		{ "track", required_argument, 0, 't' },
 		{ "help", no_argument, 0, 'h' },
 		{ "version", no_argument, 0, 'V' },
+		{ "verbose", no_argument, 0, 'v' },
+		{ "debug", no_argument, 0, 'z' },
 		{ 0, 0, 0, 0 }
 
 	};
@@ -109,7 +111,7 @@ int main(int argc, char **argv) {
 	memset(dvd_copy.buffer, '\0', DVD_VIDEO_LB_LEN);
 	memset(dvd_copy.filename, '\0', PATH_MAX);
 
-	while((opt = getopt_long(argc, argv, "c:ho:t:V", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "c:ho:t:Vvz", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -181,6 +183,15 @@ int main(int argc, char **argv) {
 			case 'V':
 				printf("dvd_copy %s\n", PACKAGE_VERSION);
 				return 0;
+
+			case 'v':
+				verbose = true;
+				break;
+
+			case 'z':
+				verbose = true;
+				debug = true;
+				break;
 
 			// ignore unknown arguments
 			case '?':
