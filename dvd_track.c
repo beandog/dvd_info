@@ -122,13 +122,13 @@ uint64_t dvd_track_blocks(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint16_t
 	uint8_t cells;
 	cells = dvd_track_cells(vmg_ifo, vts_ifo, track_number);
 
-	uint8_t cell;
+	uint16_t ix;
 	uint64_t cell_blocks;
 	uint64_t track_blocks;
 	track_blocks = 0;
-	for(cell = 1; cell < cells + 1; cell++) {
+	for(ix = 1; ix < cells + 1; ix++) {
 
-		cell_blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, track_number, cell);
+		cell_blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, track_number, ix);
 
 		track_blocks += cell_blocks;
 

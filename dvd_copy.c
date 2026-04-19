@@ -82,6 +82,7 @@ int main(int argc, char **argv) {
 	unsigned long int arg_number = 0;
 	uint8_t arg_first_chapter = 1;
 	uint8_t arg_last_chapter = 99;
+	uint16_t ix = 0;
 	char *token = NULL;
 	struct dvd_copy dvd_copy;
 
@@ -321,7 +322,6 @@ int main(int argc, char **argv) {
 		dvd_copy.track = arg_track_number;
 	}
 
-	uint16_t ix = 0;
 	uint16_t track = 1;
 
 	uint32_t longest_msecs = 0;
@@ -436,11 +436,13 @@ int main(int argc, char **argv) {
 		dvd_copy.first_cell = dvd_chapter.first_cell;
 		dvd_copy.last_cell = dvd_chapter.last_cell;
 
-		for(dvd_cell.cell = dvd_copy.first_cell; dvd_cell.cell < dvd_copy.last_cell + 1; dvd_cell.cell++) {
-			dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+		for(ix = dvd_copy.first_cell; ix < dvd_copy.last_cell + 1; ix++) {
+
+			dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, ix);
 			dvd_copy.blocks += dvd_cell.blocks;
-			dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+			dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, ix);
 			dvd_copy.filesize += dvd_cell.filesize;
+
 		}
 
 	}
@@ -471,17 +473,17 @@ int main(int argc, char **argv) {
 		dvd_copy.first_cell = dvd_chapter.first_cell;
 		dvd_copy.last_cell = dvd_chapter.last_cell;
 
-		for(dvd_cell.cell = dvd_copy.first_cell; dvd_cell.cell < dvd_copy.last_cell + 1; dvd_cell.cell++) {
+		for(ix = dvd_copy.first_cell; ix < dvd_copy.last_cell + 1; ix++) {
 
-			dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-			dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-			dvd_cell.first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-			dvd_cell.last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
-			dvd_cell_length(dvd_cell.length, vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
+			dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, ix);
+			dvd_cell.filesize = dvd_cell_filesize(vmg_ifo, vts_ifo, dvd_track.track, ix);
+			dvd_cell.first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, dvd_track.track, ix);
+			dvd_cell.last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, dvd_track.track, ix);
+			dvd_cell_length(dvd_cell.length, vmg_ifo, vts_ifo, dvd_track.track, ix);
 			cell_sectors = dvd_cell.last_sector - dvd_cell.first_sector;
 
 			if(p_dvd_copy)
-				printf("        Chapter: %*" PRIu8 ", Cell: %*" PRIu8 ", Filesize: % 5.0lf MBs\n", 2, dvd_chapter.chapter, 2, dvd_cell.cell, ceil(dvd_cell.filesize / 1048576.0));
+				printf("        Chapter: %*" PRIu8 ", Cell: %*" PRIu8 ", Filesize: % 5.0lf MBs\n", 2, dvd_chapter.chapter, 2, ix, ceil(dvd_cell.filesize / 1048576.0));
 
 			if(dvd_cell.last_sector > dvd_cell.first_sector)
 				cell_sectors++;

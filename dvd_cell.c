@@ -103,20 +103,20 @@ bool dvd_track_min_sector_error(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, ui
 	if(!cells || cells == 1)
 		return false;
 
-	uint8_t cell = 2;
+	uint16_t ix = 2;
 	uint64_t first_sector = 0;
 	uint64_t min_sector = 0;
 
 	min_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, 1);
 
-	for(cell = 2; cell < cells + 1; cell++) {
+	for(ix = 2; ix < cells + 1; ix++) {
 
-		first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, cell);
+		first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, ix);
 
 		if(first_sector < min_sector)
 			return true;
 
-		min_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, cell);
+		min_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, ix);
 
 	}
 
@@ -131,15 +131,15 @@ bool dvd_track_max_sector_error(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, ui
 	if(!cells || cells == 1)
 		return false;
 
-	uint8_t cell = 2;
+	uint16_t ix = 2;
 	uint64_t last_sector = 0;
 	uint64_t max_sector = 0;
 
 	max_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, 1);
 
-	for(cell = 2; cell < cells + 1; cell++) {
+	for(ix = 2; ix < cells + 1; ix++) {
 
-		last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, cell);
+		last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, ix);
 
 		if(last_sector < max_sector)
 			return true;
@@ -159,15 +159,15 @@ bool dvd_track_repeat_first_sector_error(ifo_handle_t *vmg_ifo, ifo_handle_t *vt
 	if(!cells || cells == 1)
 		return false;
 
-	uint8_t cell = 2;
+	uint16_t ix = 2;
 	uint64_t first_cell_first_sector = 0;
 	uint64_t first_sector = 0;
 
 	first_cell_first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, 1);
 
-	for(cell = 2; cell < cells + 1; cell++) {
+	for(ix = 2; ix < cells + 1; ix++) {
 
-		first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, cell);
+		first_sector = dvd_cell_first_sector(vmg_ifo, vts_ifo, track_number, ix);
 
 		if(first_sector == first_cell_first_sector)
 			return true;
@@ -185,15 +185,15 @@ bool dvd_track_repeat_last_sector_error(ifo_handle_t *vmg_ifo, ifo_handle_t *vts
 	if(!cells || cells == 1)
 		return false;
 
-	uint8_t cell = 2;
+	uint16_t ix = 2;
 	uint64_t first_cell_last_sector = 0;
 	uint64_t last_sector = 0;
 
 	first_cell_last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, 1);
 
-	for(cell = 2; cell < cells + 1; cell++) {
+	for(ix = 2; ix < cells + 1; ix++) {
 
-		last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, cell);
+		last_sector = dvd_cell_last_sector(vmg_ifo, vts_ifo, track_number, ix);
 
 		if(last_sector == first_cell_last_sector)
 			return true;

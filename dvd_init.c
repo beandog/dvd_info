@@ -10,7 +10,7 @@ struct dvd_track dvd_track_init(dvd_reader_t *dvdread_dvd, ifo_handle_t *vmg_ifo
 	struct dvd_track dvd_track;
 	struct dvd_video dvd_video;
 	ifo_handle_t *vts_ifo = NULL;
-	uint8_t ix;
+	uint8_t ix = 0;
 
 	dvd_track.track = track_number;
 	dvd_track.dvd_audio_tracks = NULL;

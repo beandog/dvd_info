@@ -1,3 +1,7 @@
+2.2
+
+* Fix integer overflow for tracks that have 255 cells
+
 2.1
 
 * Display more audio track details (bug #18, thanks to xmixahlx for reporing)
