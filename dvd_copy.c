@@ -70,7 +70,6 @@ int main(int argc, char **argv) {
 	char device_filename[PATH_MAX];
 	bool opt_track_number = false;
 	bool opt_chapter_number = false;
-	bool opt_cell_number = false;
 	bool p_dvd_copy = true;
 	bool p_dvd_cat = false;
 	bool opt_filename = false;
@@ -110,7 +109,7 @@ int main(int argc, char **argv) {
 	memset(dvd_copy.buffer, '\0', DVD_VIDEO_LB_LEN);
 	memset(dvd_copy.filename, '\0', PATH_MAX);
 
-	while((opt = getopt_long(argc, argv, "c:d:ho:t:V", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "c:ho:t:V", long_options, &long_index )) != -1) {
 
 		switch(opt) {
 
@@ -154,49 +153,6 @@ int main(int argc, char **argv) {
 
 				if(arg_first_chapter > arg_last_chapter)
 					arg_first_chapter = arg_last_chapter;
-				break;
-
-			case 'd':
-				opt_cell_number = true;
-				token = strtok(optarg, "-"); {
-					if(strlen(token) > 2) {
-						fprintf(stderr, "[dvd_copy] Cell range must be between 1 and 99\n");
-						return 1;
-					}
-					arg_number = strtoul(token, NULL, 10);
-					if(arg_number > 99)
-						arg_first_cell = 99;
-					else if(arg_number == 0)
-						arg_first_cell = 1;
-					else
-						arg_first_cell = (uint8_t)arg_number;
-				}
-
-				token = strtok(NULL, "-");
-
-				if(token == NULL) {
-					arg_last_cell = arg_first_cell;
-				}
-
-				if(token != NULL) {
-					if(strlen(token) > 2) {
-						fprintf(stderr, "[dvd_copy] Cell range must be between 1 and 99\n");
-						return 1;
-					}
-					arg_number = strtoul(token, NULL, 10);
-					if(arg_number > 99)
-						arg_last_cell = 99;
-					else if(arg_number == 0)
-						arg_last_cell = arg_first_cell;
-					else
-						arg_last_cell = (uint8_t)arg_number;
-				}
-
-				if(arg_last_cell < arg_first_cell)
-					arg_last_cell = arg_first_cell;
-				if(arg_first_cell > arg_last_cell)
-					arg_first_cell = arg_last_cell;
-
 				break;
 
 			case 'o':
@@ -252,13 +208,6 @@ int main(int argc, char **argv) {
 
 		}
 
-	}
-
-	// Setting a cell range requires a chapter to be selected; If none is specified, use the first chapter only
-	if(opt_cell_number && !opt_chapter_number) {
-		opt_chapter_number = true;
-		arg_first_chapter = 1;
-		arg_last_chapter = 1;
 	}
 
 	memset(device_filename, '\0', PATH_MAX);
@@ -404,22 +353,8 @@ int main(int argc, char **argv) {
 	}
 
 	// Set the proper cell range
-	if(opt_cell_number) {
-		if(arg_first_cell > dvd_track.cells) {
-			dvd_copy.first_cell = dvd_track.cells;
-			fprintf(stderr, "[dvd_copy] Resetting first cell to %" PRIu8 "\n", dvd_copy.first_cell);
-		} else
-			dvd_copy.first_cell = arg_first_cell;
-
-		if(arg_last_cell > dvd_track.cells) {
-			dvd_copy.last_cell = dvd_track.cells;
-			fprintf(stderr, "[dvd_copy] Resetting last cell to %" PRIu8 "\n", dvd_copy.last_cell);
-		} else
-			dvd_copy.last_cell = arg_last_cell;
-	} else {
-		dvd_copy.first_cell = 1;
-		dvd_copy.last_cell = dvd_track.cells;
-	}
+	dvd_copy.first_cell = 1;
+	dvd_copy.last_cell = dvd_track.cells;
 
 	// Set default filename
 	if(!opt_filename) {
@@ -487,10 +422,8 @@ int main(int argc, char **argv) {
 		dvd_chapter.first_cell = dvd_chapter_first_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
 		dvd_chapter.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
 
-		if(opt_cell_number == false) {
-			dvd_copy.first_cell = dvd_chapter.first_cell;
-			dvd_copy.last_cell = dvd_chapter.last_cell;
-		}
+		dvd_copy.first_cell = dvd_chapter.first_cell;
+		dvd_copy.last_cell = dvd_chapter.last_cell;
 
 		for(dvd_cell.cell = dvd_copy.first_cell; dvd_cell.cell < dvd_copy.last_cell + 1; dvd_cell.cell++) {
 			dvd_cell.blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, dvd_track.track, dvd_cell.cell);
@@ -524,10 +457,8 @@ int main(int argc, char **argv) {
 		dvd_chapter.last_cell = dvd_chapter_last_cell(vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
 		dvd_chapter_length(dvd_chapter.length, vmg_ifo, vts_ifo, dvd_copy.track, dvd_chapter.chapter);
 
-		if(opt_cell_number == false) {
-			dvd_copy.first_cell = dvd_chapter.first_cell;
-			dvd_copy.last_cell = dvd_chapter.last_cell;
-		}
+		dvd_copy.first_cell = dvd_chapter.first_cell;
+		dvd_copy.last_cell = dvd_chapter.last_cell;
 
 		// for(dvd_cell.cell = dvd_chapter.first_cell; dvd_cell.cell < dvd_chapter.last_cell + 1; dvd_cell.cell++) {
 		for(dvd_cell.cell = dvd_copy.first_cell; dvd_cell.cell < dvd_copy.last_cell + 1; dvd_cell.cell++) {
