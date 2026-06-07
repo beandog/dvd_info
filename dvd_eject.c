@@ -11,9 +11,8 @@
 #include <sys/mount.h>
 #include <getopt.h>
 #include <mntent.h>
-#include <dvdcss/dvdcss.h>
-
-#define DEFAULT_DVD_DEVICE "/dev/sr0"
+#include <dvdread/dvd_reader.h>
+#include "dvd_device.h"
 
 	/**
 	 *      _          _          _           _
@@ -26,14 +25,15 @@
 	 *
 	 * Opens / closes a disc tray, and decrypts the CSS on the drive to avoid
 	 * any spatial anomalies (and hardware devices whining to the kernel about
-	 * reading sectors without authentication). Requires libdvdcss as a
+	 * reading sectors without authentication). Requires libdvdread as a
 	 * dependency library.
 	 *
 	 * Three return values: 0 on success, 1 on error, 2 on success and drive has
 	 * a DVD inside of it.
 	 *
-	 * To build:
-	 * $ gcc -o dvd_eject dvd_eject.c -l dvdcss
+	 * To build, one of the two:
+	 * $ gcc -o dvd_eject dvd_eject.c -ldvdread
+	 * $ gcc -o dvd_eject dvd_eject.c `pkg-config --libs --cflags dvdread`
 	 *
 	 * Usage:
 	 * $ dvd_eject -h
@@ -68,7 +68,7 @@
 	 *
 	 * 1. Make as *few* calls as possible to the device to check on its status
 	 *    (this program does that -- it keeps it to a bare minimum)
-	 * 2. Use libdvdcss to authenticate access to the DVD.
+	 * 2. Use libdvdcss to authenticate access to the DVD (through libdvdread)
 	 *
 	 * Those two combined seem to help in large amounts, but I've never found
 	 * anything that is a sure fire solution.
@@ -77,15 +77,16 @@
 	 * closing a disc tray is trivial. The issue this one works around, however,
 	 * is that just because a tray is *closed*, does not mean that it is *ready* to
 	 * acess the media in it. This can cause issues when you do something like
-	 * "lsdvd /dev/dvd" and the tray is open. The tray will close by the call made
+	 * "dvd_info /dev/dvd" and the tray is open. The tray will close by the call made
 	 * through libdvdread / libdvdcss to access the device, but will fail because
 	 * the device is not yet in a ready mode. So there's a gap between "closing" and
 	 * "closed and ready". Fortunately, the Linux kernel allows for checking those
 	 * states, and that's the core of the logic here.
 	 *
 	 * With that in mind, all this does is close or open the tray, wait until it is
-	 * a "ready" state again, and then exits. In addition, if it closes the tray,
-	 * it waits until the "ready" state and then decrypts the CSS using libdvdcss.
+	 * a "ready" state again, and then exits.
+	 *
+	 * You can optionally open the DVD with libdvdread as a final check.
 	 *
 	 * If anecdotal evidence has any value ... it works for me. :)
 	 *
@@ -102,47 +103,73 @@ int open_tray(int dvd_fd);
 int close_tray(int dvd_fd);
 int lock_door(int dvd_fd);
 int unlock_door(int dvd_fd);
-int8_t is_mounted(const char *device_filename);
+int8_t is_mounted(char *device_filename);
 
 int main(int argc, char **argv) {
 
+	// Program name
+	bool p_dvd_eject = true;
+	bool p_dvd_close = false;
+	bool p_eject = false;
+	bool d_help = false;
+	bool p_dvdread = false;
+
+	// Device hardware
+	char device_filename[PATH_MAX];
+	int dvd_fd = -1;
+	char eject_str[PATH_MAX];
+	char umount_str[PATH_MAX];
+
+	// Drive status
+	bool dvd_drive_opened = false;
+	bool dvd_drive_has_media = false;
+
+	// Waiting
+	uint32_t sleepy_time = 1000000;
+	bool opt_wait = false;
+	int arg_wait_times = 15;
+	int times_waited = 0;
+	int retval = -1;
+
+	// getopt
 	int long_index = 0;
 	int opt = 0;
 	opterr = 1;
-	uint32_t sleepy_time = 1000000;
-	int dvd_fd = -1;
-	const char *device_filename = NULL;
-	char umount_str[PATH_MAX];
-	bool p_dvd_eject = true;
-	bool p_dvd_close = false;
-	bool dvd_drive_opened = false;
-	bool dvd_drive_has_media = false;
-	bool opt_wait = true;
-	int max_waiting_times = 15;
-	int times_waited = 0;
-	int retval = -1;
-	bool d_help = false;
 
-	memset(umount_str, '\0', PATH_MAX);
+	// Start dvd_eject
 
+	// Get options
 	struct option long_options[] = {
+		{ "eject", no_argument, 0, 'j' },
 		{ "close", no_argument, 0, 't' },
+		{ "dvdread", no_argument, 0, 'd' },
+		{ "system", no_argument, 0, 's' },
+		{ "wait", no_argument, 0, 'w' },
 		{ "help", no_argument, 0, 'h' },
-		{ "no-wait", no_argument, 0, 'n' },
 		{ 0, 0, 0, 0 }
 	};
 
-	while((opt = getopt_long(argc, argv, "hnrt", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "djtswh", long_options, &long_index )) != -1) {
 		switch(opt) {
 			case 'h':
 				d_help = true;
 				break;
-			case 'n':
-				opt_wait = false;
+			case 'w':
+				opt_wait = true;
 				break;
 			case 't':
 				p_dvd_eject = false;
 				p_dvd_close = true;
+				break;
+			case 'j':
+				p_dvd_eject = true;
+				p_dvd_close = false;
+				break;
+			case 'd':
+				p_dvdread = true;
+				break;
+			case 's':
+				p_eject = true;
 				break;
 			case '?':
 				d_help = true;
@@ -157,17 +184,38 @@ int main(int argc, char **argv) {
 		printf("dvd_eject - eject or close an optical drive\n");
 		printf("\n");
 		printf("Usage: dvd_eject [options] [device]\n\n");
-		printf("-h, --help	Display this help output\n");
+		printf("-j, --open	Open tray (default)\n");
 		printf("-t, --close	Close tray\n");
-		printf("-n, --no-wait	Don't wait for device to be ready when closing\n");
+		printf("-w, --wait	Wait for device to be ready after closing tray\n");
+		printf("-w, --wait	Try to open with libdvdread after closing tray\n");
+		printf("-s, --system	Use local 'eject' command instead\n");
+		printf("-h, --help	Display this help output\n");
 		printf("\nDefault device is %s\n", DEFAULT_DVD_DEVICE);
 		return 0;
 	}
 
-	if (argv[optind])
-		device_filename = argv[optind];
+	// Start dvd_eject
+	memset(device_filename, '\0', PATH_MAX);
+	if(argv[optind])
+		strncpy(device_filename, argv[optind], PATH_MAX - 1);
 	else
-		device_filename = DEFAULT_DVD_DEVICE;
+		strncpy(device_filename, DEFAULT_DVD_DEVICE, PATH_MAX - 1);
+
+	if(p_eject) {
+
+		memset(eject_str, '\0', PATH_MAX);
+		if(p_dvd_eject)
+			snprintf(eject_str, PATH_MAX - 1, "eject %s", device_filename);
+		else if(p_dvd_close)
+			snprintf(eject_str, PATH_MAX - 1, "eject -t %s", device_filename);
+
+		retval = system(eject_str);
+
+		return retval;
+
+	}
+
+	memset(umount_str, '\0', PATH_MAX);
 
 	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
 
@@ -178,11 +226,9 @@ int main(int argc, char **argv) {
 
 	// Fetch status
 	if(drive_status(dvd_fd) < 0) {
-
 		printf("%s is not a DVD drive\n", device_filename);
 		close(dvd_fd);
 		return 1;
-
 	}
 
 	if(p_dvd_eject)
@@ -203,9 +249,9 @@ int main(int argc, char **argv) {
 		printf(".");
 		usleep(sleepy_time);
 		times_waited += 1;
-		if(times_waited == max_waiting_times) {
+		if(times_waited == arg_wait_times) {
 			printf("\n");
-			printf("* Waited %i, tired of waiting, trying workarounds\n", max_waiting_times);
+			printf("* Waited %i, tired of waiting, trying workarounds\n", arg_wait_times);
 			printf("* Closing and reopening device\n");
 			if(close(dvd_fd) == 0) {
 				printf("* Closing file descriptor worked\n");
@@ -249,14 +295,14 @@ int main(int argc, char **argv) {
 
 	if(p_dvd_close && !dvd_drive_opened) {
 
-		if(has_media(dvd_fd)) {
+		if(has_media(dvd_fd) && p_dvdread) {
 			printf("* Scanning Deck C section 55 for anomalies ... ");
-			if(dvdcss_open(device_filename) == NULL) {
+			dvd_reader_t *dvdread_dvd = NULL;
+			dvdread_dvd = DVDOpen(device_filename);
+			if(dvdread_dvd == NULL)
 				printf("red alert!!\n");
-			} else {
+			else
 				printf("all systems go!\n");
-				return 2;
-			}
 		}
 
 		close(dvd_fd);
@@ -282,6 +328,7 @@ int main(int argc, char **argv) {
 
 			// Try unmounting it using a system call
 			if(device_mounted) {
+
 				snprintf(umount_str, PATH_MAX - 1, "umount %s", device_filename);
 				retval = system(umount_str);
 
@@ -289,7 +336,9 @@ int main(int argc, char **argv) {
 				if(is_mounted(device_filename)) {
 					printf("* Junior crew may have scraped the sides .. check for faulty mounts!\n");
 				}
+
 			}
+
 		}
 
 		// Ideally, opening the tray will unlock it as well. If not, try again
@@ -306,9 +355,13 @@ int main(int argc, char **argv) {
 			}
 			retval = open_tray(dvd_fd);
 			if(retval) {
-				printf("* Door seems to be stuck ... giving up\n");
+				printf("* Door seems to be stuck ... \n");
 				close(dvd_fd);
-				return 1;
+				printf("* One last try!\n");
+				memset(eject_str, '\0', PATH_MAX);
+				snprintf(eject_str, PATH_MAX - 1, "eject %s", device_filename);
+				retval = system(eject_str);
+				return retval;
 			}
 		}
 
@@ -351,25 +404,15 @@ int main(int argc, char **argv) {
 		}
 
 		// Open DVD device
-		if(has_media(dvd_fd)) {
+		if(has_media(dvd_fd) && p_dvdread) {
 			printf("* Scanning Deck C section 55 for anomalies ... ");
-			if(dvdcss_open(device_filename) == NULL)
+			dvd_reader_t *dvdread_dvd = NULL;
+			dvdread_dvd = DVDOpen(device_filename);
+			if(dvdread_dvd == NULL)
 				printf("red alert!!\n");
 			else
 				printf("all systems go!\n");
 		}
-
-		// Open DVD device
-		/*
-		printf("* Opening device with dvdread ... ");
-		dvd_reader_t *dvdread_dvd = NULL;
-		dvdread_dvd = DVDOpen(device_filename);
-		if(!dvdread_dvd) {
-			printf("failed\n");
-		} else {
-			printf("ok\n");
-		}
-		*/
 
 		printf("* Welcome to the station! Enjoy your stay.\n");
 
@@ -447,7 +490,7 @@ int unlock_door(int dvd_fd) {
  * Returns 1 if true; 0 if false; -1 if it can't tell
  * Used to unmount a drive before ejecting it
  */
-int8_t is_mounted(const char *device_filename) {
+int8_t is_mounted(char *device_filename) {
 
 	FILE *mtab = setmntent("/proc/mounts", "r");
 

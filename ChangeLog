@@ -1,3 +1,7 @@
+2.3
+
+* Add dvd_eject with lots of options
+
 2.2
 
 * Fix integer overflow for tracks that have 255 cells

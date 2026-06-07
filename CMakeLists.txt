@@ -2,8 +2,8 @@
 cmake_minimum_required(VERSION 3.10)
 # Yay! :D
 set(PROJECT_NAME "dvd_info")
-set(PROJECT_VERSION "2.2")
-set(CPACK_PACKAGE_VERSION "2.2")
+set(PROJECT_VERSION "2.3")
+set(CPACK_PACKAGE_VERSION "2.3")
 
 # Display what compiler is doing
 set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
@@ -63,6 +63,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	add_executable(dvd_drive_status dvd_drive_status.c)
 	INSTALL(FILES dvd_drive_status PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE DESTINATION bin)
 	INSTALL(FILES dvd_drive_status.1 DESTINATION "${CMAKE_INSTALL_MANDIR}/man1")
+endif()
+
+# Build dvd_eject for Linux
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	add_executable(dvd_eject dvd_eject.c)
+	target_link_libraries(dvd_eject PRIVATE dvdread)
+	INSTALL(FILES dvd_eject PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE DESTINATION bin)
 endif()
 
 # Build device utilities for FreeBSD

@@ -13,22 +13,8 @@ SYNOPSIS
 DESCRIPTION
 -----------
 This will use the default optical device, unmount it, and eject it. You can pass
-an option to force an eject as well. If unmount doesn't work, it will 
+an option to force an eject as well. If unmount doesn't work, it will
 continue anyway. Also has an option to close the tray.
-
-For FreeBSD, there is a native program to eject drives as well:
-
-$ cdcontrol cd0 eject
-
-And close the tray:
-
-$ cdcontrol cd0 close
-
-You can see which drives you have:
-
-$ camcontrol devlist
-
-$ camcontrol identify cd0
 
 OPTIONS
 -------
