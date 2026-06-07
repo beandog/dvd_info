@@ -5,11 +5,30 @@
 #include <dvdread/dvd_reader.h>
 #include <dvdread/ifo_read.h>
 #include <dvdread/ifo_print.h>
-#include "dvd_device.h"
 #ifdef __linux__
 #include <linux/limits.h>
+#include <linux/cdrom.h>
 #else
 #include <limits.h>
+#endif
+#ifdef __linux__
+#define DEFAULT_DVD_DEVICE "/dev/sr0"
+#elif defined (__DragonFly__)
+#define DEFAULT_DVD_DEVICE "/dev/cd0"
+#elif defined (__FreeBSD__)
+#define DEFAULT_DVD_DEVICE "/dev/cd0"
+#elif defined (__NetBSD__)
+#define DEFAULT_DVD_DEVICE "/dev/cd0d"
+#elif defined (__OpenBSD__)
+#define DEFAULT_DVD_DEVICE "/dev/rcd0c"
+#elif defined (__APPLE__) && defined (__MACH__)
+#define DEFAULT_DVD_DEVICE "/dev/disk1"
+#elif defined (__CYGWIN__)
+#define DEFAULT_DVD_DEVICE "E:\\"
+#elif defined(_WIN32)
+#define DEFAULT_DVD_DEVICE "E:\\"
+#else
+#define DEFAULT_DVD_DEVICE "/dev/dvd"
 #endif
 
 int main(int argc, char **argv) {
