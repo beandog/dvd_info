@@ -179,7 +179,7 @@ int main(int argc, char **argv) {
 		printf("Usage: dvd_eject [options] [device]\n\n");
 		printf("-t, --close	Close tray\n");
 		printf("-w, --wait	Wait for device to be ready after closing tray\n");
-		printf("-w, --wait	Try to open with libdvdread after closing tray\n");
+		printf("-d, --dvdread	Try to open with libdvdread after closing tray\n");
 		printf("-s, --system	Use local 'eject' command instead\n");
 		printf("-h, --help	Display this help output\n");
 		printf("\nDefault device is %s\n", DEFAULT_DVD_DEVICE);
