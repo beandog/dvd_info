@@ -140,7 +140,6 @@ int main(int argc, char **argv) {
 
 	// Get options
 	struct option long_options[] = {
-		{ "eject", no_argument, 0, 'j' },
 		{ "close", no_argument, 0, 't' },
 		{ "dvdread", no_argument, 0, 'd' },
 		{ "system", no_argument, 0, 's' },
@@ -149,28 +148,22 @@ int main(int argc, char **argv) {
 		{ 0, 0, 0, 0 }
 	};
 
-	while((opt = getopt_long(argc, argv, "djtswh", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "dtswh", long_options, &long_index )) != -1) {
 		switch(opt) {
-			case 'h':
-				d_help = true;
-				break;
-			case 'w':
-				opt_wait = true;
+			case 'd':
+				p_dvdread = true;
 				break;
 			case 't':
 				p_dvd_eject = false;
 				p_dvd_close = true;
 				break;
-			case 'j':
-				p_dvd_eject = true;
-				p_dvd_close = false;
-				break;
-			case 'd':
-				p_dvdread = true;
-				break;
 			case 's':
 				p_eject = true;
 				break;
+			case 'w':
+				opt_wait = true;
+				break;
+			case 'h':
 			case '?':
 				d_help = true;
 				break;
@@ -184,7 +177,6 @@ int main(int argc, char **argv) {
 		printf("dvd_eject - eject or close an optical drive\n");
 		printf("\n");
 		printf("Usage: dvd_eject [options] [device]\n\n");
-		printf("-j, --open	Open tray (default)\n");
 		printf("-t, --close	Close tray\n");
 		printf("-w, --wait	Wait for device to be ready after closing tray\n");
 		printf("-w, --wait	Try to open with libdvdread after closing tray\n");
@@ -214,8 +206,6 @@ int main(int argc, char **argv) {
 		return retval;
 
 	}
-
-	memset(umount_str, '\0', PATH_MAX);
 
 	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
 
@@ -328,6 +318,8 @@ int main(int argc, char **argv) {
 
 			// Try unmounting it using a system call
 			if(device_mounted) {
+
+				memset(umount_str, '\0', PATH_MAX);
 
 				snprintf(umount_str, PATH_MAX - 1, "umount %s", device_filename);
 				retval = system(umount_str);
