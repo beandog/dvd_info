@@ -1,6 +1,6 @@
 2.3
 
-* Add dvd_eject with lots of options
+* Rewrite dvd_eject as a bash script using getopt and util-linux's eject
 
 2.2
 

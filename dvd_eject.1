@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: dvd_eject
 .\"    Author: [see the "AUTHOR(S)" section]
-.\" Generator: Asciidoctor 2.0.23
-.\"      Date: 2025-06-29
+.\" Generator: Asciidoctor 2.0.20
+.\"      Date: 2026-06-14
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "DVD_EJECT" "1" "2025-06-29" "\ \&" "\ \&"
+.TH "DVD_EJECT" "1" "2026-06-14" "\ \&" "\ \&"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -34,36 +34,17 @@ dvd_eject \- eject or close an optical device tray
 \fBdvd_eject\fP [\fIOPTIONS\fP] [\fIDEVICE\fP]
 .SH "DESCRIPTION"
 .sp
-This will use the default optical device, unmount it, and eject it. You can pass
-an option to force an eject as well. If unmount doesn\(cqt work, it will
-continue anyway. Also has an option to close the tray.
-.sp
-For FreeBSD, there is a native program to eject drives as well:
-.sp
-$ cdcontrol cd0 eject
-.sp
-And close the tray:
-.sp
-$ cdcontrol cd0 close
-.sp
-You can see which drives you have:
-.sp
-$ camcontrol devlist
-.sp
-$ camcontrol identify cd0
+Use the \fIeject\fP program from the \fIutil\-linux\fP project to eject or close an optical tray, adding DVD\-specific options.
 .SH "OPTIONS"
-.sp
-\fB\-f\fP
-Force unmount of device.
 .sp
 \fB\-t\fP
 Close tray instead of opening.
 .sp
-\fB\-v\fP
-Display verbose output.
+\fB\-w\fP
+Wait for drive to be ready after closing using dvd_drive_status
 .sp
-\fB\-h\fP
-Display help output.
+\fB\-d\fP
+Display DVD id after closing tray
 .SH "SEE ALSO"
 .sp
 dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1), dvd_rip(1), dvd_trip(1)

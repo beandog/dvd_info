@@ -12,24 +12,19 @@ SYNOPSIS
 
 DESCRIPTION
 -----------
-This will use the default optical device, unmount it, and eject it. You can pass
-an option to force an eject as well. If unmount doesn't work, it will
-continue anyway. Also has an option to close the tray.
+Use the 'eject' program from the 'util-linux' project to eject or close an optical tray, adding DVD-specific options.
 
 OPTIONS
 -------
 
-*-f*
-	Force unmount of device.
-
 *-t*
 	Close tray instead of opening.
 
-*-v*
-	Display verbose output.
+*-w*
+	Wait for drive to be ready after closing using dvd_drive_status.
 
-*-h*
-	Display help output.
+*-d*
+	Display DVD id after closing tray using dvd_info.
 
 SEE ALSO
 --------

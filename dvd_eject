@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+
+#      _          _          _           _
+#   __| |_   ____| |    ___ (_) ___  ___| |_
+#  / _` \ \ / / _` |   / _ \| |/ _ \/ __| __|
+# | (_| |\ V / (_| |  |  __/| |  __/ (__| |_
+#  \__,_| \_/ \__,_|___\___|/ |\___|\___|\__|
+#                  |_____| |__/
+#
+# Use 'eject' program from util-linux project, adding DVD-specific options
+# Special thanks to util-linux for the 'getopt' example!
+
+if [[ "$*" == *"-h"* ]]; then
+	echo "dvd_eject [options] [device]"
+	echo
+	echo " -t	Close tray"
+	echo " -w	Wait for drive to be ready after closing (dvd_drive_status)"
+	echo " -d	Display DVD id after closing tray (dvd_info)"
+	echo
+	exit
+fi
+
+TEMP=$(getopt -o 'twd' --long 'trayclose,wait,dvdread' -n 'dvd_eject' -- "$@")
+
+if [ $? -ne 0 ]; then
+	echo 'Terminating...' >&2
+	exit 1
+fi
+
+eval set -- "$TEMP"
+unset TEMP
+
+eject_cmd="eject -r"
+eject_args=
+eject_action=open
+eject_dvdread=no
+eject_wait=no
+eject_verbose=yes
+
+while true; do
+	case "$1" in
+		'-t'|'--trayclose')
+			eject_action=close
+			shift
+			continue
+		;;
+		'-w'|'--wait')
+			eject_wait=yes
+			shift
+			continue
+		;;
+		'-d'|'--dvdread')
+			eject_dvdread=yes
+			shift
+			continue
+		;;
+		'--')
+			shift
+			break
+		;;
+		*)
+			echo 'Internal error!' >&2
+			exit 1
+		;;
+	esac
+done
+
+if [[ $eject_verbose = yes ]]; then
+	eject_cmd="$eject_cmd -v"
+fi
+if [[ $eject_action = close ]]; then
+	eject_cmd="$eject_cmd -t"
+fi
+
+for arg; do
+	eject_cmd="$eject_cmd $arg"
+done
+
+$eject_cmd
+
+if [[ $? -ne 0 ]]; then exit $?; fi
+
+dvd_drive_status=0
+eject_num_waits=0
+if [[ $eject_action = close ]] && [[ $eject_wait = yes ]]; then
+	while [[ $dvd_drive_status != 4 ]]; do
+		dvd_drive_status $arg
+		dvd_drive_status=$?
+		if [[ $dvd_drive_status = 1 ]]; then
+			exit
+		fi
+		if [[ $dvd_drive_status != 4 ]]; then
+			sleep 1
+		fi
+		eject_num_waits=$((eject_num_waits + 1))
+		if [[ $eject_num_waits -eq 10 ]]; then
+			echo "Waited ten times, quitting"
+			exit 1
+		fi
+	done
+fi
+
+if [[ $eject_action = close ]] && [[ $eject_dvdread = yes ]]; then
+	dvd_drive_status $arg &> /dev/null
+	if [[ $? -eq 4 ]]; then
+		dvd_info --id $arg
+	fi
+	exit
+fi
