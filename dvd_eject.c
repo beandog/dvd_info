@@ -108,11 +108,11 @@ int8_t is_mounted(char *device_filename);
 int main(int argc, char **argv) {
 
 	// Program name
-	bool p_dvd_eject = true;
-	bool p_dvd_close = false;
-	bool p_eject = false;
+	uint8_t p_dvd_eject = 1;
+	uint8_t p_dvd_close = 0;
+	uint8_t open_close = 0;
 	bool d_help = false;
-	bool p_dvdread = false;
+	bool dvdread_scan = false;
 
 	// Device hardware
 	char device_filename[PATH_MAX];
@@ -148,17 +148,24 @@ int main(int argc, char **argv) {
 		{ 0, 0, 0, 0 }
 	};
 
-	while((opt = getopt_long(argc, argv, "dtswh", long_options, &long_index )) != -1) {
+	while((opt = getopt_long(argc, argv, "dtsjmwh", long_options, &long_index )) != -1) {
 		switch(opt) {
 			case 'd':
-				p_dvdread = true;
+				dvdread_scan = true;
 				break;
 			case 't':
-				p_dvd_eject = false;
-				p_dvd_close = true;
+				open_close = 1;
 				break;
 			case 's':
-				p_eject = true;
+				p_dvd_eject = 2;
+				break;
+			case 'j':
+				open_close = 0;
+				p_dvd_eject = 1;
+				p_dvd_close = 0;
+				break;
+			case 'm':
+				p_dvd_close = 2;
 				break;
 			case 'w':
 				opt_wait = true;
@@ -176,12 +183,16 @@ int main(int argc, char **argv) {
 	if(d_help) {
 		printf("dvd_eject - eject or close an optical drive\n");
 		printf("\n");
-		printf("Usage: dvd_eject [options] [device]\n\n");
-		printf("-t, --close	Close tray\n");
-		printf("-w, --wait	Wait for device to be ready after closing tray\n");
-		printf("-d, --dvdread	Try to open with libdvdread after closing tray\n");
-		printf("-s, --system	Use local 'eject' command instead\n");
-		printf("-h, --help	Display this help output\n");
+		printf("Usage: dvd_eject [options] [device]\n");
+		printf("\n");
+		printf("  -j, --eject	Eject tray (default)\n");
+		printf("  -t, --close	Close tray\n");
+		printf("  -w, --wait	Wait for device to be ready after closing tray\n");
+		printf("  -d, --dvdread	Try to open with libdvdread after closing tray\n");
+		printf("  -s		Use local 'eject' to open tray\n");
+		printf("  -m		Use local 'eject' to close tray\n");
+		printf("  -h, --help	Display this help output\n");
+		printf("\n");
 		printf("\nDefault device is %s\n", DEFAULT_DVD_DEVICE);
 		return 0;
 	}
@@ -193,7 +204,7 @@ int main(int argc, char **argv) {
 	else
 		strncpy(device_filename, DEFAULT_DVD_DEVICE, PATH_MAX - 1);
 
-	if(p_eject) {
+	if(p_dvd_eject == 2 || p_dvd_close == 2) {
 
 		memset(eject_str, '\0', PATH_MAX);
 		if(p_dvd_eject)
@@ -210,7 +221,7 @@ int main(int argc, char **argv) {
 	dvd_fd = open(device_filename, O_RDONLY | O_NONBLOCK);
 
 	if(dvd_fd < 0) {
-		printf("error opening %s\n", device_filename);
+		printf("Could not open device %s\n", device_filename);
 		return 1;
 	}
 
@@ -221,35 +232,38 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	if(p_dvd_eject)
+	if(open_close == 0)
 		printf("[Open Drive Tray]\n");
-	if(p_dvd_close)
+	else if(open_close == 1)
 		printf("[Close Drive Tray]\n");
-	printf("* Device: %s\n", device_filename);
 
-	if(opt_wait == false && is_ready(dvd_fd) == false) {
-		printf("* No waiting requested, and device is not ready. Exiting\n");
-		close(dvd_fd);
-		return 0;
-	}
+	printf("* Tracking %s status\n", device_filename);
 
 	printf("* Prepping crew, sir ...");
 	// Wait for the device to be ready before performing any actions
 	while(is_ready(dvd_fd) == false) {
+
 		printf(".");
+
 		usleep(sleepy_time);
+
 		times_waited += 1;
+
 		if(times_waited == arg_wait_times) {
+
 			printf("\n");
 			printf("* Waited %i, tired of waiting, trying workarounds\n", arg_wait_times);
 			printf("* Closing and reopening device\n");
-			if(close(dvd_fd) == 0) {
+
+			if(close(dvd_fd) == 0)
 				printf("* Closing file descriptor worked\n");
-			} else {
+			else
 				printf("* Closing file descriptor failed, continuing anyway\n");
-			}
+
 			printf("* Reopening file descriptor\n");
+
 			dvd_fd = open(device_filename, O_RDONLY);
+
 			if(dvd_fd == 0) {
 				printf("* Closing and reopening file descriptor worked, checking if device is ready now\n");
 				if(is_ready(dvd_fd) == false) {
@@ -257,10 +271,15 @@ int main(int argc, char **argv) {
 					close(dvd_fd);
 					return 1;
 				}
+
 				printf("* Opening file descriptor failed, exiting\n");
+
 				return 1;
+
 			}
+
 		}
+
 	}
 
 	printf(" at your command!\n");
@@ -268,16 +287,16 @@ int main(int argc, char **argv) {
 	dvd_drive_opened = is_open(dvd_fd);
 	dvd_drive_has_media = has_media(dvd_fd);
 
-	if(dvd_drive_opened)
+	if(dvd_drive_opened) {
 		printf("* Docking port status: open\n");
-	else {
+	} else {
 		printf("* Docking port status: closed\n");
 		if(!dvd_drive_has_media)
 			printf("* Shuttle bay empty\n");
 	}
 
 	// Check for silly users
-	if(p_dvd_eject && dvd_drive_opened) {
+	if(open_close && dvd_drive_opened) {
 		printf("* Are you sure you belong on the bridge, sir?\n");
 		close(dvd_fd);
 		return 0;
@@ -285,7 +304,7 @@ int main(int argc, char **argv) {
 
 	if(p_dvd_close && !dvd_drive_opened) {
 
-		if(has_media(dvd_fd) && p_dvdread) {
+		if(has_media(dvd_fd) && dvdread_scan) {
 			printf("* Scanning Deck C section 55 for anomalies ... ");
 			dvd_reader_t *dvdread_dvd = NULL;
 			dvdread_dvd = DVDOpen(device_filename);
@@ -396,7 +415,7 @@ int main(int argc, char **argv) {
 		}
 
 		// Open DVD device
-		if(has_media(dvd_fd) && p_dvdread) {
+		if(has_media(dvd_fd) && dvdread_scan) {
 			printf("* Scanning Deck C section 55 for anomalies ... ");
 			dvd_reader_t *dvdread_dvd = NULL;
 			dvdread_dvd = DVDOpen(device_filename);
