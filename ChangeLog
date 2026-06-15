@@ -2,6 +2,7 @@
 
 * Add dvd_eject shell script for Linux
 * Add dvd_eject shell script for FreeBSD
+* Add dvd_drive_status for FreeBSD
 
 2.2
 
