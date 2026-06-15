@@ -11,9 +11,6 @@
 
 args=`getopt thd $*`
 
-if [ 1 -eq 1 ]; then
-fi
-
 set -- $args
 
 dvd_eject="cdcontrol -v"
