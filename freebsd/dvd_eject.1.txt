@@ -1,0 +1,45 @@
+DVD_EJECT(1)
+============
+:doctype: manpage
+
+NAME
+----
+dvd_eject - eject or close an optical device tray
+
+SYNOPSIS
+--------
+*dvd_eject* ['OPTIONS'] ['DEVICE']
+
+DESCRIPTION
+-----------
+Use FreeBSD's 'cdcontrol' program to eject or close an optical tray, adding DVD-specific options.
+
+OPTIONS
+-------
+
+*-t*
+	Close tray instead of opening.
+
+*-d*
+	Display DVD id after closing tray using dvd_info.
+
+SEE ALSO
+--------
+dvd_backup(1), dvd_copy(1), dvd_drive_status(1), dvd_info(1), dvd_player(1), dvd_rip(1), dvd_trip(1)
+
+BUGS
+----
+Please file bugs at <https://github.com/beandog/dvd_info/issues>
+
+AUTHOR
+------
+dvd_eject was written by Steve Dibb <steve.dibb@gmail.com>
+
+RESOURCES
+---------
+Source code available at GitHub: <https://github.com/beandog/dvd_info>
+
+COPYING
+-------
+Copyright \(C) 2025 Steve Dibb. Free use of this software is granted under the
+terms of the GNU General Public License, version 2 (GPL).

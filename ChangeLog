@@ -1,6 +1,7 @@
 2.3
 
-* Rewrite dvd_eject as a bash script using getopt and util-linux's eject
+* Add dvd_eject shell script for Linux
+* Add dvd_eject shell script for FreeBSD
 
 2.2
 

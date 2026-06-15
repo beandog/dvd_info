@@ -1,0 +1,64 @@
+#!/bin/sh
+
+#      _          _          _           _
+#   __| |_   ____| |    ___ (_) ___  ___| |_
+#  / _` \ \ / / _` |   / _ \| |/ _ \/ __| __|
+# | (_| |\ V / (_| |  |  __/| |  __/ (__| |_
+#  \__,_| \_/ \__,_|___\___|/ |\___|\___|\__|
+#                  |_____| |__/
+#
+# Use native FreeBSD 'cdcontrol' program, adding DVD-specific options
+
+args=`getopt thd $*`
+
+if [ 1 -eq 1 ]; then
+fi
+
+set -- $args
+
+dvd_eject="cdcontrol -v"
+dvd_eject_verbose=yes
+dvd_eject_device=cd0
+dvd_eject_action=open
+dvd_eject_dvdread=no
+
+while :; do
+	case "$1" in
+	-h)
+		echo "Usage: dvd_eject [options] [device]"
+		echo
+		echo "  -t	Close tray instead of opening"
+		echo "  -d	Display DVD id after closing"
+		echo
+		echo "Default device is /dev/cd0"
+		exit
+		;;
+	-d)
+		dvd_eject_dvdread=yes
+		shift
+		;;
+	-t)
+		dvd_eject_action=close
+		shift
+		;;
+	--)
+		shift; break
+		;;
+	esac
+done
+
+for args; do
+	dvd_eject="$dvd_eject -f $args"
+done
+
+if [ $dvd_eject_action = open ]; then
+	dvd_eject="$dvd_eject eject"
+elif [ $dvd_eject_action = close ]; then
+	dvd_eject="$dvd_eject close"
+fi
+
+$dvd_eject
+
+if [ $dvd_eject_dvdread = yes ]; then
+	dvd_info --id $args
+fi
