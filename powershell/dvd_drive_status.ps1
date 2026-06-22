@@ -1,4 +1,4 @@
-$dvd_drive = Get-CimInstance -Class Win32_CDROMDrive | Select-Object -First 1
+$dvd_drive = Get-CimInstance -Class Win32_CDROMDrive | Where-Object Drive -eq $args[0]
 
 $drive_info = new-object psobject
 $drive_info | Add-Member noteproperty drive ($dvd_drive.drive)
