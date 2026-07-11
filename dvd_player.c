@@ -231,7 +231,7 @@ int main(int argc, char **argv) {
 				printf("Options:\n");
 				printf("  -f, --fullscreen              Display in fullscreen mode\n");
 				printf("  -t, --track <#>               Playback track number (default: longest valid)\n");
-				printf("  -c, --chapter <#>[-#]         Playback chapter number or range (default: all)\n");
+				printf("  -c, --chapter <#>             Start playback at chapter number\n");
 				printf("  -a, --alang <language>        Select audio language, two character code (default: first audio track)\n");
 				printf("  -A, --aid <#>                 Select audio track ID\n");
 				printf("  -s, --slang <language>        Select subtitles language, two character code (default: no subtitles)\n");
@@ -538,9 +538,12 @@ int main(int argc, char **argv) {
 
 	}
 
-	// Always set last chapter
-	snprintf(dvd_playback.mpv_last_chapter, sizeof(dvd_playback.mpv_last_chapter), "#%" PRIu8, dvd_playback.last_chapter);
-	mpv_set_option_string(dvd_mpv, "end", dvd_playback.mpv_last_chapter);
+	// Originally would always set last chapter, but now (July 2026) this is generally breaking everything and not causing anything to play.
+	// To duplicate oddity, run this manually on a DVD title with one chapter
+	// mpv dvd:// --start=#1 --end=#2
+	// It will overflow to the next title and basically break. So, do nothing for now.
+	// snprintf(dvd_playback.mpv_last_chapter, sizeof(dvd_playback.mpv_last_chapter), "#%" PRIu8, dvd_playback.last_chapter);
+	// mpv_set_option_string(dvd_mpv, "end", dvd_playback.mpv_last_chapter);
 
 	// Playback options and default configuration
 	mpv_set_option_string(dvd_mpv, "dvd-device", device_filename);
