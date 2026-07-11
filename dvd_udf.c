@@ -8,8 +8,8 @@ struct dvd_udf_file_t dvd_udf_file_open(dvd_reader_t *dvdread_dvd, char *udf_fil
 
 	struct dvd_udf_file_t dvd_udf_file;
 
-	memset(dvd_udf_file.filename, '\0', DVD_UDF_PATH_MAX + 1);
-	strncpy(dvd_udf_file.filename, udf_filename, DVD_UDF_PATH_MAX + 1);
+	memset(dvd_udf_file.filename, '\0', sizeof(dvd_udf_file.filename));
+	strcpy(dvd_udf_file.filename, udf_filename);
 	dvd_udf_file.starting_block = 0;
 	dvd_udf_file.bytes = 0;
 	dvd_udf_file.mbs = 0;
