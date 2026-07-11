@@ -3,6 +3,7 @@
 * Add dvd_eject shell script for Linux
 * Add dvd_eject shell script for FreeBSD
 * Add dvd_drive_status for FreeBSD
+* Fix dvd_player to not set last chapter so that playback will start
 
 2.2
 
