@@ -3,7 +3,11 @@
 * Add dvd_eject shell script for Linux
 * Add dvd_eject shell script for FreeBSD
 * Add dvd_drive_status for FreeBSD
-* Fix dvd_player to not set last chapter so that playback will start
+* Add PowerShell script to get DVD drive status
+* Add PowerShell script to eject DVD drive
+* Fix dvd_player not starting playback
+* Port to MSYS2
+* Remove legacy dvd_trip (use dvd_rip instead)
 
 2.2
 
