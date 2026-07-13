@@ -1,16 +1,20 @@
 #ifndef DVD_INFO_VOB_H
 #define DVD_INFO_VOB_H
 
+#include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <math.h>
 #include <dvdread/dvd_reader.h>
+#include "dvd_udf.h"
 
 struct dvd_vob {
 	uint16_t vts;
 	uint16_t vob;
 	uint64_t blocks;
-	ssize_t filesize;
-	double filesize_mbs;
+	uint64_t filesize;
+	uint64_t filesize_mbs;
+	char udf_filename[PATH_MAX];
 };
 
 /**
@@ -32,11 +36,16 @@ uint64_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t
  * if it's zero or not.
  *
  */
-ssize_t dvd_vob_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number);
+uint64_t dvd_vob_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number);
 
 /**
  * Helper function to get filesize of a VOB in MBs.
  */
-double dvd_vob_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number);
+uint64_t dvd_vob_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number);
+
+/**
+ * Create and populate a dvd_vob struct
+ */
+struct dvd_vob dvd_vob_open(dvd_reader_t *dvdread_dvd, uint64_t vts_number, uint16_t vob_number);
 
 #endif

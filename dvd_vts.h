@@ -10,29 +10,30 @@
 #include "dvd_specs.h"
 #include "dvd_vmg_ifo.h"
 #include "dvd_vob.h"
+#include "dvd_udf.h"
 
 struct dvd_vts {
 	uint16_t vts;
 	bool valid;
 	char id[DVD_VTS_ID + 1];
-	ssize_t blocks;
-	ssize_t filesize;
-	double filesize_mbs;
+	uint64_t blocks;
+	uint64_t filesize;
+	uint64_t filesize_mbs;
 	uint16_t vobs;
 	uint16_t tracks;
 	uint16_t valid_tracks;
 	uint16_t invalid_tracks;
-	struct dvd_vob dvd_vobs[99];
+	struct dvd_vob dvd_vobs[DVD_MAX_TRACKS];
 };
 
-ssize_t dvd_vts_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
+uint64_t dvd_vts_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
 
-ssize_t dvd_vts_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
+uint64_t dvd_vts_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
 
-double dvd_vts_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
+uint64_t dvd_vts_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
 
 uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
 
-struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts);
+struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts_number);
 
 #endif

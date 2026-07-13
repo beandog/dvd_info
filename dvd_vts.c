@@ -1,113 +1,169 @@
 #include "dvd_vts.h"
 
 /**
- * Functions used to get information about a DVD VTS (a combination of VOBs)
+ * Functions used to get information about a DVD Video Title Set
  */
 
-ssize_t dvd_vts_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
+uint64_t dvd_vts_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
-	dvd_file_t *dvdread_vts_file;
-	dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts_number, DVD_READ_TITLE_VOBS);
+	bool udf = true;
 
-	if(dvdread_vts_file == 0)
-		return 0;
+	if(vts_number == 0)
+		udf = true;
 
-	ssize_t vts_blocks = 0;
-	vts_blocks = DVDFileSize(dvdread_vts_file);
+#if defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
+	udf = true;
+#endif
 
-	if(vts_blocks < 0)
-		return 0;
+	uint64_t vts_blocks = 0;
+
+	if(udf) {
+
+		uint8_t vob_number = 0;
+		uint64_t udf_blocks = 0;
+		char udf_filename[PATH_MAX];
+		struct dvd_udf_file_t dvd_udf_file;
+
+		uint8_t max_vobs = 9;
+		if(vts_number == 0)
+			max_vobs = 1;
+
+		for(vob_number = 1; vob_number <= max_vobs; vob_number++) {
+
+			memset(udf_filename, '\0', PATH_MAX);
+
+			if(vts_number == 0)
+				strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
+			else
+				snprintf(udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu8 ".VOB", vts_number, vob_number);
+
+			dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
+
+			if(dvd_udf_file.blocks)
+				vts_blocks += dvd_udf_file.blocks;
+			else
+				break;
+
+		}
+
+	}
+
+	if(!udf) {
+
+		dvd_file_t *dvdread_vts_file;
+		dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts_number, DVD_READ_TITLE_VOBS);
+
+		if(dvdread_vts_file == 0)
+			return 0;
+
+		// Despite the name of the function, it returns number of blocks, not bytes
+		ssize_t blocks = 0;
+		blocks = DVDFileSize(dvdread_vts_file);
+
+		if(blocks < 0)
+			return 0;
+
+		vts_blocks = (uint64_t)blocks;
+
+	}
 
 	return vts_blocks;
 
 }
 
-ssize_t dvd_vts_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
+uint64_t dvd_vts_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
-	ssize_t vts_blocks = 0;
+	uint64_t vts_blocks = 0;
 	vts_blocks = dvd_vts_blocks(dvdread_dvd, vts_number);
 
-	ssize_t vts_filesize = 0;
+	uint64_t vts_filesize = 0;
 	vts_filesize = vts_blocks * DVD_VIDEO_LB_LEN;
 
 	return vts_filesize;
 
 }
 
-double dvd_vts_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
+uint64_t dvd_vts_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
-	ssize_t vts_blocks = 0;
+	uint64_t vts_blocks = 0;
 	vts_blocks = dvd_vts_blocks(dvdread_dvd, vts_number);
 
 	if(vts_blocks == 0)
 		return 0;
 
-	double vts_filesize_mbs = 0;
-	vts_filesize_mbs = ceil((vts_blocks * DVD_VIDEO_LB_LEN) / 1048576.0);
+	uint64_t vts_filesize_mbs = 0;
+	vts_filesize_mbs = (vts_blocks * DVD_VIDEO_LB_LEN);
 
 	return vts_filesize_mbs;
 
 }
 
 /**
- * With libdvdread 6.1.3 on MSYS2, DVDFileStat() will see the VOB files, but
- * the dvd_stat_t struct nr_parts value returns 0. Using the number inside of
- * vts_ifo directly. However, on Linux and friends, this does *not* work for
- * for some reason. Just accessing the variable causes strange problems, and
- * the filesize can be completely incorrect. In addition, nr_of_vobs is one
- * too many on Linux for some reason.
- *
- * I've spent a *lot* of time debugging it, but haven't been able to find any
- * reasons why there is unusual behavior. Suffice it to say, this works. This
- * is also how the original program 'dvdbackup' gets the number of vobs.
- *
- * Using DVDFileStat is safer anyway for dvd_backup, to make sure that the
- * files are actually there and can be accessed.
+ * With libdvdread 7.0.1 on MSYS2, DVDFileStat() will see the VOB files, but
+ * the dvd_stat_t struct nr_parts value returns 0. In that case, just look at
+ * all the possible UDF filenames and get those instead.
  */
 uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
+	if(vts_number == 0)
+		return 1;
+
 	uint16_t vts_vobs = 0;
 
+	bool udf = true;
+
 #if defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
-
-	ifo_handle_t *vts_ifo = NULL;
-	vts_ifo = ifoOpen(dvdread_dvd, vts_number);
-
-	if(vts_ifo == NULL)
-		return 0;
-
-	if(vts_ifo->vts_c_adt == NULL)
-		return 0;
-
-	vts_vobs = vts_ifo->vts_c_adt->nr_of_vobs;
-
-	return vts_vobs;
-
-#else
-
-	dvd_stat_t dvdread_stat;
-
-	int retval = 0;
-	retval = DVDFileStat(dvdread_dvd, vts_number, DVD_READ_TITLE_VOBS, &dvdread_stat);
-	if(retval < 0)
-		return 0;
-
-	vts_vobs = dvdread_stat.nr_parts;
-
-	return vts_vobs;
-
+	udf = true;
 #endif
+
+	if(udf) {
+
+		uint8_t vob_number = 0;
+		char udf_filename[PATH_MAX];
+		struct dvd_udf_file_t dvd_udf_file;
+
+		for(vob_number = 1; vob_number <= 9; vob_number++) {
+
+			if(vts_number == 0)
+				strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
+			else
+				snprintf(udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu8 ".VOB", vts_number, vob_number);
+
+			dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
+
+			if(dvd_udf_file.filesize)
+				vts_vobs++;
+			else
+				break;
+
+		}
+
+	}
+
+	if(!udf) {
+
+		dvd_stat_t dvdread_stat;
+
+		int retval = 0;
+		retval = DVDFileStat(dvdread_dvd, vts_number, DVD_READ_TITLE_VOBS, &dvdread_stat);
+		if(retval < 0)
+			return 0;
+
+		vts_vobs = (uint64_t)dvdread_stat.nr_parts;
+
+	}
+
+	return vts_vobs;
 
 }
 
-struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts) {
+struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
 	struct dvd_vts dvd_vts;
 
-	dvd_vts.vts = vts;
+	dvd_vts.vts = vts_number;
 
 	// Initialize to defaults
-	dvd_vts.valid = false;
 	dvd_vts.blocks = 0;
 	dvd_vts.filesize = 0;
 	dvd_vts.filesize_mbs = 0;
@@ -116,17 +172,20 @@ struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts) {
 	dvd_vts.valid_tracks = 0;
 	dvd_vts.invalid_tracks = 0;
 
+	// I haven't found a way a VTS can be invalid yet
+	dvd_vts.valid = true;
+
 	// First VTS is the VMG IFO, used here only as a placeholder
-	if(vts == 0)
-		return dvd_vts;
+	// if(vts_number == 0)
+	//	return dvd_vts;
 
 	ifo_handle_t *vts_ifo = NULL;
-	vts_ifo = ifoOpen(dvdread_dvd, vts);
+	vts_ifo = ifoOpen(dvdread_dvd, vts_number);
 
 	if(vts_ifo == NULL)
 		return dvd_vts;
 
-	// TODO needs more testing, and also move into a function that examines if VTS is valid or not
+	// I said this needed more testing, but I've never run into it being a problem.
 	/*
 	if(vts_ifos[vts]->vtsi_mat->vts_tmapt == 0) {
 		dvd_vts[vts].valid = false;
@@ -134,19 +193,25 @@ struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts) {
 	}
 	*/
 
-	if(!ifo_is_vts(vts_ifo))
-		return dvd_vts;
+	// if(!ifo_is_vts(vts_ifo))
+	//	return dvd_vts;
 
-	dvd_vts.blocks = dvd_vts_blocks(dvdread_dvd, vts);
+	dvd_vts.blocks = dvd_vts_blocks(dvdread_dvd, vts_number);
 
 	if(!dvd_vts.blocks)
 		return dvd_vts;
 
-	dvd_vts.vobs = dvd_vts_vobs(dvdread_dvd, vts);
-	dvd_vts.filesize = dvd_vts_filesize(dvdread_dvd, vts);
-	dvd_vts.filesize_mbs = dvd_vts_filesize_mbs(dvdread_dvd, vts);
+	double mbs = 0;
 
-	dvd_vts.valid = true;
+	if(vts_number == 0)
+		dvd_vts.vobs = 1;
+	else
+		dvd_vts.vobs = dvd_vts_vobs(dvdread_dvd, vts_number);
+
+	dvd_vts.filesize = dvd_vts.blocks * DVD_VIDEO_LB_LEN;
+
+	mbs = ceil((dvd_vts.blocks * DVD_VIDEO_LB_LEN) / 1048576.0);
+	dvd_vts.filesize_mbs = (uint64_t)mbs;
 
 	return dvd_vts;
 
