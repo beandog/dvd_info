@@ -88,7 +88,7 @@ endif()
 # Documentation
 INSTALL(FILES README.md LICENSE PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ DESTINATION share/doc/${PROJECT_NAME})
 
-# If libmpv was found by pkgconfig, then build dvd_player and dvd_trip
+# If libmpv was found by pkgconfig, then build dvd_player
 if(MPV_FOUND)
 	add_executable(dvd_player dvd_player.c dvd_drive.c dvd_open.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_udf.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c dvd_video.c)
 	target_link_libraries(dvd_player PRIVATE dvdread)
@@ -97,12 +97,13 @@ if(MPV_FOUND)
 	INSTALL(FILES dvd_player PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE DESTINATION bin)
 	INSTALL(FILES dvd_player.1 DESTINATION "${CMAKE_INSTALL_MANDIR}/man1")
 
-	add_executable(dvd_trip dvd_trip.c dvd_drive.c dvd_open.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_udf.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c dvd_video.c)
-	target_link_libraries(dvd_trip PRIVATE dvdread)
-	target_link_libraries(dvd_trip PRIVATE m)
-	target_link_libraries(dvd_trip PRIVATE mpv)
-	INSTALL(FILES dvd_trip PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE DESTINATION bin)
-	INSTALL(FILES dvd_trip.1 DESTINATION "${CMAKE_INSTALL_MANDIR}/man1")
+	# Old DVD ripping program, replaced by dvd_rip
+	# add_executable(dvd_trip dvd_trip.c dvd_drive.c dvd_open.c dvd_vmg_ifo.c dvd_track.c dvd_cell.c dvd_vts.c dvd_udf.c dvd_audio.c dvd_subtitles.c dvd_time.c dvd_chapter.c dvd_video.c)
+	# target_link_libraries(dvd_trip PRIVATE dvdread)
+	# target_link_libraries(dvd_trip PRIVATE m)
+	# target_link_libraries(dvd_trip PRIVATE mpv)
+	# INSTALL(FILES dvd_trip PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE DESTINATION bin)
+	# INSTALL(FILES dvd_trip.1 DESTINATION "${CMAKE_INSTALL_MANDIR}/man1")
 endif()
 
 target_include_directories(dvd_info PRIVATE "/usr/pkg/include")
