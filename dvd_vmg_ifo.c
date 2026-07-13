@@ -27,9 +27,9 @@ bool dvd_title(char *dest_str, const char *device_filename) {
 		return false;
 	}
 
-	char buffer[2048] = {'\0'};
+	char buffer[DVD_VIDEO_LB_LEN] = {'\0'};
 
-	if(read(fd, buffer, 2048) != 2048) {
+	if(read(fd, buffer, DVD_VIDEO_LB_LEN) != DVD_VIDEO_LB_LEN) {
 		close(fd);
 		return false;
 	}
