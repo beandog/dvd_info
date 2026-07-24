@@ -46,6 +46,6 @@ uint64_t dvd_vob_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number, ui
 /**
  * Create and populate a dvd_vob struct
  */
-struct dvd_vob dvd_vob_open(dvd_reader_t *dvdread_dvd, uint64_t vts_number, uint16_t vob_number);
+struct dvd_vob dvd_vob_open(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number);
 
 #endif

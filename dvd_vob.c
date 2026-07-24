@@ -85,15 +85,20 @@ uint64_t dvd_vob_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16
 		dvd_stat_t dvdread_stat;
 		int retval = -1;
 
+		off_t dvdread_parts_size = 0;
+
 		if(vob_number == 0) {
 			retval = DVDFileStat(dvdread_dvd, vts_number, DVD_READ_MENU_VOBS, &dvdread_stat);
 			if(retval == 0)
-				vob_filesize = (uint64_t)dvdread_stat.parts_size[0];
+				dvdread_parts_size = dvdread_stat.parts_size[0];
 		} else {
 			retval = DVDFileStat(dvdread_dvd, vts_number, DVD_READ_TITLE_VOBS, &dvdread_stat);
 			if(retval == 0)
-				vob_filesize = (uint64_t)dvdread_stat.parts_size[vob_number - 1];
+				dvdread_parts_size = dvdread_stat.parts_size[vob_number - 1];
 		}
+
+		if(dvdread_parts_size > 0)
+			vob_filesize = (uint64_t)dvdread_parts_size;
 
 	}
 
@@ -119,7 +124,7 @@ uint64_t dvd_vob_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number, ui
 
 }
 
-struct dvd_vob dvd_vob_open(dvd_reader_t *dvdread_dvd, uint64_t vts_number, uint16_t vob_number) {
+struct dvd_vob dvd_vob_open(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number) {
 
 	struct dvd_vob dvd_vob;
 	double mbs = 0;
