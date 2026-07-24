@@ -62,15 +62,15 @@ uint64_t percent_completed(uint64_t, uint64_t);
  */
 int dvd_block_rw(dvd_file_t *dvdread_vts_file, uint64_t offset, int fd) {
 
-	uint64_t bytes_read = 0;
+	ssize_t dvdread_bytes_read = 0;
 	unsigned char buffer[DVD_VIDEO_LB_LEN];
 
-	bytes_read = DVDReadBlocks(dvdread_vts_file, (size_t)offset, 1, buffer);
+	dvdread_bytes_read = DVDReadBlocks(dvdread_vts_file, (size_t)offset, 1, buffer);
 
-	if(bytes_read < 0)
+	if(dvdread_bytes_read < 0)
 		return 1;
 
-	uint64_t bytes_written = 0;
+	ssize_t bytes_written = 0;
 	bytes_written = write(fd, buffer, DVD_VIDEO_LB_LEN);
 
 	if(bytes_written < 0)
