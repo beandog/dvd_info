@@ -22,7 +22,7 @@ uint64_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t
 		char udf_filename[PATH_MAX];
 		struct dvd_udf_file_t dvd_udf_file;
 
-		memset(udf_filename, PATH_MAX, '\0');
+		memset(udf_filename, '\0', PATH_MAX);
 
 		if(vts_number == 0)
 			strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
@@ -67,7 +67,7 @@ uint64_t dvd_vob_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16
 		char udf_filename[PATH_MAX];
 		struct dvd_udf_file_t dvd_udf_file;
 
-		memset(udf_filename, PATH_MAX, '\0');
+		memset(udf_filename, '\0', PATH_MAX);
 
 		if(vts_number == 0)
 			strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
