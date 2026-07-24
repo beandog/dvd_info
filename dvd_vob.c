@@ -22,12 +22,12 @@ uint64_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t
 		char udf_filename[PATH_MAX];
 		struct dvd_udf_file_t dvd_udf_file;
 
-		memset(udf_filename, '\0', PATH_MAX);
+		memset(udf_filename, '\0', sizeof(udf_filename));
 
 		if(vts_number == 0)
-			strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
+			strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", sizeof(udf_filename));
 		else
-			snprintf(udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
+			snprintf(udf_filename, sizeof(udf_filename), "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
 
 		dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
 
@@ -67,12 +67,12 @@ uint64_t dvd_vob_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16
 		char udf_filename[PATH_MAX];
 		struct dvd_udf_file_t dvd_udf_file;
 
-		memset(udf_filename, '\0', PATH_MAX);
+		memset(udf_filename, '\0', sizeof(udf_filename));
 
 		if(vts_number == 0)
-			strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
+			strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", sizeof(udf_filename));
 		else
-			snprintf(udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
+			snprintf(udf_filename, sizeof(udf_filename), "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
 
 		dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
 
@@ -135,9 +135,9 @@ struct dvd_vob dvd_vob_open(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint
 	dvd_vob.filesize = dvd_vob.blocks * DVD_VIDEO_LB_LEN;
 
 	if(vts_number == 0)
-		strncpy(dvd_vob.udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
+		strncpy(dvd_vob.udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", sizeof(dvd_vob.udf_filename));
 	else
-		snprintf(dvd_vob.udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
+		snprintf(dvd_vob.udf_filename, sizeof(dvd_vob.udf_filename), "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
 
 	mbs = ceil((dvd_vob.blocks * DVD_VIDEO_LB_LEN) / 1048576.0);
 	dvd_vob.filesize_mbs = (uint64_t)mbs;
