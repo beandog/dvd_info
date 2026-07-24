@@ -54,7 +54,7 @@ uint64_t dvd_vob_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number, ui
 	if(blocks == 0)
 		return 0;
 
-	double mbs = 0;
+	double mbs = 0.0;
 	mbs = ceil((blocks * DVD_VIDEO_LB_LEN) / 1048576.0);
 
 	uint64_t vob_filesize_mbs = 0;
@@ -67,7 +67,7 @@ uint64_t dvd_vob_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number, ui
 struct dvd_vob dvd_vob_open(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number) {
 
 	struct dvd_vob dvd_vob;
-	double mbs = 0;
+	double mbs = 0.0;
 
 	dvd_vob.vts = vts_number;
 	dvd_vob.vob = vob_number;

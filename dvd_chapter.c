@@ -122,7 +122,7 @@ double dvd_chapter_filesize_mbs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, ui
 	if(blocks == 0)
 		return 0;
 
-	double filesize_mbs = 0;
+	double filesize_mbs = 0.0;
 	filesize_mbs = (blocks * DVD_VIDEO_LB_LEN) / 1048576.0;
 
 	if(filesize_mbs < 1.0)

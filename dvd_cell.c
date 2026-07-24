@@ -86,7 +86,7 @@ double dvd_cell_filesize_mbs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint1
 	uint64_t blocks;
 	blocks = dvd_cell_blocks(vmg_ifo, vts_ifo, track_number, cell_number);
 
-	double cell_filesize_mbs = 0;
+	double cell_filesize_mbs = 0.0;
 	cell_filesize_mbs = (blocks * DVD_VIDEO_LB_LEN) / 1048576.0;
 
 	if(cell_filesize_mbs < 1.0)

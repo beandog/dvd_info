@@ -127,7 +127,7 @@ struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 	if(!dvd_vts.blocks)
 		return dvd_vts;
 
-	double mbs = 0;
+	double mbs = 0.0;
 
 	if(vts_number == 0)
 		dvd_vts.vobs = 1;

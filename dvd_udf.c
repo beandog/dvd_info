@@ -20,7 +20,7 @@ struct dvd_udf_file_t dvd_udf_file_open(dvd_reader_t *dvdread_dvd, char *udf_fil
 
 	if(dvdread_udf_size > 0) {
 
-		double mbs = 0;
+		double mbs = 0.0;
 
 		dvd_udf_file.starting_block = (uint64_t)dvdread_udf_block;
 

@@ -461,8 +461,8 @@ int main(int argc, char **argv) {
 	ssize_t total_bytes_written = 0;
 
 	// Copying DVD track
-	double mbs_written = 0;
-	double percent_complete = 0;
+	double mbs_written = 0.0;
+	double percent_complete = 0.0;
 	for(dvd_chapter.chapter = dvd_copy.first_chapter; dvd_chapter.chapter < dvd_copy.last_chapter + 1; dvd_chapter.chapter++) {
 
 		// Use dvd_copy struct as the first and last cell

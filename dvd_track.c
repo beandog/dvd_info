@@ -158,7 +158,7 @@ double dvd_track_filesize_mbs(ifo_handle_t *vmg_ifo, ifo_handle_t *vts_ifo, uint
 	if(blocks == 0)
 		return 0;
 
-	double track_filesize_mbs = 0;
+	double track_filesize_mbs = 0.0;
 	track_filesize_mbs = ceil((blocks * DVD_VIDEO_LB_LEN) / 1048576.0);
 
 	return track_filesize_mbs;
