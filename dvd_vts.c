@@ -6,63 +6,30 @@
 
 uint64_t dvd_vts_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
-	bool udf = false;
-
-	if(vts_number == 0)
-		udf = true;
-
-#if defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
-	udf = true;
-#endif
-
 	uint64_t vts_blocks = 0;
+	uint16_t vob_number = 0;
+	char udf_filename[PATH_MAX];
+	struct dvd_udf_file_t dvd_udf_file;
 
-	if(udf) {
+	uint16_t max_vobs = 9;
+	if(vts_number == 0)
+		max_vobs = 1;
 
-		uint16_t vob_number = 0;
-		char udf_filename[PATH_MAX];
-		struct dvd_udf_file_t dvd_udf_file;
+	for(vob_number = 1; vob_number <= max_vobs; vob_number++) {
 
-		uint16_t max_vobs = 9;
+		memset(udf_filename, '\0', PATH_MAX);
+
 		if(vts_number == 0)
-			max_vobs = 1;
+			strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
+		else
+			snprintf(udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
 
-		for(vob_number = 1; vob_number <= max_vobs; vob_number++) {
+		dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
 
-			memset(udf_filename, '\0', PATH_MAX);
-
-			if(vts_number == 0)
-				strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
-			else
-				snprintf(udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
-
-			dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
-
-			if(dvd_udf_file.blocks)
-				vts_blocks += dvd_udf_file.blocks;
-			else
-				break;
-
-		}
-
-	}
-
-	if(!udf) {
-
-		dvd_file_t *dvdread_vts_file;
-		dvdread_vts_file = DVDOpenFile(dvdread_dvd, vts_number, DVD_READ_TITLE_VOBS);
-
-		if(dvdread_vts_file == 0)
-			return 0;
-
-		ssize_t dvdread_file_blocks = 0;
-		// Despite the name of the function, it returns number of blocks, not bytes
-		dvdread_file_blocks = DVDFileSize(dvdread_vts_file);
-
-		if(dvdread_file_blocks < 0)
-			return 0;
-
-		vts_blocks = (uint64_t)dvdread_file_blocks;
+		if(dvd_udf_file.blocks)
+			vts_blocks += dvd_udf_file.blocks;
+		else
+			break;
 
 	}
 
@@ -97,59 +64,29 @@ uint64_t dvd_vts_filesize_mbs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
 }
 
-/**
- * With libdvdread 7.0.1 on MSYS2, DVDFileStat() will see the VOB files, but
- * the dvd_stat_t struct nr_parts value returns 0. In that case, just look at
- * all the possible UDF filenames and get those instead.
- */
 uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
 	if(vts_number == 0)
 		return 1;
 
 	uint16_t vts_vobs = 0;
+	uint8_t vob_number = 0;
+	char udf_filename[PATH_MAX];
+	struct dvd_udf_file_t dvd_udf_file;
 
-	bool udf = false;
+	for(vob_number = 1; vob_number <= 9; vob_number++) {
 
-#if defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
-	udf = true;
-#endif
+		if(vts_number == 0)
+			strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
+		else
+			snprintf(udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
 
-	if(udf) {
+		dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
 
-		uint8_t vob_number = 0;
-		char udf_filename[PATH_MAX];
-		struct dvd_udf_file_t dvd_udf_file;
-
-		for(vob_number = 1; vob_number <= 9; vob_number++) {
-
-			if(vts_number == 0)
-				strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
-			else
-				snprintf(udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
-
-			dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
-
-			if(dvd_udf_file.filesize)
-				vts_vobs++;
-			else
-				break;
-
-		}
-
-	}
-
-	if(!udf) {
-
-		dvd_stat_t dvdread_stat;
-
-		int retval = 0;
-		retval = DVDFileStat(dvdread_dvd, vts_number, DVD_READ_TITLE_VOBS, &dvdread_stat);
-		if(retval < 0)
-			return 0;
-
-		if(dvdread_stat.nr_parts > 0)
-			vts_vobs = (uint16_t)dvdread_stat.nr_parts;
+		if(dvd_udf_file.filesize)
+			vts_vobs++;
+		else
+			break;
 
 	}
 

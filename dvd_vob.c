@@ -7,43 +7,19 @@
 uint64_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number) {
 
 	uint64_t vob_blocks = 0;
+	char udf_filename[PATH_MAX];
+	struct dvd_udf_file_t dvd_udf_file;
 
-	bool udf = false;
-
-#if defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
-	udf = true;
-#endif
+	memset(udf_filename, '\0', sizeof(udf_filename));
 
 	if(vts_number == 0)
-		udf = true;
+		strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", sizeof(udf_filename));
+	else
+		snprintf(udf_filename, sizeof(udf_filename), "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
 
-	if(udf) {
+	dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
 
-		char udf_filename[PATH_MAX];
-		struct dvd_udf_file_t dvd_udf_file;
-
-		memset(udf_filename, '\0', sizeof(udf_filename));
-
-		if(vts_number == 0)
-			strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", sizeof(udf_filename));
-		else
-			snprintf(udf_filename, sizeof(udf_filename), "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
-
-		dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
-
-		vob_blocks = dvd_udf_file.blocks;
-
-	}
-
-	if(!udf) {
-
-		uint64_t vob_filesize = 0;
-
-		vob_filesize = dvd_vob_filesize(dvdread_dvd, vts_number, vob_number);
-		if(vob_filesize > 0)
-			vob_blocks = vob_filesize / DVD_VIDEO_LB_LEN;
-
-	}
+	vob_blocks = dvd_udf_file.blocks;
 
 	return vob_blocks;
 
@@ -52,55 +28,19 @@ uint64_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t
 uint64_t dvd_vob_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t vob_number) {
 
 	uint64_t vob_filesize = 0;
+	char udf_filename[PATH_MAX];
+	struct dvd_udf_file_t dvd_udf_file;
 
-	bool udf = false;
-
-#if defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
-	udf = true;
-#endif
+	memset(udf_filename, '\0', sizeof(udf_filename));
 
 	if(vts_number == 0)
-		udf = true;
+		strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", sizeof(udf_filename));
+	else
+		snprintf(udf_filename, sizeof(udf_filename), "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
 
-	if(udf) {
+	dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
 
-		char udf_filename[PATH_MAX];
-		struct dvd_udf_file_t dvd_udf_file;
-
-		memset(udf_filename, '\0', sizeof(udf_filename));
-
-		if(vts_number == 0)
-			strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", sizeof(udf_filename));
-		else
-			snprintf(udf_filename, sizeof(udf_filename), "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
-
-		dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
-
-		vob_filesize = dvd_udf_file.filesize;
-
-	}
-
-	if(!udf) {
-
-		dvd_stat_t dvdread_stat;
-		int retval = -1;
-
-		off_t dvdread_parts_size = 0;
-
-		if(vob_number == 0) {
-			retval = DVDFileStat(dvdread_dvd, vts_number, DVD_READ_MENU_VOBS, &dvdread_stat);
-			if(retval == 0)
-				dvdread_parts_size = dvdread_stat.parts_size[0];
-		} else {
-			retval = DVDFileStat(dvdread_dvd, vts_number, DVD_READ_TITLE_VOBS, &dvdread_stat);
-			if(retval == 0)
-				dvdread_parts_size = dvdread_stat.parts_size[vob_number - 1];
-		}
-
-		if(dvdread_parts_size > 0)
-			vob_filesize = (uint64_t)dvdread_parts_size;
-
-	}
+	vob_filesize = dvd_udf_file.filesize;
 
 	return vob_filesize;
 
