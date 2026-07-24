@@ -19,12 +19,12 @@ uint64_t dvd_vts_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
 	if(udf) {
 
-		uint8_t vob_number = 0;
+		uint16_t vob_number = 0;
 		uint64_t udf_blocks = 0;
 		char udf_filename[PATH_MAX];
 		struct dvd_udf_file_t dvd_udf_file;
 
-		uint8_t max_vobs = 9;
+		uint16_t max_vobs = 9;
 		if(vts_number == 0)
 			max_vobs = 1;
 
@@ -56,14 +56,14 @@ uint64_t dvd_vts_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 		if(dvdread_vts_file == 0)
 			return 0;
 
+		ssize_t dvdread_file_blocks = 0;
 		// Despite the name of the function, it returns number of blocks, not bytes
-		ssize_t blocks = 0;
-		blocks = DVDFileSize(dvdread_vts_file);
+		dvdread_file_blocks = DVDFileSize(dvdread_vts_file);
 
-		if(blocks < 0)
+		if(dvdread_file_blocks < 0)
 			return 0;
 
-		vts_blocks = (uint64_t)blocks;
+		vts_blocks = (uint64_t)dvdread_file_blocks;
 
 	}
 
@@ -127,7 +127,7 @@ uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 			if(vts_number == 0)
 				strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
 			else
-				snprintf(udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu8 ".VOB", vts_number, vob_number);
+				snprintf(udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
 
 			dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
 
@@ -149,7 +149,8 @@ uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 		if(retval < 0)
 			return 0;
 
-		vts_vobs = (uint64_t)dvdread_stat.nr_parts;
+		if(dvdread_stat.nr_parts > 0)
+			vts_vobs = (uint64_t)dvdread_stat.nr_parts;
 
 	}
 
