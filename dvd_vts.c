@@ -96,6 +96,7 @@ struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 	dvd_vts.vts = vts_number;
 
 	// Initialize to defaults
+	dvd_vts.valid = false;
 	dvd_vts.blocks = 0;
 	dvd_vts.filesize = 0;
 	dvd_vts.filesize_mbs = 0;
@@ -104,12 +105,11 @@ struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 	dvd_vts.valid_tracks = 0;
 	dvd_vts.invalid_tracks = 0;
 
-	// I haven't found a way a VTS can be invalid yet
-	dvd_vts.valid = true;
-
 	// First VTS is the VMG IFO, used here only as a placeholder
-	// if(vts_number == 0)
-	//	return dvd_vts;
+	if(vts_number == 0) {
+		dvd_vts.valid = true;
+		return dvd_vts;
+	}
 
 	ifo_handle_t *vts_ifo = NULL;
 	vts_ifo = ifoOpen(dvdread_dvd, vts_number);
@@ -117,16 +117,10 @@ struct dvd_vts dvd_vts_open(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 	if(vts_ifo == NULL)
 		return dvd_vts;
 
-	// I said this needed more testing, but I've never run into it being a problem.
-	/*
-	if(vts_ifos[vts]->vtsi_mat->vts_tmapt == 0) {
-		dvd_vts[vts].valid = false;
-		continue;
-	}
-	*/
+	if(!ifo_is_vts(vts_ifo))
+		return dvd_vts;
 
-	// if(!ifo_is_vts(vts_ifo))
-	//	return dvd_vts;
+	dvd_vts.valid = true;
 
 	dvd_vts.blocks = dvd_vts_blocks(dvdread_dvd, vts_number);
 
