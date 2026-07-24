@@ -591,7 +591,7 @@ int main(int argc, char **argv) {
 		// so that the display output will match, regardless of whether a small VOB file
 		// under 1 MB would be raised using ceil().
 		for(vob = 1; vob <= dvd_vts[vts].vobs; vob++) {
-			dvd_vob = dvd_vob_open(dvdread_dvd, vts, 0);
+			dvd_vob = dvd_vob_open(dvdread_dvd, vts, vob);
 			if(verbose)
 				printf("* 'VTS_%02" PRIu16 "_%" PRIu16 ".VOB' blocks: %" PRIu64 "\n", vts, vob, dvd_vob.blocks);
 			filesize_mbs[0] += dvd_vob.filesize_mbs;
