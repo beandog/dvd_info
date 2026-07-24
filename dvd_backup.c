@@ -432,6 +432,8 @@ int main(int argc, char **argv) {
 	uint16_t vob = 0;
 	uint16_t max_vobs = 1;
 
+	struct dvd_vob dvd_vob;
+
 	// Scan VTS for invalid data
 	for(vts = 0; vts <= dvd_info.video_title_sets; vts++) {
 
@@ -455,10 +457,10 @@ int main(int argc, char **argv) {
 
 		for(vob = 0; vob <= max_vobs; vob++) {
 
-			dvd_vts[vts].dvd_vobs[vob] = dvd_vob_open(dvdread_dvd, vts, vob);
+			dvd_vob = dvd_vob_open(dvdread_dvd, vts, vob);
 
 			if(debug)
-				printf("'%s' VIDEO TITLE SET %" PRIu16 " VOB %" PRIu16 " filesize: %" PRIu64 " mbs: %" PRIu64 " blocks: %" PRIu64 "\n", dvd_vts[vts].dvd_vobs[vob].udf_filename, vts, vob, dvd_vts[vts].dvd_vobs[vob].filesize, dvd_vts[vts].dvd_vobs[vob].filesize_mbs, dvd_vts[vts].dvd_vobs[vob].blocks);
+				printf("'%s' VIDEO TITLE SET %" PRIu16 " VOB %" PRIu16 " filesize: %" PRIu64 " mbs: %" PRIu64 " blocks: %" PRIu64 "\n", dvd_vob.udf_filename, vts, vob, dvd_vob.filesize, dvd_vob.filesize_mbs, dvd_vob.blocks);
 
 		}
 
@@ -485,7 +487,9 @@ int main(int argc, char **argv) {
 	dvd_file_t *dvdread_vts_file = NULL;
 	for(vts = 0; vts <= dvd_info.video_title_sets; vts++) {
 
-		dvd_vob_blocks = dvd_vts[vts].dvd_vobs[0].blocks;
+		dvd_vob = dvd_vob_open(dvdread_dvd, vts, 0);
+
+		dvd_vob_blocks = dvd_vob.blocks;
 
 		// If passed the --vts argument, skip if not this one
 		if(opt_vts_number && arg_vts_number != vts)
@@ -587,16 +591,17 @@ int main(int argc, char **argv) {
 		// so that the display output will match, regardless of whether a small VOB file
 		// under 1 MB would be raised using ceil().
 		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++) {
+			dvd_vob = dvd_vob_open(dvdread_dvd, vts, 0);
 			if(verbose)
-				printf("* 'VTS_%02" PRIu16 "_%" PRIu16 ".VOB' blocks: %" PRIu64 "\n", vts, vob, dvd_vts[vts].dvd_vobs[vob].blocks);
-			filesize_mbs[0] += dvd_vts[vts].dvd_vobs[vob].filesize_mbs;
+				printf("* 'VTS_%02" PRIu16 "_%" PRIu16 ".VOB' blocks: %" PRIu64 "\n", vts, vob, dvd_vob.blocks);
+			filesize_mbs[0] += dvd_vob.filesize_mbs;
 		}
 
 		dvd_blocks_offset = 0;
 
 		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++) {
 
-			filesize_mbs[1] = dvd_vts[vts].dvd_vobs[vob].filesize_mbs;
+			filesize_mbs[1] = dvd_vob.filesize_mbs;
 			filesize_mbs[2] = 0;
 			filesize_mbs[3] = 0;
 
@@ -608,7 +613,7 @@ int main(int argc, char **argv) {
 			vob_block = 0;
 			vob_blocks_skipped = 0;
 
-			while(vob_block < dvd_vts[vts].dvd_vobs[vob].blocks) {
+			while(vob_block < dvd_vob.blocks) {
 
 				retval = dvd_block_rw(dvdread_vts_file, dvd_blocks_offset, vob_fd);
 
