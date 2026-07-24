@@ -60,12 +60,12 @@ uint64_t percent_completed(uint64_t, uint64_t);
  * Read and write to the backup file. If there is an error, quit, and
  * dvd_backup will skip the blocks.
  */
-int dvd_block_rw(dvd_file_t *dvdread_vts_file, uint64_t offset, int fd) {
+int dvd_block_rw(dvd_file_t *dvdread_vts_file, size_t offset, int fd) {
 
 	ssize_t dvdread_bytes_read = 0;
 	unsigned char buffer[DVD_VIDEO_LB_LEN];
 
-	dvdread_bytes_read = DVDReadBlocks(dvdread_vts_file, (size_t)offset, 1, buffer);
+	dvdread_bytes_read = DVDReadBlocks(dvdread_vts_file, offset, 1, buffer);
 
 	if(dvdread_bytes_read < 0)
 		return 1;
@@ -476,7 +476,7 @@ int main(int argc, char **argv) {
 	/** Backup VIDEO_TS.VOB **/
 	snprintf(vob_filename, PATH_MAX - 1, "%s/VIDEO_TS.VOB", dvd_backup_dir);
 
-	uint64_t dvd_blocks_offset = 0;
+	size_t dvd_blocks_offset = 0;
 	uint64_t dvd_blocks_skipped = 0;
 
 	// Copy the menu title vobs
@@ -532,7 +532,7 @@ int main(int argc, char **argv) {
 				return 1;
 			}
 
-			fprintf(stdout, "* %s blocks written: %" PRIu64 " of %" PRIu64 "\r", vob_filename, dvd_blocks_offset + 1, dvd_vts[vts].dvd_vobs[0].blocks);
+			fprintf(stdout, "* %s blocks written: %" PRIu64 " of %" PRIu64 "\r", vob_filename, (uint64_t)(dvd_blocks_offset + 1), dvd_vts[vts].dvd_vobs[0].blocks);
 			fflush(stdout);
 
 			dvd_blocks_offset++;
