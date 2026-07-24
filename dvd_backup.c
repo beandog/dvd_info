@@ -242,7 +242,8 @@ int main(int argc, char **argv) {
 
 	// Set backup directory to uppercase
 	size_t l = 0;
-	for(l = 0; l < strlen(backup_title); l++) {
+	size_t s = strlen(backup_title);
+	for(l = 0; l < s; l++) {
 		if(isalpha(backup_title[l]))
 			backup_title[l] = toupper(backup_title[l]);
 	}
