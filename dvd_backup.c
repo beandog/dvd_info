@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
 	uint16_t arg_vts_number = 0;
 
 	char dvd_custom_dir[PATH_MAX];
-	memset(dvd_custom_dir, '\0', PATH_MAX);
+	memset(dvd_custom_dir, '\0', sizeof(dvd_custom_dir));
 
 	while((opt = getopt_long(argc, argv, "hin:T:Vvz", p_long_opts, &ix)) != -1) {
 
@@ -251,8 +251,8 @@ int main(int argc, char **argv) {
 	// Build the backup directory
 	char dvd_parent_dir[PATH_MAX];
 	char dvd_backup_dir[PATH_MAX];
-	memset(dvd_parent_dir, '\0', PATH_MAX);
-	memset(dvd_backup_dir, '\0', PATH_MAX);
+	memset(dvd_parent_dir, '\0', sizeof(dvd_parent_dir));
+	memset(dvd_backup_dir, '\0', sizeof(dvd_backup_dir));
 	if(strlen(dvd_custom_dir)) {
 		snprintf(dvd_parent_dir, DVD_DIR_PATH_MAX - 1, "%s/", dvd_custom_dir);
 		snprintf(dvd_backup_dir, DVD_DIR_PATH_MAX - 1, "%s%s", dvd_parent_dir, "VIDEO_TS");
@@ -292,7 +292,7 @@ int main(int argc, char **argv) {
 	// Keep track of each backup in one struct
 	uint64_t dvd_backup_blocks = 0;
 	char dvd_backup_filename[PATH_MAX];
-	memset(dvd_backup_filename, '\0', PATH_MAX);
+	memset(dvd_backup_filename, '\0', sizeof(dvd_backup_filename));
 
 	// Start with the primary IFO first, and the backup BUP second
 	bool info_file = true;
@@ -313,7 +313,7 @@ int main(int argc, char **argv) {
 	memset(vts_filename, '\0', 23);
 	ifo_handle_t *ifo = NULL;
 	int ifo_fd = -1;
-	for (ifo_number = 0; ifo_number < dvd_info.video_title_sets + 1; ifo_number++) {
+	for (ifo_number = 0; ifo_number <= dvd_info.video_title_sets; ifo_number++) {
 
 		// Always write the VMG IFO, and skip others if optional one is passed
 		if(ifo_number && opt_vts_number && arg_vts_number != ifo_number)
@@ -471,7 +471,7 @@ int main(int argc, char **argv) {
 	// title VOBs could be garbage, so they will be copied later.
 	int vob_fd = -1;
 	char vob_filename[PATH_MAX];
-	memset(vob_filename, '\0', PATH_MAX);
+	memset(vob_filename, '\0', sizeof(vob_filename));
 	char vob_basename[13];
 	memset(vob_basename, '\0', 13);
 
@@ -566,7 +566,7 @@ int main(int argc, char **argv) {
 
 	/** Backup VTS_01_1.VOB through VTS_99_9.VOB **/
 	uint64_t vob_blocks_skipped = 0;
-	for(vts = 1; vts < dvd_info.video_title_sets + 1; vts++) {
+	for(vts = 1; vts <= dvd_info.video_title_sets; vts++) {
 
 		filesize_mbs[0] = 0;
 
@@ -590,7 +590,7 @@ int main(int argc, char **argv) {
 		// Get the total of the VTS from a sum of the VOBs, instead of the VTS directly
 		// so that the display output will match, regardless of whether a small VOB file
 		// under 1 MB would be raised using ceil().
-		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++) {
+		for(vob = 1; vob <= dvd_vts[vts].vobs; vob++) {
 			dvd_vob = dvd_vob_open(dvdread_dvd, vts, 0);
 			if(verbose)
 				printf("* 'VTS_%02" PRIu16 "_%" PRIu16 ".VOB' blocks: %" PRIu64 "\n", vts, vob, dvd_vob.blocks);
@@ -599,7 +599,7 @@ int main(int argc, char **argv) {
 
 		dvd_blocks_offset = 0;
 
-		for(vob = 1; vob < dvd_vts[vts].vobs + 1; vob++) {
+		for(vob = 1; vob <= dvd_vts[vts].vobs; vob++) {
 
 			filesize_mbs[1] = dvd_vob.filesize_mbs;
 			filesize_mbs[2] = 0;
