@@ -478,11 +478,14 @@ int main(int argc, char **argv) {
 
 	size_t dvd_blocks_offset = 0;
 	uint64_t dvd_blocks_skipped = 0;
+	uint64_t dvd_vob_blocks = 0;
 
 	// Copy the menu title vobs
 	/** Backup VIDEO_TS.VOB, VTS_01_0.VOB through VTS_99_0.VOB **/
 	dvd_file_t *dvdread_vts_file = NULL;
 	for(vts = 0; vts <= dvd_info.video_title_sets; vts++) {
+
+		dvd_vob_blocks = dvd_vts[vts].dvd_vobs[0].blocks;
 
 		// If passed the --vts argument, skip if not this one
 		if(opt_vts_number && arg_vts_number != vts)
@@ -505,11 +508,11 @@ int main(int argc, char **argv) {
 		vob_fd = open(vob_filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 
 		if(debug)
-			printf("VTS %" PRIu16 " blocks: %" PRIu16 "\n", vts, dvd_vts[vts].dvd_vobs[0].blocks);
+			printf("VTS %" PRIu16 " blocks: %" PRIu64 "\n", vts, dvd_vob_blocks);
 
 		// It's not unusual for a DVD to have a placeholder VOB, if
 		// that's the case, skip it after it's been created by open().
-		if(dvd_vts[vts].dvd_vobs[0].blocks == 0) {
+		if(dvd_vob_blocks == 0) {
 			close(vob_fd);
 			continue;
 		}
@@ -517,7 +520,7 @@ int main(int argc, char **argv) {
 		dvd_blocks_offset = 0;
 		dvd_blocks_skipped = 0;
 
-		while(dvd_blocks_offset < dvd_vts[vts].dvd_vobs[0].blocks) {
+		while(dvd_blocks_offset < dvd_vob_blocks) {
 
 			retval = dvd_block_rw(dvdread_vts_file, dvd_blocks_offset, vob_fd);
 
@@ -532,7 +535,7 @@ int main(int argc, char **argv) {
 				return 1;
 			}
 
-			fprintf(stdout, "* %s blocks written: %" PRIu64 " of %" PRIu64 "\r", vob_filename, (uint64_t)(dvd_blocks_offset + 1), dvd_vts[vts].dvd_vobs[0].blocks);
+			fprintf(stdout, "* %s blocks written: %" PRIu64 " of %" PRIu64 "\r", vob_filename, (uint64_t)(dvd_blocks_offset + 1), dvd_vob_blocks);
 			fflush(stdout);
 
 			dvd_blocks_offset++;
