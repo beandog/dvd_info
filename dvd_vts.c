@@ -82,8 +82,6 @@ uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
 		if(dvd_udf_file.filesize)
 			vts_vobs++;
-		else
-			break;
 
 	}
 
