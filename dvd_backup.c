@@ -504,7 +504,7 @@ int main(int argc, char **argv) {
 		if(vts == 0)
 			snprintf(vob_filename, PATH_MAX - 1, "%s/VIDEO_TS.VOB", dvd_backup_dir);
 		else
-			snprintf(vob_filename, PATH_MAX - 1, "%s/VTS_%02" PRIu16  "_0.VOB", dvd_backup_dir, vts);
+			snprintf(vob_filename, PATH_MAX - 1, "%s/VTS_%02" PRIu16 "_0.VOB", dvd_backup_dir, vts);
 
 		if(verbose)
 			printf("* Writing to %s\n", vob_filename);
