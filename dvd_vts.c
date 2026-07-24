@@ -76,10 +76,7 @@ uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
 	for(vob_number = 1; vob_number <= 9; vob_number++) {
 
-		if(vts_number == 0)
-			strncpy(udf_filename, "/VIDEO_TS/VIDEO_TS.VOB", PATH_MAX);
-		else
-			snprintf(udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
+		snprintf(udf_filename, PATH_MAX, "/VIDEO_TS/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", vts_number, vob_number);
 
 		dvd_udf_file = dvd_udf_file_open(dvdread_dvd, udf_filename);
 
