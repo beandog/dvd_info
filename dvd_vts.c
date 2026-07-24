@@ -6,7 +6,7 @@
 
 uint64_t dvd_vts_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
-	bool udf = true;
+	bool udf = false;
 
 	if(vts_number == 0)
 		udf = true;
@@ -109,7 +109,7 @@ uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 
 	uint16_t vts_vobs = 0;
 
-	bool udf = true;
+	bool udf = false;
 
 #if defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
 	udf = true;

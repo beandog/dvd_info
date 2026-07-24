@@ -8,7 +8,7 @@ uint64_t dvd_vob_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16_t
 
 	uint64_t vob_blocks = 0;
 
-	bool udf = true;
+	bool udf = false;
 
 #if defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
 	udf = true;
@@ -53,7 +53,7 @@ uint64_t dvd_vob_filesize(dvd_reader_t *dvdread_dvd, uint16_t vts_number, uint16
 
 	uint64_t vob_filesize = 0;
 
-	bool udf = true;
+	bool udf = false;
 
 #if defined (__MINGW32__) || defined (__CYGWIN__) || defined (__MSYS__)
 	udf = true;
