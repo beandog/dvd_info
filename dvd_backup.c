@@ -492,7 +492,7 @@ int main(int argc, char **argv) {
 		dvd_vob_blocks = dvd_vob.blocks;
 
 		// If passed the --vts argument, skip if not this one
-		if(opt_vts_number && arg_vts_number != vts)
+		if(opt_vts_number && vts > 0 && arg_vts_number != vts)
 			continue;
 
 		// Skip if the file doesn't exist on the DVD
