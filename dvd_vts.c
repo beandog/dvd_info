@@ -149,7 +149,7 @@ uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 			return 0;
 
 		if(dvdread_stat.nr_parts > 0)
-			vts_vobs = (uint64_t)dvdread_stat.nr_parts;
+			vts_vobs = (uint16_t)dvdread_stat.nr_parts;
 
 	}
 
