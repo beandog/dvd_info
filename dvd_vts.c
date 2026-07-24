@@ -20,7 +20,6 @@ uint64_t dvd_vts_blocks(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 	if(udf) {
 
 		uint16_t vob_number = 0;
-		uint64_t udf_blocks = 0;
 		char udf_filename[PATH_MAX];
 		struct dvd_udf_file_t dvd_udf_file;
 
