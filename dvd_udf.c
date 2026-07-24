@@ -2,10 +2,10 @@
 
 struct dvd_udf_file_t dvd_udf_file_open(dvd_reader_t *dvdread_dvd, char *udf_filename) {
 
-	uint32_t bytes = 0;
+	uint32_t dvdread_udf_block = 0;
+	uint32_t dvdread_udf_size = 0;
 	uint64_t filesize = 0;
 	uint64_t filesize_mbs = 0;
-	uint64_t block = 0;
 
 	struct dvd_udf_file_t dvd_udf_file;
 
@@ -16,15 +16,15 @@ struct dvd_udf_file_t dvd_udf_file_open(dvd_reader_t *dvdread_dvd, char *udf_fil
 	dvd_udf_file.filesize = 0;
 	dvd_udf_file.filesize_mbs = 0;
 
-	block = UDFFindFile(dvdread_dvd, udf_filename, &bytes);
+	dvdread_udf_block = UDFFindFile(dvdread_dvd, udf_filename, &dvdread_udf_size);
 
-	if(bytes > 0) {
+	if(dvdread_udf_size > 0) {
 
 		double mbs = 0;
 
-		dvd_udf_file.starting_block = block;
+		dvd_udf_file.starting_block = (uint64_t)dvdread_udf_block;
 
-		dvd_udf_file.filesize = (uint64_t)bytes;
+		dvd_udf_file.filesize = (uint64_t)dvdread_udf_size;
 		dvd_udf_file.blocks = dvd_udf_file.filesize / DVD_VIDEO_LB_LEN;
 
 		mbs = ceil((dvd_udf_file.blocks * DVD_VIDEO_LB_LEN) / 1048576.0);
