@@ -509,19 +509,19 @@ int main(int argc, char **argv) {
 
 			// Couldn't write
 			if(retval == 2) {
-				fprintf(stdout, "* couldn't write to %s\n", vob_filename);
-				fflush(stdout);
+				fprintf(stderr, "* couldn't write to %s\n", vob_filename);
+				fflush(stderr);
 				return 1;
 			}
 
-			fprintf(stdout, "        Filename: '%s'; Blocks: %" PRIu64 "/%" PRIu64 "\r", udf_filename, (uint64_t)(dvd_blocks_offset + 1), dvd_vob_blocks);
-			fflush(stdout);
+			fprintf(stderr, "        Filename: '%s'; Blocks: %" PRIu64 "/%" PRIu64 "\r", udf_filename, (uint64_t)(dvd_blocks_offset + 1), dvd_vob_blocks);
+			fflush(stderr);
 
 			dvd_blocks_offset++;
 
 		}
 
-		printf("\n");
+		fprintf(stderr, "\n");
 
 		close(vob_fd);
 
@@ -604,15 +604,15 @@ int main(int argc, char **argv) {
 
 				if(vob_blocks_skipped) {
 
-					fprintf(stdout, "        VOB: %" PRIu16 ", Filename: '%s', Blocks skipped: %" PRIu64 ", MBs: %" PRIu64 "/%" PRIu64 " (%" PRIu64 "%%)\r", vob, vob_basename, vob_blocks_skipped, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3]);
+					fprintf(stderr, "        VOB: %" PRIu16 ", Filename: '%s', Blocks skipped: %" PRIu64 ", MBs: %" PRIu64 "/%" PRIu64 " (%" PRIu64 "%%)\r", vob, vob_basename, vob_blocks_skipped, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3]);
 
 				} else {
 
-					fprintf(stdout, "        VOB: %" PRIu16 ", Filename: '%s', MBs: %" PRIu64 "/%" PRIu64 " (%" PRIu64 "%%)\r", vob, vob_basename, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3]);
+					fprintf(stderr, "        VOB: %" PRIu16 ", Filename: '%s', MBs: %" PRIu64 "/%" PRIu64 " (%" PRIu64 "%%)\r", vob, vob_basename, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3]);
 
 				}
 
-				fflush(stdout);
+				fflush(stderr);
 
 				dvd_blocks_offset++;
 				vob_block++;
