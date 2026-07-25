@@ -570,7 +570,7 @@ int main(int argc, char **argv) {
 	// 2 - total filesize of destination VOB backed up
 	// 3 - percent of VOB backed up
 	// 4 - total megabytes of previous loop
-	uint64_t filesize_mbs[5];
+	uint64_t filesize_mbs[5] = { 0, 0, 0, 0, 0 };
 	uint64_t vob_mbs = 0;
 
 	/** Backup VTS_01_1.VOB through VTS_99_9.VOB **/
