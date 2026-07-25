@@ -536,7 +536,8 @@ int main(int argc, char **argv) {
 	// 1 - total filesize of source VOB being copied
 	// 2 - total filesize of destination VOB backed up
 	// 3 - percent of VOB backed up
-	uint64_t filesize_mbs[4];
+	// 4 - total megabytes of previous loop
+	uint64_t filesize_mbs[5];
 	uint64_t vob_mbs = 0;
 
 	/** Backup VTS_01_1.VOB through VTS_99_9.VOB **/
@@ -608,7 +609,12 @@ int main(int argc, char **argv) {
 
 				} else {
 
-					fprintf(stderr, "        VOB: %" PRIu16 ", Filename: '%s', MBs: %" PRIu64 "/%" PRIu64 " (%" PRIu64 "%%)\r", vob, vob_basename, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3]);
+					// Only print new filesize if it's changed
+					if((filesize_mbs[5] < filesize_mbs[2]) || filesize_mbs[5] == 0) {
+
+						filesize_mbs[5] = filesize_mbs[2];
+						fprintf(stderr, "        VOB: %" PRIu16 ", Filename: '%s', MBs: %" PRIu64 "/%" PRIu64 " (%" PRIu64 "%%)\r", vob, vob_basename, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3]);
+					}
 
 				}
 
