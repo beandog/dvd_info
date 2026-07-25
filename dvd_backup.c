@@ -570,6 +570,8 @@ int main(int argc, char **argv) {
 
 		for(vob = 1; vob <= dvd_vts[vts].vobs; vob++) {
 
+			dvd_vob = dvd_vob_open(dvdread_dvd, vts, vob);
+
 			filesize_mbs[1] = dvd_vob.filesize_mbs;
 			filesize_mbs[2] = 0;
 			filesize_mbs[3] = 0;
