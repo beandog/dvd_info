@@ -120,6 +120,7 @@ int main(int argc, char **argv) {
 		{ "name", required_argument, NULL, 'n' },
 		{ "ifos", no_argument, NULL, 'i' },
 		{ "vts", required_argument, NULL, 'T' },
+		{ "skip", no_argument, NULL, 's' },
 		{ "debug", no_argument, NULL, 'z' },
 		{ "version", no_argument, NULL, 'V' },
 		{ 0, 0, 0, 0 },
@@ -133,12 +134,13 @@ int main(int argc, char **argv) {
 
 	bool opt_title_sets = true;
 	bool opt_vts_number = false;
+	bool opt_skip_finished = false;
 	uint16_t arg_vts_number = 0;
 
 	char dvd_custom_dir[PATH_MAX];
 	memset(dvd_custom_dir, '\0', sizeof(dvd_custom_dir));
 
-	while((opt = getopt_long(argc, argv, "hin:T:Vvz", p_long_opts, &ix)) != -1) {
+	while((opt = getopt_long(argc, argv, "hin:sT:Vvz", p_long_opts, &ix)) != -1) {
 
 		switch(opt) {
 
@@ -162,6 +164,10 @@ int main(int argc, char **argv) {
 
 			case 'i':
 				opt_title_sets = false;
+				break;
+
+			case 's':
+				opt_skip_finished = true;
 				break;
 
 			case 'T':
@@ -460,6 +466,9 @@ int main(int argc, char **argv) {
 	uint64_t dvd_vob_blocks = 0;
 	char udf_filename[PATH_MAX] = {'\0'};
 
+	struct stat s_vob_filename;
+	uint64_t s_vob_filesize = 0;
+
 	// Copy the menu title vobs
 	/** Backup VIDEO_TS.VOB, VTS_01_0.VOB through VTS_99_0.VOB **/
 	dvd_file_t *dvdread_vts_file = NULL;
@@ -485,6 +494,30 @@ int main(int argc, char **argv) {
 		} else {
 			snprintf(udf_filename, PATH_MAX - 1, "VTS_%02" PRIu16 "_0.VOB", vts);
 			snprintf(vob_filename, PATH_MAX - 1, "%s/%s", dvd_backup_dir, udf_filename);
+		}
+
+		if(opt_skip_finished) {
+
+			retval = stat(vob_filename, &s_vob_filename);
+
+			if(retval == 0) {
+
+				if(s_vob_filename.st_size > 0)
+					s_vob_filesize = (uint64_t)s_vob_filename.st_size;
+
+				if(s_vob_filesize == dvd_vob.filesize) {
+
+					if(debug)
+						printf("        Filename: '%s', Source: %" PRIu64 ", Destination: %" PRIu64 "\n", udf_filename, dvd_vob.filesize, s_vob_filesize);
+					fprintf(stderr, "        Filename: '%s'; Blocks: %" PRIu64 "/%" PRIu64 " (skipping)\r", udf_filename, dvd_vob.blocks, dvd_vob_blocks);
+					fprintf(stderr, "\n");
+
+					continue;
+
+				}
+
+			}
+
 		}
 
 		vob_fd = open(vob_filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
@@ -579,6 +612,30 @@ int main(int argc, char **argv) {
 
 			snprintf(vob_filename, PATH_MAX - 1, "%s/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", dvd_backup_dir, vts, vob);
 			strncpy(vob_basename, basename(vob_filename), 13);
+
+			if(opt_skip_finished) {
+
+				retval = stat(vob_filename, &s_vob_filename);
+
+				if(retval == 0) {
+
+					if(s_vob_filename.st_size > 0)
+						s_vob_filesize = (uint64_t)s_vob_filename.st_size;
+
+					if(s_vob_filesize == dvd_vob.filesize) {
+
+						if(debug)
+							printf("        Filename: '%s', Source: %" PRIu64 ", Destination: %" PRIu64 "\n", udf_filename, dvd_vob.filesize, s_vob_filesize);
+						fprintf(stderr, "        VOB: %" PRIu16 ", Filename: '%s', MBs: %" PRIu64 "/%" PRIu64 " (%" PRIu64 "%%) skipping\r", vob, vob_basename, (uint64_t)(ceil(s_vob_filesize / 1048576.0)), dvd_vob.filesize_mbs, 100);
+						fprintf(stderr, "\n");
+
+						continue;
+
+					}
+
+				}
+
+			}
 
 			vob_fd = open(vob_filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 
