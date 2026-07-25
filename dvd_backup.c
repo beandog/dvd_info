@@ -577,8 +577,6 @@ int main(int argc, char **argv) {
 	uint64_t vob_blocks_skipped = 0;
 	for(vts = 1; vts <= dvd_info.video_title_sets; vts++) {
 
-		filesize_mbs[0] = 0;
-
 		if(opt_vts_number && arg_vts_number != vts)
 			continue;
 
@@ -592,13 +590,7 @@ int main(int argc, char **argv) {
 
 		printf("Video Title Set: %" PRIu16 ", VOBs: %" PRIu16 ", Filesize: %" PRIu64 " MBs\n", vts, dvd_vts[vts].vobs, dvd_vts[vts].filesize_mbs);
 
-		// Get the total of the VTS from a sum of the VOBs, instead of the VTS directly
-		// so that the display output will match, regardless of whether a small VOB file
-		// under 1 MB would be raised using ceil().
-		for(vob = 1; vob <= dvd_vts[vts].vobs; vob++) {
-			dvd_vob = dvd_vob_open(dvdread_dvd, vts, vob);
-			filesize_mbs[0] += dvd_vob.filesize_mbs;
-		}
+		filesize_mbs[0] = dvd_vts[vts].filesize_mbs;
 
 		dvd_blocks_offset = 0;
 
