@@ -601,6 +601,7 @@ int main(int argc, char **argv) {
 			filesize_mbs[1] = dvd_vob.filesize_mbs;
 			filesize_mbs[2] = 0;
 			filesize_mbs[3] = 0;
+			filesize_mbs[4] = 0;
 
 			snprintf(vob_filename, PATH_MAX - 1, "%s/VTS_%02" PRIu16 "_%" PRIu16 ".VOB", dvd_backup_dir, vts, vob);
 			strncpy(vob_basename, basename(vob_filename), 13);
@@ -659,9 +660,9 @@ int main(int argc, char **argv) {
 				} else {
 
 					// Only print new filesize if it's changed
-					if((filesize_mbs[5] < filesize_mbs[2]) || filesize_mbs[5] == 0) {
+					if((filesize_mbs[4] < filesize_mbs[2]) || filesize_mbs[4] == 0) {
 
-						filesize_mbs[5] = filesize_mbs[2];
+						filesize_mbs[4] = filesize_mbs[2];
 						fprintf(stderr, "        VOB: %" PRIu16 ", Filename: '%s', MBs: %" PRIu64 "/%" PRIu64 " (%" PRIu64 "%%)\r", vob, vob_basename, filesize_mbs[2], filesize_mbs[1], filesize_mbs[3]);
 					}
 
