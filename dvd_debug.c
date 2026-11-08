@@ -37,6 +37,8 @@ int main(int argc, char **argv) {
 	memset(device_filename, '\0', PATH_MAX);
 	if (argc == 2)
 		strncpy(device_filename, argv[1], PATH_MAX - 1);
+	else if(getenv("WSL_INTEROP") != NULL)
+		strncpy(device_filename, "/mnt/d", PATH_MAX - 1);
 	else
 		strncpy(device_filename, DEFAULT_DVD_DEVICE, PATH_MAX - 1);
 
