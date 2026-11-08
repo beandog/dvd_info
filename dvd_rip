@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+dvd_encoder=""
+
 # --- Pre-flight instructions
 
 # Check for ffmpeg
@@ -9,84 +11,73 @@ if [[ $? -ne 0 ]]; then
 	exit 1
 fi
 
+# Might enable at some point:
+# See if ffmpeg can read DVD directly
+# ffmpeg_formats=$(ffmpeg -hide_banner -formats 2> /dev/null)
+# if [[ $ffmpeg_formats == *"dvdvideo"* ]]; then dvd_encoder="ffmpeg"; fi
+
 # Check for dvd_copy which is needed to export the stream
-which dvd_copy &> /dev/null
-if [[ $? -ne 0 ]]; then
-	echo "dvd_copy is not installed"
-	exit 1
+if [[ -z "$dvd_encoder" ]]; then
+	which dvd_copy &> /dev/null
+	if [[ $? -eq 1 ]]; then dvd_encoder="dvd_copy"; fi
 fi
 
-# --- Get ffmpeg video codecs
+# Might enable at some point:
+# if [[ -z "$dvd_encoder" ]]; then
+#	echo "No DVD support found. Do one of two things:"
+#	echo "- Install dvd_copy"
+#	echo "- Build ffmpeg with native dvdvideo format support"
+#	exit 1
+# fi
 
-has_x264=0
-has_x265=0
-has_vp8=0
-has_vp9=0
+# --- Get ffmpeg video codecs
 
 # Get all the codecs that ffmpeg supports
 ffmpeg_codecs=$(ffmpeg -hide_banner -codecs 2> /dev/null)
 
+# Check for nvidia hardware encoding
+if [[ $ffmpeg_codecs == *"h264_nvenc"* ]]; then has_h264_nvenc=1; else has_h264_nvenc=0; fi
+
 # Check for libx264
-echo $ffmpeg_codecs | grep x264 > /dev/null
-if [[ $? -eq 0 ]]; then
-	has_x264=1
-fi
+if [[ $ffmpeg_codecs == *"x264"* ]]; then has_x264=1; else has_x264=0; fi
 
 # Check for libx265
-echo $ffmpeg_codecs | grep x265 > /dev/null
-if [[ $? -eq 0 ]]; then
-	has_x265=1
-fi
+if [[ $ffmpeg_codecs == *"x265"* ]]; then has_x265=1; else has_x265=0; fi
 
-# Check for libvpx
-echo $ffmpeg_codecs | grep vp8 > /dev/null
-if [[ $? -eq 0 ]]; then
-	has_vp8=1
-fi
+# Check for vpx8 (libvpx)
+if [[ $ffmpeg_codecs == *"libvpx"* ]]; then has_vp8=1; else has_vp8=0; fi
 
-# check for libvpx-vp9
-echo $ffmpeg_codecs | grep vp9 > /dev/null
-if [[ $? -eq 0 ]]; then
-	has_vp9=1
-fi
+# Check for vpx9 (libvpx-vp9)
+if [[ $ffmpeg_codecs == *"libvpx-vp9"* ]]; then has_vp9=1; else has_vp9=0; fi
 
 # Set default video codec
-if [[ $has_x264 -eq 1 ]]; then
-	default_vcodec=libx264
+if [[ $has_h264_nvenc -eq 1 ]]; then
+	default_vcodec="h264_nvenc"
+elif [[ $has_x264 -eq 1 ]]; then
+	default_vcodec="libx264"
 elif [[ $has_x265 -eq 1 ]]; then
-	default_vcodec=libx265
+	default_vcodec="libx265"
 elif [[ $has_vp8 -eq 1 ]]; then
-	default_vcodec=libvpx
+	default_vcodec="libvpx"
 elif [[ $has_vp9 -eq 1 ]]; then
-	default_vcodec=libvpx-vp9
+	default_vcodec="libvpx-vp9"
 else
 	default_vcodec="ffmpeg default"
 fi
 
 # --- Get ffmpeg audio codecs
 
-has_aac=0
-has_opus=0
-has_vorbis=0
-
 # Check for native AAC
-echo $ffmpeg_codecs | grep aac > /dev/null
-if [[ $? -eq 0 ]]; then
-	has_aac=1
-fi
+if [[ $ffmpeg_codecs == *"aac"* ]]; then has_aac=1; else has_aac=0; fi
 
 # Check for libopus (native opus needs experimental flag, so not checking)
-echo $ffmpeg_codecs | grep libopus > /dev/null
-if [[ $? -eq 0 ]]; then
-	has_opus=1
-fi
+if [[ $ffmpeg_codecs == *"libopus"* ]]; then has_opus=1; else has_opus=0; fi
 
 # Check for libvorbis
-echo $ffmpeg_codecs | grep libvorbis > /dev/null
-if [[ $? -eq 0 ]]; then
-	has_vorbis=1
-fi
+if [[ $ffmpeg_codecs == *"libvorbis"* ]]; then has_vorbis=1; else has_vorbis=0; fi
 
+
+# Set default audio codec
 if [[ $has_aac -eq 1 ]]; then
 	default_acodec=aac
 elif [[ $has_opus -eq 1 ]]; then
@@ -139,8 +130,8 @@ input_filename=""
 output_filename="dvd_rip.mp4"
 dvd_track=""
 dvd_chapters=""
-vcodec="libx264"
-acodec="aac"
+vcodec=""
+acodec=""
 subtitles="yes"
 loglevel="info"
 dry_run="no"
@@ -252,6 +243,10 @@ while getopts $optstring name; do
 
 done
 
+# Set defaults
+if [[ -z "$vcodec" ]]; then vcodec=$default_vcodec; fi
+if [[ -z "$acodec" ]]; then acodec=$default_acodec; fi
+
 # --- DVD_COPY
 
 dvd_copy_opts="-o -"
@@ -295,7 +290,7 @@ ffmpeg_opts="$ffmpeg_opts -i -"
 
 # Encode video
 ffmpeg_opts="$ffmpeg_opts -map v"
-ffmpeg_opts="$ffmpeg_opts -vcodec $vcodec"
+if [[ ! -z "$vcodec" ]]; then ffmpeg_opts="$ffmpeg_opts -c:v $vcodec"; fi
 if [[ -n "$crf" ]] && [[ "$crf" -gt 0 ]]; then
 	ffmpeg_opts="$ffmpeg_opts -crf $crf"
 fi
@@ -308,12 +303,12 @@ fi
 
 # Map all audio streams - ffmpeg doesn't recognize language from piped input
 ffmpeg_opts="$ffmpeg_opts -map a"
-ffmpeg_opts="$ffmpeg_opts -acodec $acodec"
+if [[ ! -z "$acodec" ]]; then ffmpeg_opts="$ffmpeg_opts -c:a $acodec"; fi
 
 # Map all subtitle streams - ffmpeg doesn't recognize language from piped input
 if [[ "$subtitles" == "yes" ]]; then
 	ffmpeg_opts="$ffmpeg_opts -map s?"
-	ffmpeg_opts="$ffmpeg_opts -scodec copy"
+	ffmpeg_opts="$ffmpeg_opts -c:s copy"
 fi
 
 # Overwrite existing file (will confirm later)
