@@ -128,7 +128,7 @@ function display_help {
 
 }
 
-if [[ $1 == "--help" ]]; then
+if [[ $1 == "--help" ]] || [[ $# -eq 0 ]]; then
 	display_help
 	exit
 fi
