@@ -52,7 +52,7 @@
 #define DVD_DIR_PATH_MAX (PATH_MAX - strlen("/VIDEO_TS.IFO"))
 
 int main(int, char **);
-int dvd_block_rw(dvd_file_t *, uint64_t, int);
+int dvd_block_rw(dvd_file_t *, size_t, int);
 uint64_t blocks_to_mbs(uint64_t);
 uint64_t percent_completed(uint64_t, uint64_t);
 
