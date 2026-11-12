@@ -70,7 +70,7 @@ uint16_t dvd_vts_vobs(dvd_reader_t *dvdread_dvd, uint16_t vts_number) {
 		return 1;
 
 	uint16_t vts_vobs = 0;
-	uint8_t vob_number = 0;
+	uint16_t vob_number = 0;
 	char udf_filename[PATH_MAX];
 	struct dvd_udf_file_t dvd_udf_file;
 
