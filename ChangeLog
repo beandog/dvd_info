@@ -9,6 +9,8 @@
 * Port to MSYS2
 * Remove legacy dvd_trip (use dvd_rip instead)
 * Support WSL and use '/mnt/d' as default mounted drive
+* dvd_rip: require an argument or option by default
+* dvd_rip: support h264_nvenc and use by default if available
 
 2.2
 
